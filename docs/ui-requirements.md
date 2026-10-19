@@ -1,24 +1,45 @@
 # Uinsure Policies UI: Requirements
 
-Author: David Morgan · Last updated: 2026-10-19 · Status: **DRAFT** (gate G0 not passed)
+Author: David Morgan · Last updated: 2026-10-19 (round 2) · Status: **DRAFT** (gate G0 not passed)
 
 This is the **single input** for the UI work: the brief that `requirements.md` §4 reserved ("the React
 frontend gets its own brief, mockups and plan DAG later"). The sequence follows agentflow's design
 pipeline, run through this repo's own spec format and HITL:
 
-0. **Brief** (this file). David approves it: gate **G0**.
+0. **Brief** (this file). It covers both scopes, the trace explorer and the policy workbench. David
+   approves it: gate **G0**.
 1. **Research → specs** in `.claude/specs/`, each Research → Options → Decision → Contract. The design
-   research (prior art, mood, style options, flows, screens, components) is `ui-research.spec.md`. Its
-   agent-facing outputs land in `docs/ui/`, because agents never read the specs. Gate **G1**.
-2. **Mockups:** 2–3 genuinely divergent directions, as static HTML, judged by screenshot. David picks
-   one: gate **G2**.
-3. **Stylesheet:** design tokens and the design-system preview page, covering every catalogued
-   component. Gate **G3**.
-4. **Screens:** every screen in the catalog as kit-only HTML, filled with **real trail data**. David
-   signs off: gate **G4**.
-5. **Plan the DAG:** `docs/plans/active/ui.dag.yaml` + `ui.plan.md`. David approves by his own commit:
+   research (prior art, mood, assets, flows, screen catalog, component catalog) is `ui-research.spec.md`.
+   Its agent-facing outputs land in `docs/ui/`, because agents never read the specs. **Every requirement
+   ID in §2, explorer and workbench, must reach a tagged region of some screen in the catalog, or the
+   stage fails.** Gate **G1**.
+2. **Creative direction:** a `creative-director` agent reads the research files themselves (not a
+   summary) and writes 3 concept territories to `docs/ui/directions.json`, each cited to research
+   entries. A script rejects territories that share a layout archetype or tone, or cite nothing. The
+   style blocks are derived from the territories. No gate: David judges them as mockups.
+3. **Mockups:** each direction rendered on one explorer screen **and** one workbench screen, as static
+   HTML, judged by screenshot. David picks one and writes or adopts its concept: gate **G2**.
+4. **Stylesheet = the React kit:** React is already decided, so this stage builds the real kit, not a
+   stack-agnostic preview: `tokens.json`, the primitives, patterns and layouts as React components, and a
+   **kitchen-sink page** rendering every component in the catalog with every variant and state. A
+   coverage audit fails the stage if any catalogued component is missing; typecheck and tests run in the
+   parent. David signs off from screenshots: gate **G3**.
+5. **Screens:** every screen in the catalog, both scopes, composed only from the kit, filled with **real
+   trail data** (explorer) or **real API responses** (workbench). David signs off: gate **G4**.
+6. **Plan the DAG:** `docs/plans/active/ui.dag.yaml` + `ui.plan.md`. David approves by his own commit:
    gate **G5**.
-6. **Build:** `/feature ui <node>` per node, with David's two pauses, PRs into the `ui` branch.
+7. **Build:** `/feature ui <node>` per node, with David's two pauses, PRs into the `ui` branch. The
+   explorer is built first, then the workbench.
+
+**Round 2.** Round 1 (2026-10-19) ran research, mockups and a G2 pick (case-file) on the explorer alone.
+Three things were wrong with it:
+- the screen catalog had no workbench screen, though this brief required one;
+- the directions were written by the main session from its own summary of the research, not by an
+  agent reading the research;
+- G2 ran before `ui-research` was decided.
+
+Round 1's research files are kept and extended. Its mockups and its pick are archived as evidence
+(`docs/ui/mockups/`, `docs/trace/ui/DM/`), not reused as the decision.
 
 Sources: `requirements.md` (the API and the harness it was built with), `Uinsure - Tehcnial Challenge
 -Backend.pdf` (the task), `Uinsure---Senior-Software-Engineer---2026.pdf` (the role), and agentflow's
@@ -36,13 +57,14 @@ tests and its red, green and refactor commits, every agent action logged by a ho
 finding recorded, every human decision signed. Today it's spread over JSONL, JSON and markdown files that
 nobody will read in an interview. The UI makes that evidence **navigable in minutes**.
 
-**Two halves, built in this order:**
+**Two halves, designed together, built in this order:**
 
-1. **The trace explorer** (this plan's first scope): how the API was built, from the trails. Read-only,
-   static, and buildable now, while F3–F7 are still in flight.
-2. **The policy workbench** (later, a second scope in the same plan): a client for the API itself (sell,
+1. **The trace explorer** (built first): how the API was built, from the trails. Read-only, static, and
+   buildable now, while F4–F7 are still in flight.
+2. **The policy workbench** (built second, in the same plan): a client for the API itself (sell,
    retrieve, cancel with quote, claims, renew), where every rule violation links back into the explorer.
-   It waits on F3 and F4.
+   It is designed now, through every design stage, so one direction and one kit serve both halves. Its
+   build waits on F4 (renew).
 
 **Audiences.**
 - **The Uinsure reviewer, alone:** an engineer, Team Lead or Principal Engineer opening the link before
@@ -135,10 +157,11 @@ explorer is built from (commit subjects, trailers, merges and PR numbers).
 | VERIFY-1 | MUST | Verify it yourself | Beside every claim, the git command that re-checks it without the UI (the commands in `docs/trace/README.md`, filled in for that rule or node) |
 | STATS-1 | COULD | Delivery stats | Commits per agent, attempts per node, elapsed time per node from the trail timestamps. Shown as facts, never as scores |
 
-### The policy workbench (second scope, deferred)
+### The policy workbench (designed now, built second)
 
-Listed now so the explorer's design leaves room for it. Not built in the first scope, and not designed
-past the screen catalog until F3 and F4 are merged.
+Designed through every stage alongside the explorer: catalogued, mocked, in the kit and in the signed-off
+screens. Built after the explorer, once F4 is merged. Its screens use real responses from the API
+running locally, recorded as the workbench's design fixture.
 
 | ID | Priority | Requirement | Draft interpretation |
 |---|---|---|---|
@@ -183,6 +206,11 @@ refactor) → reviewer + security → David's two pauses → PR. What changes:
 - **Fixture trails.** Tests run against small, hand-checked fixture trails (including an incomplete one
   and a FAIL-and-fix one), never against the live `docs/trace/`, so the tests don't change as the build
   plan moves.
+- **The kit exists before the DAG.** The React primitives, patterns and layouts are built in the design
+  phase (stage 4), as a design stage, not through the TDD loop. Each component ships with its own tests,
+  written by the kit stage and run by the parent. Build nodes consume the kit and never redesign it. A
+  missing or wrong component found during the build is a kit change: a supervised edit, re-screenshotted
+  for David, not a node's own invention.
 - **The screens are the contract.** The G4 sign-off binds the screen HTML. A built screen that drifts
   from its signed-off screen is a FAIL.
 - **One design, derived per node.** The app is designed in full at G4 but built node by node, so a
@@ -251,9 +279,12 @@ need.
   exception to `requirements.md` §3 ("no develop branch"), recorded in the orchestration amendment.
 - **Direct commits to `ui`** are allowed for the brief, the research, the specs and the catalogs
   (`docs/ui/styles.md`, `flows.md`, `screens.json`, `components.md`) until the `ui` DAG is approved at G5.
-- **Design stages that dispatch an agent** (mockups, kit, screens) each run on `feature/ui/<stage>`
-  (`DM`, `DK`, `DS`) with a PR into `ui` (`agents-skills.spec.md` A1, Option B). The trail only records
-  `feature/*` branches, so this is what puts a design stage's dispatches and gates on the record.
+- **Design stages that dispatch an agent** each run on `feature/ui/<stage>` with a PR into `ui`
+  (`agents-skills.spec.md` A1, Option B): `DC` creative direction, `DM` mockups, `DK` the kit, `DS`
+  screens. Round 1 used `DM`; round 2's mockups run as `DM2`. The trail only records `feature/*` branches,
+  so this is what puts a design stage's dispatches and gates on the record. G14's design route (A2)
+  allows only `docs/ui/` and the stage's trail, so `DK`, which writes the kit's code, needs that route
+  extended to the kit's directory first.
 - From G5, every change goes through `feature/ui/<node>` branches and PRs into `ui`.
 - **`ui` → `main`** by a PR David merges, once per releasable scope (the explorer, then the workbench).
 - **`ui` takes `main` in** after each build-plan merge (F3, F4, …), so the explorer can render the new
@@ -263,8 +294,8 @@ need.
 
 ### Running in parallel with the build plan
 
-- The design phases (stages 0–4) touch only `docs/`, `.claude/specs/` and design HTML. They run now,
-  alongside F3, in the `ui` worktree.
+- The design phases (stages 0–5) touch only `docs/`, `.claude/specs/`, design HTML and, from stage 4,
+  the kit's directory under `src/web/`. They run now, alongside F4, in the `ui` worktree.
 - **Harness changes wait for a safe point.** The F3 session reloads settings and agents live from the
   main checkout's working tree, so new agents, skills and hook rules land through `ui` and reach `main`
   only by a PR David merges between build nodes.
@@ -277,15 +308,24 @@ need.
 - **Extended:** security gains the web checks (XSS through rendered markdown, CSP, supply chain).
 - **New for the build:** `web-tester` and `web-builder`, because `skills:` is fixed per agent file and
   the current tester and builder preload .NET skills.
-- **New for the design phases:** `ui-designer` (mockups, kit, screens). No reviewer agent: David
-  judges from rendered screenshots (`efficiency.spec.md` EFF-8).
-- **New skills:** stage skills `/mockups`, `/stylesheet`, `/screens` (main session), plus the
-  screenshot review script; preloaded skills `interface-craft`, `react-web`, `web-testing`,
-  `trace-data`, `web-security`. Reused: `code-quality`, `requirements-trace`, `verdict-format`, `root-cause`,
-  `git-workflow`.
-- *Prior art:* agentflow_phase3's `analyze` workers, `mockups`, `stylesheet`, `screens`,
-  `visual-review`, `interface-craft` and `mockup-craft` skills. The procedures are ported, not the
-  factory machinery (no fingerprint registry, no mobile platform, no auto-merge).
+- **New for the design phases:**
+  - `creative-director` (stage 2): reads the research, writes cited territories as JSON.
+  - `ui-designer` (mockups, the kit's components and kitchen sink, screens).
+  
+  No reviewer agent: David judges from rendered screenshots (`efficiency.spec.md` EFF-8).
+- **New skills:**
+  - stage skills `/directions`, `/mockups`, `/stylesheet` (the React kit), `/screens` (main session), plus
+    the screenshot review and kit coverage scripts;
+  - preloaded skills `interface-craft`, `creative-direction`, `react-kit`, `react-web`, `web-testing`,
+    `trace-data`, `web-security`.
+  - Reused: `code-quality`, `requirements-trace`, `verdict-format`, `root-cause`, `git-workflow`.
+- *Prior art:* agentflow_phase3's pipeline, in its order. Its design stages are `analyze` → `creative-director` →
+  `mockups` → `stylesheet` → `screens` → `visual-review` / `user-flows` → `architect` →
+  `stylesheet-primitives`. agentflow builds the React primitives last because its stack is chosen at
+  `architect`. React is fixed here, so the primitives move into `stylesheet`. agentflow also has no
+  check that each brief feature reaches a screen; the coverage check in stage 1 is ours. The procedures
+  are ported, not the factory machinery (no fingerprint registry, no mobile platform, no auto-merge, no
+  LLM judges).
 
 ### Porting rule: a ported skill reads this project, nothing else
 
@@ -318,7 +358,9 @@ files, or none, and fall back on generic taste. So:
 ### Repository layout (additions)
 
 ```text
-src/web/             the SPA (Vite, React, TypeScript) and the trail compiler
+src/web/             the SPA (Vite, React, TypeScript) and the trail compiler; the kit (tokens,
+                     primitives, patterns, layouts, kitchen sink) in a directory settled in
+                     web-architecture.spec.md, built at stage 4
 tests/               web test location settled in web-testing.spec.md, so "the builder can't edit
                      tests" stays a path rule
 docs/ui-requirements.md   this file
@@ -332,8 +374,8 @@ docs/trace/ui/<node>/     the UI plan's trails, same format as build
 
 - Vite, React and TypeScript (strict), React Router, no state library, typed data loading from
   `trace.json`
-- Styling from design tokens (W3C DTCG `tokens.json` → CSS custom properties); the CSS approach is
-  settled in `design-system.spec.md`
+- Styling from design tokens (W3C DTCG `tokens.json` → CSS custom properties). The CSS approach and the
+  kit's location are settled in `web-architecture.spec.md`, which must be decided before stage 4
 - Vitest + Testing Library, Playwright with axe
 - Hosting: static. GitHub Pages serves only public repos on GitHub Free, so until David makes the repo
   public the explorer runs locally (`vite preview`). Enabling Pages is a repo setting: David's alone.
@@ -348,10 +390,10 @@ Contracts, distilled into contract-only skills, and on the files in `docs/ui/`.
 
 | # | Spec (`.claude/specs/`) | Must settle |
 |---|---|---|
-| 1 | `ui-research.spec.md` | <ul><li>**Prior art:** agent and LLM trace viewers, CI run views, span waterfalls, requirements-traceability and test-report tools. Per tool: real URL, the pattern worth taking, weaknesses, real colours and fonts (unverified items marked `NEEDS CLARIFICATION`, never invented)</li><li>**Mood:** primary mood, keywords, an explicit avoid list, 5+ real references</li><li>**Style options:** 2–3, each with the 9 colour tokens, type (with mono), spacing, radius, shadow, the three dials (variance, motion, density), a differentiation move and a "why this project" line</li><li>**Assets:** icon set, fonts, no Uinsure branding</li><li>**Flows:** one per task, not per person; every screen in at least one flow</li><li>**Screen catalog:** id, route, components, icons, flows, the trail data each reads, and its states</li><li>**Component catalog:** four tiers (primitive, pattern, layout, project-specific)</li></ul>Outputs to `docs/ui/` |
+| 1 | `ui-research.spec.md` | Stages 1 and 2. <ul><li>**Prior art, explorer:** agent and LLM trace viewers, CI run views, span waterfalls, requirements-traceability and test-report tools (round 1, kept)</li><li>**Prior art, workbench (round 2):** policy administration and insurance back-office screens, API clients and consoles, and how they render forms, validation errors (ProblemDetails), quotes, refunds and date windows. Per tool: real URL, the pattern worth taking, weaknesses, real colours and fonts (unverified items marked `NEEDS CLARIFICATION`, never invented)</li><li>**The API's data:** every request and response the workbench shows, from `api-contract.spec.md` and the running API, as the trail inventory is for the explorer</li><li>**Mood:** primary mood, keywords, an explicit avoid list, 5+ real references, checked against both halves</li><li>**Assets:** icon set, fonts, no Uinsure branding</li><li>**Flows:** one per task, not per person, both scopes; every screen in at least one flow</li><li>**Screen catalog:** id, route, scope, components, icons, flows, the data each reads, its states, and its regions tagged with requirement IDs</li><li>**Requirement coverage:** a script fails the stage unless every ID in §2 is on some region</li><li>**Component catalog:** four tiers (primitive, pattern, layout, project-specific), covering both scopes</li><li>**Creative direction (stage 2):** the `directions.json` contract (governing idea, excludes, layout archetype, signature move, tone, derived palette and type, citations), its validator, and how style blocks derive from it</li></ul>Outputs to `docs/ui/` |
 | 2 | `trace-data.spec.md` | <ul><li>Every source file and its schema (loop, activity, verdicts, findings, packets, README, matrix, plans, QA, context, git trailers)</li><li>The `trace.json` schema and versioning</li><li>Provenance labels, the compiled-at stamp, incomplete and in-flight trails</li><li>The privacy pass</li><li>The harness file emitted by `render-trace.mjs` (DATA-7)</li><li>Size and splitting</li></ul> |
-| 3 | `web-architecture.spec.md` | <ul><li>`src/web/` layout, routing, data loading, error boundaries</li><li>Import boundaries and how they're enforced (lint rules)</li><li>Where the workbench plugs in later (OpenAPI-generated types, CORS)</li><li>Banned APIs and approved packages, the same discipline as the API</li></ul> |
-| 4 | `design-system.spec.md` | <ul><li>Tone and voice (not a layout)</li><li>Tokens for both themes, type scale, spacing, radius, shadow, motion</li><li>The component tiers approved at G3</li><li>Accessibility floor</li><li>The anti-slop list and the asset and icon rules</li></ul> |
+| 3 | `web-architecture.spec.md` | **Decided before stage 4.** <ul><li>The kit's directory, the CSS approach, and the component test runner, since the kit is built at stage 4</li><li>`src/web/` layout, routing, data loading, error boundaries</li><li>Import boundaries and how they're enforced (lint rules)</li><li>Where the workbench plugs in later (OpenAPI-generated types, CORS)</li><li>Banned APIs and approved packages, the same discipline as the API</li></ul> |
+| 4 | `design-system.spec.md` | Stage 4's contract, the React kit. <ul><li>Tone and voice (not a layout)</li><li>Tokens for both themes (`tokens.json`, DTCG), type scale, spacing, radius, shadow, motion</li><li>The kit roster: every component in the catalog as a React component, with its variants and states, approved at G3</li><li>The kitchen-sink page and the coverage audit that fails on a missing component, variant, state or icon</li><li>Each component's tests (who writes them, what they prove), run by the parent</li><li>Accessibility floor</li><li>The anti-slop list and the asset and icon rules</li></ul> |
 | 5 | `screens.spec.md` | **Derived from `ui-research`:** its Research section cites the flows, screen catalog and component catalog by entry ID, and adds nothing the research doesn't support. <ul><li>Flows and navigation</li><li>Every screen: route, data, components, and its states (loading, empty, error, in flight, incomplete)</li><li>Deep-link scheme (NAV-2)</li><li>Region tagging: the `data-req` convention and the gate that rejects an untagged region</li><li>The "not built yet" pattern and the nav rule for unbuilt screens</li><li>The derivation script: node → its reference screens</li><li>The design fixture frozen at G4</li><li>The supervised edit path and re-sign after G4</li></ul> |
 | 5b | `ui-defects.spec.md` | **Researched from** agentflow's `build-to-spec-verify`, `parity-verify`, `fix-bugs`, `bug-investigator` and `systemic-fixer`, `planning.spec.md`'s `/plan-bug`, and Playwright's screenshot comparison. Its Options weigh what to run per node against what to run once per scope. <ul><li>The defect table in §3, made exact: who raises each kind, the route, the ID, the branch</li><li>The per-node gates: own screens, then every screen built so far</li><li>Baselines: where they live, when they're committed, who approves a change</li><li>Systemic defects: how one bug is scoped to the shared layer</li><li>Upstream drift: the compiler's failure and the `feat-NNN` it raises</li><li>The cross-node flow gates on a scope's last node, and the optional whole-app review and its triage</li><li>What `/plan-bug` needs for a UI defect</li></ul> |
 | 6 | `web-testing.spec.md` | <ul><li>What red, stub and green mean for a UI</li><li>Test types and what each proves</li><li>Fixture trails</li><li>The TS form of the `Rule` trait and the coverage check over this file's IDs</li><li>Where web tests live</li><li>Screenshot and axe checks; the QA script template for UI nodes</li></ul> |
@@ -359,28 +401,31 @@ Contracts, distilled into contract-only skills, and on the files in `docs/ui/`.
 | 7b | `efficiency.spec.md` | agentflow's costly lessons as rules (`EFF-n`), each with its mechanical leg and the spec that owns it; the dispatch budget per stage; the machinery explicitly not built. Drafted 2026-10-19 from LESSONS, DECISIONS, RESEARCH and all 98 plan files |
 | 8 | Amendments | <ul><li>`agents-skills`: the new agents and skills</li><li>`guardrails`: path rules for `src/web/` and the web tests; the harness lock covers the new agents</li><li>`traceability`: this file's IDs in the matrix; `render-trace.mjs` reads TS test tags and emits the harness file</li><li>`orchestration`: the `ui` branch model, base branch per plan, no overlapping loops</li><li>`planning`: the `ui` plan ID (beside `build`, `feat-NNN`, `bug-NNN`, `inv-NNN`)</li></ul> |
 
-**Order:** `efficiency` (first: it binds how the others are run) → `ui-research` → `trace-data` → `web-architecture` → `design-system` → `screens` →
-`ui-defects` → `web-testing` → `web-deployment` → amendments. Mockups (G2) start once `ui-research` is
+**Order:** `efficiency` (first: it binds how the others are run) → `ui-research` → `web-architecture` →
+`design-system` → `trace-data` → `screens` → `ui-defects` → `web-testing` → `web-deployment` →
+amendments. Creative direction (stage 2) and mockups (G2) start once `ui-research` is decided, not
+before (round 1 broke this). The kit (G3) starts once `web-architecture` and `design-system` are
 decided. `screens` and `ui-defects` are drafted from the research, not from this file alone: each one's
 Research section cites `ui-research` entries, and a spec that cites none isn't ready for G1.
 
 **Draft feature list** (settled at G5):
 - **U0a** harness extension: agents, skills, hook rules (owner David, in-session, no loop)
-- **U0b** walking skeleton: compiler → `trace.json` → one screen → static build
+- **U0b** walking skeleton: compiler → `trace.json` → one screen built from the kit → static build
 - **U1** overview, matrix and rule page
 - **U2** DAG, node page and walkthrough
 - **U3** loop, verdicts, findings and the retry ladder
 - **U4** agents, human decisions and verify-it-yourself
 - **U5** sessions, harness anatomy and stats (cuttable)
 - **U6** hosting (cuttable)
-- **W1+** the workbench, after F3 and F4 merge
+- **W1+** the workbench (sell, policy view and problem details first; then cancel with quote, claims
+  and renew), after F4 merges and the explorer's last node
 
 The last node of each scope carries the cross-node flow gates (see Defects).
 
 **Cut order:** U6, then U5, then the COULD rows.
 
-**Guard against over-building:** every spec, agent and skill must be used by U0a, U0b or U1. Anything
-that isn't is cut.
+**Guard against over-building:** every spec, agent and skill must be used by a design stage, U0a, U0b,
+U1 or W1. Anything that isn't is cut.
 
 ---
 
@@ -403,6 +448,18 @@ Carried over from agentflow_phase3 (`LESSONS.md`, `DECISIONS.md`, `brief-templat
   leaves layout to the directions.
 - **Research drives distinctness** (feat-089): references come from the domain and its real prior art
   first, the generic design-system pool only as a fallback.
+- **Direction before mockups, from the research itself** (agentflow `creative-director`, run after
+  analyze and before mockups): territories are written by an agent reading the research files, cited,
+  and checked by script for distinct archetype and tone. The style blocks derive from them.
+- **The kit is enumerated, then audited** (agentflow `stylesheet`, `audit-preview-coverage.mjs`): the
+  component plan comes from the catalog, and the preview fails unless every component, variant and icon
+  appears. agentflow builds its React primitives only after `architect` picks the stack, and has no
+  parity check from them back to the preview; with React fixed here, the kitchen sink *is* the React kit,
+  so that gap doesn't arise.
+- **No brief feature → screen check exists in agentflow.** Its brief has one flat screen list and its
+  coverage check runs only at task planning. A whole feature area can go missing from the catalog
+  unnoticed, which is what happened to the workbench in round 1. Stage 1's requirement-coverage script
+  closes it here.
 
 ---
 
