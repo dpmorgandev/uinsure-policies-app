@@ -3,8 +3,8 @@ import { AgentLanes } from './AgentLanes';
 import type { Lane, LaneEvent } from './AgentLanes';
 
 // The events are the 17 red, stub, green and refactor rows of build/F2's walkthrough for GET-1, as rule.html's
-// text-equivalent table lists them: row number, SHA, TDD step, agent and what it did. Position is the row
-// number. The trail holds no per-agent activity records in the excerpt beyond these, so nothing else is drawn.
+// text-equivalent table lists them: row number, SHA, TDD step, agent and what it did, plus row 2 (a commit with no
+// TDD trailer). Position is the row number. Nothing else is drawn.
 
 const tester: LaneEvent[] = [
   { n: 5, tdd: 'red', sha: '94a7473', label: 'retrieve answers the full policy response, derived status, the current term and 2 dp money' },
@@ -29,7 +29,12 @@ const builder: LaneEvent[] = [
   { n: 33, tdd: 'green', sha: 'af38b4b', label: 'reject only query-bound unknown keys' },
 ];
 
+// Row 2 of the same walkthrough: a commit by main whose message carries no TDD trailer (the walkthrough lists its TDD
+// column as null), so it is drawn as the neutral tick beside the lanes whose commits do carry one.
+const main: LaneEvent[] = [{ n: 2, tdd: null, sha: 'd2a46f5', label: 'f1b-done-merged' }];
+
 const both: Lane[] = [
+  { agent: 'main', events: main },
   { agent: 'tester', events: tester },
   { agent: 'builder', events: builder },
 ];

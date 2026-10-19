@@ -51,10 +51,10 @@ describe('AgentLanes', () => {
         .find((li) => li.textContent?.startsWith(text))?.getAttribute('data-column');
     const tester = screen.getByRole('list', { name: 'tester rungs' });
     const builder = screen.getByRole('list', { name: 'builder rungs' });
-    expect(column(tester, '#5')).toBe('1');
-    expect(column(builder, '#7')).toBe('2');
-    expect(column(builder, '#9')).toBe('3');
-    expect(column(tester, '#12')).toBe('4');
+    expect(column(tester, '#5')).toBe('2');
+    expect(column(builder, '#7')).toBe('3');
+    expect(column(builder, '#9')).toBe('4');
+    expect(column(tester, '#12')).toBe('5');
     expect(Number(column(tester, '#34'))).toBeGreaterThan(Number(column(builder, '#33')));
   });
 
@@ -84,9 +84,10 @@ describe('AgentLanes', () => {
       'What it did',
     ]);
     const heads = within(table).getAllByRole('rowheader').map((h) => h.textContent);
-    expect(heads[0]).toBe('#5');
-    expect(heads[1]).toBe('#7');
-    expect(heads).toHaveLength(17);
+    expect(heads[0]).toBe('#2');
+    expect(heads[1]).toBe('#5');
+    expect(heads[2]).toBe('#7');
+    expect(heads).toHaveLength(18);
     expect([...heads].map((h) => Number((h ?? '').slice(1)))).toEqual(
       [...heads].map((h) => Number((h ?? '').slice(1))).sort((a, b) => a - b),
     );
@@ -97,6 +98,18 @@ describe('AgentLanes', () => {
     const table = screen.getByRole('table', { name: /Activity by agent/ });
     expect(within(table).getAllByRole('cell', { name: 'refactor' })).toHaveLength(2);
     expect(within(table).getAllByRole('cell', { name: 'red' })).toHaveLength(9);
+  });
+
+  it('pop: a commit with no TDD trailer is a neutral tick beside lanes whose commits carry one', () => {
+    render(byState('pop'));
+    const main = within(screen.getByRole('list', { name: 'main rungs' })).getByRole('listitem');
+    expect(main.getAttribute('data-step')).toBe('none');
+    expect(main.textContent).toContain('no TDD trailer');
+    expect(main.getAttribute('title')).toBe('f1b-done-merged');
+    expect(main.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+    const table = screen.getByRole('table', { name: /Activity by agent/ });
+    expect(within(table).getAllByRole('cell', { name: 'none' })).toHaveLength(1);
+    expect(within(table).getByText('d2a46f5')).toBeTruthy();
   });
 
   it('says the lanes scroll inside their frame, and puts the frame and the table frame on the keyboard path', () => {
