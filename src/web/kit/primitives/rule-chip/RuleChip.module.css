@@ -1,0 +1,61 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-14);
+  font-weight: 700;
+  line-height: 1.4;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius);
+  white-space: nowrap;
+}
+
+.link {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  color: var(--color-primary);
+}
+
+.link:hover {
+  background: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+.link:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.nb {
+  border-style: dashed;
+}
+
+.unknown {
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  border: 1px dashed var(--color-text-secondary);
+}
+
+.icon {
+  flex: none;
+  width: 1em;
+  height: 1em;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

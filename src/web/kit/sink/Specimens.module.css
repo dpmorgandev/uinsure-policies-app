@@ -1,0 +1,141 @@
+.block {
+  margin: 0 0 var(--space-5);
+}
+
+.heading {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-14);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.sizeRow {
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.sizeRow:first-of-type {
+  border-top: 0;
+}
+
+.sizeLabel {
+  display: block;
+  margin: 0 0 var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  color: var(--color-text-secondary);
+}
+
+.sample {
+  margin: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+
+.sans {
+  font-family: var(--font-sans);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.s12 {
+  font-size: var(--text-12);
+}
+
+.s14 {
+  font-size: var(--text-14);
+}
+
+.s16 {
+  font-size: var(--text-16);
+}
+
+.s18 {
+  font-size: var(--text-18);
+}
+
+.s24 {
+  font-size: var(--text-24);
+}
+
+.s32 {
+  font-size: var(--text-32);
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: var(--space-4);
+}
+
+.column {
+  min-width: 0;
+}
+
+.columnTitle {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-12);
+  font-weight: 700;
+  color: var(--color-text-secondary);
+}
+
+.figures {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  width: max-content;
+  max-width: 100%;
+  font-size: var(--text-18);
+  font-variant-numeric: tabular-nums;
+}
+
+.proportional {
+  font-variant-numeric: proportional-nums;
+}
+
+.figures li {
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.right li {
+  text-align: right;
+}
+
+.icons {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9.5rem, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border-radius: var(--radius);
+}
+
+.icon svg {
+  flex: none;
+  color: var(--color-primary);
+}
+
+.iconName {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+}

@@ -1,0 +1,210 @@
+.root {
+  display: grid;
+  gap: var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--text-16);
+  color: var(--color-text-primary);
+}
+
+.order {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  font-weight: 700;
+  border: 1.5px solid var(--c);
+  border-left-width: 6px;
+  border-radius: var(--radius);
+}
+
+.held {
+  --c: var(--color-success);
+  background: color-mix(in srgb, var(--c) 8%, var(--color-background));
+}
+
+.violated {
+  --c: var(--color-error);
+  background: color-mix(in srgb, var(--c) 8%, var(--color-background));
+  border-width: 3px;
+  border-left-width: 8px;
+}
+
+.order .icon {
+  color: var(--c);
+}
+
+.icon {
+  flex: none;
+  width: 1.25em;
+  height: 1.25em;
+}
+
+/* Red, green and refactor in one glance, in the order the rows hold them. */
+.glance {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+  padding: var(--space-3);
+  list-style: none;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+}
+
+.glanceItem {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+}
+
+.glanceRow {
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-16);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+  background: var(--color-background);
+  border: 3px solid var(--color-text-secondary);
+  border-radius: var(--radius);
+}
+
+.glanceItem[data-tdd="red"] .glanceRow {
+  border-color: var(--color-error);
+}
+
+.glanceItem[data-tdd="green"] .glanceRow {
+  border-color: var(--color-success);
+}
+
+.glanceItem[data-tdd="refactor"] .glanceRow {
+  border-color: var(--color-primary);
+}
+
+.glanceItem[data-tdd="stub"] .glanceRow {
+  border-style: dashed;
+}
+
+/* Receipts */
+.line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+  padding-top: var(--space-1);
+}
+
+.layer,
+.ref {
+  font-family: var(--font-mono);
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+}
+
+.ref {
+  color: var(--color-text-primary);
+}
+
+a.ref {
+  color: var(--color-primary);
+  text-underline-offset: 0.2em;
+}
+
+.what {
+  margin: var(--space-1) 0 0;
+  overflow-wrap: anywhere;
+}
+
+.note {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+}
+
+.line a:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Pinned tests */
+.pinned {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border: 2px dashed var(--color-text-secondary);
+  border-radius: var(--radius);
+}
+
+.pinned .icon {
+  margin-top: 0.15em;
+  color: var(--color-text-secondary);
+}
+
+.pinnedTitle {
+  margin: 0;
+  font-weight: 700;
+}
+
+/* The text equivalent */
+.equivalent {
+  font-size: var(--text-14);
+}
+
+.scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.scroll:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-14);
+}
+
+.table caption {
+  padding-bottom: var(--space-2);
+  text-align: left;
+  font-size: var(--text-12);
+  color: var(--color-text-secondary);
+}
+
+.table th,
+.table td {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table thead th {
+  background: var(--color-surface);
+  border-bottom: 2px solid var(--color-text-secondary);
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.cellMono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+  white-space: nowrap;
+}
+
+.table tbody th {
+  font-weight: 700;
+}
+
+.absent {
+  color: var(--color-text-secondary);
+  font-style: italic;
+}

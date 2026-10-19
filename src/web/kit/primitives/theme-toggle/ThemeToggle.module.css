@@ -1,0 +1,70 @@
+.toggle {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.legend {
+  padding: 0;
+  margin-bottom: var(--space-1);
+  color: var(--color-text-secondary);
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.options {
+  display: inline-flex;
+  border: 2px solid var(--color-text-secondary);
+  border-radius: var(--radius);
+}
+
+.option {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.option + .option {
+  border-left: 2px solid var(--color-text-secondary);
+}
+
+/* The radio stays in the layout for the keyboard and screen readers; the face is what is seen. */
+.input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.face {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 2.5rem;
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-14);
+  font-weight: 700;
+  transition:
+    background-color var(--duration-short),
+    color var(--duration-short);
+}
+
+.input:checked + .face {
+  background: var(--color-primary);
+  color: var(--color-background);
+}
+
+.input:focus-visible + .face {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}

@@ -1,0 +1,4 @@
+/* Added to the input TextInput draws: amounts read right-aligned so the decimal points line up. */
+.money {
+  text-align: right;
+}
