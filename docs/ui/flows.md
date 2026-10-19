@@ -1,6 +1,6 @@
 # User flows
 
-Drafted 2026-10-19 by the main session. A flow is **one task**, not one person (agentflow
+Drafted 2026-10-19 by the main session; round 2 adds the workbench (FL-10..FL-16). A flow is **one task**, not one person (agentflow
 `analyze/flows.md`). Screen IDs are those in `docs/ui/screens.json`. Readers: **R1** the Uinsure
 reviewer alone with the link, **R2** David presenting live (`docs/ui-requirements.md` §1). Every screen
 appears in at least one flow (coverage at the end).
@@ -76,6 +76,69 @@ Any reader. Requirements: NAV-2.
 A stale or mistyped deep link → `not-found`, which names what was asked for and links to `overview`,
 `matrix` and search.
 
+---
+
+## Workbench flows (round 2)
+
+Readers: **R1** and **R2** as above, plus **R3** someone exercising the API's rules without Postman.
+Entity and endpoint IDs are `api-inventory.md`'s; B-entries are `prior-art-workbench.md`'s.
+
+## FL-10: Sell a policy and see it read back
+
+Primary reader R3, R2. Requirements: WB-1, WB-2, WB-9.
+
+`wb-home` → `wb-sell` (1 to 3 policyholders; the reference as it will be stored) → submit (E1 `201`) →
+`wb-policy` (the same 16 members as the 201 body, A1) → back on `wb-home`, the reference is in recent
+policies.
+
+## FL-11: Break a rule and follow it to its evidence
+
+Primary reader R1, R2. Requirements: WB-3, WB-6, RULE-1. **The flow that joins the two halves.**
+
+`wb-sell` → send it anyway on → submit an under-16 policyholder and a start date 61 days out → the error
+summary lists SELL-2 and SELL-5 (one 422, "2 rules failed.", A12) → a rule chip → the explorer's `rule`
+page for SELL-5 (its tests, red before green, sign-off).
+
+The summary must show the multi-rule limit honestly: with two violations the API returns no field path
+and no extensions (`api-inventory.md` §4), so both are listed in the summary, not guessed onto fields.
+
+## FL-12: Quote, then cancel, and check the maths
+
+Primary reader R1, R3. Requirements: WB-4, WB-2.
+
+`wb-policy` → `wb-cancel` → choose a date → quote (E4) → the refund as a worked sum per term with
+`ruleApplied` (A11) → cancel, which sends exactly the quoted date (E3) → quote and cancellation compared
+→ `wb-policy` (status Cancelled, the gap on the timeline, the refund under payments).
+
+## FL-13: Record a claim and see the refund drop to zero
+
+Primary reader R1, R3. Requirements: WB-5, WB-4.
+
+`wb-policy` → `wb-claim` → the refund quoted before → record the claim (E5) → quoted again: 0.00 under
+COULD-2 on every paid term → `wb-policy` (`hasClaims` true, the claim on the timeline).
+
+## FL-14: Renew inside the window
+
+Primary reader R3. Requirements: WB-5. **Designed from `requirements.md` only until F4 merges.**
+
+`wb-policy` → `wb-renew` → the payment method defaults from the current term (RENEW-3a/3b) → Cheque with
+auto-renew is refused (COULD-3) → `wb-policy` (a new term on the timeline). Until the endpoint exists,
+`wb-renew` shows the api-not-built state.
+
+## FL-15: See exactly what was sent
+
+Primary reader R1, R2. Requirements: WB-7.
+
+Any workbench screen → the inspector drawer (the latest exchange, live) → `wb-requests` → one exchange
+(status line, request, response, curl) → copy the curl.
+
+## FL-16: Come back to a policy
+
+Primary reader R2, R3. Requirements: WB-9, WB-2.
+
+`wb-home` → recent policies (this browser only) → `wb-policy`; or open one by reference. A reference that
+doesn't exist gives the 404 banner on `wb-policy` (GET-1), naming the reference as the API normalised it.
+
 ## Coverage
 
 | Screen | Flows |
@@ -97,5 +160,13 @@ A stale or mistyped deep link → `not-found`, which names what was asked for an
 | sessions | FL-8 |
 | stats | FL-8 |
 | not-found | FL-9 |
+| wb-home | FL-10, FL-16 |
+| wb-sell | FL-10, FL-11, FL-15 |
+| wb-policy | FL-10, FL-12, FL-13, FL-14, FL-16 |
+| wb-cancel | FL-12, FL-13 |
+| wb-claim | FL-13 |
+| wb-renew | FL-14 |
+| wb-requests | FL-15 |
 
-17 screens, every one in at least one flow. No orphans.
+24 screens, every one in at least one flow. No orphans. FL-11 crosses from the workbench into the
+explorer (`rule`), so `rule` is reached from both halves.
