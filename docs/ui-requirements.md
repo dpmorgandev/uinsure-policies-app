@@ -179,6 +179,7 @@ running locally, recorded as the workbench's design fixture.
 
 | ID | Priority | Requirement | Draft interpretation |
 |---|---|---|---|
+| BUSY-1 | MUST | A running action shows it | Any control that starts a process (a request to the API, a quote, loading a diff) shows a spinner and is disabled for as long as the process runs, so it can't be fired twice; its label says what is happening ("Quoting…", "Cancelling…"), and `aria-busy` and `aria-disabled` are set. The form keeps its values. When the process ends, the control re-enables and the result or problem appears. Added by David, 2026-10-19, after G0 |
 | A11Y-1 | MUST | WCAG 2.2 AA | Keyboard reachable, visible focus, contrast in both themes, status never by colour alone (every status also has a word or an icon). Checked with axe in the end-to-end tests |
 | THEME-1 | MUST | Light and dark | Both themes from the same tokens, following the system setting, with a manual toggle |
 | RESP-1 | SHOULD | Works on a laptop and a phone | Designed for 1440 and 1280 wide; usable at 390 wide with no horizontal page scroll (wide tables scroll inside their own container) |

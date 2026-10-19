@@ -28,7 +28,8 @@ collapsed · **dis** sources disagree · **red** redacted · **nb** not built ye
 | tabs | The views of one node (node, walkthrough, loop, activity) as linked routes | each tab, git-only (some tabs empty) | 4 (E) | C2 |
 | code-block | A command or detail line in mono, wrapping, with copy | pop, long | 2 (E+W) | D6 |
 | theme-toggle | Light, dark, system | each | global | THEME-1 |
-| button | An action. Primary, secondary and destructive; destructive actions (cancel a policy) also need a confirm-dialog. Never hidden in an overflow menu (B4, B6 category default) | primary, secondary, destructive, disabled, submitting, focus | 6 (W) | B4, B10 |
+| button | An action. Primary, secondary and destructive; destructive actions (cancel a policy) also need a confirm-dialog. Never hidden in an overflow menu (B4, B6 category default). **Busy (BUSY-1):** while its process runs it shows a `spinner`, its label says what is happening ("Quoting…"), it is disabled with `aria-busy` and `aria-disabled`, and it can't be fired twice; it re-enables when the process ends | primary, secondary, destructive, disabled, busy (each variant), focus | 6 (W) | B4, B10 |
+| spinner | Shows a process is running, inside the control that started it (BUSY-1); never on its own as the only signal (the label changes too); still under `prefers-reduced-motion`, a static busy glyph replaces the rotation | inline in a button, reduced motion, both themes | 6 (E+W) | BUSY-1, A11Y-1 |
 | text-input | A single-line text field, used inside `field` | empty, filled, invalid, disabled, focus | 2 (W) | B9, B10 |
 | text-area | Multi-line text with a visible character count against its maximum (claim description, 500) | empty, filled, at limit, invalid | 1 (W) | A7, E5 |
 | date-input | A `yyyy-MM-dd` date, the only format the API accepts; shown as typed, never reformatted | empty, filled, invalid format, invalid by rule | 3 (W) | A1, §2 global formats |

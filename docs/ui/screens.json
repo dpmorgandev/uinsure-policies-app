@@ -84,7 +84,7 @@
       "api-error": "the API answered with a problem (400/404/409/422/429/500): rendered from its ProblemDetails, never a generic failure",
       "api-unreachable": "the API is not running or the proxy failed: says so, names the base URL, and how to start it",
       "api-not-built": "the endpoint is not in the API yet (renew until F4 merges): the not-built-yet pattern, never a failure",
-      "submitting": "a request is in flight: the action is disabled against a double submit, the form keeps its values"
+      "submitting": "a process is running (a request, a quote, a lazy load): the control that started it shows a spinner, says what is happening, and is disabled until it ends; the form keeps its values (BUSY-1)"
     },
     "screens": [
       {
@@ -269,7 +269,8 @@
           "RULE-3",
           "VERIFY-1",
           "NAV-3",
-          "HITL-1"
+          "HITL-1",
+          "BUSY-1"
         ],
         "data": [
           "D1",
@@ -289,7 +290,8 @@
           "diff-viewer",
           "verify-command",
           "not-built-yet",
-          "provenance-label"
+          "provenance-label",
+          "spinner"
         ],
         "icons": [
           "flask-conical",
@@ -310,7 +312,8 @@
           "loading",
           "error",
           "not-built",
-          "long-content"
+          "long-content",
+          "submitting"
         ],
         "regions": [
           {
@@ -348,6 +351,12 @@
             "name": "verify it yourself",
             "req": [
               "VERIFY-1"
+            ]
+          },
+          {
+            "name": "load diff, busy while the diff chunk loads",
+            "req": [
+              "BUSY-1"
             ]
           }
         ],
@@ -1181,7 +1190,8 @@
         "requirements": [
           "WB-2",
           "WB-9",
-          "WB-1"
+          "WB-1",
+          "BUSY-1"
         ],
         "data": [
           "E2",
@@ -1192,7 +1202,8 @@
           "text-input",
           "button",
           "recent-policies",
-          "empty-state"
+          "empty-state",
+          "spinner"
         ],
         "icons": [
           "search",
@@ -1205,7 +1216,8 @@
         ],
         "states": [
           "empty",
-          "api-unreachable"
+          "api-unreachable",
+          "submitting"
         ],
         "regions": [
           {
@@ -1225,6 +1237,12 @@
             "req": [
               "WB-9"
             ]
+          },
+          {
+            "name": "open by reference, busy while the policy loads",
+            "req": [
+              "BUSY-1"
+            ]
           }
         ],
         "file": "wb-home.html"
@@ -1241,7 +1259,8 @@
           "WB-1",
           "WB-3",
           "WB-6",
-          "WB-7"
+          "WB-7",
+          "BUSY-1"
         ],
         "data": [
           "E1",
@@ -1269,7 +1288,8 @@
           "rule-chip",
           "send-anyway-toggle",
           "button",
-          "inspector-drawer"
+          "inspector-drawer",
+          "spinner"
         ],
         "icons": [
           "file-plus",
@@ -1328,6 +1348,12 @@
             "name": "the request as sent (inspector)",
             "req": [
               "WB-7"
+            ]
+          },
+          {
+            "name": "submit, busy while the sell request runs (spinner, disabled)",
+            "req": [
+              "BUSY-1"
             ]
           }
         ],
@@ -1466,7 +1492,8 @@
         "requirements": [
           "WB-4",
           "WB-3",
-          "WB-7"
+          "WB-7",
+          "BUSY-1"
         ],
         "data": [
           "E3",
@@ -1488,7 +1515,8 @@
           "confirm-dialog",
           "error-summary",
           "problem-banner",
-          "inspector-drawer"
+          "inspector-drawer",
+          "spinner"
         ],
         "icons": [
           "receipt",
@@ -1535,6 +1563,12 @@
             "req": [
               "WB-7"
             ]
+          },
+          {
+            "name": "quote and cancel actions, each busy while its request runs",
+            "req": [
+              "BUSY-1"
+            ]
           }
         ],
         "file": "wb-cancel.html"
@@ -1549,7 +1583,8 @@
         "description": "Record a claim, then quote again: the refund drops to 0.00 under COULD-2, shown as before and after.",
         "requirements": [
           "WB-5",
-          "WB-3"
+          "WB-3",
+          "BUSY-1"
         ],
         "data": [
           "E5",
@@ -1568,7 +1603,8 @@
           "error-summary",
           "problem-banner",
           "rule-chip",
-          "inspector-drawer"
+          "inspector-drawer",
+          "spinner"
         ],
         "icons": [
           "receipt",
@@ -1599,6 +1635,12 @@
             "req": [
               "WB-3"
             ]
+          },
+          {
+            "name": "record claim, busy while the request and the two quotes run",
+            "req": [
+              "BUSY-1"
+            ]
           }
         ],
         "file": "wb-claim.html"
@@ -1613,7 +1655,8 @@
         "description": "Renew inside the window; the payment method defaults from the current term; Cheque is refused for an auto-renewing renewal. Designed from requirements.md RENEW-1..6 and COULD-3; the API has no renew endpoint until F4 merges, so real responses join the design fixture then.",
         "requirements": [
           "WB-5",
-          "WB-3"
+          "WB-3",
+          "BUSY-1"
         ],
         "data": [
           "A1",
@@ -1628,7 +1671,8 @@
           "button",
           "not-built-yet",
           "error-summary",
-          "rule-chip"
+          "rule-chip",
+          "spinner"
         ],
         "icons": [
           "refresh-cw",
@@ -1653,6 +1697,12 @@
             "name": "problems (RENEW-*, COULD-3)",
             "req": [
               "WB-3"
+            ]
+          },
+          {
+            "name": "renew, busy while the request runs",
+            "req": [
+              "BUSY-1"
             ]
           }
         ],
