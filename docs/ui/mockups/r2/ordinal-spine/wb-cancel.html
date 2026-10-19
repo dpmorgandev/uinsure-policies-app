@@ -1,0 +1,846 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quote and cancel · F3-MVEOSVDQJQ · ordinal spine</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --surface: #f3f3f3;
+  --border: #cecece;
+  --accent: #d5e7ec;
+  --text: #1b1f24;
+  --text-2: #555b62;
+  --primary: #165f73;
+  --error: #ca3535;
+  --success: #0f7a52;
+  --warn: #8a5a00;
+}
+[data-theme="dark"] {
+  --bg: #1b1d21;
+  --surface: #24272c;
+  --border: #3b4048;
+  --accent: #1f3a42;
+  --text: #ececec;
+  --text-2: #a3a9b0;
+  --primary: #6fc3d6;
+  --error: #fa4d56;
+  --success: #42be65;
+  --warn: #f1c21b;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-padding-top: 3.5rem; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+.mono, code, pre, kbd, .chip, .num, td.m, th.m {
+  font-family: "Atkinson Hyperlegible Mono", "Cascadia Mono", Consolas, "DejaVu Sans Mono", "Courier New", monospace;
+}
+.num, td.m, th.m, .money { font-variant-numeric: tabular-nums lining-nums; }
+.wrap { max-width: 70rem; margin: 0 auto; padding: 1.5rem 1.25rem 3rem; }
+.skip { position: absolute; left: -999px; }
+.skip:focus { left: 1rem; top: 1rem; background: var(--bg); padding: .5rem; z-index: 9; }
+:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+a { color: var(--primary); text-underline-offset: 3px; }
+
+h1, h2, h3, h4 { line-height: 1.2; margin: 0; }
+h2 { font-size: 1.5rem; margin: 3rem 0 .25rem; }
+h3 { font-size: 1.125rem; }
+.eyebrow {
+  font-size: .75rem; letter-spacing: .08em; text-transform: uppercase;
+  color: var(--text-2); font-weight: 700; margin: 0 0 .35rem;
+}
+.hint { color: var(--text-2); font-size: .875rem; margin: 0; }
+.small { font-size: .875rem; }
+.sec-intro { color: var(--text-2); margin: 0 0 1.25rem; max-width: 46rem; }
+
+/* ---------- icons ---------- */
+.icon { width: 1em; height: 1em; flex: none; vertical-align: -.125em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ---------- status tags: word + glyph + colour, not interactive ---------- */
+.tag {
+  display: inline-flex; align-items: center; gap: .35rem;
+  font-size: .8125rem; font-weight: 700; line-height: 1.2;
+  padding: .15rem .5rem; border: 1.5px solid currentColor; border-radius: 3px;
+  background: var(--bg); white-space: nowrap;
+}
+.tag.ok { color: var(--success); }
+.tag.bad { color: var(--error); }
+.tag.warn { color: var(--warn); }
+.tag.pend { color: var(--text-2); border-style: dashed; }
+.tag.neutral { color: var(--text-2); }
+
+/* ---------- rule chip: a link, mono ---------- */
+.chip {
+  display: inline-block; font-size: .8125rem; font-weight: 700;
+  padding: 0 .4rem; border-radius: 3px; background: var(--accent);
+  color: var(--primary); text-decoration: underline; text-underline-offset: 3px;
+}
+
+kbd {
+  font-size: .75rem; padding: .05rem .4rem; border: 1.5px solid var(--text-2);
+  border-bottom-width: 3px; border-radius: 3px; background: var(--surface);
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  font: inherit; font-weight: 700; min-height: 2.75rem; padding: .5rem 1.1rem;
+  border: 2px solid var(--primary); border-radius: 4px; cursor: pointer;
+  background: transparent; color: var(--primary);
+}
+.btn.primary { background: var(--primary); color: var(--bg); }
+.btn.destructive { background: var(--error); border-color: var(--error); color: var(--bg); }
+.btn.destructive.outline { background: transparent; color: var(--error); }
+.btn:disabled, .btn[aria-disabled="true"] {
+  background: var(--surface); color: var(--text-2); border: 2px dashed var(--text-2); cursor: not-allowed;
+}
+.btn[aria-busy="true"] { cursor: progress; }
+.spin { animation: spin 1s linear infinite; }
+.spin-static { display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .spin { animation: none; display: none; }
+  .spin-static { display: inline-block; }
+}
+.btn.rm .spin, .rm-demo .spin { animation: none; display: none; }
+.btn.rm .spin-static, .rm-demo .spin-static { display: inline-block; }
+
+/* ---------- fields ---------- */
+.field { margin: 0 0 1rem; max-width: 22rem; }
+.field label { display: block; font-weight: 700; margin-bottom: .15rem; }
+.field .err { display: flex; gap: .4rem; align-items: flex-start; color: var(--error); font-weight: 700; margin: .25rem 0; font-size: .9375rem; }
+.date {
+  font: inherit; font-size: 1.125rem; width: 100%; padding: .55rem .7rem; margin-top: .25rem;
+  background: var(--bg); color: var(--text); border: 2px solid var(--text-2); border-radius: 4px;
+  font-family: "Atkinson Hyperlegible Mono", "Cascadia Mono", Consolas, "DejaVu Sans Mono", monospace;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.date[aria-invalid="true"] { border-color: var(--error); border-width: 3px; }
+.date:disabled { background: var(--surface); color: var(--text-2); border-style: dashed; }
+
+/* ---------- tables ---------- */
+.tw { overflow-x: auto; margin: .5rem 0; }
+table { border-collapse: collapse; width: 100%; font-size: .9375rem; }
+caption { text-align: left; font-weight: 700; padding: 0 0 .4rem; }
+th, td { padding: .45rem .6rem; text-align: left; vertical-align: top; border-bottom: 1px solid var(--border); }
+thead th { position: sticky; top: 0; background: var(--surface); font-size: .8125rem; border-bottom: 2px solid var(--text-2); }
+th.r, td.r { text-align: right; }
+tbody th { font-weight: 700; white-space: nowrap; }
+tfoot td, tfoot th { border-top: 2px solid var(--text-2); font-weight: 700; }
+.wait { display: inline-block; padding: .1rem .5rem; border: 1.5px dashed var(--text-2); color: var(--text-2); font-size: .8125rem; border-radius: 3px; }
+
+/* ---------- page header ---------- */
+.page-header { border-bottom: 2px solid var(--text-2); padding-bottom: 1.25rem; }
+.page-header h1 { font-size: 1rem; font-weight: 700; margin-bottom: .6rem; }
+.answer { font-size: clamp(1.75rem, 5vw, 2.75rem); line-height: 1.15; font-weight: 700; margin: 0 0 .5rem; max-width: 52rem; }
+.answer .figure { font-family: "Atkinson Hyperlegible Mono", "Cascadia Mono", Consolas, monospace; font-variant-numeric: tabular-nums lining-nums; }
+.answer .big { color: var(--primary); }
+.meta { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin: .75rem 0 0; padding: 0; list-style: none; font-size: .875rem; }
+.meta li span:first-child { color: var(--text-2); margin-right: .35rem; }
+.gap { border: 1.5px dashed var(--text-2); padding: 0 .4rem; color: var(--text-2); border-radius: 3px; }
+.keys { margin: .9rem 0 0; font-size: .875rem; color: var(--text-2); display: flex; flex-wrap: wrap; gap: .4rem 1rem; align-items: center; }
+
+/* ---------- the spine ---------- */
+.spine { list-style: none; margin: 0; padding: 0; }
+.rung {
+  display: grid;
+  grid-template-columns: minmax(9rem, 13rem) 3rem minmax(0, 1fr);
+  column-gap: 1.25rem;
+  padding-bottom: 2rem;
+}
+.rung .lbl { padding-top: .3rem; }
+.rung .lbl h3 { font-size: 1.25rem; margin-bottom: .25rem; }
+.rung .lbl p { margin: 0 0 .5rem; }
+.rung .rail { position: relative; display: flex; justify-content: center; }
+.rung .rail::before {
+  content: ""; position: absolute; left: 50%; top: 1.5rem; bottom: -2rem; width: 3px;
+  margin-left: -1.5px; background: var(--text-2);
+}
+.rung.last .rail::before { display: none; }
+.rung.stop .rail::before { display: none; }
+.node {
+  position: relative; z-index: 1; width: 2.75rem; height: 2.75rem; border-radius: 50%;
+  display: grid; place-items: center; font-weight: 700; font-size: 1.25rem;
+  border: 3px solid var(--primary); background: var(--bg); color: var(--primary);
+  font-family: "Atkinson Hyperlegible Mono", "Cascadia Mono", Consolas, monospace;
+}
+.node.active { background: var(--primary); color: var(--bg); }
+.node.waiting { border: 3px dashed var(--text-2); color: var(--text-2); }
+.node.bad { border-color: var(--error); color: var(--error); }
+.rcp { min-width: 0; }
+.region { background: var(--surface); padding: 1rem 1.1rem; margin: 0 0 1rem; border-left: 4px solid var(--text-2); }
+.region > .eyebrow { margin-bottom: .6rem; }
+
+.eq { display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .6rem; margin: .25rem 0 .5rem; }
+.eq .op { color: var(--text-2); font-size: 1.5rem; }
+.eq .val { text-align: center; }
+.eq .val b { display: block; font-size: 1.75rem; line-height: 1.1; font-family: "Atkinson Hyperlegible Mono", "Cascadia Mono", Consolas, monospace; font-variant-numeric: tabular-nums lining-nums; }
+.eq .val small { display: block; font-size: .75rem; color: var(--text-2); font-family: "Atkinson Hyperlegible Mono", "Cascadia Mono", Consolas, monospace; }
+.eq .res b { font-size: 2.5rem; color: var(--primary); }
+
+.branch {
+  margin: 1rem 0 0 .75rem; padding: .25rem 0 .25rem 1rem;
+  border-left: 3px dashed var(--text-2);
+}
+.branch .join { color: var(--text-2); font-size: .875rem; margin: .4rem 0 0; }
+
+.carried { display: flex; flex-wrap: wrap; align-items: baseline; gap: .25rem .75rem; margin: 0 0 .75rem; }
+.carried .lab { font-weight: 700; }
+.carried .v { font-size: 1.5rem; font-weight: 700; font-family: "Atkinson Hyperlegible Mono", "Cascadia Mono", Consolas, monospace; font-variant-numeric: tabular-nums lining-nums; }
+.row-actions { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-top: .5rem; }
+
+.unreached { border: 2px dashed var(--text-2); padding: .75rem 1rem; color: var(--text-2); margin: 0; }
+
+/* ---------- inspector drawer ---------- */
+.drawer { background: var(--surface); border-top: 4px solid var(--primary); margin: 1.5rem 0 0; }
+.drawer-bar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; padding: .6rem 1rem; }
+.drawer-bar h3 { font-size: 1rem; }
+.grip { width: 3rem; height: 5px; background: var(--text-2); border-radius: 3px; margin: .3rem auto 0; }
+.reqs { list-style: none; margin: 0; padding: 0 1rem 1rem; }
+.reqs > li { border-top: 1px solid var(--border); padding: .6rem 0; }
+.reqline { display: flex; flex-wrap: wrap; gap: .4rem .75rem; align-items: baseline; }
+.reqline .n { font-weight: 700; }
+pre { margin: .5rem 0 0; padding: .75rem 1rem; background: var(--bg); overflow-x: auto; font-size: .8125rem; line-height: 1.5; border-left: 4px solid var(--text-2); }
+code { font-size: .875em; }
+
+/* ---------- boards for states ---------- */
+.board { margin: 0 0 2rem; padding-top: 1rem; border-top: 2px solid var(--text-2); }
+.board > .eyebrow { color: var(--primary); }
+.board h3 { margin-bottom: .5rem; }
+.grid2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr)); gap: 1.25rem; }
+.card { background: var(--surface); padding: 1rem 1.1rem; }
+.card > .eyebrow { margin-bottom: .5rem; }
+
+.errsum { border: 4px solid var(--error); padding: 1rem 1.1rem; background: var(--bg); margin: 0 0 1rem; }
+.errsum h4 { color: var(--error); font-size: 1.125rem; display: flex; gap: .4rem; align-items: center; margin-bottom: .5rem; }
+.errsum ul { margin: 0; padding-left: 1.25rem; }
+.errsum li { margin: .25rem 0; }
+.banner { border-left: 6px solid var(--error); background: var(--surface); padding: .9rem 1.1rem; margin: 0 0 1rem; }
+.banner h4 { display: flex; gap: .4rem; align-items: center; font-size: 1.125rem; color: var(--error); margin-bottom: .35rem; }
+.banner p { margin: .25rem 0; }
+.ext { margin: .5rem 0 0; display: grid; grid-template-columns: max-content 1fr; gap: .15rem .9rem; font-size: .875rem; }
+.ext dt { color: var(--text-2); }
+.ext dd { margin: 0; }
+.banner.pl { border-left-style: dashed; }
+
+.dialog { background: var(--bg); border: 3px solid var(--text); padding: 1.25rem 1.4rem; max-width: 30rem; }
+.dialog h4 { font-size: 1.25rem; margin-bottom: .6rem; }
+.dialog p { margin: 0 0 1rem; }
+.dialog .row-actions { margin-top: 0; }
+.scrim { background: var(--surface); padding: 1.25rem; }
+
+.skel { height: 1rem; background: var(--border); margin: .5rem 0; border-radius: 2px; }
+.skel.w1 { width: 70%; } .skel.w2 { width: 45%; } .skel.w3 { width: 85%; }
+
+.verdict { display: flex; flex-wrap: wrap; gap: .4rem 1rem; align-items: center; margin: 0 0 .75rem; }
+.verdict .v { font-size: 1.125rem; font-weight: 700; }
+
+.fig-note { margin-top: 1rem; }
+figcaption { color: var(--text-2); font-size: .875rem; margin-top: .75rem; max-width: 52rem; }
+
+/* ---------- 390 wide: rail to the left edge, receipts stack under labels ---------- */
+@media (max-width: 40rem) {
+  .wrap { padding: 1rem .75rem 2rem; }
+  .rung { grid-template-columns: 2.75rem minmax(0, 1fr); column-gap: .75rem; }
+  .rung .rail { grid-column: 1; grid-row: 1 / span 2; }
+  .rung .lbl { grid-column: 2; grid-row: 1; }
+  .rung .rcp { grid-column: 2; grid-row: 2; }
+  .eq .res b { font-size: 2rem; }
+  .region { padding: .85rem .8rem; }
+  .branch { margin-left: 0; }
+}
+</style>
+</head>
+<body data-screen-id="wb-cancel">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol>
+    <symbol id="i-loader" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></symbol>
+    <symbol id="i-ellipsis" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#rung-1">Skip to rung 1</a>
+
+<div class="wrap">
+
+<!-- ====================================================== PAGE HEADER -->
+<header class="page-header">
+  <p class="eyebrow">Workbench · Quote and cancel · policy <span class="mono">F3-MVEOSVDQJQ</span></p>
+  <h1>Quote and cancel</h1>
+  <p class="eyebrow" id="question">The question: if I cancel on the date I quoted, is the refund the one I was quoted?</p>
+  <p class="answer" aria-labelledby="question">
+    Cancel on <span class="figure">2027-01-27</span> and the refund is <span class="figure big">445.11</span>.
+  </p>
+  <p class="hint">Quoted on <span class="mono">2026-10-19</span> (the UK today it was checked against) · rule <a class="chip" href="#rule-CANCEL-1c">CANCEL-1c</a> · 1 term · refunded to DirectDebit. The cancel in rung 2 is not sent yet.</p>
+  <ul class="meta">
+    <li><span>Policy</span><span class="mono">F3-MVEOSVDQJQ</span></li>
+    <li><span>Status</span><span class="gap">not in this screen's data</span></li>
+    <li><span>Compiled at</span><span class="gap">not in this screen's data</span></li>
+  </ul>
+  <p class="keys" aria-label="Keyboard">
+    <span>Keys</span>
+    <span><kbd>J</kbd> next rung</span>
+    <span><kbd>K</kbd> previous rung</span>
+    <span><kbd>Enter</kbd> act on the rung in focus</span>
+  </p>
+</header>
+
+<main>
+
+<!-- ====================================================== THE SPINE -->
+<h2 id="walk">The walk, in order</h2>
+<p class="sec-intro">Three rungs, read top to bottom. A rung only opens when the one above it has returned. Recorded case: QA step 10 of F3 (quote for 2027-01-27, then cancel for the same date).</p>
+
+<figure class="spine-fig">
+<ol class="spine" aria-label="Quote and cancel, three rungs">
+
+  <!-- RUNG 1 -->
+  <li class="rung" id="rung-1">
+    <div class="lbl">
+      <h3>Quote the date</h3>
+      <p class="hint">Read-only. A quote never saves.</p>
+      <span class="tag ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Quote returned</span>
+    </div>
+    <div class="rail" aria-hidden="true"><span class="node">1</span></div>
+    <div class="rcp">
+
+      <section class="region" data-req="WB-4" aria-labelledby="r1-h">
+        <h4 class="eyebrow" id="r1-h">Cancellation date and quote</h4>
+        <form action="#">
+          <div class="field">
+            <label for="d1">Cancellation date</label>
+            <p class="hint" id="d1-hint">Format yyyy-MM-dd, the only format the API accepts. Shown as typed.</p>
+            <input class="date" id="d1" name="cancellationDate" type="text" inputmode="numeric" autocomplete="off" value="2027-01-27" aria-describedby="d1-hint">
+          </div>
+          <button type="button" class="btn">
+            <svg class="icon" aria-hidden="true"><use href="#i-receipt"/></svg>Quote this date
+          </button>
+        </form>
+        <p class="small" style="margin:.75rem 0 0">
+          <span class="mono">GET /policies/F3-MVEOSVDQJQ/cancellation-quote?cancellationDate=2027-01-27</span>
+          answered <span class="mono">200</span>, <span class="mono">quotedOn</span> <span class="mono">2026-10-19</span>.
+        </p>
+      </section>
+
+      <section class="region" data-req="WB-4" aria-labelledby="r2-h">
+        <h4 class="eyebrow" id="r2-h">The refund as a worked sum, per term, with the rule applied</h4>
+        <div class="eq" role="group" aria-label="615.40 times 264 divided by 365 equals 445.11">
+          <span class="val"><b>615.40</b><small>amount</small></span>
+          <span class="op" aria-hidden="true">×</span>
+          <span class="val"><b>264</b><small>unusedDays</small></span>
+          <span class="op" aria-hidden="true">÷</span>
+          <span class="val"><b>365</b><small>daysInTerm</small></span>
+          <span class="op" aria-hidden="true">=</span>
+          <span class="val res"><b class="money">445.11</b><small>refundAmount</small></span>
+        </div>
+        <p class="small" style="margin:0 0 .5rem">The unrounded quotient is 445.1112…; the API wrote <span class="mono">445.11</span>, shown here as written.</p>
+
+        <div class="tw">
+        <table>
+          <caption>Refund per term, from the quote's own fields</caption>
+          <thead>
+            <tr>
+              <th scope="col" aria-sort="ascending" class="m">Term ↑</th>
+              <th scope="col">Rule applied</th>
+              <th scope="col" class="r">Amount</th>
+              <th scope="col" class="r">Days used</th>
+              <th scope="col" class="r">Unused days</th>
+              <th scope="col" class="r">Days in term</th>
+              <th scope="col" class="r">Refund</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row" class="m">1</th>
+              <td><a class="chip" href="#rule-CANCEL-1c">CANCEL-1c</a> <span class="small">after cooling-off: pro-rata for unused days</span></td>
+              <td class="r m">615.40</td>
+              <td class="r m">101</td>
+              <td class="r m">264</td>
+              <td class="r m">365</td>
+              <td class="r m">445.11</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row" colspan="6">Total refund</th>
+              <td class="r m">445.11</td>
+            </tr>
+          </tfoot>
+        </table>
+        </div>
+        <p class="small" style="margin:.5rem 0 0">Refund = amount × unused days ÷ actual days in the term; the cancellation day counts as used (CANCEL-1c). Refund method: DirectDebit, payment <span class="mono">PAY-7f24722e…</span> (CANCEL-2: the method of the payment it reverses).</p>
+
+        <div class="branch">
+          <p class="eyebrow" style="margin-bottom:.25rem">Branch 1b · if a claim is recorded first (COULD-2)</p>
+          <p class="small" style="margin:0 0 .35rem">Different recorded case: policy <span class="mono">QA-F3-CLAIM</span>, QA step H7, quote for T + 15. A claim inserts its own rung; the quote after it reads:</p>
+          <div class="tw">
+          <table>
+            <caption>Quote after a claim, term 1</caption>
+            <thead>
+              <tr>
+                <th scope="col" class="m">Term ↑</th>
+                <th scope="col">Rule applied</th>
+                <th scope="col" class="r">Days used</th>
+                <th scope="col" class="r">Unused days</th>
+                <th scope="col" class="r">Days in term</th>
+                <th scope="col" class="r">Refund</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row" class="m">1</th>
+                <td><a class="chip" href="#rule-COULD-2">COULD-2</a> <span class="small">a claim means a zero refund</span></td>
+                <td class="r m">16</td>
+                <td class="r m">349</td>
+                <td class="r m">365</td>
+                <td class="r m">0.00</td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="small" style="margin:.35rem 0 0">Total refund <span class="mono">0.00</span>, <span class="mono">refunds</span> <span class="mono">[]</span>. <a class="chip" href="#rule-CANCEL-1c">CANCEL-1c</a> would have refunded <span class="mono">329.34</span>.</p>
+          <p class="join">Rejoins the spine at rung 2.</p>
+        </div>
+      </section>
+    </div>
+  </li>
+
+  <!-- RUNG 2 -->
+  <li class="rung" id="rung-2">
+    <div class="lbl">
+      <h3>Cancel on that date</h3>
+      <p class="hint">The date is carried down from rung 1, not typed again.</p>
+      <span class="tag neutral"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg>Ready, not sent</span>
+    </div>
+    <div class="rail" aria-hidden="true"><span class="node active">2</span></div>
+    <div class="rcp">
+      <section class="region" data-req="WB-4" aria-labelledby="r3a-h">
+        <h4 class="eyebrow" id="r3a-h">Cancel with the quoted date</h4>
+        <p class="carried">
+          <span class="lab">Cancellation date</span>
+          <span class="v">2027-01-27</span>
+          <span class="hint">carried from rung 1. To change it, quote again.</span>
+        </p>
+        <p class="small" style="margin:0 0 .5rem"><span class="mono">POST /policies/F3-MVEOSVDQJQ/cancellation</span> with <span class="mono">cancellationDate</span> <span class="mono">2027-01-27</span>.</p>
+        <div class="row-actions">
+          <button type="button" class="btn destructive primary">
+            <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>Cancel on 2027-01-27
+          </button>
+          <span class="hint">Opens a confirmation that names the date and the 445.11 refund. Cancelling is irreversible.</span>
+        </div>
+      </section>
+    </div>
+  </li>
+
+  <!-- RUNG 3 -->
+  <li class="rung last" id="rung-3">
+    <div class="lbl">
+      <h3>Check they agree</h3>
+      <p class="hint">Quote and cancellation, field by field.</p>
+      <span class="tag pend"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Waiting for rung 2</span>
+    </div>
+    <div class="rail" aria-hidden="true"><span class="node waiting">3</span></div>
+    <div class="rcp">
+      <section class="region" data-req="WB-4" aria-labelledby="r3b-h">
+        <h4 class="eyebrow" id="r3b-h">Quote and cancellation compared</h4>
+        <div class="tw">
+        <table>
+          <caption>Rung 1 against rung 2</caption>
+          <thead>
+            <tr>
+              <th scope="col">Field</th>
+              <th scope="col">Quote (rung 1)</th>
+              <th scope="col">Cancellation (rung 2)</th>
+              <th scope="col">Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row" class="m">cancellationDate</th><td class="m">2027-01-27</td><td><span class="wait">waits for rung 2</span></td><td><span class="tag pend"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Waiting</span></td></tr>
+            <tr><th scope="row" class="m">ruleApplied</th><td class="m">CANCEL-1c</td><td><span class="wait">waits for rung 2</span></td><td><span class="tag pend"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Waiting</span></td></tr>
+            <tr><th scope="row" class="m">totalRefund</th><td class="m">445.11</td><td><span class="wait">waits for rung 2</span></td><td><span class="tag pend"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Waiting</span></td></tr>
+            <tr><th scope="row" class="m">terms</th><td class="m">{1, CANCEL-1c, 365, 101, 264, 445.11}</td><td><span class="wait">waits for rung 2</span></td><td><span class="tag pend"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Waiting</span></td></tr>
+            <tr><th scope="row" class="m">refunds</th><td class="m">DirectDebit 445.11 · PAY-7f24722e…</td><td><span class="wait">waits for rung 2</span></td><td><span class="tag pend"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Waiting</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </section>
+    </div>
+  </li>
+</ol>
+
+<figcaption>
+  The spine: each rung is a step of the walk, in the order it happened. Text equivalent, the same walk as a table:
+</figcaption>
+<div class="tw">
+<table>
+  <caption>The walk as a list of requests, in order</caption>
+  <thead>
+    <tr><th scope="col" class="m">Rung</th><th scope="col">Step</th><th scope="col">Request</th><th scope="col">Outcome</th></tr>
+  </thead>
+  <tbody>
+    <tr><th scope="row" class="m">1</th><td>Quote</td><td class="m">GET …/cancellation-quote?cancellationDate=2027-01-27</td><td>200, 445.11 under CANCEL-1c</td></tr>
+    <tr><th scope="row" class="m">2</th><td>Cancel</td><td class="m">POST …/cancellation, cancellationDate 2027-01-27</td><td>Not sent yet</td></tr>
+    <tr><th scope="row" class="m">3</th><td>Agree</td><td>Quote set against the cancellation</td><td>Waits for rung 2</td></tr>
+  </tbody>
+</table>
+</div>
+</figure>
+
+<!-- ====================================================== INSPECTOR -->
+<aside class="drawer" data-req="WB-7" aria-labelledby="insp-h">
+  <div class="grip" aria-hidden="true"></div>
+  <div class="drawer-bar">
+    <h3 id="insp-h">The requests as sent</h3>
+    <span class="tag neutral">Open · 1 request</span>
+    <span class="hint">Docked, resizable. Latest request and response, as each is sent.</span>
+  </div>
+  <ol class="reqs">
+    <li>
+      <div class="reqline">
+        <span class="n mono">#1</span>
+        <code>GET /policies/F3-MVEOSVDQJQ/cancellation-quote?cancellationDate=2027-01-27</code>
+        <span class="tag ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>200</span>
+      </div>
+<pre>reference         "F3-MVEOSVDQJQ"
+quotedOn          "2026-10-19"
+cancellationDate  "2027-01-27"
+ruleApplied       "CANCEL-1c"
+totalRefund       445.11
+terms             [ {1, CANCEL-1c, 365, 101, 264, 445.11} ]
+refunds           [ {DirectDebit, 445.11, PAY-7f24722e…} ]   (no reference)</pre>
+      <p class="hint" style="margin-top:.4rem">Shown as recorded in QA step 10. <span class="mono">terms</span> and <span class="mono">refunds</span> are positional because the data excerpt doesn't hold their key names.</p>
+    </li>
+  </ol>
+</aside>
+
+<!-- ====================================================== STATES -->
+<h2 id="states">States</h2>
+<p class="sec-intro">Each board is one state of this screen, labelled. Where a board uses a different recorded policy, it says so.</p>
+
+<!-- AFTER THE CANCEL -->
+<section class="board" aria-labelledby="b-after">
+  <p class="eyebrow">State: populated, after the cancel returned 201 · recorded case F3-MVEOSVDQJQ, QA step 10</p>
+  <h3 id="b-after">Quoted 445.11. Cancelled 445.11. They agree.</h3>
+  <figure>
+  <ol class="spine" aria-label="After the cancel, three rungs">
+    <li class="rung">
+      <div class="lbl">
+        <h3>Quote the date</h3>
+        <span class="tag ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Quote returned</span>
+      </div>
+      <div class="rail" aria-hidden="true"><span class="node">1</span></div>
+      <div class="rcp"><p class="small" style="margin:.35rem 0 0"><span class="mono">200</span> for <span class="mono">2027-01-27</span>, <span class="mono">445.11</span> under <a class="chip" href="#rule-CANCEL-1c">CANCEL-1c</a>. Worked sum above.</p></div>
+    </li>
+    <li class="rung">
+      <div class="lbl">
+        <h3>Cancel on that date</h3>
+        <span class="tag ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Cancelled · 201</span>
+      </div>
+      <div class="rail" aria-hidden="true"><span class="node">2</span></div>
+      <div class="rcp">
+        <div class="region" data-req="WB-4">
+          <p class="carried"><span class="lab">Cancellation date</span><span class="v">2027-01-27</span><span class="hint">carried from rung 1</span></p>
+          <p class="small" style="margin:0">Answered <span class="mono">201</span>, no <span class="mono">Location</span> header. Refund <span class="mono">REF-c1b44418…</span> to DirectDebit, <span class="mono">445.11</span>, against the same payment <span class="mono">PAY-7f24722e…</span>.</p>
+        </div>
+      </div>
+    </li>
+    <li class="rung last">
+      <div class="lbl">
+        <h3>Check they agree</h3>
+        <span class="tag ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Agree</span>
+      </div>
+      <div class="rail" aria-hidden="true"><span class="node">3</span></div>
+      <div class="rcp">
+        <div class="region" data-req="WB-4">
+          <p class="verdict"><span class="v">Agree on all 5 compared fields</span><span class="hint">counted from the table below</span></p>
+          <div class="tw">
+          <table>
+            <caption>Quote against the cancellation it led to</caption>
+            <thead>
+              <tr><th scope="col">Field</th><th scope="col">Quote (rung 1)</th><th scope="col">Cancellation (rung 2)</th><th scope="col">Result</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row" class="m">cancellationDate</th><td class="m">2027-01-27</td><td class="m">2027-01-27</td><td><span class="tag ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Agrees</span></td></tr>
+              <tr><th scope="row" class="m">ruleApplied</th><td class="m">CANCEL-1c</td><td class="m">CANCEL-1c</td><td><span class="tag ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Agrees</span></td></tr>
+              <tr><th scope="row" class="m">totalRefund</th><td class="m">445.11</td><td class="m">445.11</td><td><span class="tag ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Agrees</span></td></tr>
+              <tr><th scope="row" class="m">terms</th><td class="m">{1, CANCEL-1c, 365, 101, 264, 445.11}</td><td class="m">{1, CANCEL-1c, 365, 101, 264, 445.11}</td><td><span class="tag ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Agrees</span></td></tr>
+              <tr><th scope="row" class="m">refunds</th><td class="m">DirectDebit 445.11 · PAY-7f24722e…</td><td class="m">DirectDebit 445.11 · PAY-7f24722e…</td><td><span class="tag ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Agrees</span></td></tr>
+              <tr><th scope="row" class="m">quotedOn</th><td class="m">2026-10-19</td><td><span class="wait">not in a cancellation</span></td><td><span class="tag neutral"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg>Quote only</span></td></tr>
+              <tr><th scope="row" class="m">refund reference</th><td><span class="wait">none on a quote</span></td><td class="m">REF-c1b44418…</td><td><span class="tag neutral"><svg class="icon" aria-hidden="true"><use href="#i-minus"/></svg>Cancellation only</span></td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="hint">The last two rows are not compared: a quote has no refund reference and a cancellation has no <span class="mono">quotedOn</span>. A differing pair has no recorded case in the data, so the "differ" layout is not drawn.</p>
+        </div>
+      </div>
+    </li>
+  </ol>
+  <figcaption>Text equivalent: rung 1 quoted 2027-01-27 at 445.11 under CANCEL-1c; rung 2 cancelled on 2027-01-27 and returned 201 at 445.11 under CANCEL-1c; rung 3 finds the date, rule, total, terms and refunds identical.</figcaption>
+  </figure>
+
+  <aside class="drawer" data-req="WB-7" aria-labelledby="insp-h2">
+    <div class="grip" aria-hidden="true"></div>
+    <div class="drawer-bar">
+      <h3 id="insp-h2">The requests as sent</h3>
+      <span class="tag neutral">Open · 2 requests</span>
+    </div>
+    <ol class="reqs">
+      <li>
+        <div class="reqline"><span class="n mono">#2</span><code>POST /policies/F3-MVEOSVDQJQ/cancellation</code><span class="tag ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>201</span><span class="hint">latest</span></div>
+<pre>request   cancellationDate  "2027-01-27"
+response  cancellationDate  "2027-01-27"
+          ruleApplied       "CANCEL-1c"
+          totalRefund       445.11
+          terms             [ {1, CANCEL-1c, 365, 101, 264, 445.11} ]
+          refunds           [ {REF-c1b44418…, DirectDebit, 445.11, PAY-7f24722e…} ]</pre>
+      </li>
+      <li>
+        <div class="reqline"><span class="n mono">#1</span><code>GET /policies/F3-MVEOSVDQJQ/cancellation-quote?cancellationDate=2027-01-27</code><span class="tag ok"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>200</span></div>
+      </li>
+    </ol>
+  </aside>
+
+  <div class="card" style="margin-top:1rem">
+    <p class="eyebrow">State: inspector closed</p>
+    <p class="small" style="margin:0"><span class="tag neutral">Closed · 2 requests</span> <span class="hint">The bar stays docked at the bottom; the requests are one press away.</span></p>
+  </div>
+</section>
+
+<!-- CONFIRM DIALOG -->
+<section class="board" aria-labelledby="b-confirm">
+  <p class="eyebrow">State: confirm dialog, open and submitting</p>
+  <h3 id="b-confirm">Name exactly what will happen, then send</h3>
+  <div class="grid2">
+    <div class="scrim">
+      <p class="eyebrow">Open</p>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg1-h">
+        <h4 id="dlg1-h">Cancel policy F3-MVEOSVDQJQ?</h4>
+        <p>This cancels the policy on <span class="mono">2027-01-27</span>, the date you quoted, and refunds <span class="mono">445.11</span> to DirectDebit. It can't be undone: cancelling again answers 409 under <a class="chip" href="#rule-CANCEL-4">CANCEL-4</a>.</p>
+        <div class="row-actions">
+          <button type="button" class="btn destructive primary">Cancel policy on 2027-01-27</button>
+          <button type="button" class="btn">Go back</button>
+        </div>
+      </div>
+    </div>
+    <div class="scrim">
+      <p class="eyebrow">Submitting</p>
+      <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="dlg2-h">
+        <h4 id="dlg2-h">Cancel policy F3-MVEOSVDQJQ?</h4>
+        <p>This cancels the policy on <span class="mono">2027-01-27</span>, the date you quoted, and refunds <span class="mono">445.11</span> to DirectDebit.</p>
+        <div class="row-actions">
+          <button type="button" class="btn destructive" disabled aria-disabled="true" aria-busy="true">
+            <svg class="icon spin" aria-hidden="true"><use href="#i-loader"/></svg><svg class="icon spin-static" aria-hidden="true"><use href="#i-ellipsis"/></svg>Cancelling…
+          </button>
+          <button type="button" class="btn" disabled aria-disabled="true">Go back</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUBMITTING / BUSY -->
+<section class="board" data-req="BUSY-1" aria-labelledby="b-busy">
+  <p class="eyebrow">State: submitting · quote and cancel actions, each busy while its request runs</p>
+  <h3 id="b-busy">The control that started the request says what is happening</h3>
+  <div class="grid2">
+    <div class="card">
+      <p class="eyebrow">Quote busy</p>
+      <div class="field">
+        <label for="d3">Cancellation date</label>
+        <input class="date" id="d3" type="text" value="2027-01-27" disabled>
+      </div>
+      <button type="button" class="btn" disabled aria-disabled="true" aria-busy="true">
+        <svg class="icon spin" aria-hidden="true"><use href="#i-loader"/></svg><svg class="icon spin-static" aria-hidden="true"><use href="#i-ellipsis"/></svg>Quoting…
+      </button>
+      <p class="hint" style="margin-top:.6rem">Request #1 is sent; no response yet. The worked sum below it is a static skeleton:</p>
+      <div aria-hidden="true"><div class="skel w1"></div><div class="skel w3"></div><div class="skel w2"></div></div>
+    </div>
+    <div class="card">
+      <p class="eyebrow">Cancel busy</p>
+      <p class="carried"><span class="lab">Cancellation date</span><span class="v">2027-01-27</span></p>
+      <button type="button" class="btn destructive" disabled aria-disabled="true" aria-busy="true">
+        <svg class="icon spin" aria-hidden="true"><use href="#i-loader"/></svg><svg class="icon spin-static" aria-hidden="true"><use href="#i-ellipsis"/></svg>Cancelling…
+      </button>
+      <p class="hint" style="margin-top:.6rem">Disabled, <span class="mono">aria-busy</span>, can't be fired twice. Re-enabled when the request ends. Rung 3 stays on "Waiting for rung 2".</p>
+    </div>
+    <div class="card rm-demo">
+      <p class="eyebrow">Reduced motion · both buttons</p>
+      <p class="hint" style="margin-bottom:.6rem">With <span class="mono">prefers-reduced-motion</span>, a static glyph replaces the rotation. The label still changes.</p>
+      <div class="row-actions">
+        <button type="button" class="btn rm" disabled aria-disabled="true" aria-busy="true"><svg class="icon spin" aria-hidden="true"><use href="#i-loader"/></svg><svg class="icon spin-static" aria-hidden="true"><use href="#i-ellipsis"/></svg>Quoting…</button>
+        <button type="button" class="btn destructive rm" disabled aria-disabled="true" aria-busy="true"><svg class="icon spin" aria-hidden="true"><use href="#i-loader"/></svg><svg class="icon spin-static" aria-hidden="true"><use href="#i-ellipsis"/></svg>Cancelling…</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- API ERROR -->
+<section class="board" data-req="WB-3" aria-labelledby="b-err">
+  <p class="eyebrow">State: api error · problems (CANCEL-3, CANCEL-4, CANCEL-7)</p>
+  <h3 id="b-err">Each problem stops the walk on its rung and says what to change</h3>
+  <p class="sec-intro">Each case is a recorded response from F3 QA, on its own policy. Extension values are shown as the API sent them, not read out of the detail text.</p>
+
+  <div class="grid2">
+    <div class="card">
+      <p class="eyebrow">422 single · CANCEL-3 · policy F3-MVEOTAONJW · QA step 16</p>
+      <p class="hint" style="margin-bottom:.5rem"><span class="tag bad"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>Rung 1 stopped</span> The quote for 2026-10-18 was rejected.</p>
+      <div class="errsum" role="alert" tabindex="-1" aria-labelledby="es1-h">
+        <h4 id="es1-h"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>There is a problem</h4>
+        <ul>
+          <li><a href="#d-err1">Cancellation date in the past</a> <a class="chip" href="#rule-CANCEL-3">CANCEL-3</a></li>
+        </ul>
+      </div>
+      <div class="field">
+        <label for="d-err1">Cancellation date</label>
+        <p class="hint" id="d-err1-hint">Format yyyy-MM-dd.</p>
+        <p class="err" id="d-err1-err"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><span>Cancellation date in the past. Today is <span class="mono">2026-10-19</span>.</span></p>
+        <input class="date" id="d-err1" type="text" value="2026-10-18" aria-invalid="true" aria-describedby="d-err1-hint d-err1-err">
+      </div>
+      <button type="button" class="btn primary">Quote this date</button>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">400 field keys · invalid format · policy QA-F3-SHAPE · QA step 48</p>
+      <p class="hint" style="margin-bottom:.5rem"><span class="tag bad"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>Rung 1 stopped</span> No rule applies; the format failed.</p>
+      <div class="errsum" role="alert" tabindex="-1" aria-labelledby="es2-h">
+        <h4 id="es2-h"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>There is a problem</h4>
+        <ul>
+          <li><a href="#d-err2">The cancellation date must be a date in the form yyyy-MM-dd.</a></li>
+        </ul>
+      </div>
+      <div class="field">
+        <label for="d-err2">Cancellation date</label>
+        <p class="hint" id="d-err2-hint">Format yyyy-MM-dd.</p>
+        <p class="err" id="d-err2-err"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg><span>The cancellation date must be a date in the form yyyy-MM-dd.</span></p>
+        <input class="date" id="d-err2" type="text" value="18/11/2026" aria-invalid="true" aria-describedby="d-err2-hint d-err2-err">
+      </div>
+      <p class="hint">Also recorded: with no date at all, <span class="mono">errors.cancellationDate</span> reads "The cancellationDate field is required." (policy F3-MVEOTHRWL1, step 22).</p>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">409 · CANCEL-4 · policy F3-MVEOTAWL4W · QA step 18</p>
+      <p class="hint" style="margin-bottom:.5rem"><span class="tag bad"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>Rung 2 stopped</span> The second cancel, for 2026-11-28, was rejected.</p>
+      <div class="banner" role="alert">
+        <h4><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>Policy already cancelled</h4>
+        <p>The policy was already cancelled on <span class="mono">2026-11-18</span>.</p>
+        <p><a class="chip" href="#rule-CANCEL-4">CANCEL-4</a></p>
+        <dl class="ext">
+          <dt class="mono">cancellationDate</dt><dd class="mono">2026-11-18</dd>
+          <dt class="mono">instance</dt><dd class="mono">/policies/F3-MVEOTAWL4W/cancellation</dd>
+        </dl>
+      </div>
+      <p class="hint">Rung 3 never opens: there is no second cancellation to compare. The original date is the extension's, not typed.</p>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">422 · CANCEL-7 · policy F3-MVEOTHOTP7 · QA step 21</p>
+      <p class="hint" style="margin-bottom:.5rem"><span class="tag bad"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>Rung 1 stopped</span> The quote for 2027-11-10 was rejected.</p>
+      <div class="banner" role="alert">
+        <h4><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>Cancellation date after the end of cover</h4>
+        <p><a class="chip" href="#rule-CANCEL-7">CANCEL-7</a> <span class="small">the date must be on or before the latest term's end</span></p>
+        <dl class="ext">
+          <dt class="mono">latestEndDate</dt><dd class="mono">2027-11-09</dd>
+          <dt class="mono">violations</dt><dd class="mono">[CANCEL-7]</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">API unreachable · no recorded response</p>
+      <div class="banner pl" role="alert">
+        <h4><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>The API did not answer</h4>
+        <p>No request was completed. Nothing was changed by this screen.</p>
+      </div>
+      <p class="hint">Wording is a placeholder: the trail holds no unreachable case.</p>
+    </div>
+
+    <div class="card">
+      <p class="eyebrow">Inspector, problem state · request for 2026-10-18</p>
+      <aside class="drawer" data-req="WB-7" aria-labelledby="insp-h3" style="margin-top:0">
+        <div class="drawer-bar"><h3 id="insp-h3">The requests as sent</h3><span class="tag bad"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>422</span></div>
+        <ol class="reqs"><li>
+          <div class="reqline"><span class="n mono">#1</span><code>GET /policies/F3-MVEOTAONJW/cancellation-quote?cancellationDate=2026-10-18</code></div>
+<pre>type        /problems/cancel-3
+instance    /policies/F3-MVEOTAONJW/cancellation-quote
+ruleId      "CANCEL-3"
+violations  [CANCEL-3]
+today       "2026-10-19"
+traceId     (present; value not in the data)</pre>
+        </li></ol>
+      </aside>
+    </div>
+  </div>
+  <p class="hint">Not drawn for lack of data: a 422 with several violations and no field path (listed, not placed).</p>
+</section>
+
+<!-- EMPTY -->
+<section class="board" aria-labelledby="b-empty">
+  <p class="eyebrow">State: empty · no date entered, nothing quoted</p>
+  <h3 id="b-empty">Nothing to cancel against until a date is quoted</h3>
+  <figure>
+  <ol class="spine" aria-label="Empty state, three rungs">
+    <li class="rung">
+      <div class="lbl">
+        <h3>Quote the date</h3>
+        <span class="tag pend"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Waiting for a date</span>
+      </div>
+      <div class="rail" aria-hidden="true"><span class="node active">1</span></div>
+      <div class="rcp">
+        <div class="region" data-req="WB-4">
+          <div class="field">
+            <label for="d-empty">Cancellation date</label>
+            <p class="hint" id="d-empty-hint">Format yyyy-MM-dd, the only format the API accepts.</p>
+            <input class="date" id="d-empty" type="text" value="" placeholder="yyyy-MM-dd" aria-describedby="d-empty-hint">
+          </div>
+          <button type="button" class="btn primary"><svg class="icon" aria-hidden="true"><use href="#i-receipt"/></svg>Quote this date</button>
+          <p class="hint" style="margin-top:.6rem">No quote yet. Enter a date and quote it. A quote never saves, so nothing changes on policy <span class="mono">F3-MVEOSVDQJQ</span>.</p>
+        </div>
+      </div>
+    </li>
+    <li class="rung">
+      <div class="lbl">
+        <h3>Cancel on that date</h3>
+        <span class="tag pend"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Not reached</span>
+      </div>
+      <div class="rail" aria-hidden="true"><span class="node waiting">2</span></div>
+      <div class="rcp">
+        <p class="unreached">Needs a quote first: the cancel uses the quoted date, so there is no date to carry down yet.</p>
+        <div class="row-actions">
+          <button type="button" class="btn destructive" disabled aria-disabled="true">Cancel on a quoted date</button>
+          <span class="hint">Disabled until rung 1 returns.</span>
+        </div>
+      </div>
+    </li>
+    <li class="rung last">
+      <div class="lbl">
+        <h3>Check they agree</h3>
+        <span class="tag pend"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Not reached</span>
+      </div>
+      <div class="rail" aria-hidden="true"><span class="node waiting">3</span></div>
+      <div class="rcp"><p class="unreached">Needs a quote and a cancellation to set side by side.</p></div>
+    </li>
+  </ol>
+  <figcaption>Text equivalent: rung 1 waits for a date; rungs 2 and 3 are not reached.</figcaption>
+  </figure>
+</section>
+
+</main>
+</div>
+
+</body>
+</html>
