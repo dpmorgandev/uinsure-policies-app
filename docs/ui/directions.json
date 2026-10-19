@@ -1,0 +1,113 @@
+{
+  "version": 1,
+  "territories": [
+    {
+      "name": "receipts-in-the-margin",
+      "governingIdea": "A statement and its receipt are read together: every claim the page makes is a plain sentence in a reading column, and the trail or API fact that proves it sits in the margin on the same line.",
+      "singleMindedProposition": "Nothing on this page is asserted without its receipt sitting beside it.",
+      "excludes": [
+        "A table or grid as the first thing a rule, node or policy page shows: those pages open on sentences, and tables appear only where the data is a list (the matrix, the request log, the gate events)",
+        "Left navigation rails, three-pane list-tree-detail layouts and right-hand detail drawers in the explorer",
+        "A status, figure or SHA standing alone without the sentence it supports: no bare KPI tiles, no orphan badges, no status dots",
+        "Dark-IDE chrome and dark highlight themes for JSON: dark mode is the same page dimmed, not a console",
+        "Horizontal time axes, waterfalls and duration bars"
+      ],
+      "layoutArchetype": "Manuscript page with sidenotes: one measured reading column of about 64 characters and a right margin of receipts aligned to the line each one supports; navigation is a single top line; at 390 wide each sidenote drops directly beneath its line",
+      "toneRegister": "Plain-spoken expository: a careful written report that explains in full sentences, in the domain's own words (test, gate, verdict, finding), and footnotes every source",
+      "signatureMove": {
+        "explorer": "On the rule page the requirement's text and agreed interpretation from requirements.md (D1) run as the reading column, followed by short sentences built only from trail values, each with its receipt in the margin on its line. For SELL-1: 'Tested by 22 tests, all passing' beside `22/22`; 'The failing test came first' beside red `b716734` above green `7d3f791`, each with its walkthrough row number (D8); 'Checked by hand and signed' beside `docs/qa/build-F1.md#1` and `David 2026-10-18` (D11, D12); 'Merged' beside `#10`. Every sidenote is a link (sha-link, file-line-link) carrying its provenance label: generated, recorded or written.",
+        "workbench": "On quote-and-cancel the refund is written as sentences from the E4 response, and every figure a sentence uses sits in the margin exactly as the API wrote it, field name and value. For the recorded F3 quote: 'The term has 365 days; 101 count as used, the cancellation day included, leaving 264 unused, so the pro-rata rule refunds 445.11', with margin notes `daysInTerm 365`, `daysUsed 101`, `unusedDays 264`, `ruleApplied CANCEL-1c` (a rule chip into the explorer), `refundAmount 445.11` and `quotedOn` (A10, A11). A 409 CANCEL-4 sentence reads its `cancellationDate` extension, never parsing `detail` (A12)."
+      },
+      "categoryDeparture": "The category presents data and leaves the reader to infer the claim: a left list, main canvas and right or bottom drawer with dark chrome and status dots (C1, C2, C4), a tree then a detail pane of raw JSON (P1), and for the workbench a list-and-detail split with a left rail, tabs, actions in overflow menus and dark-themed JSON (B6, B7, B8). This territory states each claim in words a reader without a guide can follow and pins the receipt beside it, as C8 anchors a comment to its line and M6 promotes highlights to the top: no rail, no explorer drawer, no tabs as page structure, verbs inline as buttons, JSON on a light paper view, and the earned-premium sum in prose as B3 writes it, with the basis named in words (B5).",
+      "derivedStyle": {
+        "palette": {
+          "background": { "light": "#fbfaf7", "dark": "#17191c", "source": "proposed" },
+          "surface": { "light": "#ffffff", "dark": "#1f2226", "source": "proposed" },
+          "border": { "light": "#cecece", "dark": "#3a3f45", "source": "K1 (light); dark proposed" },
+          "accent": { "light": "#3d5a6c", "dark": "#9db7c7", "source": "proposed" },
+          "textPrimary": { "light": "#0b0c0c", "dark": "#e8e6e1", "source": "K1 (light); dark proposed" },
+          "textSecondary": { "light": "#484949", "dark": "#a9adb3", "source": "K1 (light); dark proposed" },
+          "primary": { "light": "#1a65a6", "dark": "#7cb3e6", "source": "K1 link (light); dark proposed" },
+          "error": { "light": "#ca3535", "dark": "#fa4d56", "source": "K1 (light); K2 inverse error (dark)" },
+          "success": { "light": "#0f7a52", "dark": "#42be65", "source": "K1 (light); K2 inverse success (dark)" },
+          "warn": { "light": "#8a5a00", "dark": "#e0a63a", "source": "proposed", "graphicsOnly": false }
+        },
+        "type": { "sans": "T3", "mono": "T3" },
+        "dials": { "design_variance": 4, "motion_intensity": 1, "visual_density": 4 }
+      },
+      "citations": ["C8", "C1", "M6", "M1", "M2", "B3", "B5", "B9", "B10", "D1", "D8", "D11", "D12", "A10", "A11", "A12", "K1", "K2", "T3"]
+    },
+    {
+      "name": "cross-reference-grid",
+      "governingIdea": "Evidence is a cross-reference: every fact lives where two things meet (a rule and a TDD step, a request field and the check that guards it), so a filled cell is proof and an empty cell is an honest gap.",
+      "singleMindedProposition": "Every rule and every field was checked at every step, and every gap is in plain view.",
+      "excludes": [
+        "Prose paragraphs as primary content: labels and values, not explanatory sentences (long-form prose lives only on the about page and the F7 guide)",
+        "Charts of counts (bars, pies, donuts, sparklines): a count is a number in a cell, footed under its column",
+        "Cards, panels and boxed sections with captions: a ruled grid line, not a box, separates facts",
+        "Colour-filled status cells: status is a glyph and a word in the cell, colour only on the glyph",
+        "Leaving the grid to see a cell's evidence: no drawer, modal or tab for it; the cell opens in place first and its entity page is one link further"
+      ],
+      "layoutArchetype": "Full-width cross-reference grid: every primary screen is a two-axis table (rules by evidence steps, request fields by checks) with sticky row and column headers, a crosshair on the focused cell, cells that expand in place, and column footings that carry the counts; at 390 wide the grid scrolls inside its own container with the row-header column pinned",
+      "toneRegister": "Terse and schematic: an engineer's tabulation, identifiers and values, no sentences where a label will do",
+      "signatureMove": {
+        "explorer": "The requirements matrix (D1, as rendered in docs/trace/requirements-matrix.md) is the spine: 29 rule rows by the matrix's own columns (plan/node, tests pass/total, red, green, refactor, QA step, sign-off, PR). The 21 built rows fill with receipts (SELL-1: `b716734`, `7d3f791`, `22/22`, `docs/qa/build-F1.md#1`, `David 2026-10-18`, `#10`); the 8 not-built rows (CANCEL-5, RENEW-1/2, RENEW-3a, RENEW-3b, RENEW-4, RENEW-5, RENEW-6, COULD-3, all build/F4) keep every cell as a dashed 'not built yet' outline instead of vanishing. A built row's empty cell stays visibly empty, never filled in: the refactor column holds four SHAs, GET-1 `80d3ee2`, CANCEL-2 `19da300`, COULD-1 `9be38f7` and COULD-2 `ebbab99`, and the green column is blank for CANCEL-1a, CANCEL-1b, CANCEL-6, CANCEL-7, COULD-2, COULD-2a, COULD-2b and COULD-2c. SELL-7's test cell reads '10/10 at F1' with the 15 traited tests noted. Each column foots with the count of its filled cells, which is the overview's figure. Focusing a cell crosshairs its row and column and opens it in place to the walkthrough row behind it: subject, TDD trailer and agent (D8).",
+        "workbench": "The sell form is a field-by-check grid: one row per request field of E1 (reference, type, startDate, amount, paymentMethod, autoRenew, each policyholder's names and dateOfBirth, the property lines), with columns 'your value', 'constraint' (`^[A-Z0-9-]{3,20}$`, today to today + 60, at most 1,000,000.00 and 2 dp, 1 to 3 holders), 'rule' (SELL-1 to SELL-7 or shape) and 'API said'. With send it anyway on, the last column fills from the response: a 400's `errors` keys (`policyholders[0].dateOfBirth`, `$.startDate`, A13) land on their rows, a single-rule 422's extensions (`earliest`, `latest`) on its row, and a multi-rule 422's `violations[]`, which carry no field path, in a footer row rather than guessed onto a field (A12)."
+      },
+      "categoryDeparture": "The category's grids are status tables, dense rows coloured by green, red and amber dots in dark or neutral chrome (C1, C4, C5), and its traceability stops at the commit, with nothing linking checks to requirements (C8). Here the cross-reference itself is the interface: requirement by evidence step, the matrix-to-evidence pattern the research found nowhere, with failures steppable as in C2 and C4. It refuses the left-list, canvas and drawer split, tabs as structure and overflow menus (B6, B7), colour-filled status (M1, M8: lightness and a word, colour on the glyph only), and the KPI graphs on a console overview (B6 weakness): constraints sit beside their fields (B8) and server problems line up against the client checks that would have caught them (B10).",
+      "derivedStyle": {
+        "palette": {
+          "background": { "light": "#f6f7f8", "dark": "#15171a", "source": "proposed" },
+          "surface": { "light": "#ffffff", "dark": "#1d2024", "source": "proposed" },
+          "border": { "light": "#c9ced4", "dark": "#363b42", "source": "proposed" },
+          "accent": { "light": "#56b4e9", "dark": "#0072b2", "source": "K3" },
+          "textPrimary": { "light": "#16181b", "dark": "#e6e8eb", "source": "proposed" },
+          "textSecondary": { "light": "#4f565e", "dark": "#9aa2ab", "source": "proposed" },
+          "primary": { "light": "#0072b2", "dark": "#56b4e9", "source": "K3" },
+          "error": { "light": "#d55e00", "dark": "#d55e00", "source": "K3", "graphicsOnly": true },
+          "success": { "light": "#009e73", "dark": "#009e73", "source": "K3", "graphicsOnly": true },
+          "warn": { "light": "#9a6400", "dark": "#e69f00", "source": "K3 (dark); light proposed", "graphicsOnly": false }
+        },
+        "type": { "sans": "T1", "mono": "T1" },
+        "dials": { "design_variance": 2, "motion_intensity": 1, "visual_density": 8 }
+      },
+      "citations": ["D1", "D8", "D11", "D12", "C1", "C2", "C4", "C5", "C8", "M1", "M3", "M4", "M8", "B6", "B7", "B8", "B10", "A12", "A13", "K3", "T1"]
+    },
+    {
+      "name": "ordinal-spine",
+      "governingIdea": "Order is the proof: every story the app tells (a rule going red then green, an attempt failing then being fixed, a quote leading to a cancel) is a numbered sequence read top to bottom, and nothing can be read out of turn.",
+      "singleMindedProposition": "It happened in the order shown: test before code, every failure before its fix, quote before cancel.",
+      "excludes": [
+        "A two-axis matrix as the way into a story: the rule page and the cancel screen read down one spine, and the matrix is only an index",
+        "Wall-clock time axes, waterfalls and duration bars: position is ordinal (#1, #2, ...), because the walkthrough and matrix carry commit order, not commit dates, and API responses carry no timestamps",
+        "Side-by-side panes and tabs that let a story's steps be read out of order",
+        "Folding retries into a counter or a passing summary: every attempt keeps its own rung",
+        "Asking the user to re-enter a value a later step depends on: the quoted date is carried down, not typed again"
+      ],
+      "layoutArchetype": "Single vertical spine of numbered rungs: an ordinal rail down the page with each step's label to its left and its receipt to its right; retries step off to the side and rejoin the spine; the keyboard moves rung to rung with the keys shown; at 390 wide the rail moves to the left edge and receipts stack under their labels",
+      "toneRegister": "Procedural and stepwise: a numbered protocol with short imperative step labels, one thing at a time",
+      "signatureMove": {
+        "explorer": "GET-1's rule page is a numbered spine built from F2's walkthrough (D8): each commit sits at its walkthrough row number with its TDD trailer and agent (`#5 94a7473 red tester`), so red above green is read from position, not asserted, and refactor `80d3ee2` (D1) is the last rung. Because F2 took three attempts (D3), the retry steps off the spine and rejoins it: attempt 1 `gate.stub` (expect 'every GET-1 test fails', exit 2, ok false, '25 total, 13 failed, 12 passed', D6); finding round A1 and its `Fixes-Finding: A1/I1` commit; attempt 2 reviewer FAIL with R1 P1 (D9); attempt 3 with inv-001 opened as a marked branch, finding round A2 (D10) and the `Fixes-Finding: A2/I1` commit; then reviewer PASS at A3 and again at A3.2, two rungs in the same attempt (D5).",
+        "workbench": "Quote-and-cancel is three rungs. 1 Quote: E4 with `cancellationDate`, answered with `quotedOn` and the per-term lines (A10, A11; the recorded F3 case: term 1, CANCEL-1c, 365, 101, 264, 445.11). 2 Cancel: E3, whose date is not an input but the quoted date carried down the spine from rung 1. 3 Agree: the 201's date, rule, terms and total set against the quote line by line; the recorded case agreed at 445.11. Recording a claim (E5) inserts its rung between two quotes, the second showing 0.00 under COULD-2 on every paid term."
+      },
+      "categoryDeparture": "The category puts time on a horizontal axis as bars in a status palette (C3 and C4 waterfalls, the C5 timeline, P2) and folds retries into counters (P5 aggregated mode). This spine replaces time with ordinal position, because order is what TDD claims and order is what the data holds; retries step aside and rejoin rather than collapse, with the attempt switch C2 offers made visible as a branch; there are no tabs splitting a story (B7, and the tab-gated flow B3 is criticised for) and no sidebar. The workbench follows the preview-then-commit shape of B4 and the quoted-then-bound job of B2, and a policy's terms read in issue order as B1's transactions do.",
+      "derivedStyle": {
+        "palette": {
+          "background": { "light": "#ffffff", "dark": "#1b1d21", "source": "proposed" },
+          "surface": { "light": "#f3f3f3", "dark": "#24272c", "source": "K1 light grey (light); dark proposed" },
+          "border": { "light": "#cecece", "dark": "#3b4048", "source": "K1 (light); dark proposed" },
+          "accent": { "light": "#d5e7ec", "dark": "#1f3a42", "source": "proposed" },
+          "textPrimary": { "light": "#1b1f24", "dark": "#ececec", "source": "proposed" },
+          "textSecondary": { "light": "#555b62", "dark": "#a3a9b0", "source": "proposed" },
+          "primary": { "light": "#165f73", "dark": "#6fc3d6", "source": "proposed" },
+          "error": { "light": "#ca3535", "dark": "#fa4d56", "source": "K1 (light); K2 inverse error (dark)" },
+          "success": { "light": "#0f7a52", "dark": "#42be65", "source": "K1 (light); K2 inverse success (dark)" },
+          "warn": { "light": "#8a5a00", "dark": "#f1c21b", "source": "K2 support-warning (dark); light proposed", "graphicsOnly": false }
+        },
+        "type": { "sans": "T5", "mono": "T5" },
+        "dials": { "design_variance": 5, "motion_intensity": 2, "visual_density": 5 }
+      },
+      "citations": ["D1", "D3", "D5", "D6", "D8", "D9", "D10", "P2", "P5", "P7", "C2", "C3", "C4", "C5", "B1", "B2", "B3", "B4", "B7", "A10", "A11", "E3", "E4", "E5", "K1", "K2", "T5"]
+    }
+  ]
+}
