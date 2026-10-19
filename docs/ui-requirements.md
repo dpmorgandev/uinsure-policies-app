@@ -249,9 +249,12 @@ need.
 
 - **`ui`** is the integration branch for this plan, cut from `main` at `ad7b6b0`. It is a ruled
   exception to `requirements.md` §3 ("no develop branch"), recorded in the orchestration amendment.
-- **Direct commits to `ui`** are allowed for the design phases (brief, specs, `docs/ui/`, mockups,
-  stylesheet, screens) until the `ui` DAG is approved at G5. From then, every change goes through
-  `feature/ui/<node>` branches and PRs into `ui`.
+- **Direct commits to `ui`** are allowed for the brief, the research, the specs and the catalogs
+  (`docs/ui/styles.md`, `flows.md`, `screens.json`, `components.md`) until the `ui` DAG is approved at G5.
+- **Design stages that dispatch an agent** (mockups, kit, screens) each run on `feature/ui/<stage>`
+  (`DM`, `DK`, `DS`) with a PR into `ui` (`agents-skills.spec.md` A1, Option B). The trail only records
+  `feature/*` branches, so this is what puts a design stage's dispatches and gates on the record.
+- From G5, every change goes through `feature/ui/<node>` branches and PRs into `ui`.
 - **`ui` → `main`** by a PR David merges, once per releasable scope (the explorer, then the workbench).
 - **`ui` takes `main` in** after each build-plan merge (F3, F4, …), so the explorer can render the new
   trails. The git agent rebases UI feature branches onto `origin/ui`, not `origin/main`.
