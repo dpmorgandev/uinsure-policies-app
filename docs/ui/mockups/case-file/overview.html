@@ -1,0 +1,757 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overview · Trail explorer</title>
+<style>
+:root{
+  --bg:#f7f5f0;
+  --surface:#ffffff;
+  --text:#0b0c0c;
+  --text-2:#484949;
+  --link:#1a65a6;
+  --focus:#ffdd00;
+  --fail:#ca3535;
+  --pass:#0f7a52;
+  --warn:#8a5a00;
+  --rule:#cecece;
+  --sans:"Source Sans 3","Source Sans Pro",system-ui,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:"Source Code Pro",ui-monospace,"Cascadia Mono",Consolas,"Liberation Mono",Menlo,monospace;
+}
+[data-theme="dark"]{
+  --bg:#161616;
+  --surface:#1f1f1f;
+  --text:#f3f3f3;
+  --text-2:#b4b4b4;
+  --link:#8cb4e8;
+  --focus:#ffdd00;
+  --fail:#fa4d56;
+  --pass:#42be65;
+  --warn:#e6a23c;
+  --rule:#4a4a4a;
+}
+
+*{box-sizing:border-box}
+html{scroll-padding-top:72px;background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--text);font:400 16px/1.5 var(--sans)}
+h1,h2,h3,h4{font-family:var(--sans);font-weight:600;margin:0}
+p{margin:0 0 12px}
+.prose{max-width:72ch}
+.mono,code,time.mono,.num{font-family:var(--mono);font-variant-numeric:tabular-nums lining-nums}
+code{font-size:14px;overflow-wrap:anywhere}
+a{color:var(--link);text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px}
+a:hover{text-decoration-thickness:2px}
+a:focus-visible,button:focus-visible{outline:3px solid var(--focus);outline-offset:1px;box-shadow:0 4px 0 0 var(--text)}
+svg a:focus-visible{outline:3px solid var(--focus);outline-offset:2px;box-shadow:none}
+.ico{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.wrap{max-width:1040px;margin:0 auto;padding:0 24px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--surface);padding:8px 12px;z-index:5}
+.skip:focus{left:8px}
+
+/* top bar and breadcrumb */
+.topbar{background:var(--surface);border-bottom:2px solid var(--text)}
+.topbar .wrap{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 24px;padding-top:12px;padding-bottom:12px}
+.brand{font-weight:600;font-size:20px}
+.crumbs ol{display:flex;flex-wrap:wrap;gap:4px;list-style:none;margin:0;padding:0;font-size:14px;color:var(--text-2)}
+.crumbs li+li::before{content:"/";margin-right:4px}
+.crumbs [aria-current]{color:var(--text);font-weight:600}
+
+/* type helpers */
+.eyebrow{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-2);margin:0 0 8px}
+.sec{padding:48px 0 0}
+.sec>h2{font-size:24px;margin-bottom:4px}
+.sec>.lede{color:var(--text-2);max-width:72ch;margin-bottom:16px}
+.src{font-size:14px;color:var(--text-2)}
+.gapword{font-style:italic;color:var(--text-2)}
+
+/* status tags: word + glyph + colour, never interactive */
+.tag{display:inline-flex;align-items:center;gap:4px;padding:2px 8px 2px 6px;font-size:14px;font-weight:600;line-height:20px;color:var(--text);background:color-mix(in srgb,var(--text-2) 10%,var(--surface));border-left:3px solid var(--text-2);border-radius:0;white-space:nowrap}
+.tag.pass{border-left-color:var(--pass);background:color-mix(in srgb,var(--pass) 10%,var(--surface))}
+.tag.pass .ico{color:var(--pass)}
+.tag.fail{border-left-color:var(--fail);background:color-mix(in srgb,var(--fail) 10%,var(--surface))}
+.tag.fail .ico{color:var(--fail)}
+.tag.warn{border-left-color:var(--warn);background:color-mix(in srgb,var(--warn) 10%,var(--surface))}
+.tag.warn .ico{color:var(--warn)}
+.tag.pending .ico{color:var(--text-2)}
+.tag.nb{background:transparent;border:1px dashed var(--text-2);padding:1px 8px;font-weight:400;color:var(--text-2)}
+
+/* rule chips */
+.chip{display:inline-block;font-family:var(--mono);font-size:14px;padding:0 4px;margin:0 4px 4px 0;background:var(--surface);border-radius:0;font-variant-numeric:tabular-nums lining-nums}
+.chip.nbc{background:transparent;border:1px dashed var(--text-2);padding:0 3px}
+.nbnote{display:block;margin-top:4px;font-size:14px;color:var(--text-2)}
+
+/* not-built-yet pattern */
+.nby{border:1px dashed var(--text-2);padding:12px 16px;color:var(--text-2);background:transparent}
+.nby strong{color:var(--text)}
+
+/* completeness banner */
+.banner{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:24px;padding:12px 16px;background:color-mix(in srgb,var(--pass) 8%,var(--surface));border-left:6px solid var(--pass)}
+.banner .state{display:inline-flex;align-items:center;gap:8px;font:600 16px var(--mono)}
+.banner .state .ico{color:var(--pass)}
+.banner p{margin:0;font-size:14px;max-width:72ch}
+.banner.bad{background:color-mix(in srgb,var(--fail) 8%,var(--surface));border-left-color:var(--fail)}
+.banner.bad .state .ico{color:var(--fail)}
+
+/* headline answer */
+.answer{padding:32px 0 0}
+.question{font-size:20px;color:var(--text-2);margin:0 0 12px;max-width:40ch}
+.answer h1{font-size:32px;line-height:1.2;max-width:26em;margin-bottom:16px}
+.answer .lead{max-width:72ch}
+.actions{display:flex;flex-wrap:wrap;gap:16px 24px;align-items:center;margin-top:24px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 16px;font:600 16px var(--sans);text-decoration:none;border-radius:2px;background:var(--link);color:var(--surface);border:2px solid var(--link)}
+.btn:hover{text-decoration:underline}
+.btn.alt{background:transparent;color:var(--link);border-color:var(--text-2)}
+
+/* stamp */
+.stamp{margin-top:32px;padding:16px 0;border-top:2px solid var(--text);border-bottom:1px solid var(--rule)}
+.stamp h2{font-size:12px;margin-bottom:4px}
+.stamp-time{font-size:24px;font-weight:600;margin:0 0 8px}
+.stamp dl{display:grid;grid-template-columns:max-content 1fr;gap:4px 24px;margin:0;font-size:14px}
+.stamp dt{color:var(--text-2)}
+.stamp dd{margin:0}
+.toc{margin:16px 0 0;font-size:14px}
+.toc ul{display:flex;flex-wrap:wrap;gap:4px 24px;list-style:none;margin:0;padding:0}
+
+/* receipts */
+.receipts{list-style:none;margin:16px 0 0;padding:0;border-top:2px solid var(--text)}
+.receipt{display:grid;grid-template-columns:6rem 14rem 1fr;gap:8px 24px;padding:16px 0;border-bottom:1px solid var(--rule)}
+.receipt .ex{font:600 12px var(--mono);color:var(--text-2);padding-top:6px}
+.receipt .num{font-size:32px;font-weight:600;line-height:1.15;margin:0}
+.receipt .num small{display:block;font:600 16px var(--sans);color:var(--text-2)}
+.receipt h3{font-size:20px;margin-bottom:4px}
+.receipt .body p{max-width:72ch}
+.tally{display:flex;flex-wrap:wrap;gap:4px 24px;margin:8px 0;font-size:14px}
+.tally span b{font-family:var(--mono);font-variant-numeric:tabular-nums lining-nums}
+
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:14px;background:var(--surface)}
+caption{text-align:left;font-weight:600;font-size:14px;padding:8px 12px;color:var(--text)}
+caption .sortnote{font-weight:400;color:var(--text-2)}
+th,td{padding:8px 12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule);border-radius:0}
+thead th{position:sticky;top:0;background:var(--surface);border-bottom:2px solid var(--text);font-weight:600;z-index:1}
+tbody th{font-weight:600}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums lining-nums}
+tfoot td,tfoot th{border-top:2px solid var(--text);font-weight:600}
+.small{font-size:14px}
+
+/* chain of custody (signature) */
+.fig{margin:16px 0 0;padding:0}
+.fig>figcaption{font-size:14px;color:var(--text-2);max-width:72ch;margin-bottom:16px}
+.strip{margin:0 0 32px;padding:16px;background:var(--surface)}
+.strip h4{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;font-size:16px;margin-bottom:4px}
+.strip h4 .mono{font-size:20px}
+.strip .fact{font-size:14px;color:var(--text-2);margin:0 0 16px;max-width:72ch}
+.chain{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));list-style:none;margin:0;padding:0}
+.chain li{position:relative;padding:0 8px 0 0;min-width:0}
+.chain li::before{content:"";position:absolute;top:11px;left:0;right:0;height:2px;background:var(--text)}
+.chain li:first-child::before{left:12px}
+.chain li:last-child::before{right:calc(100% - 12px)}
+.chain .no{position:relative;z-index:1;display:grid;place-items:center;width:24px;height:24px;margin-bottom:8px;background:var(--text);color:var(--surface);font:600 12px var(--mono)}
+.chain .lbl{display:block;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--text-2)}
+.chain .val{display:block;font-family:var(--mono);font-size:14px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums lining-nums}
+.chain .meta{display:block;font-size:12px;color:var(--text-2);overflow-wrap:anywhere}
+.chain li.gap::before{height:0;background:none;border-top:2px dotted var(--text-2)}
+.chain li.gap .no{background:var(--surface);color:var(--text-2);border:2px dotted var(--text-2)}
+.chain li.gap .val{font-family:var(--sans);font-style:italic;color:var(--text-2)}
+.chain li.nbl::before{height:0;background:none;border-top:2px dashed var(--text-2)}
+.chain li.nbl .no{background:transparent;color:var(--text-2);border:1px dashed var(--text-2)}
+.chain li.nbl .val{font-family:var(--sans);color:var(--text-2)}
+
+/* verify command */
+.cmd{margin:16px 0 0;background:var(--surface);padding:16px}
+.cmd pre{margin:0 0 12px;font:400 14px/1.6 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere;color:var(--text)}
+.cmd .row{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.cmd button{font:600 14px var(--sans);padding:6px 12px;border-radius:2px;background:transparent;color:var(--link);border:1px solid var(--text-2);cursor:pointer}
+
+/* dag */
+.dagsvg{display:block;width:100%;height:auto;background:var(--surface)}
+.dagsvg text{fill:var(--text);font-family:var(--sans)}
+.dagsvg .id{font:600 14px var(--mono)}
+.dagsvg .ttl{font-size:12px}
+.dagsvg .st{font-size:14px;font-weight:600}
+.dagsvg .mt{font-size:12px;fill:var(--text-2)}
+.dagsvg .node rect{fill:var(--surface);stroke:var(--text-2);stroke-width:1}
+.dagsvg .node.done rect{fill:color-mix(in srgb,var(--pass) 8%,var(--surface));stroke:var(--text);stroke-width:2}
+.dagsvg .node.done .ico{color:var(--pass)}
+.dagsvg .node.pending .ico{color:var(--text-2)}
+.dagsvg .edge{fill:none;stroke:var(--text-2);stroke-width:2}
+.dagsvg marker path{fill:var(--text-2)}
+.dagsvg a{cursor:pointer}
+.legend{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin:12px 0 0;font-size:14px;color:var(--text-2)}
+.dagtable{margin-top:24px}
+
+/* decisions */
+.dec{list-style:none;margin:16px 0 0;padding:0;border-top:2px solid var(--text)}
+.dec li{display:grid;grid-template-columns:10rem 1fr 15rem;gap:8px 24px;padding:16px 0;border-bottom:1px solid var(--rule)}
+.dec .kind{display:flex;flex-direction:column;gap:4px;font-weight:600}
+.dec .kind span.k{display:inline-flex;align-items:center;gap:8px}
+.dec .kind .node{font:400 14px var(--mono);color:var(--text-2)}
+.dec .what p{margin:0 0 4px;max-width:72ch}
+.dec .when{font:400 14px var(--mono);font-variant-numeric:tabular-nums lining-nums;overflow-wrap:anywhere}
+.dec .when .gapword{font-family:var(--sans)}
+.dec .quote{font:400 14px/1.5 var(--mono);color:var(--text-2);overflow-wrap:anywhere}
+.disagree{margin-top:24px;padding:16px;background:var(--surface);border-left:6px solid var(--warn)}
+.disagree h3{display:flex;gap:8px;align-items:center;font-size:16px;margin-bottom:8px}
+
+/* states */
+.spec{margin:24px 0 0}
+.speclabel{display:inline-block;margin:0 0 8px;padding:2px 8px;background:var(--text);color:var(--bg);font:600 12px var(--mono)}
+.panel{background:var(--surface);padding:16px}
+.panel .ph{font-size:14px;color:var(--text-2)}
+.sk{display:grid;gap:12px;margin-top:16px}
+.sk i{display:block;height:16px;background:var(--rule)}
+.sk i.big{height:32px}
+.sk .r{display:grid;grid-template-columns:7rem 1fr;gap:16px}
+.sk .w60{width:60%}.sk .w80{width:80%}.sk .w40{width:40%}
+.triple{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.tags{display:flex;flex-wrap:wrap;gap:12px}
+footer{margin-top:64px;padding:24px 0 48px;border-top:2px solid var(--text);font-size:14px;color:var(--text-2)}
+
+@media (max-width:860px){
+  .receipt{grid-template-columns:1fr}
+  .dec li{grid-template-columns:1fr}
+  .triple{grid-template-columns:1fr}
+  .chain{grid-template-columns:1fr}
+  .chain li{padding:0 0 16px 40px;min-height:24px}
+  .chain li::before{top:0;bottom:0;left:11px;right:auto;width:2px;height:auto}
+  .chain li:first-child::before{top:12px;left:11px}
+  .chain li:last-child::before{right:auto;bottom:auto;height:12px}
+  .chain .no{position:absolute;left:0;top:0}
+  .chain li.gap::before,.chain li.nbl::before{width:0;border-top:0;border-left:2px dotted var(--text-2)}
+  .chain li.nbl::before{border-left-style:dashed}
+  .stamp dl{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body data-screen-id="overview">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-gavel" viewBox="0 0 24 24"><path d="m14 13-8.381 8.38a1 1 0 0 1-3.001-3L11 9.999"/><path d="M15.973 4.027A13 13 0 0 0 5.902 2.373c-1.398.342-1.092 2.158.277 2.601a19.9 19.9 0 0 1 5.822 3.024"/><path d="M16.001 11.999a19.9 19.9 0 0 1 3.024 5.824c.444 1.369 2.26 1.676 2.603.278A13 13 0 0 0 20 8.069"/><path d="M18.352 3.352a1.205 1.205 0 0 0-1.704 0l-5.296 5.296a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0l5.296-5.296a1.205 1.205 0 0 0 0-1.704z"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/><path d="M6.453 15h11.094"/><path d="M8.5 2h7"/></symbol>
+  <symbol id="i-pr" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M6 9v12"/></symbol>
+</svg>
+
+<a class="skip" href="#main">Skip to the answer</a>
+
+<header class="topbar">
+  <div class="wrap">
+    <span class="brand">Trail explorer</span>
+    <nav class="crumbs" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="overview.html">Trail</a></li>
+        <li aria-current="page">Overview</li>
+      </ol>
+    </nav>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <!-- Question this screen answers: "Was this really built test-first, and was the AI really checked?" -->
+
+  <div class="banner" data-req="DATA-4" role="status">
+    <span class="state"><svg class="ico" width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>OK</span>
+    <p>Completeness line copied from the four node READMEs this page was given (F0b, F1, F1b, F2): each reads "OK". The completeness lines for F0a and F3 are not in the data excerpt, so no overall value is claimed beyond these four.</p>
+  </div>
+
+  <section class="answer" data-req="NAV-1" aria-labelledby="h-answer">
+    <p class="question">Was this really built test-first, and was the AI really checked?</p>
+    <h1 id="h-answer">Yes, as far as the record goes: 21 of 29 rules are built, and every one has a red commit and a sign-off from David on record.</h1>
+    <p class="lead prose">The AI's work was not waved through. The loop lines this page was given hold 5 FAILs (reviewer, security and gate), and F2 needed 3 attempts. Commit dates are not in the data behind this page, so red-before-green order is not drawn here; the command under Exhibit 6 prints it from git. The remaining 8 rules are not built yet.</p>
+    <div class="actions">
+      <a class="btn" href="../../../trace/requirements-matrix.md"><svg class="ico" width="18" height="18" aria-hidden="true"><use href="#i-flask"/></svg>Show the proof: all 29 rules in the matrix</a>
+      <a href="#verify">Re-check it with git</a>
+    </div>
+  </section>
+
+  <section class="stamp" data-req="DATA-3" aria-labelledby="h-stamp">
+    <h2 id="h-stamp" class="eyebrow">Compiled-at stamp</h2>
+    <p class="stamp-time"><time class="mono" datetime="2026-10-19T03:33:55Z">2026-10-19T03:33:55Z</time></p>
+    <dl>
+      <dt>Generated by</dt><dd><code>.claude/scripts/render-trace.mjs</code>, from every node trail and <code>docs/requirements.md</code>. Generated, not hand-written: "Do not edit".</dd>
+      <dt>Snapshot SHA</dt><dd><span class="gapword">Not in the data this page was given.</span></dd>
+      <dt>Older node trails</dt><dd><code>F0b 2026-10-18T02:09:11Z</code> · <code>F1 2026-10-18T18:40:51Z</code> · <code>F1b 2026-10-18T21:44:56Z</code> · <code>F2 2026-10-19T00:07:57Z</code></dd>
+    </dl>
+    <nav class="toc" aria-label="On this page">
+      <ul>
+        <li><a href="#receipts">Receipts</a></li>
+        <li><a href="#chain">Chain of custody</a></li>
+        <li><a href="#verify">Re-check</a></li>
+        <li><a href="#plan">Build plan</a></li>
+        <li><a href="#decisions">Human decisions</a></li>
+        <li><a href="#states">States</a></li>
+      </ul>
+    </nav>
+  </section>
+
+  <section id="receipts" class="sec" data-req="NAV-1 VERIFY-1" aria-labelledby="h-receipts">
+    <h2 id="h-receipts">Receipts</h2>
+    <p class="lede">Five figures, each counted from a named source and linked to it. Where a source is partial, the figure says so.</p>
+
+    <ol class="receipts">
+      <li class="receipt">
+        <span class="ex">Exhibit 1</span>
+        <p class="num">21<small>of 29 rules built</small></p>
+        <div class="body">
+          <h3>Rules built</h3>
+          <p>Counted from the 29 rows of the requirements matrix. 21 rows name a red commit. 8 rows read "not built yet": CANCEL-5, the six RENEW rows and COULD-3, all planned in F4.</p>
+          <p class="tally" aria-label="Of the 21 built rules, how many name each link">
+            <span>red <b>21</b></span><span>green <b>13</b></span><span>refactor <b>4</b></span><span>QA step <b>21</b></span><span>sign-off <b>21</b></span><span>PR <b>21</b></span>
+          </p>
+          <p class="src">Source: <a href="../../../trace/requirements-matrix.md">docs/trace/requirements-matrix.md</a>, compiled 2026-10-19T03:33:55Z.</p>
+        </div>
+      </li>
+
+      <li class="receipt">
+        <span class="ex">Exhibit 2</span>
+        <p class="num">358<small>of 358 tests passing</small></p>
+        <div class="body">
+          <h3>Tests passing</h3>
+          <p>The pass/total column of the matrix, summed over the 21 built rules: 112 in F1, 59 in F2, 187 in F3. It is a per-rule sum, not a whole-suite count. F2's own loop log separately records "integrate 374/0 on this head" at its sign-off.</p>
+          <p class="src">Source: <a href="../../../trace/requirements-matrix.md">docs/trace/requirements-matrix.md</a>; <a href="../../../trace/build/F2/loop.jsonl">docs/trace/build/F2/loop.jsonl</a>.</p>
+        </div>
+      </li>
+
+      <li class="receipt">
+        <span class="ex">Exhibit 3</span>
+        <p class="num">6<small>of 10 nodes done</small></p>
+        <div class="body">
+          <h3>Nodes done</h3>
+          <p>Counted from the plan file. F0a, F0b, F1, F1b, F2 and F3 are done. F4, F5, F6 and F7 are pending at attempt 0.</p>
+          <p class="src">Source: <a href="../../../plans/active/build.dag.yaml">docs/plans/active/build.dag.yaml</a>; drawn in <a href="#plan">the build plan</a>.</p>
+        </div>
+      </li>
+
+      <li class="receipt">
+        <span class="ex">Exhibit 4</span>
+        <p class="num">5<small>FAILs on record</small></p>
+        <div class="body">
+          <h3>Attempts and FAILs</h3>
+          <p>Seen in the loop lines given: 4 reviewer or security FAILs (F0b 1, F1b 2, F2 1) and 1 gate FAIL (F2). Attempt counter at done: F2 3; F0b, F1, F1b and F3 2; F0a 0. F1 and F3 also reached attempt 2, but their loop lines are not in the excerpt, so any FAILs there are not counted.</p>
+          <table>
+            <caption>Verdicts and retries seen <span class="sortnote">(default order: plan order)</span></caption>
+            <thead><tr><th scope="col">Node</th><th scope="col">Events, in the order recorded</th></tr></thead>
+            <tbody>
+              <tr>
+                <th scope="row" class="mono"><a href="../../../trace/build/F0b/README.md">F0b</a></th>
+                <td>
+                  steer D1 (pause1) ·
+                  attempt 0: security <span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Pass</span>
+                  attempt 0: reviewer <span class="tag fail"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-x"/></svg>Fail</span>
+                  attempt 0: security <span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Pass</span>
+                  attempt 0: reviewer <span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Pass</span>
+                  attempt 2: security <span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Pass</span>
+                  attempt 2: reviewer <span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Pass</span>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row" class="mono"><a href="../../../trace/build/F1b/README.md">F1b</a></th>
+                <td>
+                  attempt 1: security <span class="tag fail"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-x"/></svg>Fail</span>
+                  attempt 1: reviewer <span class="tag fail"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-x"/></svg>Fail</span>
+                  attempt 2: security <span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Pass</span>
+                  attempt 2: reviewer <span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Pass</span>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row" class="mono"><a href="../../../trace/build/F2/loop.jsonl">F2</a></th>
+                <td>
+                  attempt 1 to 2 on gate.stub <span class="tag fail"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-x"/></svg>Fail</span> at <code>305789d</code> (2026-10-18T22:26:21Z) ·
+                  attempt 2 to 3 on reviewer <span class="tag fail"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-x"/></svg>Fail</span> at <code>8ea8f60</code> (2026-10-18T22:50:11Z)
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p class="src" style="margin-top:8px">Sources: the "Loop" line of each node README; F2 from <code>loop.jsonl</code>, because the F2 README's Loop section is empty in the lines given.</p>
+        </div>
+      </li>
+
+      <li class="receipt">
+        <span class="ex">Exhibit 5</span>
+        <p class="num">3<small>sign-offs by David</small></p>
+        <div class="body">
+          <h3>Human decisions</h3>
+          <p>The matrix names David's sign-off for F1 (2026-10-18), F2 and F3 (both 2026-10-19), covering all 21 built rules. Beyond sign-offs the excerpts show 1 merge (F2, PR #17), 1 pause 1 (F2) and 1 steer (F0b, D1). Other nodes' loop logs are not in the excerpt, so this is a floor, not a total.</p>
+          <p class="src">Source: <a href="../../../trace/requirements-matrix.md">requirements matrix</a>; <a href="#decisions">each decision, below</a>.</p>
+        </div>
+      </li>
+    </ol>
+
+    <h3 id="chain" style="margin-top:48px;font-size:24px">Exhibit 6: chain of custody</h3>
+    <figure class="fig" aria-labelledby="cap-chain">
+      <figcaption id="cap-chain">Each rule is a chain: requirement, red commit, green commit, refactor, QA step, sign-off, PR. Three of the 21 built rules are drawn: one with every commit link, one with no refactor, one with a red commit only. A gap in the chain is a step the matrix does not record. Commit dates and authors are not in the data given, so those links carry no date.</figcaption>
+
+      <div class="strip">
+        <h4><span class="mono">GET-1</span><span>build/F2 · 59/59 tests, from the matrix</span></h4>
+        <p class="fact">Every commit link is on record.</p>
+        <ol class="chain" aria-label="Chain of custody for GET-1">
+          <li><span class="no">1</span><span class="lbl">Requirement</span><a class="val" href="../../../requirements.md">GET-1</a><span class="meta">docs/requirements.md</span></li>
+          <li><span class="no">2</span><span class="lbl">Red commit</span><code class="val">94a7473</code><span class="meta">date n/a</span></li>
+          <li><span class="no">3</span><span class="lbl">Green commit</span><code class="val">92ede9e</code><span class="meta">date n/a</span></li>
+          <li><span class="no">4</span><span class="lbl">Refactor</span><code class="val">80d3ee2</code><span class="meta">date n/a</span></li>
+          <li><span class="no">5</span><span class="lbl">QA step</span><a class="val" href="../../../qa/build-F2.md">docs/qa/build-F2.md#1</a></li>
+          <li><span class="no">6</span><span class="lbl">Sign-off</span><span class="val">David</span><span class="meta">2026-10-19</span></li>
+          <li><span class="no">7</span><span class="lbl">PR</span><a class="val" href="../../../trace/build/F2/README.md">#17</a><span class="meta">merged by David, 2026-10-19T00:10:40Z</span></li>
+        </ol>
+      </div>
+
+      <div class="strip">
+        <h4><span class="mono">SELL-5</span><span>build/F1 · 16/16 tests, from the matrix</span></h4>
+        <p class="fact">Green <code>7d3f791</code> is the same commit the matrix names for all seven SELL rules, SELL-1 to SELL-7. No refactor commit is recorded.</p>
+        <ol class="chain" aria-label="Chain of custody for SELL-5">
+          <li><span class="no">1</span><span class="lbl">Requirement</span><a class="val" href="../../../requirements.md">SELL-5</a><span class="meta">docs/requirements.md</span></li>
+          <li><span class="no">2</span><span class="lbl">Red commit</span><code class="val">04cae24</code><span class="meta">date n/a</span></li>
+          <li><span class="no">3</span><span class="lbl">Green commit</span><code class="val">7d3f791</code><span class="meta">date n/a</span></li>
+          <li class="gap"><span class="no">4</span><span class="lbl">Refactor</span><span class="val">Gap: none recorded</span></li>
+          <li><span class="no">5</span><span class="lbl">QA step</span><a class="val" href="../../../qa/build-F1.md">docs/qa/build-F1.md#8</a></li>
+          <li><span class="no">6</span><span class="lbl">Sign-off</span><span class="val">David</span><span class="meta">2026-10-18</span></li>
+          <li><span class="no">7</span><span class="lbl">PR</span><a class="val" href="../../../trace/build/F1/README.md">#10</a></li>
+        </ol>
+      </div>
+
+      <div class="strip">
+        <h4><span class="mono">CANCEL-1a</span><span>build/F3 · 5/5 tests, from the matrix</span></h4>
+        <p class="fact">Red <code>61f73b1</code> is recorded. The matrix names no green and no refactor commit for this rule.</p>
+        <ol class="chain" aria-label="Chain of custody for CANCEL-1a">
+          <li><span class="no">1</span><span class="lbl">Requirement</span><a class="val" href="../../../requirements.md">CANCEL-1a</a><span class="meta">docs/requirements.md</span></li>
+          <li><span class="no">2</span><span class="lbl">Red commit</span><code class="val">61f73b1</code><span class="meta">date n/a</span></li>
+          <li class="gap"><span class="no">3</span><span class="lbl">Green commit</span><span class="val">Gap: none recorded</span></li>
+          <li class="gap"><span class="no">4</span><span class="lbl">Refactor</span><span class="val">Gap: none recorded</span></li>
+          <li><span class="no">5</span><span class="lbl">QA step</span><a class="val" href="../../../qa/build-F3.md">docs/qa/build-F3.md#64</a></li>
+          <li><span class="no">6</span><span class="lbl">Sign-off</span><span class="val">David</span><span class="meta">2026-10-19</span></li>
+          <li><span class="no">7</span><span class="lbl">PR</span><a class="val" href="../../../trace/build/F3/README.md">#20</a></li>
+        </ol>
+      </div>
+
+      <table>
+        <caption>Text equivalent: chain shapes across all 29 matrix rows <span class="sortnote">(default order: most commit links first)</span></caption>
+        <thead>
+          <tr><th scope="col">Shape of the chain</th><th scope="col" class="n">Rules</th><th scope="col">Rule IDs</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Red, green and refactor commits</th><td class="n">3</td><td><a class="chip" href="rule.html#GET-1">GET-1</a><a class="chip" href="rule.html#CANCEL-2">CANCEL-2</a><a class="chip" href="rule.html#COULD-1">COULD-1</a></td></tr>
+          <tr><th scope="row">Red and green, no refactor</th><td class="n">10</td><td><a class="chip" href="rule.html#SELL-1">SELL-1</a><a class="chip" href="rule.html#SELL-2">SELL-2</a><a class="chip" href="rule.html#SELL-3">SELL-3</a><a class="chip" href="rule.html#SELL-4">SELL-4</a><a class="chip" href="rule.html#SELL-5">SELL-5</a><a class="chip" href="rule.html#SELL-6">SELL-6</a><a class="chip" href="rule.html#SELL-7">SELL-7</a><a class="chip" href="rule.html#CANCEL-1c">CANCEL-1c</a><a class="chip" href="rule.html#CANCEL-3">CANCEL-3</a><a class="chip" href="rule.html#CANCEL-4">CANCEL-4</a></td></tr>
+          <tr><th scope="row">Red and refactor, no green recorded</th><td class="n">1</td><td><a class="chip" href="rule.html#COULD-2">COULD-2</a></td></tr>
+          <tr><th scope="row">Red only (no green, no refactor recorded)</th><td class="n">7</td><td><a class="chip" href="rule.html#CANCEL-1a">CANCEL-1a</a><a class="chip" href="rule.html#CANCEL-1b">CANCEL-1b</a><a class="chip" href="rule.html#CANCEL-6">CANCEL-6</a><a class="chip" href="rule.html#CANCEL-7">CANCEL-7</a><a class="chip" href="rule.html#COULD-2a">COULD-2a</a><a class="chip" href="rule.html#COULD-2b">COULD-2b</a><a class="chip" href="rule.html#COULD-2c">COULD-2c</a></td></tr>
+          <tr><th scope="row">No chain yet: <span class="tag nb">Not built yet</span></th><td class="n">8</td><td><a class="chip nbc" href="rule.html#CANCEL-5">CANCEL-5</a><a class="chip nbc" href="rule.html#RENEW-1/2">RENEW-1/2</a><a class="chip nbc" href="rule.html#RENEW-3a">RENEW-3a</a><a class="chip nbc" href="rule.html#RENEW-3b">RENEW-3b</a><a class="chip nbc" href="rule.html#RENEW-4">RENEW-4</a><a class="chip nbc" href="rule.html#RENEW-5">RENEW-5</a><a class="chip nbc" href="rule.html#RENEW-6">RENEW-6</a><a class="chip nbc" href="rule.html#COULD-3">COULD-3</a></td></tr>
+        </tbody>
+        <tfoot><tr><th scope="row">All rows in the matrix</th><td class="n">29</td><td class="src">Counted from <code>docs/trace/requirements-matrix.md</code></td></tr></tfoot>
+      </table>
+    </figure>
+
+    <h3 id="verify" style="margin-top:48px;font-size:24px">Re-check it with git</h3>
+    <p class="prose">The matrix lists red and green commits but no commit dates. This prints the three GET-1 commits with author date, newest first. Test-first holds if red <code>94a7473</code> prints below green <code>92ede9e</code>.</p>
+    <div class="cmd">
+      <pre id="cmd-text">git log --no-walk --format='%h  %aI  %an  %s' 94a7473 92ede9e 80d3ee2</pre>
+      <div class="row">
+        <button type="button">Copy command</button>
+        <span class="src">Built from the SHAs in the GET-1 row of the matrix. The exact format template in <code>docs/trace/README.md</code> is not in the data excerpt, so this one is a stand-in.</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="plan" class="sec" data-req="DAG-1" aria-labelledby="h-plan">
+    <h2 id="h-plan">Build plan at a glance</h2>
+    <p class="lede">Exhibit 7. Ten nodes from the plan file. An arrow runs from a node to the node that depends on it.</p>
+
+    <figure class="fig" aria-labelledby="cap-dag">
+      <figcaption id="cap-dag">Build plan: F0a to F3 done; F4, F5, F6, F7 pending. F5 depends on F0b only; F4 depends on F3. F2 took 3 attempts, the most of any node.</figcaption>
+      <svg class="dagsvg" viewBox="0 0 960 326" role="group" aria-label="Build plan graph of 10 nodes; the adjacency table below lists the same dependencies">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10 z"/></marker>
+        </defs>
+
+        <path class="edge" d="M130 72 H164" marker-end="url(#arr)"/>
+        <path class="edge" d="M296 72 H330" marker-end="url(#arr)"/>
+        <path class="edge" d="M462 72 H496" marker-end="url(#arr)"/>
+        <path class="edge" d="M628 72 H662" marker-end="url(#arr)"/>
+        <path class="edge" d="M794 72 H828" marker-end="url(#arr)"/>
+        <path class="edge" d="M231 136 V188" marker-end="url(#arr)"/>
+        <path class="edge" d="M895 136 V163 H563 V188" marker-end="url(#arr)"/>
+        <path class="edge" d="M628 254 H662" marker-end="url(#arr)"/>
+        <path class="edge" d="M794 254 H828" marker-end="url(#arr)"/>
+
+        <a href="../../../trace/build/F0a/README.md" aria-label="F0a, Harness, done, attempt 0">
+          <g class="node done"><rect x="0" y="8" width="130" height="128"/>
+            <text class="id" x="10" y="32">F0a</text>
+            <text class="ttl" x="10" y="52">Harness</text>
+            <use class="ico" href="#i-check" x="10" y="94" width="14" height="14"/><text class="st" x="30" y="106">Done</text>
+            <text class="mt" x="10" y="124">attempt 0</text></g>
+        </a>
+        <a href="../../../trace/build/F0b/README.md" aria-label="F0b, Walking skeleton, done, attempt 2">
+          <g class="node done"><rect x="166" y="8" width="130" height="128"/>
+            <text class="id" x="176" y="32">F0b</text>
+            <text class="ttl" x="176" y="52">Walking skeleton</text>
+            <use class="ico" href="#i-check" x="176" y="94" width="14" height="14"/><text class="st" x="196" y="106">Done</text>
+            <text class="mt" x="176" y="124">attempt 2</text></g>
+        </a>
+        <a href="../../../trace/build/F1/README.md" aria-label="F1, Sell (+ bare GET), done, attempt 2, PR 10">
+          <g class="node done"><rect x="332" y="8" width="130" height="128"/>
+            <text class="id" x="342" y="32">F1</text>
+            <text class="ttl" x="342" y="52">Sell (+ bare GET)</text>
+            <use class="ico" href="#i-check" x="342" y="94" width="14" height="14"/><text class="st" x="362" y="106">Done</text>
+            <text class="mt" x="342" y="124">attempt 2 · PR #10</text></g>
+        </a>
+        <a href="../../../trace/build/F1b/README.md" aria-label="F1b, Layered models and interfaces, done, attempt 2, PR 15">
+          <g class="node done"><rect x="498" y="8" width="130" height="128"/>
+            <text class="id" x="508" y="32">F1b</text>
+            <text class="ttl" x="508" y="52">Layered models</text>
+            <text class="ttl" x="508" y="68">and interfaces</text>
+            <use class="ico" href="#i-check" x="508" y="94" width="14" height="14"/><text class="st" x="528" y="106">Done</text>
+            <text class="mt" x="508" y="124">attempt 2 · PR #15</text></g>
+        </a>
+        <a href="../../../trace/build/F2/README.md" aria-label="F2, Retrieve, done, attempt 3, PR 17">
+          <g class="node done"><rect x="664" y="8" width="130" height="128"/>
+            <text class="id" x="674" y="32">F2</text>
+            <text class="ttl" x="674" y="52">Retrieve</text>
+            <use class="ico" href="#i-check" x="674" y="94" width="14" height="14"/><text class="st" x="694" y="106">Done</text>
+            <text class="mt" x="674" y="124">attempt 3 · PR #17</text></g>
+        </a>
+        <a href="../../../trace/build/F3/README.md" aria-label="F3, Cancel (+ quote, + claims), done, attempt 2, PR 20">
+          <g class="node done"><rect x="830" y="8" width="130" height="128"/>
+            <text class="id" x="840" y="32">F3</text>
+            <text class="ttl" x="840" y="52">Cancel (+ quote,</text>
+            <text class="ttl" x="840" y="68">+ claims)</text>
+            <use class="ico" href="#i-check" x="840" y="94" width="14" height="14"/><text class="st" x="860" y="106">Done</text>
+            <text class="mt" x="840" y="124">attempt 2 · PR #20</text></g>
+        </a>
+
+        <a href="../../../trace/build/F5/README.md" aria-label="F5, IaC + pipeline (evidence, never deployed), pending, attempt 0">
+          <g class="node pending"><rect x="166" y="190" width="130" height="128"/>
+            <text class="id" x="176" y="214">F5</text>
+            <text class="ttl" x="176" y="234">IaC + pipeline</text>
+            <text class="ttl" x="176" y="250">(evidence, never</text>
+            <text class="ttl" x="176" y="266">deployed)</text>
+            <use class="ico" href="#i-clock" x="176" y="276" width="14" height="14"/><text class="st" x="196" y="288">Pending</text>
+            <text class="mt" x="176" y="306">attempt 0</text></g>
+        </a>
+        <a href="../../../trace/build/F4/README.md" aria-label="F4, Renew, pending, attempt 0">
+          <g class="node pending"><rect x="498" y="190" width="130" height="128"/>
+            <text class="id" x="508" y="214">F4</text>
+            <text class="ttl" x="508" y="234">Renew</text>
+            <use class="ico" href="#i-clock" x="508" y="276" width="14" height="14"/><text class="st" x="528" y="288">Pending</text>
+            <text class="mt" x="508" y="306">attempt 0</text></g>
+        </a>
+        <a href="../../../trace/build/F6/README.md" aria-label="F6, README, pending, attempt 0">
+          <g class="node pending"><rect x="664" y="190" width="130" height="128"/>
+            <text class="id" x="674" y="214">F6</text>
+            <text class="ttl" x="674" y="234">README</text>
+            <use class="ico" href="#i-clock" x="674" y="276" width="14" height="14"/><text class="st" x="694" y="288">Pending</text>
+            <text class="mt" x="674" y="306">attempt 0</text></g>
+        </a>
+        <a href="../../../trace/build/F7/README.md" aria-label="F7, Pitch deck, pending, attempt 0">
+          <g class="node pending"><rect x="830" y="190" width="130" height="128"/>
+            <text class="id" x="840" y="214">F7</text>
+            <text class="ttl" x="840" y="234">Pitch deck</text>
+            <use class="ico" href="#i-clock" x="840" y="276" width="14" height="14"/><text class="st" x="860" y="288">Pending</text>
+            <text class="mt" x="840" y="306">attempt 0</text></g>
+        </a>
+      </svg>
+      <p class="legend">
+        <span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Done</span> solid heavy outline
+        <span class="tag pending"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span> thin outline
+      </p>
+
+      <table class="dagtable">
+        <caption>Text equivalent: the build plan as an adjacency table <span class="sortnote">(default order: plan order, as listed in the file)</span></caption>
+        <thead>
+          <tr>
+            <th scope="col">Node</th><th scope="col">Title</th><th scope="col">Kind</th><th scope="col">Depends on</th><th scope="col">Status</th><th scope="col" class="n">Attempt</th><th scope="col">PR</th><th scope="col">Rules</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row" class="mono">F0a</th><td>Harness</td><td>harness</td><td>none</td><td><span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="n">0</td><td>none (null)</td><td>none</td></tr>
+          <tr><th scope="row" class="mono">F0b</th><td>Walking skeleton</td><td>feature</td><td class="mono">F0a</td><td><span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="n">2</td>
+            <td><span class="tag warn"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-alert"/></svg>Sources differ</span><span class="nbnote">Plan file: <code>pr: null</code>. F0b README header: "PR #6". Both shown.</span></td><td>none</td></tr>
+          <tr><th scope="row" class="mono">F1</th><td>Sell (+ bare GET)</td><td>feature</td><td class="mono">F0b</td><td><span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="n">2</td><td class="mono">#10</td>
+            <td><a class="chip" href="rule.html#SELL-1">SELL-1</a><a class="chip" href="rule.html#SELL-2">SELL-2</a><a class="chip" href="rule.html#SELL-3">SELL-3</a><a class="chip" href="rule.html#SELL-4">SELL-4</a><a class="chip" href="rule.html#SELL-5">SELL-5</a><a class="chip" href="rule.html#SELL-6">SELL-6</a><a class="chip" href="rule.html#SELL-7">SELL-7</a></td></tr>
+          <tr><th scope="row" class="mono">F1b</th><td>Layered models and interfaces</td><td>feature</td><td class="mono">F1</td><td><span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="n">2</td><td class="mono">#15</td><td>none</td></tr>
+          <tr><th scope="row" class="mono">F2</th><td>Retrieve</td><td>feature</td><td class="mono">F1b</td><td><span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="n">3</td><td class="mono">#17</td><td><a class="chip" href="rule.html#GET-1">GET-1</a></td></tr>
+          <tr><th scope="row" class="mono">F3</th><td>Cancel (+ quote, + claims)</td><td>feature</td><td class="mono">F2</td><td><span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="n">2</td><td class="mono">#20</td>
+            <td><a class="chip" href="rule.html#CANCEL-1a">CANCEL-1a</a><a class="chip" href="rule.html#CANCEL-1b">CANCEL-1b</a><a class="chip" href="rule.html#CANCEL-1c">CANCEL-1c</a><a class="chip" href="rule.html#CANCEL-2">CANCEL-2</a><a class="chip" href="rule.html#CANCEL-3">CANCEL-3</a><a class="chip" href="rule.html#CANCEL-4">CANCEL-4</a><a class="chip" href="rule.html#CANCEL-6">CANCEL-6</a><a class="chip" href="rule.html#CANCEL-7">CANCEL-7</a><a class="chip" href="rule.html#COULD-1">COULD-1</a><a class="chip" href="rule.html#COULD-2">COULD-2</a><a class="chip" href="rule.html#COULD-2a">COULD-2a</a><a class="chip" href="rule.html#COULD-2b">COULD-2b</a><a class="chip" href="rule.html#COULD-2c">COULD-2c</a></td></tr>
+          <tr><th scope="row" class="mono">F4</th><td>Renew</td><td>feature</td><td class="mono">F3</td><td><span class="tag pending"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></td><td class="n">0</td><td>none (null)</td>
+            <td><a class="chip nbc" href="rule.html#RENEW-1/2">RENEW-1/2</a><a class="chip nbc" href="rule.html#RENEW-3a">RENEW-3a</a><a class="chip nbc" href="rule.html#RENEW-3b">RENEW-3b</a><a class="chip nbc" href="rule.html#RENEW-4">RENEW-4</a><a class="chip nbc" href="rule.html#RENEW-5">RENEW-5</a><a class="chip nbc" href="rule.html#RENEW-6">RENEW-6</a><a class="chip nbc" href="rule.html#COULD-3">COULD-3</a><a class="chip nbc" href="rule.html#CANCEL-5">CANCEL-5</a><span class="nbnote">All 8: not built yet</span></td></tr>
+          <tr><th scope="row" class="mono">F5</th><td>IaC + pipeline (evidence, never deployed)</td><td>evidence</td><td class="mono">F0b</td><td><span class="tag pending"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></td><td class="n">0</td><td>none (null)</td><td>none</td></tr>
+          <tr><th scope="row" class="mono">F6</th><td>README</td><td>docs</td><td class="mono">F4</td><td><span class="tag pending"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></td><td class="n">0</td><td>none (null)</td><td>none</td></tr>
+          <tr><th scope="row" class="mono">F7</th><td>Pitch deck</td><td>docs</td><td class="mono">F6</td><td><span class="tag pending"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></td><td class="n">0</td><td>none (null)</td><td>none</td></tr>
+        </tbody>
+      </table>
+    </figure>
+  </section>
+
+  <section id="decisions" class="sec" data-req="HITL-1" aria-labelledby="h-dec">
+    <h2 id="h-dec">Latest human decisions</h2>
+    <p class="lede">Exhibit 8. Every human decision visible in the data given, newest first. Rows with a date only have no time to order them by; where a row's decision text is missing, it says so rather than filling it in.</p>
+
+    <ol class="dec">
+      <li>
+        <div class="kind"><span class="k"><svg class="ico" width="18" height="18" aria-hidden="true"><use href="#i-flask"/></svg>Sign-off</span><span class="node">build/F3</span></div>
+        <div class="what">
+          <p><strong>David</strong> signed off F3: 13 built rules, PR #20.</p>
+          <p class="src">Where: the sign-off column of <a href="../../../trace/requirements-matrix.md">the matrix</a>; QA steps in <a href="../../../qa/build-F3.md">docs/qa/build-F3.md</a>.</p>
+        </div>
+        <div class="when">2026-10-19<br><span class="gapword">time not in the data given</span></div>
+      </li>
+      <li>
+        <div class="kind"><span class="k"><svg class="ico" width="18" height="18" aria-hidden="true"><use href="#i-pr"/></svg>Merge</span><span class="node">build/F2</span></div>
+        <div class="what">
+          <p><strong>David</strong>: PR #17 merged by David in the GitHub UI.</p>
+          <p class="src">Where: <a href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a>, event <code>merged(ad7b6b0…)</code>, head <code>0a04b8b</code>.</p>
+        </div>
+        <div class="when"><time datetime="2026-10-19T00:10:40Z">2026-10-19T00:10:40Z</time></div>
+      </li>
+      <li>
+        <div class="kind"><span class="k"><svg class="ico" width="18" height="18" aria-hidden="true"><use href="#i-flask"/></svg>Sign-off</span><span class="node">build/F2</span></div>
+        <div class="what">
+          <p><strong>David</strong>: "sign off". Verdict Accept F2; 41/41 steps PASS at <code>beba48e</code>.</p>
+          <p class="quote">docs/qa/build-F2.md signed by David Morgan 2026-10-19 01:05; Postman F2 25/0, 26/0; integrate 374/0 on this head; ?REFERENCE errors-key casing carried over to F3</p>
+          <p class="src">Where: <a href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a>, event <code>signoff(223102a…)</code>; <a href="../../../qa/build-F2.md">docs/qa/build-F2.md</a>.</p>
+        </div>
+        <div class="when"><time datetime="2026-10-19T00:07:35Z">2026-10-19T00:07:35Z</time></div>
+      </li>
+      <li>
+        <div class="kind"><span class="k"><svg class="ico" width="18" height="18" aria-hidden="true"><use href="#i-gavel"/></svg>Ruling asked</span><span class="node">build/F2</span></div>
+        <div class="what">
+          <p><strong>Orchestrator</strong> opened investigation <code>inv-001</code> at attempt 3: "run ends until David decides". David's ruling is <span class="gapword">not in the data given</span>.</p>
+          <p class="quote">attempt 3 stop; parent build/F2. /plan-investigation is not built yet (built on first need)</p>
+          <p class="src">Where: <a href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a>, head <code>0c91d99</code>.</p>
+        </div>
+        <div class="when"><time datetime="2026-10-18T22:50:11Z">2026-10-18T22:50:11Z</time></div>
+      </li>
+      <li>
+        <div class="kind"><span class="k"><svg class="ico" width="18" height="18" aria-hidden="true"><use href="#i-gavel"/></svg>Pause 1</span><span class="node">build/F2</span></div>
+        <div class="what">
+          <p><strong>Orchestrator</strong> recorded pause 1 for David. David's reply is <span class="gapword">not in the data given</span>.</p>
+          <p class="quote">Api.Tests RED 22/202 (21 GET-1 + unknown-query 400); stub callable</p>
+          <p class="src">Where: <a href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a>, head <code>8c75bb4</code>, attempt 2.</p>
+        </div>
+        <div class="when"><time datetime="2026-10-18T22:30:10Z">2026-10-18T22:30:10Z</time></div>
+      </li>
+      <li>
+        <div class="kind"><span class="k"><svg class="ico" width="18" height="18" aria-hidden="true"><use href="#i-flask"/></svg>Sign-off</span><span class="node">build/F1</span></div>
+        <div class="what">
+          <p><strong>David</strong> signed off F1: 7 built rules, SELL-1 to SELL-7, PR #10.</p>
+          <p class="src">Where: the sign-off column of <a href="../../../trace/requirements-matrix.md">the matrix</a>; QA steps in <a href="../../../qa/build-F1.md">docs/qa/build-F1.md</a>.</p>
+        </div>
+        <div class="when">2026-10-18<br><span class="gapword">time not in the data given</span></div>
+      </li>
+      <li>
+        <div class="kind"><span class="k"><svg class="ico" width="18" height="18" aria-hidden="true"><use href="#i-gavel"/></svg>Steer</span><span class="node">build/F0b</span></div>
+        <div class="what">
+          <p>Steer <code>D1</code> at pause 1. Who steered and what it said are <span class="gapword">not in the data given</span>; only the Loop line is.</p>
+          <p class="src">Where: <a href="../../../trace/build/F0b/README.md">F0b README</a>, Loop: "steer D1 (pause1)".</p>
+        </div>
+        <div class="when"><span class="gapword">date not in the data given</span></div>
+      </li>
+    </ol>
+
+    <aside class="disagree" aria-labelledby="h-dis">
+      <h3 id="h-dis"><span class="tag warn"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-alert"/></svg>Sources differ</span> F2 merge status, shown from both sources</h3>
+      <p class="prose small"><strong>F2 README</strong>, generated 2026-10-19T00:07:57Z: "status: done · PR #17 · merge pending".<br>
+      <strong>F2 loop.jsonl</strong>: <code>merged(ad7b6b0…)</code> at 2026-10-19T00:10:40Z, "PR #17 merged by David in the GitHub UI". The merge event is stamped after the README was generated.</p>
+      <p class="prose small" style="margin:0">The READMEs for F0b (PR #6), F1 (PR #10) and F1b (PR #15) also read "merge pending"; no merge event for them is in the data given.</p>
+    </aside>
+  </section>
+
+  <section id="states" class="sec" aria-labelledby="h-states">
+    <h2 id="h-states">State specimens</h2>
+    <p class="lede">The same screen in the other conditions it owes. Each is labelled; placeholder wording is marked as placeholder.</p>
+
+    <div class="spec">
+      <p class="speclabel">State: loading</p>
+      <div class="panel" aria-busy="true">
+        <p style="margin:0"><span class="tag pending"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span> Reading <code>docs/trace/requirements-matrix.md</code> and <code>docs/plans/active/build.dag.yaml</code>. Static skeleton, no shimmer.</p>
+        <div class="sk" aria-hidden="true">
+          <i class="big w80"></i><i class="big w60"></i>
+          <i class="w40"></i>
+          <div class="r"><i></i><i></i></div>
+          <div class="r"><i></i><i class="w80"></i></div>
+          <div class="r"><i></i><i class="w60"></i></div>
+          <div class="r"><i></i><i class="w80"></i></div>
+          <div class="r"><i></i><i class="w40"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="spec">
+      <p class="speclabel">State: error</p>
+      <div class="panel">
+        <div class="banner bad" role="alert" style="margin-top:0">
+          <span class="state"><svg class="ico" width="20" height="20" aria-hidden="true"><use href="#i-x"/></svg>TRAIL INCOMPLETE: &lt;reasons&gt;</span>
+          <p>Banner value copied verbatim from the component vocabulary; the reasons are left as the placeholder they are.</p>
+        </div>
+        <p style="margin-top:16px"><span class="tag fail"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-x"/></svg>Fail</span> Could not read <code>docs/trace/requirements-matrix.md</code>, so the rule, test and sign-off figures are withheld rather than estimated.</p>
+        <p class="src" style="margin:0">Placeholder wording: the failure is illustrative, the file path is real. Where to go: <a href="#plan">the build plan</a> reads from a different file and is unaffected.</p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <p class="speclabel">State: in-flight</p>
+      <div class="panel">
+        <p class="ph" style="margin-bottom:12px">Placeholder state: no node is in flight in the 2026-10-19T03:33:55Z snapshot. F4, pending at attempt 0 in the plan file, stands in so the layout is real.</p>
+        <div class="banner" style="margin-top:0">
+          <span class="state"><svg class="ico" width="20" height="20" aria-hidden="true"><use href="#i-check"/></svg>OK</span>
+          <p>Banner value as above. A run in progress adds a live line beneath it and the stamp moves when the trail is rewritten.</p>
+        </div>
+        <p class="num" style="font-size:32px;font-weight:600;margin:16px 0 4px">6<span style="font:600 16px var(--sans);color:var(--text-2)"> of 10 nodes done</span></p>
+        <p style="margin:0"><span class="tag pending"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span> <code>F4</code> Renew · attempt 0 · live: figures on this page can change before it finishes.</p>
+      </div>
+    </div>
+
+    <div class="spec">
+      <p class="speclabel">State: not built</p>
+      <div class="triple">
+        <div>
+          <p class="eyebrow">Rule</p>
+          <div class="nby"><a class="chip nbc" href="rule.html#CANCEL-5">CANCEL-5</a> <strong>not built yet</strong><br>Planned in build/F4. No red, green, refactor, QA step, sign-off or PR to chain.</div>
+        </div>
+        <div>
+          <p class="eyebrow">Node</p>
+          <div class="nby"><code>F4</code> Renew <span class="tag pending"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span><br>8 rules, all <strong>not built yet</strong>.</div>
+        </div>
+        <div>
+          <p class="eyebrow">Region</p>
+          <div class="nby">Latest human decisions for F4: <strong>not built yet</strong>. No decision exists to list until the node starts.</div>
+        </div>
+      </div>
+      <div class="strip" style="margin-top:24px">
+        <h4><span class="mono">CANCEL-5</span><span>build/F4 · tests: not built yet</span></h4>
+        <p class="fact">The chain of custody for an unbuilt rule: only the requirement exists. Dashed, because absence is not failure.</p>
+        <ol class="chain" aria-label="Chain of custody for CANCEL-5, not built yet">
+          <li><span class="no">1</span><span class="lbl">Requirement</span><a class="val" href="../../../requirements.md">CANCEL-5</a><span class="meta">docs/requirements.md</span></li>
+          <li class="nbl"><span class="no">2</span><span class="lbl">Red commit</span><span class="val">not built yet</span></li>
+          <li class="nbl"><span class="no">3</span><span class="lbl">Green commit</span><span class="val">not built yet</span></li>
+          <li class="nbl"><span class="no">4</span><span class="lbl">Refactor</span><span class="val">not built yet</span></li>
+          <li class="nbl"><span class="no">5</span><span class="lbl">QA step</span><span class="val">not built yet</span></li>
+          <li class="nbl"><span class="no">6</span><span class="lbl">Sign-off</span><span class="val">not built yet</span></li>
+          <li class="nbl"><span class="no">7</span><span class="lbl">PR</span><span class="val">not built yet</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="spec">
+      <p class="speclabel">Status tags: all five values</p>
+      <div class="panel">
+        <div class="tags">
+          <span class="tag pass"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-check"/></svg>Pass</span>
+          <span class="tag fail"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-x"/></svg>Fail</span>
+          <span class="tag warn"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-alert"/></svg>Warning</span>
+          <span class="tag pending"><svg class="ico" width="14" height="14" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span>
+          <span class="tag nb">Not built yet</span>
+        </div>
+        <p class="src" style="margin:12px 0 0">Banner vocabulary, verbatim: <code>OK</code> · <code>OK (git-only, F0a)</code> · <code>TRAIL INCOMPLETE: &lt;reasons&gt;</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Every figure above is counted from the source named beside it. Compiled 2026-10-19T03:33:55Z by <code>.claude/scripts/render-trace.mjs</code>; snapshot SHA not in the data given.
+  </footer>
+</main>
+</body>
+</html>

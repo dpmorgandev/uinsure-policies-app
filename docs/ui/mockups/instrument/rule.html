@@ -1,0 +1,928 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rule GET-1 · Build trail · Instrument</title>
+<style>
+:root {
+  --bg: #f4f4f4;
+  --surface: #ffffff;
+  --text: #161616;
+  --text2: #525252;
+  --primary: #0f62fe;
+  --accent: #0f62fe;
+  --fail: #da1e28;
+  --pass: #198038;
+  --warn: #8e6a00;
+  --border: #c6c6c6;
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+[data-theme="dark"] {
+  --bg: #161616;
+  --surface: #262626;
+  --text: #f4f4f4;
+  --text2: #a8a8a8;
+  --primary: #78a9ff;
+  --accent: #78a9ff;
+  --fail: #fa4d56;
+  --pass: #42be65;
+  --warn: #f1c21b;
+  --border: #393939;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { font-size: 100%; scroll-padding-top: 3rem; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+a { color: var(--primary); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, summary:focus-visible, .scrollbox:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+h1, h2, h3, p, ul, ol, figure, table, dl, dd { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+.mono, code, kbd, time {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+code { font-size: 0.92em; }
+.num, td.num, th.num { font-variant-numeric: tabular-nums lining-nums; }
+.eyebrow {
+  font-size: 0.75rem;
+  line-height: 1.3;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text2);
+  font-weight: 600;
+}
+.skip {
+  position: absolute; left: 0; top: -3rem;
+  background: var(--surface); color: var(--primary); padding: 0.5rem 0.75rem;
+}
+.skip:focus { top: 0; }
+
+.icon {
+  width: 1em; height: 1em;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+  vertical-align: -0.14em; flex: none;
+}
+.mk { width: 0.9rem; height: 0.9rem; vertical-align: -0.17em; flex: none; }
+
+/* status */
+.tag {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  height: 1.25rem; padding: 0 0.375rem;
+  border: 1px solid currentColor; border-radius: 4px;
+  font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+  background: var(--surface);
+}
+.s-pass { color: var(--pass); }
+.s-fail { color: var(--fail); }
+.s-warn { color: var(--warn); }
+.s-pending { color: var(--text2); }
+.st { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+.pin {
+  display: inline-flex; align-items: center; height: 1.25rem; padding: 0 0.375rem;
+  border: 1px solid var(--text2); border-radius: 4px; color: var(--text2);
+  font-size: 0.75rem; font-weight: 600; white-space: nowrap; background: var(--surface);
+}
+.gap {
+  display: inline-block; border: 1px dashed var(--text2); border-radius: 4px;
+  padding: 0 0.375rem; color: var(--text2); font-size: 0.75rem;
+}
+.nbbox {
+  border: 1px dashed var(--text2); border-radius: 4px; padding: 0.5rem 0.75rem; color: var(--text2);
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.5rem;
+}
+.nbbox b { color: var(--text); font-weight: 600; }
+
+/* provenance label */
+.prov {
+  display: inline-block; padding: 0 0.375rem; height: 1.25rem; line-height: 1.1rem;
+  font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--text); background: var(--surface); border-radius: 2px;
+}
+.prov-generated { border: 1px solid var(--text2); }
+.prov-recorded { border: 3px double var(--text2); line-height: 0.8rem; }
+.prov-written { border: 1px dotted var(--text); border-width: 2px; line-height: 0.95rem; }
+.provrow { display: inline-flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.provrow .mean { color: var(--text2); font-size: 0.75rem; }
+
+/* chips and sha links */
+.chip {
+  display: inline-block; padding: 0 0.3rem; margin: 1px 0;
+  font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.25rem;
+  border: 1px solid var(--border); border-radius: 4px;
+  background: var(--surface);
+}
+a.sha { font-family: var(--font-mono); font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; }
+a.sha .icon { margin-left: 0.15em; font-size: 0.85em; }
+.sha-head { font-family: var(--font-mono); white-space: nowrap; }
+
+/* top bar and shell */
+.topbar {
+  display: flex; align-items: center; gap: 1rem; height: 2.5rem; padding: 0 1rem;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.brand { font-weight: 600; font-size: 0.875rem; }
+.topbar .crumb { color: var(--text2); font-size: 0.8125rem; }
+.shell { display: grid; grid-template-columns: 16.5rem minmax(0, 1fr); align-items: start; }
+.rail {
+  background: var(--surface); border-right: 1px solid var(--border);
+  padding: 0.75rem; position: sticky; top: 0; align-self: stretch;
+}
+.rail .eyebrow { margin: 0.25rem 0 0.25rem; }
+.rail .plan { display: block; padding: 0.25rem 0.5rem; font-weight: 600; text-decoration: none; color: var(--text); border-left: 3px solid var(--accent); background: var(--bg); }
+.rail ul { margin-top: 0.25rem; }
+.rail li a, .rail li .cur {
+  display: grid; grid-template-columns: minmax(2.1rem, auto) minmax(0, 1fr) auto;
+  gap: 0.375rem; align-items: baseline;
+  min-height: 1.5rem; padding: 0.125rem 0.5rem; text-decoration: none; color: var(--text);
+}
+.rail li a:hover { background: var(--bg); }
+.rail .nid { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; }
+.rail .nt { font-size: 0.8125rem; }
+.rail li.indent { padding-left: 1rem; }
+.rail li.current a { background: var(--bg); border-left: 3px solid var(--accent); font-weight: 600; }
+.rail .nbbox { margin-top: 0.75rem; font-size: 0.75rem; }
+main { padding: 1rem 1.5rem 2rem; min-width: 0; max-width: 72rem; }
+main > * + * { margin-top: 1rem; }
+
+/* breadcrumbs and page header */
+.crumbs ol { display: flex; flex-wrap: wrap; gap: 0.25rem 0.5rem; font-size: 0.8125rem; }
+.crumbs li + li::before { content: "/"; color: var(--text2); margin-right: 0.5rem; }
+.crumbs [aria-current="page"] { color: var(--text); font-weight: 600; font-family: var(--font-mono); }
+.pagehead { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; }
+.pagehead h1 { font-size: 1.25rem; font-weight: 600; display: flex; align-items: baseline; gap: 0.75rem; flex-wrap: wrap; }
+.pagehead h1 .title { font-family: var(--font-sans); font-weight: 400; color: var(--text2); font-size: 1rem; }
+.pagehead .ids { color: var(--text2); font-size: 0.8125rem; display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; align-items: baseline; }
+
+.stamp { background: var(--surface); padding: 0.5rem 0.75rem; }
+.stamp .line { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; align-items: baseline; font-size: 0.8125rem; }
+.stamp .line > span.k { color: var(--text2); }
+.differ { margin-top: 0.5rem; display: grid; gap: 0.25rem; }
+.differ li { display: grid; grid-template-columns: auto 1fr; gap: 0.5rem; align-items: baseline; font-size: 0.8125rem; }
+
+/* sections */
+section.region { background: var(--surface); padding: 1rem; }
+section.region > h2 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
+.rhead { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; align-items: baseline; justify-content: space-between; }
+.sub { color: var(--text2); font-size: 0.8125rem; }
+
+/* headline answer */
+.question { font-size: 0.875rem; font-weight: 400; color: var(--text2); margin-top: 0.125rem; }
+.answers { display: grid; gap: 1rem; margin-top: 0.75rem; }
+.answer-row { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: 0.25rem 1rem; align-items: start; }
+.answer-row .eyebrow { padding-top: 0.5rem; }
+.answer { font-size: 1.5rem; line-height: 1.3; font-weight: 600; }
+.answer .n { font-family: var(--font-mono); font-variant-numeric: tabular-nums lining-nums; }
+.answer a.sha { font-size: 1.25rem; font-weight: 600; }
+.answer-note { grid-column: 2; color: var(--text2); font-size: 0.875rem; max-width: 70ch; }
+.answer-note strong { color: var(--text); font-weight: 600; }
+.action { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; align-items: center; }
+a.primary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  min-height: 2rem; padding: 0.25rem 0.875rem;
+  background: var(--primary); color: var(--surface);
+  font-weight: 600; text-decoration: none; border-radius: 4px;
+}
+a.primary:hover { text-decoration: underline; }
+a.primary:focus-visible { outline-offset: 3px; }
+
+/* key-value list */
+dl.kv { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 0; margin-top: 0.5rem; }
+dl.kv dt { color: var(--text2); font-size: 0.8125rem; padding: 0.375rem 0.5rem 0.375rem 0; border-top: 1px solid var(--border); }
+dl.kv dd { padding: 0.375rem 0; border-top: 1px solid var(--border); min-width: 0; overflow-wrap: anywhere; }
+dl.kv dt:first-of-type, dl.kv dt:first-of-type + dd { border-top: 0; }
+.rule-text { font-size: 1rem; line-height: 1.5; max-width: 76ch; }
+
+/* chain strip */
+.chain { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.25rem; margin-top: 0.75rem; }
+.chain li { background: var(--bg); padding: 0.5rem 0.625rem; border-left: 3px solid var(--text2); min-width: 0; display: flex; flex-direction: column; gap: 0.125rem; }
+.chain .v { font-family: var(--font-mono); font-variant-numeric: tabular-nums lining-nums; font-weight: 600; font-size: 0.8125rem; overflow-wrap: anywhere; }
+.chain .w { font-size: 0.75rem; color: var(--text2); }
+
+/* figures */
+figure.fig { margin-top: 1rem; }
+figure.fig > h3 { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.25rem; }
+.scroll { overflow-x: auto; }
+.lanes-svg { display: block; width: 100%; min-width: 1100px; height: auto; }
+figcaption { color: var(--text2); font-size: 0.8125rem; margin-top: 0.5rem; max-width: 90ch; }
+figcaption p + p { margin-top: 0.375rem; }
+figcaption strong { color: var(--text); font-weight: 600; }
+svg text { font-family: var(--font-mono); fill: var(--text); font-size: 11px; font-variant-numeric: tabular-nums lining-nums; }
+svg .t-bold { font-weight: 600; font-size: 12px; }
+svg .t-dim { fill: var(--text2); }
+svg .t-fail { fill: var(--fail); font-weight: 600; }
+svg .t-pass { fill: var(--pass); font-weight: 600; }
+svg .t-sans { font-family: var(--font-sans); font-size: 12px; font-weight: 600; }
+svg .t-halo { paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+svg .lane { stroke: var(--border); stroke-width: 1; }
+svg .sep { stroke: var(--text2); stroke-width: 1; stroke-dasharray: 2 4; }
+svg .band { fill: var(--bg); }
+svg .edge { stroke: var(--text2); stroke-width: 1.5; fill: none; }
+svg .arrow { fill: var(--text2); }
+.m-solid { fill: var(--text); }
+.m-hollow { fill: var(--surface); stroke: var(--text); stroke-width: 2; }
+.m-ring { fill: none; stroke: var(--accent); stroke-width: 2; }
+.m-gate { fill: var(--text); }
+.m-pass-c { fill: var(--surface); stroke: var(--pass); stroke-width: 2; }
+.m-pass-p { fill: none; stroke: var(--pass); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.m-fail-r { fill: var(--fail); }
+.m-fail-x { stroke: var(--surface); stroke-width: 2; stroke-linecap: round; fill: none; }
+.m-open { fill: var(--surface); stroke: var(--text2); stroke-width: 2; stroke-dasharray: 3 2; }
+
+/* tables */
+table { border-collapse: collapse; width: 100%; font-size: 0.8125rem; }
+caption { text-align: left; color: var(--text2); padding: 0.25rem 0; font-size: 0.8125rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.25rem 0.5rem; height: 2rem; border-bottom: 1px solid var(--border); }
+thead th { position: sticky; top: 0; background: var(--surface); font-weight: 600; font-size: 0.75rem; z-index: 1; border-bottom: 2px solid var(--border); }
+th.num, td.num { text-align: right; }
+tbody th { font-family: var(--font-mono); font-weight: 600; }
+.sortnote { color: var(--text2); font-weight: 400; margin-left: 0.25rem; }
+table.compact th, table.compact td { height: 1.5rem; }
+.tbl-wrap { overflow-x: auto; margin-top: 0.5rem; }
+details > summary { cursor: pointer; color: var(--primary); }
+details.tbl { margin-top: 0.75rem; }
+tr.att th, tr.att td { background: var(--bg); color: var(--text2); height: 1.5rem; }
+tr.exp td { background: var(--bg); height: auto; padding: 0.375rem 0.5rem 0.5rem; border-left: 4px solid var(--fail); overflow-wrap: anywhere; }
+tr.row-fail th, tr.row-fail td { border-bottom: 0; }
+td.wrap { overflow-wrap: anywhere; min-width: 14rem; }
+tr.picked th, tr.picked td { background: var(--bg); }
+
+/* receipts and tests */
+.big { font-family: var(--font-mono); font-variant-numeric: tabular-nums lining-nums; font-size: 1.5rem; font-weight: 600; line-height: 1.2; }
+.big .of { font-size: 1rem; font-weight: 400; color: var(--text2); }
+.testhead { display: flex; flex-wrap: wrap; gap: 0.25rem 1.5rem; align-items: baseline; margin-top: 0.5rem; }
+.note { color: var(--text2); font-size: 0.8125rem; max-width: 90ch; margin-top: 0.5rem; }
+.note strong { color: var(--text); font-weight: 600; }
+
+/* diffs */
+.diffs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 0.75rem; }
+.diffpanel { background: var(--bg); padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+.diffpanel h3 { font-size: 0.875rem; font-weight: 600; display: flex; flex-wrap: wrap; gap: 0.25rem 0.5rem; align-items: center; }
+.diffpanel .msg { overflow-wrap: anywhere; }
+.diffbody { background: var(--surface); padding: 0.5rem 0.75rem; min-height: 4rem; }
+.recorded { font-size: 0.8125rem; }
+.recorded .eyebrow { margin-bottom: 0.125rem; }
+.files { display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.25rem; }
+
+/* verify */
+.verify { margin-top: 0.75rem; display: grid; gap: 0.75rem; }
+.verify .item { background: var(--bg); padding: 0.75rem; }
+.verify h3 { font-size: 0.875rem; font-weight: 600; }
+.cmdrow { display: flex; gap: 0.5rem; align-items: stretch; margin-top: 0.5rem; }
+.cmd {
+  flex: 1; min-width: 0; margin: 0; padding: 0.5rem 0.75rem; background: var(--surface);
+  font-family: var(--font-mono); font-size: 0.8125rem; overflow-x: auto; white-space: pre;
+  border-left: 3px solid var(--text2);
+}
+button.copy {
+  display: inline-flex; align-items: center; gap: 0.375rem; padding: 0 0.75rem;
+  background: var(--surface); color: var(--primary);
+  border: 1px solid var(--text2); border-radius: 4px; font: inherit; font-size: 0.8125rem; font-weight: 600; cursor: pointer;
+}
+
+/* states */
+.states { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 0.75rem; }
+.state { background: var(--bg); padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; min-width: 0; }
+.state > h3 { font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text2); font-weight: 600; }
+.state .body { background: var(--surface); padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; min-width: 0; }
+.placeholder { font-size: 0.75rem; color: var(--text2); }
+.sk { height: 0.75rem; background: var(--border); border-radius: 2px; }
+.sk.tall { height: 1.75rem; }
+.err { border-left: 4px solid var(--fail); }
+.errline { display: flex; align-items: center; gap: 0.375rem; color: var(--fail); font-weight: 600; }
+.scrollbox {
+  max-height: 7rem; overflow: auto; padding: 0.5rem 0.75rem; background: var(--bg);
+  font-family: var(--font-mono); font-size: 0.75rem; overflow-wrap: anywhere; border-left: 3px solid var(--text2);
+}
+
+@media (max-width: 60rem) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .rail { position: static; border-right: 0; border-bottom: 1px solid var(--border); }
+  .answer-row { grid-template-columns: minmax(0, 1fr); }
+  .answer-note { grid-column: 1; }
+  .states, .diffs { grid-template-columns: minmax(0, 1fr); }
+  .chain { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  dl.kv { grid-template-columns: minmax(0, 1fr); }
+  dl.kv dt { border-bottom: 0; padding-bottom: 0; }
+  dl.kv dd { border-top: 0; padding-top: 0; }
+}
+</style>
+</head>
+<body data-screen-id="rule">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-gavel" viewBox="0 0 24 24"><path d="m14 13-8.381 8.38a1 1 0 0 1-3.001-3L11 9.999"/><path d="M15.973 4.027A13 13 0 0 0 5.902 2.373c-1.398.342-1.092 2.158.277 2.601a19.9 19.9 0 0 1 5.822 3.024"/><path d="M16.001 11.999a19.9 19.9 0 0 1 3.024 5.824c.444 1.369 2.26 1.676 2.603.278A13 13 0 0 0 20 8.069"/><path d="M18.352 3.352a1.205 1.205 0 0 0-1.704 0l-5.296 5.296a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0l5.296-5.296a1.205 1.205 0 0 0 0-1.704z"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/><path d="M6.453 15h11.094"/><path d="M8.5 2h7"/></symbol>
+    <symbol id="i-pr" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" x2="6" y1="9" y2="21"/></symbol>
+    <symbol id="i-commit" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><line x1="3" x2="9" y1="12" y2="12"/><line x1="15" x2="21" y1="12" y2="12"/></symbol>
+    <symbol id="i-ext" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+    <g id="g-red"><rect x="-5" y="-5" width="10" height="10" class="m-solid"/></g>
+    <g id="g-stub"><rect x="-4" y="-4" width="8" height="8" class="m-hollow"/></g>
+    <g id="g-green"><circle r="5.5" class="m-solid"/></g>
+    <g id="g-refac"><rect x="-4" y="-4" width="8" height="8" transform="rotate(45)" class="m-solid"/></g>
+    <g id="g-ring"><circle r="10" class="m-ring"/></g>
+    <g id="g-gate"><rect x="-4.5" y="-4.5" width="9" height="9" transform="rotate(45)" class="m-gate"/></g>
+    <g id="g-pass"><circle r="7" class="m-pass-c"/><path d="M-3.5 0.5 L-1 3 L3.5 -2.5" class="m-pass-p"/></g>
+    <g id="g-fail"><rect x="-7" y="-7" width="14" height="14" rx="2" class="m-fail-r"/><path d="M-3 -3 L3 3 M3 -3 L-3 3" class="m-fail-x"/></g>
+    <g id="g-open"><circle r="7" class="m-open"/></g>
+  </defs>
+</svg>
+
+<a class="skip" href="#answer">Skip to the answer</a>
+
+<header class="topbar">
+  <span class="brand">Build trail</span>
+  <span class="crumb">Plan <span class="mono">build</span> / Node <span class="mono">F2</span> / Rule <span class="mono">GET-1</span></span>
+</header>
+
+<div class="shell">
+
+  <nav class="rail" aria-label="Plans, nodes and rules">
+    <p class="eyebrow">Plans</p>
+    <a class="plan mono" href="overview.html">build</a>
+    <p class="eyebrow" style="margin-top:0.75rem">Node on screen</p>
+    <ul>
+      <li><a href="#"><span class="nid">F2</span><span class="nt">Retrieve</span><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Done</span></a></li>
+      <li class="indent current"><a href="#" aria-current="page"><span class="nid">GET-1</span><span class="nt">Retrieve a policy</span><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passing</span></a></li>
+    </ul>
+    <div class="nbbox"><span>Other plans, nodes and rules: <b>not in this screen's data excerpt</b>, so none are listed.</span></div>
+    <p class="sub" style="margin-top:0.5rem">The F2 README lists one rule row, <span class="mono">GET-1</span>.</p>
+  </nav>
+
+  <main id="main">
+
+    <nav class="crumbs" aria-label="Breadcrumbs" data-req="NAV-3">
+      <ol>
+        <li><a href="overview.html">Plan <span class="mono">build</span></a></li>
+        <li><a href="#">Node <span class="mono">F2</span> Retrieve</a></li>
+        <li><span aria-current="page">GET-1</span></li>
+      </ol>
+    </nav>
+
+    <div class="pagehead" data-req="NAV-3">
+      <h1><span class="mono">GET-1</span> <span class="title">Retrieve a policy</span></h1>
+      <span class="tag s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passing</span>
+      <span class="ids">
+        <span>Tests <span class="mono">59/59</span></span>
+        <span>Node <span class="mono">build/F2</span>, <span class="mono">done</span></span>
+        <span><svg class="icon" aria-hidden="true"><use href="#i-pr"/></svg> <a class="mono" href="https://github.com/dpmorgandev/uinsure-policies-api/pull/17">PR #17</a></span>
+        <span>QA <a class="mono" href="#qa">docs/qa/build-F2.md#1</a></span>
+      </span>
+    </div>
+
+    <section class="stamp" aria-label="Compiled-at stamp">
+      <p class="line">
+        <span class="k">Compiled at</span>
+        <time datetime="2026-10-19T00:07:57Z">2026-10-19T00:07:57Z</time>
+        <span class="k">by</span> <span class="mono">.claude/scripts/render-trace.mjs</span>
+        <span class="k">from</span> <span>loop/activity JSONL, verdicts, findings, git and test source</span>
+        <span class="k">Completeness</span> <span class="mono">OK</span>
+        <span class="k">Snapshot SHA</span> <span class="gap">not in the excerpt</span>
+      </p>
+      <p class="sub" style="margin-top:0.25rem">Stamp is the F2 README's. The matrix and walkthrough stamps are not in this screen's excerpt.</p>
+      <ul class="differ" aria-label="Where sources differ">
+        <li><span class="tag s-warn"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>Out of date</span>
+          <span>F2 README (compiled <time datetime="2026-10-19T00:07:57Z">2026-10-19T00:07:57Z</time>) says <span class="mono">PR #17 · merge pending</span>. F2 <span class="mono">loop.jsonl</span> records <span class="mono">merged</span> at <time datetime="2026-10-19T00:10:40Z">2026-10-19T00:10:40Z</time>, "PR #17 merged by David in the GitHub UI". Both shown; the README is the older stamp.</span></li>
+        <li><span class="tag s-warn"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>Differs</span>
+          <span>Loop gate heads and walkthrough SHAs agree for two commits only: <span class="mono">af38b4b</span> and <span class="mono">143e5ba</span>. The loop's refactor head is <span class="mono">803c898</span>; the walkthrough's refactor rows are <span class="mono">80d3ee2</span> and <span class="mono">98a574d</span>. The excerpt doesn't say why.</span></li>
+      </ul>
+    </section>
+
+    <section class="region" id="answer" data-req="RULE-2" aria-labelledby="h-answer">
+      <p class="eyebrow">Question</p>
+      <h2 class="question" id="h-answer">Did GET-1's test fail before its code made it pass, and who signed it off?</h2>
+
+      <div class="answers">
+        <div class="answer-row">
+          <p class="eyebrow">Red before green?</p>
+          <p class="answer">Yes. Red <a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/94a7473">94a7473</a> is walkthrough commit <span class="n">#5</span>; green <a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/92ede9e">92ede9e</a> is <span class="n">#17</span>.</p>
+          <p class="answer-note">The order is the walkthrough's commit number, counted from <span class="mono">build/F2/walkthrough.md</span> (44 commits). <strong>Commit dates are not in the excerpt</strong>, so the dates are checked by the command under Verify it yourself. The loop agrees from the other side: the red gate failed as expected at <time datetime="2026-10-18T22:22:53Z">2026-10-18T22:22:53Z</time> (<strong>21</strong> of <strong>25</strong> GET-1 API tests failed; 4 already passed, pinned), and the first green gate is <time datetime="2026-10-18T22:38:33Z">2026-10-18T22:38:33Z</time>. Those are two sources agreeing, not one chain: their SHAs differ. Before green, a stub gate also failed once: 5 tests passed on a canned value.</p>
+        </div>
+        <div class="answer-row">
+          <p class="eyebrow">Signed off by?</p>
+          <p class="answer">David Morgan, <span class="n">2026-10-19</span>: Accept F2, <span class="n">41</span> of <span class="n">41</span> QA steps pass.</p>
+          <p class="answer-note">QA step <a class="mono" href="#qa">docs/qa/build-F2.md#1</a> covers GET-1 and is marked PASS. PR <a class="mono" href="https://github.com/dpmorgandev/uinsure-policies-api/pull/17">#17</a> is recorded merged by David at <time datetime="2026-10-19T00:10:40Z">2026-10-19T00:10:40Z</time>; the older README still says merge pending.</p>
+        </div>
+      </div>
+
+      <div class="action">
+        <a class="primary" href="#diffs"><svg class="icon" aria-hidden="true"><use href="#i-flask"/></svg>Show me the proof: the red and green diffs</a>
+        <span class="sub">Then the commands that re-check the order yourself.</span>
+      </div>
+    </section>
+
+    <section class="region" data-req="RULE-1" aria-labelledby="h-text">
+      <div class="rhead">
+        <h2 id="h-text">Rule text and agreed interpretation</h2>
+        <span class="provrow"><span class="prov prov-written">written</span><span class="mean">by a person, in <span class="mono">docs/requirements.md</span></span></span>
+      </div>
+      <dl class="kv">
+        <dt>Rule</dt>
+        <dd><span class="chip">GET-1</span> <span class="tag s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Built</span></dd>
+        <dt>Title</dt>
+        <dd>Retrieve a policy</dd>
+        <dt>Text</dt>
+        <dd class="rule-text">By reference. Returns the policy, its terms, policyholders, property, payments, refunds and claims. <strong>404</strong> if not found. The policy-level <code>startDate</code>, <code>endDate</code> and <code>amount</code> describe the <strong>current term</strong>: the term in force today, or the latest term if today is outside them all. <code>terms[]</code> holds the history</dd>
+        <dt>Status codes</dt>
+        <dd><span class="mono">404</span> if not found. No other code is stated in the excerpt.</dd>
+        <dt>Split of rule and interpretation</dt>
+        <dd><span class="gap">not in the excerpt</span> The requirements table's header row isn't provided, so the row is shown as one text.</dd>
+        <dt>Source line</dt>
+        <dd><span class="gap">line number not in the excerpt</span></dd>
+      </dl>
+      <p class="note"><strong>Related row, ID shown as <span class="mono">—</span>:</strong> Status. Derived from today, never stored: <code>Pending</code> (today before the first start), <code>Active</code>, <code>Expired</code> (today after the last end), or <code>Cancelled</code>, which overrides the others. Where it sits relative to GET-1 is not in the excerpt.</p>
+    </section>
+
+    <section class="region" data-req="RULE-2" aria-labelledby="h-sig">
+      <div class="rhead">
+        <h2 id="h-sig">Red before green: the evidence on agent lanes</h2>
+        <span class="provrow"><span class="prov prov-generated">generated</span><span class="prov prov-recorded">recorded</span><span class="mean">commits from the walkthrough, events from the loop</span></span>
+      </div>
+
+      <ol class="chain" aria-label="The matrix row for GET-1, in order">
+        <li><span class="eyebrow">1 Requirement</span><span class="v">GET-1</span><span class="w">build/F2</span></li>
+        <li><span class="eyebrow">2 Red</span><span class="v">94a7473</span><span class="w">commit #5, tests</span></li>
+        <li><span class="eyebrow">3 Green</span><span class="v">92ede9e</span><span class="w">commit #17, api</span></li>
+        <li><span class="eyebrow">4 Refactor</span><span class="v">80d3ee2</span><span class="w">commit #19, api</span></li>
+        <li><span class="eyebrow">5 QA step</span><span class="v">docs/qa/build-F2.md#1</span><span class="w">PASS</span></li>
+        <li><span class="eyebrow">6 Sign-off</span><span class="v">David 2026-10-19</span><span class="w">Accept F2</span></li>
+        <li><span class="eyebrow">7 PR</span><span class="v">#17</span><span class="w">merged per the loop</span></li>
+      </ol>
+      <p class="sub" style="margin-top:0.25rem">The row is from <span class="mono">requirements-matrix.md</span>. No step is missing. The matrix names the first red, green and refactor; the walkthrough holds more of each.</p>
+
+      <figure class="fig" id="lanes">
+        <h3>GET-1 in build/F2: commits by walkthrough number, loop events by recorded order</h3>
+        <div class="scroll">
+        <svg class="lanes-svg" viewBox="0 0 1100 504" role="img" aria-labelledby="ev-t ev-d">
+          <title id="ev-t">GET-1 evidence on agent lanes</title>
+          <desc id="ev-d">Left zone: 17 GET-1 commits from the walkthrough on the tester and builder lanes, placed by commit number. Red 94a7473 is number 5 and green 92ede9e is number 17, so red comes first. In the A2 fix round, reds 26 to 30 come before greens 31 to 33. The last row, number 34, is a red, 143e5ba, with no green row after it. Right zone: 21 loop events in recorded order across three attempts. A gate.stub FAIL at 305789d is in attempt 1 and a reviewer FAIL at 8ea8f60 is in attempt 2. Sign-off and merge are on the human lane. The investigator and git lanes hold no events in the excerpt. A text equivalent follows.</desc>
+
+          <rect class="band" x="428" y="58" width="128" height="376"/>
+          <line class="lane" x1="598" x2="598" y1="8" y2="436"/>
+          <line class="sep" x1="670" x2="670" y1="58" y2="436"/>
+          <line class="sep" x1="850" x2="850" y1="58" y2="436"/>
+
+          <g>
+            <line class="lane" x1="96" x2="594" y1="84" y2="84"/><line class="lane" x1="602" x2="1092" y1="84" y2="84"/>
+            <line class="lane" x1="96" x2="594" y1="132" y2="132"/><line class="lane" x1="602" x2="1092" y1="132" y2="132"/>
+            <line class="lane" x1="96" x2="594" y1="180" y2="180"/><line class="lane" x1="602" x2="1092" y1="180" y2="180"/>
+            <line class="lane" x1="96" x2="594" y1="228" y2="228"/><line class="lane" x1="602" x2="1092" y1="228" y2="228"/>
+            <line class="lane" x1="96" x2="594" y1="276" y2="276"/><line class="lane" x1="602" x2="1092" y1="276" y2="276"/>
+            <line class="lane" x1="96" x2="594" y1="324" y2="324"/><line class="lane" x1="602" x2="1092" y1="324" y2="324"/>
+            <line class="lane" x1="96" x2="594" y1="372" y2="372"/><line class="lane" x1="602" x2="1092" y1="372" y2="372"/>
+            <line class="lane" x1="96" x2="594" y1="420" y2="420"/><line class="lane" x1="602" x2="1092" y1="420" y2="420"/>
+          </g>
+
+          <!-- zone headers -->
+          <text x="100" y="18" class="t-bold">Commits · by walkthrough #</text>
+          <text x="100" y="34" class="t-dim">17 GET-1 rows (red, stub, green, refactor); other rows not drawn</text>
+          <text x="640" y="18" class="t-bold">Loop events · by recorded order</text>
+          <text x="640" y="34" class="t-dim">21 events; dotted lines mark attempt changes</text>
+          <text x="592" y="52" text-anchor="end" class="t-dim">A2 fix round: reds, then greens</text>
+          <text x="650" y="52" text-anchor="middle" class="t-dim">attempt 1</text>
+          <text x="760" y="52" text-anchor="middle" class="t-dim">attempt 2</text>
+          <text x="950" y="52" text-anchor="middle" class="t-dim">attempt 3</text>
+
+          <!-- lane labels -->
+          <text x="4" y="88" class="t-bold">main</text><text x="4" y="101" class="t-dim">orchestrator</text>
+          <text x="4" y="136" class="t-bold">tester</text>
+          <text x="4" y="184" class="t-bold">builder</text>
+          <text x="4" y="232" class="t-bold">reviewer</text>
+          <text x="4" y="280" class="t-bold">security</text>
+          <text x="4" y="328" class="t-bold">investigator</text>
+          <text x="4" y="376" class="t-bold">git</text>
+          <text x="4" y="424" class="t-bold">human</text>
+
+          <!-- gap lanes -->
+          <text x="104" y="328" class="t-dim">no events in the excerpt</text>
+          <text x="104" y="376" class="t-dim">no events in the excerpt</text>
+
+          <!-- main lane, zone A: only two gate heads can be placed -->
+          <text x="100" y="80" class="t-dim">gates at other heads: no walkthrough #,</text>
+          <text x="100" y="93" class="t-dim">position on this axis not observed</text>
+          <text x="570" y="66" text-anchor="end" class="t-dim">gate heads af38b4b, 143e5ba</text>
+          <use href="#g-gate" x="548" y="84"/>
+          <use href="#g-gate" x="564" y="84"/>
+
+          <!-- first cycle arrow: red 5 before green 17 -->
+          <line class="edge" x1="100" x2="287" y1="158" y2="158"/>
+          <polygon class="arrow" points="286,154 293,158 286,162"/>
+          <text x="196" y="152" text-anchor="middle" class="t-sans">red #5 before green #17</text>
+          <line class="edge" x1="436" x2="509" y1="158" y2="158"/>
+          <polygon class="arrow" points="508,154 515,158 508,162"/>
+
+          <!-- tester lane: red commits -->
+          <use href="#g-ring" x="100" y="132"/>
+          <use href="#g-red" x="100" y="132"/>
+          <use href="#g-red" x="212" y="132"/>
+          <use href="#g-red" x="244" y="132"/>
+          <use href="#g-red" x="436" y="132"/>
+          <use href="#g-red" x="452" y="132"/>
+          <use href="#g-red" x="468" y="132"/>
+          <use href="#g-red" x="484" y="132"/>
+          <use href="#g-red" x="500" y="132"/>
+          <use href="#g-red" x="564" y="132"/>
+          <text x="100" y="119" text-anchor="middle">5</text>
+          <text x="212" y="119" text-anchor="middle">12</text>
+          <text x="244" y="119" text-anchor="middle">14</text>
+          <text x="436" y="119" text-anchor="middle">26</text>
+          <text x="452" y="119" text-anchor="middle">27</text>
+          <text x="468" y="119" text-anchor="middle">28</text>
+          <text x="484" y="119" text-anchor="middle">29</text>
+          <text x="500" y="119" text-anchor="middle">30</text>
+          <text x="564" y="119" text-anchor="middle">34</text>
+          <text x="100" y="104" text-anchor="middle" class="t-bold">red 94a7473</text>
+          <text x="570" y="104" text-anchor="end" class="t-bold">red 143e5ba</text>
+
+          <!-- builder lane: stub, green, refactor -->
+          <use href="#g-stub" x="132" y="180"/>
+          <use href="#g-stub" x="164" y="180"/>
+          <use href="#g-ring" x="292" y="180"/>
+          <use href="#g-green" x="292" y="180"/>
+          <use href="#g-ring" x="324" y="180"/>
+          <use href="#g-refac" x="324" y="180"/>
+          <use href="#g-refac" x="340" y="180"/>
+          <use href="#g-green" x="516" y="180"/>
+          <use href="#g-green" x="532" y="180"/>
+          <use href="#g-green" x="548" y="180"/>
+          <text x="132" y="200" text-anchor="middle">7</text>
+          <text x="164" y="200" text-anchor="middle">9</text>
+          <text x="292" y="200" text-anchor="middle">17</text>
+          <text x="324" y="200" text-anchor="middle">19</text>
+          <text x="340" y="200" text-anchor="middle">20</text>
+          <text x="516" y="200" text-anchor="middle">31</text>
+          <text x="532" y="200" text-anchor="middle">32</text>
+          <text x="548" y="200" text-anchor="middle">33</text>
+          <text x="298" y="214" text-anchor="end" class="t-bold">green 92ede9e</text>
+          <text x="318" y="214" class="t-bold">refactor 80d3ee2</text>
+          <text x="548" y="214" text-anchor="middle" class="t-bold">green af38b4b</text>
+
+          <!-- zone B, main lane: gates -->
+          <text x="940" y="66" text-anchor="middle" class="t-dim">143e5ba</text>
+          <text x="860" y="66" text-anchor="middle" class="t-dim">af38b4b</text>
+          <text x="972" y="66" class="t-dim">PR #17 draft</text>
+          <use href="#g-pass" x="640" y="84"/>
+          <use href="#g-fail" x="660" y="84"/>
+          <use href="#g-pass" x="680" y="84"/>
+          <use href="#g-pass" x="700" y="84"/>
+          <use href="#g-pass" x="720" y="84"/>
+          <use href="#g-pass" x="740" y="84"/>
+          <use href="#g-pass" x="760" y="84"/>
+          <use href="#g-pass" x="780" y="84"/>
+          <use href="#g-pass" x="800" y="84"/>
+          <use href="#g-pass" x="860" y="84"/>
+          <use href="#g-pass" x="880" y="84"/>
+          <use href="#g-pass" x="940" y="84"/>
+          <use href="#g-open" x="1000" y="84"/>
+          <text x="676" y="108" class="t-fail t-halo">FAIL gate.stub, 305789d</text>
+          <text x="676" y="121" class="t-halo">13 failed, 12 passed of 25</text>
+
+          <!-- security lane -->
+          <use href="#g-pass" x="820" y="276"/>
+          <use href="#g-pass" x="900" y="276"/>
+          <use href="#g-pass" x="960" y="276"/>
+          <text x="820" y="297" text-anchor="middle" class="t-pass">pass</text>
+          <text x="900" y="297" text-anchor="middle" class="t-pass">pass</text>
+          <text x="960" y="297" text-anchor="middle" class="t-pass">pass</text>
+
+          <!-- reviewer lane -->
+          <use href="#g-fail" x="840" y="228"/>
+          <use href="#g-pass" x="920" y="228"/>
+          <use href="#g-pass" x="980" y="228"/>
+          <text x="920" y="249" text-anchor="middle" class="t-pass">pass</text>
+          <text x="980" y="249" text-anchor="middle" class="t-pass">pass</text>
+          <text x="836" y="198" text-anchor="end" class="t-fail t-halo">FAIL reviewer, 8ea8f60</text>
+          <text x="836" y="211" text-anchor="end" class="t-halo">R1 P1: hasClaims hard-coded false</text>
+
+          <!-- human lane -->
+          <use href="#g-pass" x="1020" y="420"/>
+          <use href="#g-pass" x="1040" y="420"/>
+          <text x="1026" y="402" text-anchor="end" class="t-bold">sign-off</text>
+          <text x="1046" y="441" text-anchor="end" class="t-bold">merged #17</text>
+
+          <!-- axis numbers and times -->
+          <text x="628" y="456" text-anchor="end" class="t-dim">event</text>
+          <g class="t-dim">
+            <text x="640" y="456" text-anchor="middle">1</text><text x="660" y="456" text-anchor="middle">2</text><text x="680" y="456" text-anchor="middle">3</text><text x="700" y="456" text-anchor="middle">4</text><text x="720" y="456" text-anchor="middle">5</text><text x="740" y="456" text-anchor="middle">6</text><text x="760" y="456" text-anchor="middle">7</text><text x="780" y="456" text-anchor="middle">8</text><text x="800" y="456" text-anchor="middle">9</text><text x="820" y="456" text-anchor="middle">10</text><text x="840" y="456" text-anchor="middle">11</text><text x="860" y="456" text-anchor="middle">12</text><text x="880" y="456" text-anchor="middle">13</text><text x="900" y="456" text-anchor="middle">14</text><text x="920" y="456" text-anchor="middle">15</text><text x="940" y="456" text-anchor="middle">16</text><text x="960" y="456" text-anchor="middle">17</text><text x="980" y="456" text-anchor="middle">18</text><text x="1000" y="456" text-anchor="middle">19</text><text x="1020" y="456" text-anchor="middle">20</text><text x="1040" y="456" text-anchor="middle">21</text>
+          </g>
+          <text x="640" y="470" class="t-dim">2026-10-18 22:22:53Z</text>
+          <text x="860" y="470" text-anchor="middle" class="t-dim">23:21:21Z</text>
+          <text x="1046" y="470" text-anchor="end" class="t-dim">2026-10-19 00:10:40Z</text>
+
+          <!-- legend -->
+          <use href="#g-red" x="104" y="492"/><text x="116" y="496">red commit</text>
+          <use href="#g-stub" x="214" y="492"/><text x="226" y="496">stub commit</text>
+          <use href="#g-green" x="330" y="492"/><text x="342" y="496">green commit</text>
+          <use href="#g-refac" x="450" y="492"/><text x="462" y="496">refactor commit</text>
+          <use href="#g-ring" x="590" y="492"/><text x="608" y="496">named in the matrix</text>
+          <use href="#g-pass" x="760" y="492"/><text x="774" y="496">gate or verdict passed</text>
+          <use href="#g-fail" x="940" y="492"/><text x="954" y="496">FAIL</text>
+          <use href="#g-open" x="1000" y="492"/><text x="1014" y="496">PR draft</text>
+        </svg>
+        </div>
+        <figcaption>
+          <p><strong>Read it:</strong> the agent is a lane and a label; status keeps the colour. Left, commits sit at their walkthrough number, so their spacing is order only; no interval between commits is drawn as time, because none is observed. Right, loop events sit in recorded order, with times at three points. The two zones are not one clock. They join at two commits whose SHAs appear in both sources: <span class="mono">af38b4b</span> (#33, a green, and the head of the attempt-3 <span class="mono">gate.green</span>) and <span class="mono">143e5ba</span> (#34, a red, and the head of the last <span class="mono">gate.stubs</span>).</p>
+          <p><strong>Surprise in the data:</strong> the last TDD row in the excerpt, #34, is a red. No green row follows it, yet the loop records the re-review at that head with A3 R1 closed. Whether the fix was test-only is not in the excerpt. Reds #29 and #30 also have no green row named for them; the attempt-3 gate says "the 5 A2 reds pass".</p>
+        </figcaption>
+
+        <details class="tbl" open>
+          <summary>Text equivalent 1 of 2: the 17 commits</summary>
+          <div class="tbl-wrap">
+          <table class="compact">
+            <caption>GET-1 rows of <span class="mono">build/F2/walkthrough.md</span> whose TDD column is red, stub, green or refactor (17 of 44 commits). Default sort: walkthrough # ascending.</caption>
+            <thead><tr>
+              <th scope="col" class="num">#<span class="sortnote">ascending</span></th>
+              <th scope="col">SHA</th><th scope="col">TDD</th><th scope="col">Layer</th><th scope="col">Agent</th><th scope="col">What it did</th><th scope="col">In the matrix</th>
+            </tr></thead>
+            <tbody>
+              <tr class="picked"><th scope="row" class="num">5</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/94a7473">94a7473</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-red"/></svg> red</td><td>tests</td><td>tester</td><td class="wrap">retrieve answers the full policy response, derived status, the current term and 2 dp money</td><td>red</td></tr>
+              <tr><th scope="row" class="num">7</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/2f81a40">2f81a40</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-stub"/></svg> stub</td><td>api</td><td>builder</td><td class="wrap">stub full policy response shape</td><td></td></tr>
+              <tr><th scope="row" class="num">9</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/8988ed8">8988ed8</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-stub"/></svg> stub</td><td>api</td><td>builder</td><td class="wrap">canned status and term number match no expected value</td><td></td></tr>
+              <tr><th scope="row" class="num">12</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/770a29b">770a29b</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-red"/></svg> red</td><td>tests</td><td>tester</td><td class="wrap">trait domain status and current-term tests</td><td></td></tr>
+              <tr><th scope="row" class="num">14</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/7b6e4d9">7b6e4d9</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-red"/></svg> red</td><td>tests</td><td>tester</td><td class="wrap">trait services status and current-term tests</td><td></td></tr>
+              <tr class="picked"><th scope="row" class="num">17</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/92ede9e">92ede9e</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-green"/></svg> green</td><td>api</td><td>builder</td><td class="wrap">api real status, current term, 2dp money, unknown query filter</td><td>green</td></tr>
+              <tr class="picked"><th scope="row" class="num">19</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/80d3ee2">80d3ee2</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-refac"/></svg> refactor</td><td>api</td><td>builder</td><td class="wrap">make TwoDecimalPlacesConverter comment true to the code</td><td>refactor</td></tr>
+              <tr><th scope="row" class="num">20</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/98a574d">98a574d</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-refac"/></svg> refactor</td><td>api</td><td>builder</td><td class="wrap">make TwoDecimalPlacesConverter comment true at HEAD</td><td></td></tr>
+              <tr><th scope="row" class="num">26</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/357e108">357e108</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-red"/></svg> red</td><td>tests</td><td>tester</td><td class="wrap">fix A2/I1</td><td></td></tr>
+              <tr><th scope="row" class="num">27</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/02e49a2">02e49a2</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-red"/></svg> red</td><td>tests</td><td>tester</td><td class="wrap">fix A2/I3</td><td></td></tr>
+              <tr><th scope="row" class="num">28</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/ef7d2e6">ef7d2e6</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-red"/></svg> red</td><td>tests</td><td>tester</td><td class="wrap">fix A2/I4</td><td></td></tr>
+              <tr><th scope="row" class="num">29</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/2753a64">2753a64</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-red"/></svg> red</td><td>tests</td><td>tester</td><td class="wrap">fix A2/I5</td><td></td></tr>
+              <tr><th scope="row" class="num">30</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/6947971">6947971</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-red"/></svg> red</td><td>tests</td><td>tester</td><td class="wrap">fix A2/I6</td><td></td></tr>
+              <tr><th scope="row" class="num">31</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/8be3aed">8be3aed</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-green"/></svg> green</td><td>api</td><td>builder</td><td class="wrap">map stored HasClaims, make comments true</td><td></td></tr>
+              <tr><th scope="row" class="num">32</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/0e107fd">0e107fd</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-green"/></svg> green</td><td>api</td><td>builder</td><td class="wrap">write money exactly, padded to 2 dp without rounding</td><td></td></tr>
+              <tr><th scope="row" class="num">33</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/af38b4b">af38b4b</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-green"/></svg> green</td><td>api</td><td>builder</td><td class="wrap">reject only query-bound unknown keys</td><td></td></tr>
+              <tr><th scope="row" class="num">34</th><td><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/143e5ba">143e5ba</a></td><td><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-red"/></svg> red</td><td>tests</td><td>tester</td><td class="wrap">fix A3/R1</td><td></td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="note">Counted from the rows above: 9 red, 2 stub, 4 green, 2 refactor. Shaded rows are the three the matrix names.</p>
+        </details>
+
+        <details class="tbl" open>
+          <summary>Text equivalent 2 of 2: the 21 loop events, FAILs expanded</summary>
+          <div class="tbl-wrap">
+          <table class="compact">
+            <caption>Events of <span class="mono">build/F2/loop.jsonl</span> that are gates, verdicts, the PR, sign-off and merge. Two attempt changes are shown as shaded rows. Default sort: recorded order ascending. Event numbers match the figure.</caption>
+            <thead><tr>
+              <th scope="col" class="num">Event<span class="sortnote">ascending</span></th>
+              <th scope="col">Time (UTC)</th><th scope="col">Event</th><th scope="col">Lane</th><th scope="col">Head</th><th scope="col">Result</th><th scope="col">Note, as recorded</th>
+            </tr></thead>
+            <tbody>
+              <tr><th scope="row" class="num">1</th><td class="mono">2026-10-18T22:22:53Z</td><td class="mono">gate.red</td><td>main</td><td class="sha-head">b7d5b5a</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">Expected fail, exit 2. GET-1: 25 total, 21 failed. 4 pass at HEAD: the 404 rows (pinned, not red). Diff tests/** + postman + pending.txt only; 0 src lines removed.</td></tr>
+              <tr class="row-fail"><th scope="row" class="num">2</th><td class="mono">2026-10-18T22:26:06Z</td><td class="mono">gate.stub</td><td>main</td><td class="sha-head">305789d</td><td><span class="st s-fail"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>Failed</span></td><td class="wrap">Expected: every GET-1 test fails.</td></tr>
+              <tr class="exp"><td></td><td colspan="6">25 total, 13 failed, 12 passed. (a) 5 pass by the canned status Active coinciding. (b) 7 pass on behaviour already delivered by F1/F1b. David: fix (a), accept (b) as pinned. The full text is under States, long content.</td></tr>
+              <tr class="att"><th scope="row" class="num">a2</th><td class="mono">2026-10-18T22:26:21Z</td><td colspan="5">attempt 1 to 2 on gate.stub FAIL at 305789d; failure route round A1</td></tr>
+              <tr><th scope="row" class="num">3</th><td class="mono">2026-10-18T22:29:54Z</td><td class="mono">gate.stub</td><td>main</td><td class="sha-head">aee97ab</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">25 total, 21 failed; passes are the 4 RetrieveNotFoundTests 404 rows only (pinned by David). Diff e82562d..HEAD is PolicyMappings.cs only.</td></tr>
+              <tr><th scope="row" class="num">4</th><td class="mono">2026-10-18T22:35:46Z</td><td class="mono">gate.red</td><td>main</td><td class="sha-head">c4f7d64</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span> <span class="pin">pinned</span></td><td class="wrap">Domain GET-1: 22/22 pass. Existing F1b tests traited, assertions unchanged. No GET-1 Domain gap found, so no red test.</td></tr>
+              <tr><th scope="row" class="num">5</th><td class="mono">2026-10-18T22:38:33Z</td><td class="mono">gate.green</td><td>main</td><td class="sha-head">311ccb6</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">Services GET-1 6/6 pass. Gap noted, not closed: no Services test for the GET-1 not-found result.</td></tr>
+              <tr><th scope="row" class="num">6</th><td class="mono">2026-10-18T22:39:42Z</td><td class="mono">gate.green</td><td>main</td><td class="sha-head">b9cd547</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">Persistence: no change needed. Domain 63/0, Services 34/0, Architecture 66/0.</td></tr>
+              <tr><th scope="row" class="num">7</th><td class="mono">2026-10-18T22:42:11Z</td><td class="mono">gate.green</td><td>main</td><td class="sha-head">cbb4c7c</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">Api: whole Api.Tests suite green; solution 365/365.</td></tr>
+              <tr><th scope="row" class="num">8</th><td class="mono">2026-10-18T22:45:04Z</td><td class="mono">gate.refactor</td><td>main</td><td class="sha-head">803c898</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">365/365; diff is a TwoDecimalPlacesConverter.cs comment only (7023420, corrected in 803c898).</td></tr>
+              <tr><th scope="row" class="num">9</th><td class="mono">2026-10-18T22:45:05Z</td><td class="mono">gate.stubs</td><td>main</td><td class="sha-head">803c898</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">No NotImplementedException in src/ sources.</td></tr>
+              <tr><th scope="row" class="num">10</th><td class="mono">2026-10-18T22:49:47Z</td><td class="mono">verdict(security)</td><td>security</td><td class="sha-head">8ea8f60</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">No findings; P2 note: cancellationToken query key accepted and ignored.</td></tr>
+              <tr class="row-fail"><th scope="row" class="num">11</th><td class="mono">2026-10-18T22:49:48Z</td><td class="mono">verdict(reviewer)</td><td>reviewer</td><td class="sha-head">8ea8f60</td><td><span class="st s-fail"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>Failed</span></td><td class="wrap">FAIL.</td></tr>
+              <tr class="exp"><td></td><td colspan="6">R1 P1 hasClaims hard-coded false though stored, no test seeds true; P2s: R2 stale PolicyResponse comment, R3 F2 converter as a second rounding path, R4 unknown-query filter counts route/body/special params as known, R5 unpaid-second-term row lacks status, R6 no Services not-found test</td></tr>
+              <tr class="att"><th scope="row" class="num">a3</th><td class="mono">2026-10-18T22:50:11Z</td><td colspan="5">attempt 2 to 3 on reviewer FAIL at 8ea8f60 (A2)</td></tr>
+              <tr><th scope="row" class="num">12</th><td class="mono">2026-10-18T23:21:21Z</td><td class="mono">gate.green</td><td>main</td><td class="sha-head">af38b4b</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">The 5 A2 reds pass; 373/373. Diff 6947971..HEAD is PolicyMappings.cs, PolicyResponse.cs, TwoDecimalPlacesConverter.cs, RejectUnknownQueryParametersFilter.cs.</td></tr>
+              <tr><th scope="row" class="num">13</th><td class="mono">2026-10-18T23:21:22Z</td><td class="mono">gate.stubs</td><td>main</td><td class="sha-head">af38b4b</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">No NotImplementedException in src/ sources.</td></tr>
+              <tr><th scope="row" class="num">14</th><td class="mono">2026-10-18T23:25:46Z</td><td class="mono">verdict(security)</td><td>security</td><td class="sha-head">af38b4b</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">No findings; A2 P2 (query keys) resolved.</td></tr>
+              <tr><th scope="row" class="num">15</th><td class="mono">2026-10-18T23:25:46Z</td><td class="mono">verdict(reviewer)</td><td>reviewer</td><td class="sha-head">af38b4b</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">A2 R1-R6 resolved; inv-001 approach followed.</td></tr>
+              <tr><th scope="row" class="num">16</th><td class="mono">2026-10-18T23:31:02Z</td><td class="mono">gate.stubs</td><td>main</td><td class="sha-head">143e5ba</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">No NotImplementedException in src/ sources.</td></tr>
+              <tr><th scope="row" class="num">17</th><td class="mono">2026-10-18T23:32:53Z</td><td class="mono">verdict(security)</td><td>security</td><td class="sha-head">143e5ba</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">Re-review at d131efb; no findings.</td></tr>
+              <tr><th scope="row" class="num">18</th><td class="mono">2026-10-18T23:32:54Z</td><td class="mono">verdict(reviewer)</td><td>reviewer</td><td class="sha-head">143e5ba</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="wrap">Re-review at d131efb; A3 R1 closed; no findings.</td></tr>
+              <tr><th scope="row" class="num">19</th><td class="mono">2026-10-18T23:49:07Z</td><td class="mono">pr(17)</td><td>main</td><td class="sha-head">beba48e</td><td><span class="st s-pending"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Draft</span></td><td class="wrap">Draft <a href="https://github.com/dpmorgandev/uinsure-policies-api/pull/17">PR #17</a>.</td></tr>
+              <tr><th scope="row" class="num">20</th><td class="mono">2026-10-19T00:07:35Z</td><td class="mono">signoff</td><td>human</td><td class="sha-head">223102a</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Signed off</span></td><td class="wrap">David: sign off. QA signed by David Morgan, Verdict Accept F2.</td></tr>
+              <tr><th scope="row" class="num">21</th><td class="mono">2026-10-19T00:10:40Z</td><td class="mono">merged</td><td>human</td><td class="sha-head">0a04b8b</td><td><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Merged</span></td><td class="wrap">PR #17 merged by David in the GitHub UI. Merge commit <span class="mono">ad7b6b096e2dba88f3a3c71d860b557b789f5247</span>.</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p class="note">Event 20's head is the loop head at sign-off (<span class="mono">223102a</span>). The QA document names a different commit as the one signed off (<span class="mono">beba48e</span>); both are shown under QA step and sign-off. Event 21's head is the loop head at merge; the merge commit is the SHA in the note.</p>
+        </details>
+      </figure>
+    </section>
+
+    <section class="region" data-req="RULE-1" aria-labelledby="h-tests">
+      <div class="rhead">
+        <h2 id="h-tests">Tests: count and scope</h2>
+        <span class="provrow"><span class="prov prov-generated">generated</span><span class="prov prov-recorded">recorded</span><span class="mean">total from the matrix, per-project counts from the loop</span></span>
+      </div>
+      <div class="testhead">
+        <p class="big">59<span class="of"> of </span>59<span class="of"> pass</span></p>
+        <p class="sub">Counted from <span class="mono">requirements-matrix.md</span>, column <span class="mono">tests (pass/total)</span>, row GET-1, node <span class="mono">build/F2</span>.</p>
+      </div>
+      <div class="tbl-wrap">
+      <table>
+        <caption>GET-1 tests per project, as the loop recorded them at the named gate. Default sort: order recorded.</caption>
+        <thead><tr><th scope="col">Project<span class="sortnote">recorded order</span></th><th scope="col" class="num">Count</th><th scope="col">Outcome</th><th scope="col">Recorded at</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Api.Tests</th><td class="num">25 total</td><td class="wrap"><span class="st s-fail"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>21 failed</span> at red, as expected. <span class="pin">pinned</span> 4 pass: the RetrieveNotFoundTests 404 rows, delivered in F1/F1b.</td><td class="mono">gate.red, 2026-10-18T22:22:53Z</td></tr>
+          <tr><th scope="row">Domain.Tests</th><td class="num">22/22</td><td class="wrap"><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span> <span class="pin">pinned</span> Existing F1b tests traited, assertions unchanged.</td><td class="mono">gate.red, 2026-10-18T22:35:46Z</td></tr>
+          <tr><th scope="row">Services.Tests</th><td class="num">6/6</td><td class="wrap"><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></td><td class="mono">gate.green, 2026-10-18T22:38:33Z</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <p class="note"><strong>Sources differ on the total.</strong> The matrix says 59. The three per-project counts were taken at earlier gates and the excerpt gives no later split, so they are not added up here. Architecture: <span class="mono">RuleCoverageTests</span> green, 66/66, at the same time as the Domain count. <span class="tag s-warn" style="margin-left:0.25rem"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>Gap noted</span> no Services test for the GET-1 not-found result; the 4 RetrieveNotFoundTests cover it over HTTP.</p>
+    </section>
+
+    <section class="region" id="qa" data-req="RULE-1 HITL-1" aria-labelledby="h-qa">
+      <div class="rhead">
+        <h2 id="h-qa">QA step and sign-off</h2>
+        <span class="provrow"><span class="prov prov-written">written</span><span class="prov prov-recorded">recorded</span><span class="mean">QA signed by a person; sign-off line appended by the orchestrator</span></span>
+      </div>
+      <dl class="kv">
+        <dt>QA step</dt>
+        <dd><a class="mono" href="../../../qa/build-F2.md">docs/qa/build-F2.md#1</a> · GET-1 · sold policy reads back in full → 200 <span class="tag s-pass" style="margin-left:0.375rem"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></dd>
+        <dt>Rule IDs on the QA page</dt>
+        <dd>GET-1 (and SELL-7 for the two extreme-negative echo rows F2 pins)</dd>
+        <dt>Action</dt>
+        <dd>Send (folder <code>F2 Retrieve</code> / <code>happy path</code>). The sale is BuyToLet, 412.34 by Card, start today + 30, auto-renew off, two policyholders (Grace Hopper, Alan Turing), 7 Canal St, Flat 3, Ancoats, M4 6BX</dd>
+        <dt>Expected</dt>
+        <dd><code>200</code>, the full read-back, <code>status</code> Pending, <code>endDate</code> = start + 1 year − 1 day, <code>terms[0]</code> the same dates and 412.34</dd>
+        <dt>Observed</dt>
+        <dd>POST <code>201</code>, GET <code>/policies/F2-MVEHF2QGG5</code> <code>200</code>: exactly the 16 members; BuyToLet, <code>status</code> Pending, <code>currentTermNumber</code> 1, start 2026-11-18 (today + 30), <code>endDate</code> 2027-11-17, 412.34, <code>autoRenew</code> false, Grace Hopper and Alan Turing, 7 Canal St / Flat 3 / Ancoats / M4 6BX; <code>terms[0]</code> 2026-11-18 to 2027-11-17, 412.34, linked to the one Card payment; <code>hasClaims</code> false, <code>refunds</code>/<code>claims</code> <code>[]</code>, <code>cancellation</code> null. 3/3 <code>pm.test</code> Pass</dd>
+        <dt>Steps passed</dt>
+        <dd><span class="mono">41 of 41</span></dd>
+        <dt>Tester</dt>
+        <dd>David Morgan (steps run by the tester agent, verified by the orchestrator)</dd>
+        <dt>Date</dt>
+        <dd class="mono">2026-10-19</dd>
+        <dt>Commit signed off</dt>
+        <dd><a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/beba48e3f7f4efc948d3542dffce87bfe2de33df" title="beba48e3f7f4efc948d3542dffce87bfe2de33df">beba48e<svg class="icon" aria-hidden="true"><use href="#i-ext"/></svg></a> (PR #17 head; <code>src/</code> and <code>tests/</code> identical to 143e5ba)</dd>
+        <dt>Verdict</dt>
+        <dd><span class="tag s-pass"><svg class="icon" aria-hidden="true"><use href="#i-gavel"/></svg>Accept F2</span> <span class="sub">Reject (findings above) was not chosen.</span></dd>
+        <dt>Signature</dt>
+        <dd>David Morgan 19/10/2026 01:05 <span class="sub">(time zone not stated)</span></dd>
+        <dt>Defects raised</dt>
+        <dd><span class="gap">row not in the excerpt</span></dd>
+        <dt>Sign-off event</dt>
+        <dd><span class="mono">signoff(223102a7c40f2042674e3b677116c446244dfea7)</span> at <time datetime="2026-10-19T00:07:35Z">2026-10-19T00:07:35Z</time>. Matrix sign-off column: <span class="mono">David 2026-10-19</span>.</dd>
+        <dt>PR</dt>
+        <dd><svg class="icon" aria-hidden="true"><use href="#i-pr"/></svg> <a class="mono" href="https://github.com/dpmorgandev/uinsure-policies-api/pull/17">#17</a> draft opened <time datetime="2026-10-18T23:49:07Z">2026-10-18T23:49:07Z</time>; merged by David <time datetime="2026-10-19T00:10:40Z">2026-10-19T00:10:40Z</time>, merge commit <span class="mono" title="ad7b6b096e2dba88f3a3c71d860b557b789f5247">ad7b6b0</span></dd>
+      </dl>
+      <div class="scrollbox" tabindex="0" role="region" aria-label="Sign-off line, verbatim from the loop" style="margin-top:0.75rem">David: sign off. docs/qa/build-F2.md signed by David Morgan 2026-10-19 01:05, Verdict Accept F2; 41/41 steps PASS at beba48e (code unchanged since 143e5ba); Postman F2 25/0, 26/0; integrate 374/0 on this head; ?REFERENCE errors-key casing carried over to F3</div>
+      <p class="sub" style="margin-top:0.25rem">Sign-off line as recorded. One item was carried over to F3: the <code>?REFERENCE</code> errors-key casing.</p>
+    </section>
+
+    <section class="region" id="diffs" data-req="RULE-3" aria-labelledby="h-diffs">
+      <div class="rhead">
+        <h2 id="h-diffs">Red and green diffs</h2>
+        <span class="sub">Lazy: a diff loads when asked. Diff bodies and sizes are not in the excerpt.</span>
+      </div>
+      <div class="diffs">
+        <article class="diffpanel" aria-labelledby="d-red">
+          <h3 id="d-red"><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-red"/></svg> Red <a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/94a7473">94a7473<svg class="icon" aria-hidden="true"><use href="#i-ext"/></svg></a> <span class="mono">#5</span> · tests · tester</h3>
+          <p class="msg">retrieve answers the full policy response, derived status, the current term and 2 dp money</p>
+          <div class="recorded">
+            <p class="eyebrow">What the red gate recorded</p>
+            <p><span class="mono">gate.red</span>, <time datetime="2026-10-18T22:22:53Z">2026-10-18T22:22:53Z</time>, over <span class="mono">git diff --name-only 2cdf88e..HEAD</span>: diff <span class="mono">tests/**</span> + postman + <span class="mono">pending.txt</span> only; 0 src lines removed; GET-1 traits in 5 Api.Tests files.</p>
+            <p class="sub">A range at the gate's head, not this one commit's diff.</p>
+          </div>
+          <div class="diffbody">
+            <p class="eyebrow">Diff</p>
+            <p><span class="gap">not loaded</span></p>
+            <p style="margin-top:0.375rem"><a href="https://github.com/dpmorgandev/uinsure-policies-api/commit/94a7473">Load diff of 94a7473<svg class="icon" aria-hidden="true" style="margin-left:0.25em"><use href="#i-ext"/></svg></a></p>
+          </div>
+        </article>
+        <article class="diffpanel" aria-labelledby="d-green">
+          <h3 id="d-green"><svg class="mk" viewBox="-8 -8 16 16" aria-hidden="true"><use href="#g-green"/></svg> Green <a class="sha" href="https://github.com/dpmorgandev/uinsure-policies-api/commit/92ede9e">92ede9e<svg class="icon" aria-hidden="true"><use href="#i-ext"/></svg></a> <span class="mono">#17</span> · api · builder</h3>
+          <p class="msg">api real status, current term, 2dp money, unknown query filter</p>
+          <div class="recorded">
+            <p class="eyebrow">What the green gate recorded</p>
+            <p><span class="mono">gate.green</span> for the api, <time datetime="2026-10-18T22:42:11Z">2026-10-18T22:42:11Z</time>, head <span class="mono">cbb4c7c</span>: whole Api.Tests suite green; diff <span class="mono">f6eea6b..HEAD</span> is
+              <span class="files"><span class="chip">PolicyMappings.cs</span><span class="chip">TwoDecimalPlacesConverter.cs</span><span class="chip">RejectUnknownQueryParametersFilter.cs</span><span class="chip">Program.cs</span></span></p>
+            <p class="sub">Head <span class="mono">cbb4c7c</span> is not a walkthrough SHA, so this is a range, not this one commit's diff.</p>
+          </div>
+          <div class="diffbody">
+            <p class="eyebrow">Diff</p>
+            <p><span class="gap">not loaded</span></p>
+            <p style="margin-top:0.375rem"><a href="https://github.com/dpmorgandev/uinsure-policies-api/commit/92ede9e">Load diff of 92ede9e<svg class="icon" aria-hidden="true" style="margin-left:0.25em"><use href="#i-ext"/></svg></a></p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="region" data-req="VERIFY-1" aria-labelledby="h-verify">
+      <div class="rhead">
+        <h2 id="h-verify">Verify it yourself</h2>
+        <span class="sub">Run these in a clone. The page's claim is true only if the output matches.</span>
+      </div>
+      <div class="verify">
+        <div class="item">
+          <h3>Red commit comes before green commit</h3>
+          <p class="sub">Prints the three matrix SHAs in the order given, each with its commit date. The red line's date should not be later than the green line's. Dates are not in the excerpt, so none are shown here.</p>
+          <div class="cmdrow">
+            <pre class="cmd" tabindex="0" aria-label="Command">git log --no-walk=unsorted --format='%h %cI %s' 94a7473 92ede9e 80d3ee2</pre>
+            <button type="button" class="copy"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copy</button>
+          </div>
+          <p class="placeholder" style="margin-top:0.375rem">Placeholder form: the canonical <span class="mono">git log --format=…</span> text lives in <span class="mono">docs/trace/README.md</span>, which is not in the excerpt. The SHAs are real.</p>
+        </div>
+        <div class="item">
+          <h3>The GET-1 tests</h3>
+          <p class="sub">The command the red gate ran, as recorded. It runs the tests carrying the GET-1 trait.</p>
+          <div class="cmdrow">
+            <pre class="cmd" tabindex="0" aria-label="Command">dotnet test --solution Uinsure.Policies.slnx -- --filter-trait Rule=GET-1</pre>
+            <button type="button" class="copy"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copy</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="region" aria-labelledby="h-src">
+      <h2 id="h-src">Sources and provenance</h2>
+      <div class="tbl-wrap">
+      <table class="compact">
+        <caption>Where each part of this page comes from. Default sort: order of appearance on the page.</caption>
+        <thead><tr><th scope="col">Source<span class="sortnote">page order</span></th><th scope="col">Provenance</th><th scope="col">Stamp in the excerpt</th><th scope="col">Used for</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">docs/requirements.md</th><td><span class="prov prov-written">written</span></td><td><span class="gap">none</span></td><td>Rule text</td></tr>
+          <tr><th scope="row">docs/trace/build/F2/walkthrough.md</th><td><span class="prov prov-generated">generated</span> *</td><td><span class="gap">none</span></td><td>Commits, red before green</td></tr>
+          <tr><th scope="row">docs/trace/build/F2/loop.jsonl</th><td><span class="prov prov-recorded">recorded</span></td><td class="mono">2026-10-18T22:22:53Z to 2026-10-19T00:10:40Z</td><td>Gates, verdicts, PR, sign-off, merge</td></tr>
+          <tr><th scope="row">docs/trace/requirements-matrix.md</th><td><span class="prov prov-generated">generated</span> *</td><td><span class="gap">none</span></td><td>Chain row, test total</td></tr>
+          <tr><th scope="row">docs/qa/build-F2.md</th><td><span class="prov prov-written">written</span></td><td class="mono">2026-10-19, signed 19/10/2026 01:05</td><td>QA step and sign-off</td></tr>
+          <tr><th scope="row">docs/trace/build/F2/README.md</th><td><span class="prov prov-generated">generated</span></td><td class="mono">2026-10-19T00:07:57Z</td><td>Header stamp, status</td></tr>
+        </tbody>
+      </table>
+      </div>
+      <ul class="note" style="padding:0">
+        <li><span class="prov prov-generated">generated</span> compiled by a script from other files; do not edit.</li>
+        <li style="margin-top:0.25rem"><span class="prov prov-recorded">recorded</span> appended by the orchestrator, one line per event, as the loop ran.</li>
+        <li style="margin-top:0.25rem"><span class="prov prov-written">written</span> authored by a person in a document.</li>
+        <li style="margin-top:0.25rem">* Inferred: the F2 README states that render-trace.mjs generates the trace files; the matrix's and walkthrough's own headers are not in the excerpt.</li>
+      </ul>
+    </section>
+
+    <section class="region" aria-labelledby="h-states">
+      <h2 id="h-states">States of this screen</h2>
+      <p class="sub">Each state is an example of the design, not an observation. The populated view is above.</p>
+      <div class="states">
+
+        <div class="state" data-state="loading">
+          <h3>Loading: diff-viewer</h3>
+          <div class="body" aria-busy="true">
+            <p class="st s-pending"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Loading diff of <span class="mono">92ede9e</span></p>
+            <div class="sk tall"></div>
+            <div class="sk" style="width:92%"></div>
+            <div class="sk" style="width:78%"></div>
+            <div class="sk" style="width:85%"></div>
+            <p class="placeholder">Static skeleton, no animation. The rest of the page stays readable while it loads.</p>
+          </div>
+        </div>
+
+        <div class="state" data-state="error">
+          <h3>Error: diff-viewer</h3>
+          <div class="body err">
+            <p class="errline"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>Error: the diff of <span class="mono">94a7473</span> did not load</p>
+            <p>The request for the diff failed. Nothing else on this page depends on it.</p>
+            <p><a href="https://github.com/dpmorgandev/uinsure-policies-api/commit/94a7473">Open the commit on GitHub<svg class="icon" aria-hidden="true" style="margin-left:0.25em"><use href="#i-ext"/></svg></a></p>
+            <p class="placeholder">Example state, not an observation.</p>
+          </div>
+        </div>
+
+        <div class="state" data-state="not-built">
+          <h3>Not built: a rule that has no build yet</h3>
+          <div class="body">
+            <p><span class="chip" style="border-style:dashed">ID-0</span> <span class="placeholder">Placeholder ID, not a real rule.</span></p>
+            <div class="nbbox"><b>not built yet</b> <span>No red, green, refactor, QA step, sign-off or PR exists for this rule. Absence is not failure.</span></div>
+            <ol class="chain" style="grid-template-columns:repeat(3,minmax(0,1fr));margin-top:0">
+              <li style="border-left-style:dashed"><span class="eyebrow">Red</span><span class="gap">not built yet</span></li>
+              <li style="border-left-style:dashed"><span class="eyebrow">Green</span><span class="gap">not built yet</span></li>
+              <li style="border-left-style:dashed"><span class="eyebrow">QA step</span><span class="gap">not built yet</span></li>
+            </ol>
+          </div>
+        </div>
+
+        <div class="state" data-state="long-content">
+          <h3>Long content: a loop detail that runs long</h3>
+          <div class="body">
+            <p class="sub">Event 2, <span class="mono">gate.stub</span>, verbatim. The box wraps, then scrolls; nothing is cut.</p>
+            <div class="scrollbox" tabindex="0" role="region" aria-label="Event 2 detail, verbatim">25 total, 13 failed, 12 passed. (a) 5 pass by the canned status Active coinciding: Policy_sold_to_start_today_reads_back_Active, Status_on_the_start_date_is_Active, Status_on_the_end_date_is_Active, Status_at_23_30_UTC_on_an_end_date_in_GMT_is_Active, Status_at_22_59_UTC_on_an_end_date_in_BST_is_Active. (b) 7 pass on behaviour already delivered by F1/F1b: the four RetrieveNotFoundTests 404 rows; Today_inside_the_first_of_two_terms_shows_the_first_term, Last_day_of_the_first_term_still_shows_the_first_term, Unpaid_second_term_reads_back_with_no_payment_reference_and_no_payment. David: fix (a), accept (b) as pinned.</div>
+            <p class="placeholder">Long test names break anywhere, so a narrow screen scrolls the box and not the page.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+</body>
+</html>
