@@ -1,0 +1,42 @@
+screens: screens/matrix/populated.html: screen CSS: "margin-block-end" is not a layout property
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: <td.kit-data-table__anywhere.kit-data-table__cell.kit-data-table__mono> inside data-table is not in data-table's stylekit markup
+screens: screens/matrix/populated.html: "#24" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/matrix/loading.html: screen CSS: "margin-block-end" is not a layout property
+screens: screens/matrix/loading.html: <span.kit-status-tag__pending.kit-status-tag__tag> inside page-header is not in page-header's stylekit markup
+screens: screens/matrix/loading.html: <svg.kit-status-tag__icon.lucide.lucide-clock> inside page-header is not in page-header's stylekit markup
+screens: screens/matrix/error.html: screen CSS: "margin-block-end" is not a layout property
+screens: screens/matrix/error.html: <span.kit-status-tag__fail.kit-status-tag__tag> inside page-header is not in page-header's stylekit markup
+screens: screens/matrix/error.html: <svg.kit-status-tag__icon.lucide.lucide-x> inside page-header is not in page-header's stylekit markup
+screens: screens/matrix/not-built.html: screen CSS: "margin-block-end" is not a layout property
+screens: screens/matrix/disagreement.html: screen CSS: "margin-block-end" is not a layout property
+screens: screens/matrix/disagreement.html: <span.kit-status-tag__tag.kit-status-tag__warn> inside page-header is not in page-header's stylekit markup
+screens: screens/matrix/disagreement.html: <svg.kit-status-tag__icon.lucide.lucide-alert-triangle.lucide-triangle-alert> inside page-header is not in page-header's stylekit markup
+screens: screens/matrix/disagreement.html: "06:33" is not in the fixture, the stylekit or the brief (HONEST-1)
