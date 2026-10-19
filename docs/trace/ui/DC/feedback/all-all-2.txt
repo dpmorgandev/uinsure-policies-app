@@ -1,0 +1,7 @@
+Steer D1 from David (pause2): "steer attempt 2 with the count corrections"
+
+The corrections he approved, checked against docs/trace/requirements-matrix.md:
+- cross-reference-grid's explorer signature move says "The 8 built rows ... the 21 not-built rows". It is the reverse: 21 rules are built and 8 are not built yet (CANCEL-5, RENEW-1/2, RENEW-3a, RENEW-3b, RENEW-4, RENEW-5, RENEW-6, COULD-3).
+- It says GET-1's refactor cell `80d3ee2` "stands alone in an otherwise empty column". Four rules have a refactor commit: GET-1 80d3ee2, CANCEL-2 19da300, COULD-1 9be38f7, COULD-2 ebbab99.
+
+Every number in a signature move must be read from the research files, never estimated (HONEST-1).
