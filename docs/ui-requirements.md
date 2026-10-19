@@ -166,7 +166,7 @@ running locally, recorded as the workbench's design fixture.
 | ID | Priority | Requirement | Draft interpretation |
 |---|---|---|---|
 | WB-1 | MUST | Sell form | Every field of the sell request, 1–3 policyholders, the reference normalisation preview (SELL-1) |
-| WB-2 | MUST | Policy view | By reference: status, current term, terms timeline (cooling-off and renewal windows shaded), holders, property, payments, refunds, claims |
+| WB-2 | MUST | Policy view | By reference: status, current term, terms timeline (the dates the API returns; no window is shaded or computed), holders, property, payments, refunds, claims |
 | WB-3 | MUST | Problem details | Every 400/404/409/422 rendered from its ProblemDetails, each violation as a rule chip that links to RULE-1 for that rule |
 | WB-4 | SHOULD | Cancel with quote | Quote, then cancel, showing `ruleApplied`, the day counts and the refund maths, and that quote and cancellation agree |
 | WB-5 | SHOULD | Claims and renew | Record a claim and see the quote drop to £0; renew inside the window; cheque blocked for auto-renew |
