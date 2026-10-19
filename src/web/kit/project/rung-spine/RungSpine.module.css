@@ -1,6 +1,7 @@
 /* The spine lays out by the width of its own box: a narrow pane moves the rail to the left edge as a phone does. */
 .root {
   container-type: inline-size;
+  position: relative;
   min-width: 0;
   max-width: 100%;
   font-family: var(--font-sans);

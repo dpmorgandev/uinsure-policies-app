@@ -48,7 +48,7 @@ export const examples: { state: string; element: JSX.Element }[] = [
   {
     state: 'long',
     element: (
-      <div style={{ maxWidth: '26rem' }}>
+      <div style={{ maxWidth: 'min(26rem, 100%)' }}>
         <MarkdownText source={LONG} />
       </div>
     ),

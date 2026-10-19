@@ -1,4 +1,5 @@
 .root {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
@@ -158,6 +159,7 @@ a.ref {
 }
 
 .scroll {
+  position: relative;
   max-width: 100%;
   overflow-x: auto;
 }
@@ -173,7 +175,6 @@ a.ref {
  */
 .table {
   width: 100%;
-  min-width: 44rem;
   border-collapse: collapse;
   font-size: var(--text-14);
   overflow-wrap: normal;
@@ -185,7 +186,7 @@ a.ref {
 }
 
 .cellWhat {
-  min-width: 16rem;
+  min-width: 12rem;
   overflow-wrap: break-word;
 }
 

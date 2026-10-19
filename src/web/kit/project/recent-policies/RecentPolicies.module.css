@@ -1,8 +1,9 @@
 .root {
+  position: relative;
   display: grid;
   gap: var(--space-3);
   min-width: 0;
-  max-width: 34rem;
+  max-width: min(34rem, 100%);
   padding: var(--space-3) var(--space-4);
   font-family: var(--font-sans);
   font-size: var(--text-14);

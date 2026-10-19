@@ -1,5 +1,6 @@
 .card {
   --c: var(--color-text-secondary);
+  position: relative;
   box-sizing: border-box;
   min-width: 0;
   max-width: 100%;

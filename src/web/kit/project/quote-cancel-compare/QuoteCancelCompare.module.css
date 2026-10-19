@@ -1,4 +1,5 @@
 .root {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
@@ -29,6 +30,7 @@
 }
 
 .frame {
+  position: relative;
   max-width: 100%;
   overflow-x: auto;
   border-radius: var(--radius);
@@ -39,10 +41,10 @@
   outline-offset: 2px;
 }
 
-/* Four columns of API values do not squeeze: a narrow pane scrolls the table inside its frame. */
+/* Four columns of API values do not squeeze below about 30rem: a narrower pane scrolls the table inside its frame. */
 .table {
   width: 100%;
-  min-width: 34rem;
+  min-width: 30rem;
   border-collapse: collapse;
 }
 
