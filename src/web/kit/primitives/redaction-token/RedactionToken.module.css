@@ -1,0 +1,46 @@
+.token {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-2) 0 var(--space-1);
+  font-size: var(--text-14);
+  line-height: 1.4;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-text-secondary);
+  border-radius: var(--radius);
+  white-space: nowrap;
+}
+
+.icon {
+  flex: none;
+  width: 1em;
+  height: 1em;
+  color: var(--color-text-secondary);
+}
+
+.code {
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.label {
+  font-family: var(--font-sans);
+  font-size: var(--text-12);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

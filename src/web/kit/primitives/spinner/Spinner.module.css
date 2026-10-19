@@ -1,0 +1,46 @@
+.spinner {
+  display: inline-flex;
+  width: 1em;
+  height: 1em;
+  flex: none;
+  vertical-align: -0.125em;
+}
+
+.glyph {
+  width: 100%;
+  height: 100%;
+}
+
+.spin {
+  animation: rotate calc(var(--duration-medium) * 5) linear infinite;
+}
+
+.static {
+  display: none;
+}
+
+@keyframes rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner[data-still="true"] .spin {
+  display: none;
+  animation: none;
+}
+
+.spinner[data-still="true"] .static {
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spin {
+    display: none;
+    animation: none;
+  }
+
+  .static {
+    display: inline-block;
+  }
+}

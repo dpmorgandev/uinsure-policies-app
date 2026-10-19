@@ -1,0 +1,27 @@
+.link {
+  display: inline;
+  font-family: var(--font-mono);
+  font-size: var(--text-14);
+  line-height: 1.4;
+  color: var(--color-primary);
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+}
+
+.link:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+.text {
+  overflow-wrap: anywhere;
+}
+
+.icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  margin-left: var(--space-1);
+  vertical-align: -0.125em;
+}

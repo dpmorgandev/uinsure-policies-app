@@ -1,0 +1,4 @@
+/* Added to the input TextInput draws; the field, its invalid state and its focus ring come from there. */
+.date {
+  letter-spacing: 0.04em;
+}

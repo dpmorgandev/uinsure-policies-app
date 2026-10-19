@@ -1,0 +1,58 @@
+.wrap {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.select {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-6) var(--space-2) var(--space-3);
+  appearance: none;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  border: 2px solid var(--color-text-secondary);
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  font-size: var(--text-18);
+  line-height: 1.5;
+  cursor: pointer;
+}
+
+.select:focus-visible,
+.select[data-show-focus] {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.select[aria-invalid="true"] {
+  border-color: var(--color-error);
+  border-width: 3px;
+  padding-right: var(--space-7);
+}
+
+.select:disabled {
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.chevron {
+  position: absolute;
+  top: 50%;
+  right: var(--space-2);
+  transform: translateY(-50%);
+  color: var(--color-text-primary);
+  pointer-events: none;
+}
+
+.invalidGlyph {
+  position: absolute;
+  top: 50%;
+  right: var(--space-5);
+  transform: translateY(-50%);
+  color: var(--color-error);
+  pointer-events: none;
+}
