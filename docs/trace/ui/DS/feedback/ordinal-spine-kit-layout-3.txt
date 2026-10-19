@@ -1,0 +1,13 @@
+Steer D1 (David, after screens wave 2), his word: "agree", to this proposal:
+run the agent-lanes kit fix, so the stylekit shows the neutral tick (an event with no TDD trailer,
+drawn with Minus), then rebuild the stylekit and re-audit everything.
+
+Why: AgentLanes renders an event with no TDD trailer as <li class="kit-agent-lanes__none
+kit-agent-lanes__tick"> with the Minus icon, but no agent-lanes example has such an event, so the
+stylekit (generated from the examples) never shows it. The real activity log has 191 such events,
+and a screen may only paste markup the stylekit shows. The fix is in agent-lanes' examples: at least
+one listed state with events that carry no TDD trailer beside ones that do. Change nothing else.
+
+audit-screens.mjs on the activity screen, verbatim (each line repeats once per tick; distinct lines):
+screens: screens/activity/populated.html: <li.kit-agent-lanes__none.kit-agent-lanes__tick> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
