@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GET-1 · Retrieve a policy · rule</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --border: #cecece;
+  --accent: #3d5a6c;
+  --text: #0b0c0c;
+  --text-2: #484949;
+  --primary: #1a65a6;
+  --error: #ca3535;
+  --success: #0f7a52;
+  --warn: #8a5a00;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+}
+[data-theme="dark"] {
+  --bg: #17191c;
+  --surface: #1f2226;
+  --border: #3a3f45;
+  --accent: #9db7c7;
+  --text: #e8e6e1;
+  --text-2: #a9adb3;
+  --primary: #7cb3e6;
+  --error: #fa4d56;
+  --success: #42be65;
+  --warn: #e0a63a;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 3.5rem; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+code, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums lining-nums; }
+code { font-size: 0.92em; }
+a { color: var(--primary); text-underline-offset: 0.15em; }
+a:focus-visible, button:focus-visible, .scroll:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; vertical-align: -0.125em; }
+
+/* top line: the only navigation */
+.top { border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 3; }
+.top-in { max-width: 82rem; margin: 0 auto; padding: 0.6rem 1.5rem; }
+.crumbs { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.25rem 0.5rem; font-size: 0.9375rem; }
+.crumbs li + li::before { content: "/"; color: var(--text-2); margin-right: 0.5rem; }
+.crumbs a[aria-current="page"] { color: var(--text); font-weight: 600; text-decoration: none; }
+
+.page { max-width: 82rem; margin: 0 auto; padding: 1.5rem 1.5rem 4rem; }
+
+/* the manuscript line: sentence left, receipt right */
+.line {
+  display: grid;
+  grid-template-columns: minmax(0, 64ch) minmax(15rem, 22rem);
+  column-gap: 2.5rem;
+  align-items: start;
+  margin: 0 0 1.35rem;
+}
+.line > p, .line > blockquote, .line > .col { margin: 0; }
+.line > blockquote { padding-left: 1rem; border-left: 3px solid var(--border); }
+.col > * + * { margin-top: 0.75rem; }
+
+.note {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  padding: 0.55rem 0.75rem;
+  border-radius: 2px;
+  overflow-wrap: anywhere;
+}
+.note > * + * { margin-top: 0.4rem; }
+.note p { margin: 0; }
+.note-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 0.5rem; }
+.mk {
+  display: inline-block;
+  min-width: 1.25em;
+  padding: 0 0.25em;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.35;
+  border: 1px solid var(--text-2);
+  color: var(--text-2);
+  border-radius: 2px;
+}
+sup.mk { vertical-align: super; margin-left: 0.2em; font-size: 0.7rem; }
+.prov { font-family: var(--font-mono); font-size: 0.75rem; padding: 0 0.4em; border-radius: 2px; color: var(--text); }
+.prov-generated { border: 1.5px solid var(--accent); }
+.prov-recorded { border: 1.5px dotted var(--accent); }
+.prov-written { border: 1.5px dashed var(--accent); }
+.fl { font-family: var(--font-mono); font-size: 0.8125rem; }
+.sha { font-family: var(--font-mono); font-weight: 600; }
+.chip {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: 600;
+  padding: 0 0.4em;
+  border: 1px solid var(--primary);
+  border-radius: 3px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.chip-nb { border: 1.5px dashed var(--text-2); color: var(--text-2); }
+.val { font-family: var(--font-mono); font-size: 0.8125rem; }
+
+/* status tag: a word, a glyph, a colour */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  padding: 0 0.5em 0 0.35em;
+  border: 1.5px solid currentColor;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.tag-pass { color: var(--success); }
+.tag-fail { color: var(--error); }
+.tag-warn { color: var(--warn); }
+.tag-pend { color: var(--text-2); }
+.tag-nb { color: var(--text-2); border-style: dashed; }
+
+.eyebrow {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.6rem;
+  margin: 0;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  font-weight: 600;
+}
+h1 {
+  margin: 0;
+  font-size: clamp(1.9rem, 4.2vw, 2.75rem);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+h2 { margin: 0 0 0.3rem; font-size: 1.5rem; line-height: 1.25; font-weight: 650; }
+h3 { margin: 0 0 0.4rem; font-size: 1.0625rem; font-weight: 650; }
+.section { margin-top: 3.25rem; }
+.section > .eyebrow { margin-bottom: 0.2rem; }
+.section > h2 { margin-bottom: 1rem; }
+.lede { font-size: 1.1875rem; }
+
+.stack { list-style: none; margin: 0; padding: 0; }
+.stack li { position: relative; padding: 0 0 0.55rem 1.1rem; border-left: 2px solid var(--accent); margin-left: 0.3rem; }
+.stack li:last-child { padding-bottom: 0; border-left-color: transparent; }
+.stack li::before {
+  content: ""; position: absolute; left: -0.36rem; top: 0.35rem;
+  width: 0.7rem; height: 0.7rem; border-radius: 50%;
+  background: var(--surface); border: 2px solid var(--accent);
+}
+.stack .row1 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; }
+.stack .sub { display: block; color: var(--text-2); font-size: 0.8125rem; margin-top: 0.1rem; }
+.kv { display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.75rem; margin: 0; }
+.kv dt { color: var(--text-2); }
+.kv dd { margin: 0; overflow-wrap: anywhere; }
+.kv dd.num { text-align: right; font-family: var(--font-mono); }
+
+.legend { display: grid; gap: 0.35rem; margin: 0 0 0.5rem; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 2px; max-width: 64ch; font-size: 0.9375rem; }
+.legend div { display: flex; flex-wrap: wrap; gap: 0.25rem 0.75rem; align-items: baseline; }
+.legend dt { flex: none; }
+.legend dd { margin: 0; color: var(--text-2); }
+.legend-title { margin: 0 0 0.4rem; font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-2); }
+
+.gap { border: 1.5px dashed var(--text-2); color: var(--text-2); padding: 0.4rem 0.6rem; border-radius: 3px; font-size: 0.9375rem; }
+
+.chain { margin: 0.75rem 0 0; padding-left: 1.6rem; max-width: 64ch; font-size: 0.9375rem; }
+.chain li { margin-bottom: 0.2rem; }
+figure { margin: 0; }
+figcaption { font-size: 0.875rem; color: var(--text-2); margin-bottom: 1.1rem; max-width: 64ch; }
+
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5em;
+  font: inherit; font-weight: 600; font-size: 0.9375rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 3px;
+  cursor: pointer;
+  border: 2px solid var(--primary);
+  background: var(--primary);
+  color: var(--surface);
+}
+.btn-2 { background: transparent; color: var(--text); border-color: var(--text-2); }
+.btn[disabled] { cursor: progress; background: transparent; color: var(--text); border-color: var(--text-2); }
+.spin { animation: rot 0.9s linear infinite; }
+@keyframes rot { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+.btn-row { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: center; }
+.label-sm { margin: 0 0 0.35rem; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700; color: var(--text-2); }
+
+.diff { background: var(--surface); border: 1px solid var(--border); border-radius: 2px; max-width: 64ch; }
+.diff + .diff { margin-top: 0.75rem; }
+.diff-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.75rem; padding: 0.55rem 0.75rem; }
+.diff-body { padding: 0 0.75rem 0.75rem; }
+.diff-body p { margin: 0 0 0.4rem; font-size: 0.9375rem; }
+pre.cmd {
+  margin: 0.25rem 0 0.75rem;
+  padding: 0.7rem 0.85rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.states { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; align-items: start; }
+.state { background: var(--surface); border: 1px solid var(--border); border-radius: 2px; padding: 0.9rem 1rem 1rem; min-width: 0; }
+.state-wide { grid-column: 1 / -1; }
+.state-label { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin: 0 0 0.7rem; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700; color: var(--text-2); }
+.state p { margin: 0 0 0.6rem; }
+.sk { height: 0.8rem; margin-bottom: 0.55rem; background: color-mix(in srgb, var(--text-2) 22%, transparent); border-radius: 2px; }
+.sk-w1 { width: 92%; } .sk-w2 { width: 78%; } .sk-w3 { width: 60%; }
+.sk-note { height: 3rem; margin-left: 40%; }
+.nb { border: 1.5px dashed var(--text-2); color: var(--text-2); padding: 0.45rem 0.7rem; border-radius: 3px; margin-bottom: 0.5rem; font-size: 0.9375rem; }
+.nb strong { color: var(--text); }
+.scroll { max-height: 21rem; overflow: auto; border: 1px solid var(--border); border-radius: 2px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 0.875rem; }
+caption { text-align: left; padding: 0.55rem 0.75rem; font-size: 0.875rem; color: var(--text-2); }
+th, td { text-align: left; vertical-align: top; padding: 0.35rem 0.75rem; border-top: 1px solid var(--border); }
+thead th { position: sticky; top: 0; background: var(--surface); z-index: 1; border-top: 0; border-bottom: 2px solid var(--text-2); white-space: nowrap; }
+td.n, th.n { text-align: right; font-family: var(--font-mono); }
+.long-note { font-family: var(--font-mono); font-size: 0.8125rem; overflow-wrap: anywhere; background: var(--bg); border: 1px solid var(--border); padding: 0.5rem 0.65rem; border-radius: 2px; margin: 0 0 0.75rem; }
+
+.foot { margin-top: 3.25rem; font-size: 0.875rem; color: var(--text-2); max-width: 64ch; }
+
+@media (max-width: 62rem) {
+  .line { grid-template-columns: minmax(0, 1fr); row-gap: 0.5rem; }
+  .states { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 30rem) {
+  .page, .top-in { padding-left: 1rem; padding-right: 1rem; }
+}
+</style>
+</head>
+<body data-screen-id="rule">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/><path d="M6.453 15h11.094"/><path d="M8.5 2h7"/></symbol>
+  <symbol id="i-commit" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><line x1="3" x2="9" y1="12" y2="12"/><line x1="15" x2="21" y1="12" y2="12"/></symbol>
+  <symbol id="i-pr" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" x2="6" y1="9" y2="21"/></symbol>
+  <symbol id="i-gavel" viewBox="0 0 24 24"><path d="m14.5 12.5-8 8a2.119 2.119 0 1 1-3-3l8-8"/><path d="m16 16 6-6"/><path d="m8 8 6-6"/><path d="m9 7 8 8"/><path d="m21 11-8-8"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+  <symbol id="i-spin" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></symbol>
+  <symbol id="i-busy" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="top-in">
+    <nav aria-label="Breadcrumb">
+      <ol class="crumbs">
+        <li><a href="#plan-build">build</a></li>
+        <li><a href="#node-f2">F2 Retrieve</a></li>
+        <li><a href="#rule-get-1" aria-current="page">GET-1</a></li>
+      </ol>
+    </nav>
+  </div>
+</header>
+
+<main class="page">
+
+<!-- The question this page answers: did GET-1's tests fail before its code made them pass, and who signed it off? -->
+<section aria-labelledby="answer">
+  <div class="line">
+    <div class="col">
+      <p class="eyebrow"><svg class="ic" aria-hidden="true"><use href="#i-flask"/></svg> Rule <a class="chip" href="#rule-get-1">GET-1</a> Retrieve a policy · build/F2</p>
+      <h1 id="answer">The GET-1 tests failed before the code passed them, and David signed it off.</h1>
+      <p class="lede">At the red gate, 21 of the 25 GET-1 tests failed. The other 4, the 404 rows, were already answered by the F1 bare GET, so they were pinned, not counted as red.<sup class="mk">1</sup></p>
+    </div>
+    <aside class="note" aria-label="Receipt 1: red above green, then the sign-off">
+      <p class="note-head"><span class="mk">1</span> <span class="prov prov-generated">generated</span> <a class="fl" href="#walkthrough">build/F2 walkthrough</a></p>
+      <ol class="stack">
+        <li><div class="row1"><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>Failing</span> <span>red</span> <a class="sha" href="#commit-94a7473">94a7473</a> <span class="val">row 5</span></div></li>
+        <li><div class="row1"><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Passing</span> <span>green</span> <a class="sha" href="#commit-92ede9e">92ede9e</a> <span class="val">row 17</span></div></li>
+        <li><div class="row1"><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-gavel"/></svg>Signed</span> <span>David</span> <span class="val">2026-10-19</span></div><span class="sub">from the requirements matrix</span></li>
+      </ol>
+    </aside>
+  </div>
+
+  <div class="line">
+    <p>PR #17 is merged: David merged it in the GitHub UI at <code>2026-10-19T00:10:40Z</code>. The page this one is compiled from was stamped earlier, at <code>2026-10-19T00:07:57Z</code>, and still reads &ldquo;merge pending&rdquo;.<sup class="mk">2</sup></p>
+    <aside class="note" aria-label="Receipt 2: two sources, two moments">
+      <p class="note-head"><span class="mk">2</span> <span class="tag tag-warn"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>Warning</span> two sources, shown both</p>
+      <p><span class="prov prov-recorded">recorded</span> <span class="fl">loop.jsonl</span> <code>merged(ad7b6b0)</code> at <code>2026-10-19T00:10:40Z</code></p>
+      <p><span class="prov prov-generated">generated</span> <a class="fl" href="#node-f2">build/F2 README</a> &ldquo;done · PR #17 · merge pending&rdquo;, compiled <code>2026-10-19T00:07:57Z</code></p>
+      <p><a class="fl" href="https://github.com/dpmorgandev/uinsure-policies-api/pull/17">PR #17 on GitHub <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg></a></p>
+    </aside>
+  </div>
+
+  <div class="line">
+    <div class="col">
+      <p class="legend-title">How to read the margin</p>
+      <dl class="legend">
+        <div><dt><span class="prov prov-generated">generated</span></dt><dd>compiled by render-trace.mjs from the trail; not edited by hand.</dd></div>
+        <div><dt><span class="prov prov-recorded">recorded</span></dt><dd>logged as it happened, by the orchestrator, in loop.jsonl.</dd></div>
+        <div><dt><span class="prov prov-written">written</span></dt><dd>authored in a document: the requirements table or the QA sheet.</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- Region 1 -->
+<section class="section" data-req="RULE-1" aria-labelledby="h-rule">
+  <p class="eyebrow">The rule</p>
+  <h2 id="h-rule">What GET-1 says, as agreed</h2>
+
+  <div class="line">
+    <blockquote>By reference. Returns the policy, its terms, policyholders, property, payments, refunds and claims. <strong class="mono">404</strong> if not found.<sup class="mk">3</sup></blockquote>
+    <aside class="note" aria-label="Receipt 3: the requirement row">
+      <p class="note-head"><span class="mk">3</span> <span class="prov prov-written">written</span> <a class="fl" href="#requirements-get-1">docs/requirements.md</a></p>
+      <p>Row <a class="chip" href="#rule-get-1">GET-1</a>, named &ldquo;Retrieve a policy&rdquo;. Its one status code is <code>404</code>.</p>
+    </aside>
+  </div>
+
+  <div class="line">
+    <blockquote>The policy-level <code>startDate</code>, <code>endDate</code> and <code>amount</code> describe the <strong>current term</strong>: the term in force today, or the latest term if today is outside them all. <code>terms[]</code> holds the history.<sup class="mk">4</sup></blockquote>
+    <aside class="note" aria-label="Receipt 4: the agreed interpretation">
+      <p class="note-head"><span class="mk">4</span> <span class="prov prov-written">written</span> <a class="fl" href="#requirements-get-1">docs/requirements.md</a></p>
+      <p>The same row. It fixes what &ldquo;current&rdquo; means for three fields; the history stays in <code>terms[]</code>.</p>
+    </aside>
+  </div>
+
+  <div class="line">
+    <blockquote>Status: derived from today, never stored: <code>Pending</code> (today before the first start), <code>Active</code>, <code>Expired</code> (today after the last end), or <code>Cancelled</code>, which overrides the others.<sup class="mk">5</sup></blockquote>
+    <aside class="note" aria-label="Receipt 5: the status row">
+      <p class="note-head"><span class="mk">5</span> <span class="prov prov-written">written</span> <a class="fl" href="#requirements-get-1">docs/requirements.md</a></p>
+      <p>A row with <code>&mdash;</code> where the rule ID would be, named &ldquo;Status&rdquo;. It carries no rule ID of its own; this page keeps it with GET-1.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- Region 2: the signature -->
+<section class="section" data-req="RULE-2" aria-labelledby="h-order">
+  <p class="eyebrow"><svg class="ic" aria-hidden="true"><use href="#i-commit"/></svg> Red before green</p>
+  <h2 id="h-order">Did the test fail first?</h2>
+
+  <figure>
+    <figcaption>Figure. The order of events for GET-1, one sentence at a time, each with its receipt in the margin on the same line. Every SHA and timestamp is as the trail records it; the numbered list at the end of the figure says the same in plain order.</figcaption>
+
+    <div class="line">
+      <p>Yes. The red commit, <a class="sha" href="#commit-94a7473">94a7473</a>, is row 5 of the build/F2 walkthrough. The commit that made the tests pass, <a class="sha" href="#commit-92ede9e">92ede9e</a>, is row 17.<sup class="mk">6</sup></p>
+      <aside class="note" aria-label="Receipt 6: red above green">
+        <p class="note-head"><span class="mk">6</span> <span class="prov prov-generated">generated</span> <a class="fl" href="#walkthrough">walkthrough.md</a></p>
+        <ol class="stack">
+          <li><div class="row1"><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>Failing</span> <a class="sha" href="#commit-94a7473">94a7473</a> <span class="val">row 5</span></div><span class="sub">red · tests layer · tester</span></li>
+          <li><div class="row1"><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Passing</span> <a class="sha" href="#commit-92ede9e">92ede9e</a> <span class="val">row 17</span></div><span class="sub">green · api layer · builder</span></li>
+        </ol>
+      </aside>
+    </div>
+
+    <div class="line">
+      <p>The red gate agreed. It ran with the tests expected to fail, they did, and the gate passed: 25 GET-1 tests in total, 21 failed. The 4 that passed are the 404 rows, answered earlier by the F1 bare GET and pinned.<sup class="mk">7</sup></p>
+      <aside class="note" aria-label="Receipt 7: the red gate">
+        <p class="note-head"><span class="mk">7</span> <span class="prov prov-recorded">recorded</span> <span class="fl">loop.jsonl</span></p>
+        <p><code>gate.red</code> · <code>2026-10-18T22:22:53Z</code></p>
+        <p><code>exit 2</code> · <code>expect fail</code> · <code>ok true</code></p>
+        <p><code>25 total, 21 failed</code> at head <code>b7d5b5a</code></p>
+        <p><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Passing</span> the gate, not the tests</p>
+      </aside>
+    </div>
+
+    <div class="line">
+      <p>The stub gate failed once before it passed. At <a class="sha" href="#commit-305789d">305789d</a> only 13 of the 25 failed: 5 passed by coincidence with the canned status Active, and 7 on behaviour an earlier node had delivered. On attempt 2 it passed, with 21 failing and only the 4 pinned 404 rows passing. Row 9&rsquo;s message says the canned status and term number now match no expected value.<sup class="mk">8</sup></p>
+      <aside class="note" aria-label="Receipt 8: the stub gate, twice">
+        <p class="note-head"><span class="mk">8</span> <span class="prov prov-recorded">recorded</span> <span class="fl">loop.jsonl</span></p>
+        <ol class="stack">
+          <li><div class="row1"><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>Failing</span> <code>gate.stub</code> <code>ok false</code></div><span class="sub"><code>2026-10-18T22:26:06Z</code> · attempt 1 · <code>13 failed, 12 passed</code></span></li>
+          <li><div class="row1"><span class="tag tag-pend"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span> <code>attempt++</code> 1 &rarr; 2</div><span class="sub"><code>2026-10-18T22:26:21Z</code></span></li>
+          <li><div class="row1"><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Passing</span> <code>gate.stub</code> <code>ok true</code></div><span class="sub"><code>2026-10-18T22:29:54Z</code> · attempt 2 · <code>21 failed</code></span></li>
+        </ol>
+        <p><span class="prov prov-generated">generated</span> stub rows <a class="sha" href="#commit-2f81a40">2f81a40</a> <span class="val">row 7</span>, <a class="sha" href="#commit-8988ed8">8988ed8</a> <span class="val">row 9</span></p>
+      </aside>
+    </div>
+
+    <div class="line">
+      <p>Then green. The green gate passed at <code>2026-10-18T22:42:11Z</code> with 365 of 365 tests across the whole solution, not only GET-1.<sup class="mk">9</sup></p>
+      <aside class="note" aria-label="Receipt 9: the green gate">
+        <p class="note-head"><span class="mk">9</span> <span class="prov prov-recorded">recorded</span> <span class="fl">loop.jsonl</span></p>
+        <p><code>gate.green</code> · <code>exit 0</code> · <code>expect pass</code> · <code>ok true</code></p>
+        <p><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Passing</span> <code>365/365</code>, head <code>cbb4c7c</code></p>
+        <p>Diff <code>f6eea6b..HEAD</code></p>
+      </aside>
+    </div>
+
+    <div class="line">
+      <p>A refactor followed: row 19 (<a class="sha" href="#commit-80d3ee2">80d3ee2</a>) made a code comment true to the code, and row 20 (<a class="sha" href="#commit-98a574d">98a574d</a>) made it true at HEAD. The loop log names this refactor differently, as <code>7023420</code>, corrected in <code>803c898</code>. The trail excerpt doesn&rsquo;t say why the two differ.<sup class="mk">10</sup></p>
+      <aside class="note" aria-label="Receipt 10: two sources name different refactor SHAs">
+        <p class="note-head"><span class="mk">10</span> <span class="tag tag-warn"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>Warning</span> sources differ</p>
+        <dl class="kv">
+          <dt><span class="prov prov-generated">generated</span></dt><dd>matrix and walkthrough: <a class="sha" href="#commit-80d3ee2">80d3ee2</a>, <a class="sha" href="#commit-98a574d">98a574d</a></dd>
+          <dt><span class="prov prov-recorded">recorded</span></dt><dd>loop.jsonl <code>gate.refactor</code>, <code>2026-10-18T22:45:04Z</code>: <code>7023420</code>, then <code>803c898</code>; <code>365/365</code></dd>
+        </dl>
+      </aside>
+    </div>
+
+    <div class="line">
+      <p>A reviewer failed the work at <code>8ea8f60</code>, with findings R1 to R6. The fix went round again red first: five red commits, rows 26 to 30, then three green commits, rows 31 to 33. The gate recorded those 5 reds passing, 373 of 373.<sup class="mk">11</sup></p>
+      <aside class="note" aria-label="Receipt 11: the review round">
+        <p class="note-head"><span class="mk">11</span> <span class="prov prov-recorded">recorded</span> <span class="fl">loop.jsonl</span></p>
+        <ol class="stack">
+          <li><div class="row1"><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>Failing</span> <code>verdict(reviewer,FAIL)</code></div><span class="sub"><code>2026-10-18T22:49:48Z</code> · R1 P1, R2 to R6 P2</span></li>
+          <li><div class="row1"><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>Failing</span> red rows <span class="val">26 to 30</span></div><span class="sub"><a class="sha" href="#commit-357e108">357e108</a> <a class="sha" href="#commit-02e49a2">02e49a2</a> <a class="sha" href="#commit-ef7d2e6">ef7d2e6</a> <a class="sha" href="#commit-2753a64">2753a64</a> <a class="sha" href="#commit-6947971">6947971</a></span></li>
+          <li><div class="row1"><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Passing</span> green rows <span class="val">31 to 33</span></div><span class="sub"><a class="sha" href="#commit-8be3aed">8be3aed</a> <a class="sha" href="#commit-0e107fd">0e107fd</a> <a class="sha" href="#commit-af38b4b">af38b4b</a> · gate <code>2026-10-18T23:21:21Z</code></span></li>
+        </ol>
+      </aside>
+    </div>
+
+    <div class="line">
+      <p>One red has no green after it in the walkthrough lines this page holds. Row 34 (<a class="sha" href="#commit-143e5ba">143e5ba</a>, &ldquo;fix A3/R1&rdquo;) is the last tagged row; the re-review at that commit passed and records A3 R1 closed.<sup class="mk">12</sup></p>
+      <aside class="note" aria-label="Receipt 12: a gap, named">
+        <p class="note-head"><span class="mk">12</span> <span class="tag tag-warn"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>Warning</span> a gap</p>
+        <p class="gap">No green row after row 34 in the lines excerpted.</p>
+        <p><span class="prov prov-recorded">recorded</span> <code>verdict(reviewer,PASS)</code>, <code>2026-10-18T23:32:54Z</code>, head <code>143e5ba</code>: &ldquo;A3 R1 closed&rdquo;</p>
+      </aside>
+    </div>
+
+    <p class="label-sm" id="chain-label">The same order, as a list</p>
+    <ol class="chain" aria-labelledby="chain-label">
+      <li>Requirement GET-1 (written, docs/requirements.md).</li>
+      <li>Red: <code>94a7473</code>, row 5.</li>
+      <li>Stub: <code>2f81a40</code>, row 7; <code>8988ed8</code>, row 9. Red gate recorded <code>2026-10-18T22:22:53Z</code>; stub gate failed once at <code>2026-10-18T22:26:06Z</code>, passed on attempt 2 at <code>2026-10-18T22:29:54Z</code>.</li>
+      <li>Red-tagged trait commits: <code>770a29b</code>, row 12; <code>7b6e4d9</code>, row 14.</li>
+      <li>Green: <code>92ede9e</code>, row 17. Green gate recorded <code>2026-10-18T22:42:11Z</code>.</li>
+      <li>Refactor: <code>80d3ee2</code>, row 19; <code>98a574d</code>, row 20.</li>
+      <li>Review round: red rows 26 to 30, green rows 31 to 33, red row 34 with no green row after it in the excerpt.</li>
+      <li>QA step <code>docs/qa/build-F2.md#1</code>, then sign-off by David, 2026-10-19, then PR #17.</li>
+    </ol>
+  </figure>
+</section>
+
+<!-- Region 3 -->
+<section class="section" data-req="RULE-1" aria-labelledby="h-tests">
+  <p class="eyebrow"><svg class="ic" aria-hidden="true"><use href="#i-flask"/></svg> Tests</p>
+  <h2 id="h-tests">How many tests, and counted from where</h2>
+
+  <div class="line">
+    <p>The requirements matrix counts 59 tests for GET-1, and all 59 pass.<sup class="mk">13</sup></p>
+    <aside class="note" aria-label="Receipt 13: the matrix count">
+      <p class="note-head"><span class="mk">13</span> <span class="prov prov-generated">generated</span> <a class="fl" href="#matrix">requirements-matrix.md</a></p>
+      <p><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Passing</span> <code>59/59</code> &ldquo;tests (pass/total)&rdquo;</p>
+      <p>Row <a class="chip" href="#rule-get-1">GET-1</a>, plan/node <code>build/F2</code>. Counted from that one row.</p>
+    </aside>
+  </div>
+
+  <div class="line">
+    <p>The loop log gives GET-1 counts by project, and they don&rsquo;t add up to 59 on their own. Domain passed 22 of 22 and Services 6 of 6 when their existing tests were given the GET-1 trait with assertions unchanged, so those two were pinned, not red, though the walkthrough tags their commits (rows 12 and 14) red. The Api tests numbered 25 at the red gate. This page doesn&rsquo;t add them, because the excerpt doesn&rsquo;t say how the 59 splits.<sup class="mk">14</sup></p>
+    <aside class="note" aria-label="Receipt 14: counts by project">
+      <p class="note-head"><span class="mk">14</span> <span class="prov prov-recorded">recorded</span> <span class="fl">loop.jsonl</span></p>
+      <dl class="kv">
+        <dt>Domain</dt><dd class="num">22/22 pass</dd>
+        <dt>Services</dt><dd class="num">6/6 pass</dd>
+        <dt>Api, at red</dt><dd class="num">25 total</dd>
+      </dl>
+      <p><span class="tag tag-warn"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>Warning</span> the walkthrough tags <a class="sha" href="#commit-770a29b">770a29b</a> and <a class="sha" href="#commit-7b6e4d9">7b6e4d9</a> red; the gate calls the Domain and Services tests pinned.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- Region 4 -->
+<section class="section" data-req="RULE-1 HITL-1" aria-labelledby="h-qa">
+  <p class="eyebrow"><svg class="ic" aria-hidden="true"><use href="#i-gavel"/></svg> Checked by hand</p>
+  <h2 id="h-qa">QA step and sign-off</h2>
+
+  <div class="line">
+    <p>QA step 1 sold a policy and read it back. The GET answered <code>200</code> with exactly the 16 members and a status of Pending, 3 of 3 <code>pm.test</code> checks passed, and the step&rsquo;s result is PASS.<sup class="mk">15</sup></p>
+    <aside class="note" aria-label="Receipt 15: QA step 1">
+      <p class="note-head"><span class="mk">15</span> <span class="prov prov-written">written</span> <a class="fl" href="#qa-build-f2-1">docs/qa/build-F2.md#1</a></p>
+      <p><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Passing</span> step 1, rule <a class="chip" href="#rule-get-1">GET-1</a></p>
+      <p>Policy read back: <code>F2-MVEHF2QGG5</code></p>
+    </aside>
+  </div>
+
+  <div class="line">
+    <p>The whole sheet passed: 41 of 41 steps, run by the tester agent and verified by the orchestrator, at commit <a class="sha" href="#commit-beba48e" title="beba48e3f7f4efc948d3542dffce87bfe2de33df">beba48e</a>, the PR&rsquo;s head.<sup class="mk">16</sup></p>
+    <aside class="note" aria-label="Receipt 16: the QA sheet">
+      <p class="note-head"><span class="mk">16</span> <span class="prov prov-written">written</span> <a class="fl" href="#qa-build-f2">docs/qa/build-F2.md</a></p>
+      <dl class="kv">
+        <dt>Tester</dt><dd>David Morgan (steps run by the tester agent, verified by the orchestrator)</dd>
+        <dt>Date</dt><dd class="num">2026-10-19</dd>
+        <dt>Commit signed off</dt><dd><code>beba48e3f7f4efc948d3542dffce87bfe2de33df</code></dd>
+        <dt>Steps passed</dt><dd class="num">41 of 41</dd>
+        <dt>Verdict</dt><dd>Accept F2</dd>
+        <dt>Signature</dt><dd class="num">David Morgan 19/10/2026 01:05</dd>
+      </dl>
+    </aside>
+  </div>
+
+  <div class="line">
+    <p>David Morgan signed it off. The matrix records &ldquo;David 2026-10-19&rdquo;, the loop log records &ldquo;David: sign off.&rdquo; at <code>2026-10-19T00:07:35Z</code>, and the sheet carries his signature. One finding went forward to F3: the <code>?REFERENCE</code> errors-key casing.<sup class="mk">17</sup></p>
+    <aside class="note" aria-label="Receipt 17: the sign-off, in three places">
+      <p class="note-head"><span class="mk">17</span> <span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-gavel"/></svg>Signed</span> three sources agree</p>
+      <p><span class="prov prov-generated">generated</span> matrix: <code>David 2026-10-19</code></p>
+      <p><span class="prov prov-recorded">recorded</span> <code>signoff(223102a)</code>, <code>2026-10-19T00:07:35Z</code>; integrate <code>374/0</code> on that head</p>
+      <p><span class="prov prov-written">written</span> sheet: <code>David Morgan 19/10/2026 01:05</code></p>
+      <p>Full head: <code>223102a7c40f2042674e3b677116c446244dfea7</code></p>
+    </aside>
+  </div>
+
+  <div class="line">
+    <p>PR #17 went up as a draft at <code>2026-10-18T23:49:07Z</code>. David merged it in the GitHub UI, and the loop log records the merge at <code>2026-10-19T00:10:40Z</code>.<sup class="mk">18</sup></p>
+    <aside class="note" aria-label="Receipt 18: the pull request">
+      <p class="note-head"><span class="mk">18</span> <span class="prov prov-recorded">recorded</span> <span class="fl">loop.jsonl</span></p>
+      <p><svg class="ic" aria-hidden="true"><use href="#i-pr"/></svg> <code>pr(17)</code>, head <code>beba48e</code></p>
+      <p><code>merged(ad7b6b096e2dba88f3a3c71d860b557b789f5247)</code></p>
+      <p><a class="fl" href="https://github.com/dpmorgandev/uinsure-policies-api/pull/17">PR #17 on GitHub <svg class="ic" aria-hidden="true"><use href="#i-ext"/></svg></a></p>
+    </aside>
+  </div>
+</section>
+
+<!-- Region 5 -->
+<section class="section" data-req="RULE-3" aria-labelledby="h-diffs">
+  <p class="eyebrow"><svg class="ic" aria-hidden="true"><use href="#i-commit"/></svg> Diffs, on request</p>
+  <h2 id="h-diffs">What the red and green work touched</h2>
+
+  <div class="line">
+    <p>The red work changed tests only. At the red gate, the diff since <code>2cdf88e</code> touched <code>tests/**</code>, the Postman collection and <code>pending.txt</code>, and removed 0 lines of <code>src</code>.<sup class="mk">19</sup></p>
+    <aside class="note" aria-label="Receipt 19: files at the red gate">
+      <p class="note-head"><span class="mk">19</span> <span class="prov prov-recorded">recorded</span> <span class="fl">loop.jsonl</span></p>
+      <p><code>gate.red</code>, <code>git diff --name-only 2cdf88e..HEAD</code></p>
+      <p>&ldquo;Diff tests/** + postman + pending.txt only; 0 src lines removed&rdquo;</p>
+    </aside>
+  </div>
+
+  <div class="line">
+    <p>The green work changed source. At the green gate, the diff since <code>f6eea6b</code> is <code>PolicyMappings.cs</code>, <code>TwoDecimalPlacesConverter.cs</code>, <code>RejectUnknownQueryParametersFilter.cs</code> and <code>Program.cs</code>.<sup class="mk">20</sup></p>
+    <aside class="note" aria-label="Receipt 20: files at the green gate">
+      <p class="note-head"><span class="mk">20</span> <span class="prov prov-recorded">recorded</span> <span class="fl">loop.jsonl</span></p>
+      <p><code>gate.green</code>, <code>2026-10-18T22:42:11Z</code>, diff <code>f6eea6b..HEAD</code></p>
+    </aside>
+  </div>
+
+  <div class="line">
+    <div class="col">
+      <p class="label-sm">Diff viewer, ready to load</p>
+      <div class="diff">
+        <div class="diff-head">
+          <span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>Failing</span>
+          <span>red</span> <a class="sha" href="#commit-94a7473">94a7473</a> <span class="val">row 5</span>
+          <button type="button" class="btn">Load diff for 94a7473</button>
+        </div>
+        <div class="diff-body"><p class="gap">The diff body loads on request. Its lines are not in this page&rsquo;s data, so none are drawn here.</p></div>
+      </div>
+      <div class="diff">
+        <div class="diff-head">
+          <span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Passing</span>
+          <span>green</span> <a class="sha" href="#commit-92ede9e">92ede9e</a> <span class="val">row 17</span>
+          <button type="button" class="btn btn-2">Load diff for 92ede9e</button>
+        </div>
+        <div class="diff-body"><p class="gap">The diff body loads on request. Its lines are not in this page&rsquo;s data, so none are drawn here.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Region 7 -->
+<section class="section" aria-labelledby="h-busy">
+  <div data-req="BUSY-1">
+    <p class="eyebrow">Busy while the diff chunk loads</p>
+    <h2 id="h-busy">The button says it is working</h2>
+    <div class="line">
+      <div class="col">
+        <p>While a diff chunk loads, the button that asked for it changes its label as well as its glyph, and stops taking clicks.</p>
+        <div>
+          <p class="label-sm">State: submitting</p>
+          <div class="btn-row">
+            <button type="button" class="btn" disabled aria-busy="true"><svg class="ic spin" aria-hidden="true"><use href="#i-spin"/></svg>Loading diff for 94a7473&hellip;</button>
+          </div>
+        </div>
+        <div>
+          <p class="label-sm">State: submitting, with reduced motion (static busy glyph)</p>
+          <div class="btn-row">
+            <button type="button" class="btn" disabled aria-busy="true"><svg class="ic" aria-hidden="true"><use href="#i-busy"/></svg>Loading diff for 92ede9e&hellip;</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Region 6 -->
+<section class="section" data-req="VERIFY-1" aria-labelledby="h-verify">
+  <p class="eyebrow">Verify it yourself</p>
+  <h2 id="h-verify">Check the order without trusting this page</h2>
+
+  <div class="line">
+    <div class="col">
+      <p>Run this in a clone. It lists the red, green and refactor commits with their author dates. The red date should be earlier than the green date; if it isn&rsquo;t, this page is wrong.<sup class="mk">21</sup></p>
+      <pre class="cmd" id="verify-cmd">git log --no-walk=unsorted --format='%h %aI %s' 94a7473 92ede9e 80d3ee2</pre>
+      <button type="button" class="btn btn-2" aria-describedby="verify-cmd">Copy command</button>
+    </div>
+    <aside class="note" aria-label="Receipt 21: where the command comes from">
+      <p class="note-head"><span class="mk">21</span> <span class="prov prov-generated">generated</span> <a class="fl" href="#matrix">requirements-matrix.md</a></p>
+      <p>Filled from row <a class="chip" href="#rule-get-1">GET-1</a>: red <a class="sha" href="#commit-94a7473">94a7473</a>, green <a class="sha" href="#commit-92ede9e">92ede9e</a>, refactor <a class="sha" href="#commit-80d3ee2">80d3ee2</a>.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- Other states -->
+<section class="section" aria-labelledby="h-states">
+  <p class="eyebrow">Other states of this page</p>
+  <h2 id="h-states">What it shows when the trail is slow, broken, empty or long</h2>
+  <p style="max-width:64ch;margin:0 0 1.25rem">Each card sits beside the populated page above. Submitting is shown in the busy section above, under its own label. The cards below use no invented data: where a rule or a failure is needed, it is a labelled placeholder.</p>
+
+  <div class="states">
+    <div class="state" aria-busy="true">
+      <p class="state-label">State: loading <span class="tag tag-pend"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></p>
+      <p>Reading the trail for GET-1. A sentence appears only once its receipt has loaded. These blocks are still; nothing shimmers.</p>
+      <div class="sk sk-w1"></div><div class="sk sk-w2"></div><div class="sk sk-note"></div>
+      <div class="sk sk-w1"></div><div class="sk sk-w3"></div><div class="sk sk-note"></div>
+      <p class="label-sm" style="margin-top:0.75rem">Diff chunk loading</p>
+      <div class="sk sk-w2"></div><div class="sk sk-w1"></div><div class="sk sk-w3"></div>
+    </div>
+
+    <div class="state">
+      <p class="state-label">State: error <span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>Not loaded</span></p>
+      <p>The trail for GET-1 didn&rsquo;t load, so this page shows no sentences: a sentence without its receipt would be an assertion.</p>
+      <div class="btn-row">
+        <button type="button" class="btn btn-2">Try again</button>
+        <a href="#node-f2">Back to F2 Retrieve</a>
+      </div>
+      <p class="label-sm" style="margin-top:1rem">Diff error</p>
+      <p>The diff for <a class="sha" href="#commit-92ede9e">92ede9e</a> didn&rsquo;t load. The rest of the page doesn&rsquo;t depend on it.</p>
+      <div class="btn-row"><button type="button" class="btn btn-2">Try again</button></div>
+    </div>
+
+    <div class="state">
+      <p class="state-label">State: not built <span class="tag tag-nb"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>not built yet</span></p>
+      <p>A rule whose requirement is written and nothing else. The ID below is a placeholder, not a real rule.</p>
+      <p><span class="chip chip-nb">rule ID (placeholder)</span></p>
+      <div class="nb"><strong>Red:</strong> not built yet</div>
+      <div class="nb"><strong>Green:</strong> not built yet</div>
+      <div class="nb"><strong>QA step and sign-off:</strong> not built yet</div>
+      <div class="nb"><strong>Pull request:</strong> not built yet</div>
+    </div>
+
+    <div class="state state-wide">
+      <p class="state-label">State: long content</p>
+      <p>A long recorded detail wraps instead of widening the page. This is the first stub gate&rsquo;s detail, as recorded:</p>
+      <p class="long-note">25 total, 13 failed, 12 passed. (a) 5 pass by the canned status Active coinciding: Policy_sold_to_start_today_reads_back_Active, Status_on_the_start_date_is_Active, Status_on_the_end_date_is_Active, Status_at_23_30_UTC_on_an_end_date_in_GMT_is_Active, Status_at_22_59_UTC_on_an_end_date_in_BST_is_Active. (b) 7 pass on behaviour already delivered by F1/F1b: the four RetrieveNotFoundTests 404 rows; Today_inside_the_first_of_two_terms_shows_the_first_term, Last_day_of_the_first_term_still_shows_the_first_term, Unpaid_second_term_reads_back_with_no_payment_reference_and_no_payment. David: fix (a), accept (b) as pinned.</p>
+      <p>The full list of tagged rows is a list, so here it is a table.</p>
+      <div class="scroll" tabindex="0" role="region" aria-label="GET-1 walkthrough rows, scrollable" id="walkthrough">
+        <table>
+          <caption>17 rows of the build/F2 walkthrough (44 commits) are tagged red, stub, green or refactor, and all 17 belong to GET-1. Sorted by row number, ascending. <span class="prov prov-generated">generated</span></caption>
+          <thead>
+            <tr>
+              <th scope="col" class="n" aria-sort="ascending">#, ascending</th>
+              <th scope="col">sha</th>
+              <th scope="col">TDD</th>
+              <th scope="col">layer</th>
+              <th scope="col">agent</th>
+              <th scope="col">what it did</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row" class="n">5</th><td><a class="sha" href="#commit-94a7473">94a7473</a></td><td><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>red</span></td><td>tests</td><td>tester</td><td>retrieve answers the full policy response, derived status, the current term and 2 dp money</td></tr>
+            <tr><th scope="row" class="n">7</th><td><a class="sha" href="#commit-2f81a40">2f81a40</a></td><td><span class="tag tag-pend"><svg class="ic" aria-hidden="true"><use href="#i-commit"/></svg>stub</span></td><td>api</td><td>builder</td><td>stub full policy response shape</td></tr>
+            <tr><th scope="row" class="n">9</th><td><a class="sha" href="#commit-8988ed8">8988ed8</a></td><td><span class="tag tag-pend"><svg class="ic" aria-hidden="true"><use href="#i-commit"/></svg>stub</span></td><td>api</td><td>builder</td><td>canned status and term number match no expected value</td></tr>
+            <tr><th scope="row" class="n">12</th><td><a class="sha" href="#commit-770a29b">770a29b</a></td><td><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>red</span></td><td>tests</td><td>tester</td><td>trait domain status and current-term tests</td></tr>
+            <tr><th scope="row" class="n">14</th><td><a class="sha" href="#commit-7b6e4d9">7b6e4d9</a></td><td><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>red</span></td><td>tests</td><td>tester</td><td>trait services status and current-term tests</td></tr>
+            <tr><th scope="row" class="n">17</th><td><a class="sha" href="#commit-92ede9e">92ede9e</a></td><td><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>green</span></td><td>api</td><td>builder</td><td>api real status, current term, 2dp money, unknown query filter</td></tr>
+            <tr><th scope="row" class="n">19</th><td><a class="sha" href="#commit-80d3ee2">80d3ee2</a></td><td><span class="tag tag-pend"><svg class="ic" aria-hidden="true"><use href="#i-commit"/></svg>refactor</span></td><td>api</td><td>builder</td><td>make TwoDecimalPlacesConverter comment true to the code</td></tr>
+            <tr><th scope="row" class="n">20</th><td><a class="sha" href="#commit-98a574d">98a574d</a></td><td><span class="tag tag-pend"><svg class="ic" aria-hidden="true"><use href="#i-commit"/></svg>refactor</span></td><td>api</td><td>builder</td><td>make TwoDecimalPlacesConverter comment true at HEAD</td></tr>
+            <tr><th scope="row" class="n">26</th><td><a class="sha" href="#commit-357e108">357e108</a></td><td><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>red</span></td><td>tests</td><td>tester</td><td>fix A2/I1</td></tr>
+            <tr><th scope="row" class="n">27</th><td><a class="sha" href="#commit-02e49a2">02e49a2</a></td><td><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>red</span></td><td>tests</td><td>tester</td><td>fix A2/I3</td></tr>
+            <tr><th scope="row" class="n">28</th><td><a class="sha" href="#commit-ef7d2e6">ef7d2e6</a></td><td><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>red</span></td><td>tests</td><td>tester</td><td>fix A2/I4</td></tr>
+            <tr><th scope="row" class="n">29</th><td><a class="sha" href="#commit-2753a64">2753a64</a></td><td><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>red</span></td><td>tests</td><td>tester</td><td>fix A2/I5</td></tr>
+            <tr><th scope="row" class="n">30</th><td><a class="sha" href="#commit-6947971">6947971</a></td><td><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>red</span></td><td>tests</td><td>tester</td><td>fix A2/I6</td></tr>
+            <tr><th scope="row" class="n">31</th><td><a class="sha" href="#commit-8be3aed">8be3aed</a></td><td><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>green</span></td><td>api</td><td>builder</td><td>map stored HasClaims, make comments true</td></tr>
+            <tr><th scope="row" class="n">32</th><td><a class="sha" href="#commit-0e107fd">0e107fd</a></td><td><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>green</span></td><td>api</td><td>builder</td><td>write money exactly, padded to 2 dp without rounding</td></tr>
+            <tr><th scope="row" class="n">33</th><td><a class="sha" href="#commit-af38b4b">af38b4b</a></td><td><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>green</span></td><td>api</td><td>builder</td><td>reject only query-bound unknown keys</td></tr>
+            <tr><th scope="row" class="n">34</th><td><a class="sha" href="#commit-143e5ba">143e5ba</a></td><td><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>red</span></td><td>tests</td><td>tester</td><td>fix A3/R1</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<p class="foot">Snapshot: the build/F2 README, compiled <code>2026-10-19T00:07:57Z</code> by render-trace.mjs from the loop and activity logs, verdicts, findings, git and test source. Commit and file links on this page point at placeholder routes in this mock.</p>
+
+</main>
+</body>
+</html>
