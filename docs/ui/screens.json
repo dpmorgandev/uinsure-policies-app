@@ -1,0 +1,364 @@
+{
+  "version": "1.0",
+  "generatedAt": "2026-10-19",
+  "generatedBy": "main session, drafted from docs/ui/research/ and docs/ui/flows.md; style-agnostic (layout per docs/ui/styles.md)",
+  "app": {
+    "appId": "trace-explorer-webapp",
+    "appName": "Trace explorer (name TBC, docs/ui-requirements.md open item 3)",
+    "appType": "webapp",
+    "viewports": [1440, 1280, 390],
+    "themes": ["light", "dark"],
+    "primaryNav": ["overview", "matrix", "plan", "decisions", "about"],
+    "globalComponents": ["app-shell", "top-bar", "primary-nav", "search", "theme-toggle", "compiled-at-stamp", "footer"],
+    "iconsVerified": ["git-commit-horizontal", "git-branch", "git-merge", "git-pull-request", "flask-conical", "shield", "bug", "gavel", "bot", "clock", "check", "external-link", "file-code", "chart-gantt", "user", "x", "triangle-alert"],
+    "iconsToVerify": ["search", "copy", "sun", "moon", "info", "arrow-left", "chevron-down", "list-tree"],
+    "states": {
+      "loading": "trace.json (or a lazy chunk such as a diff) is being fetched",
+      "error": "trace.json failed to load or failed its schema check; names what failed, never a blank page",
+      "empty": "the entity exists but has no items (e.g. F0b's Rules table, findings: [])",
+      "in-flight": "the node is in progress (F3 at the snapshot): shows what exists, marked in progress",
+      "incomplete": "TRAIL INCOMPLETE: <reasons>, shown verbatim and first",
+      "git-only": "OK (git-only, F0a): no loop, activity or verdicts, by design",
+      "not-built": "the rule or node isn't built yet: the not-built-yet pattern, never a failure",
+      "disagreement": "two sources disagree (e.g. README 'merge pending' vs a merged event): both shown, the event-derived value first",
+      "redacted": "<user>, <outside-repo>, <root> kept and labelled as redactions",
+      "long-content": "root causes 1-3k chars, details up to ~600, commands truncated at ~200: collapsed with a full-text disclosure"
+    },
+    "screens": [
+      {
+        "id": "overview",
+        "file": "overview.html",
+        "route": "/",
+        "name": "Overview",
+        "description": "Answers 'was this really test-driven, and was the AI really checked?' from the data, every figure linking to its source.",
+        "section": "overview",
+        "priority": "MUST",
+        "requirements": ["NAV-1", "DATA-3", "DATA-4", "HITL-1", "VERIFY-1"],
+        "data": ["D1", "D3", "D5", "D6", "D9", "D12"],
+        "components": ["page-header", "receipt-figure", "status-tag", "rule-chip", "completeness-banner", "dag-graph", "dag-table", "human-decision-row", "verify-command", "not-built-yet"],
+        "icons": ["check", "x", "clock", "gavel", "flask-conical", "git-pull-request"],
+        "flows": ["FL-1", "FL-2", "FL-4", "FL-6", "FL-8"],
+        "states": ["loading", "error", "in-flight", "not-built"],
+        "regions": [
+          {"name": "headline answer", "req": ["NAV-1"]},
+          {"name": "receipt figures (rules built/total, tests passing, nodes done, attempts and FAILs, human decisions)", "req": ["NAV-1", "VERIFY-1"]},
+          {"name": "build plan at a glance", "req": ["DAG-1"]},
+          {"name": "latest human decisions", "req": ["HITL-1"]},
+          {"name": "compiled-at stamp", "req": ["DATA-3"]}
+        ]
+      },
+      {
+        "id": "matrix",
+        "file": "matrix.html",
+        "route": "/rules",
+        "name": "Requirements matrix",
+        "description": "Every rule in requirements.md with its node, tests, red/green/refactor commits, QA step, sign-off and PR; filterable by status and feature.",
+        "section": "requirements",
+        "priority": "MUST",
+        "requirements": ["MATRIX-1", "DATA-4"],
+        "data": ["D1", "D11", "D12", "D14"],
+        "components": ["page-header", "filter-bar", "data-table", "rule-chip", "sha-link", "status-tag", "not-built-yet", "sources-disagree"],
+        "icons": ["git-commit-horizontal", "git-pull-request", "check", "clock"],
+        "flows": ["FL-1"],
+        "states": ["loading", "error", "not-built", "disagreement"],
+        "regions": [
+          {"name": "filters (status, feature)", "req": ["MATRIX-1"]},
+          {"name": "matrix table", "req": ["MATRIX-1"]},
+          {"name": "test-count scope note (counts are per node: SELL-7 10 at F1 vs 15 traited)", "req": ["DATA-4"]}
+        ]
+      },
+      {
+        "id": "rule",
+        "file": "rule.html",
+        "route": "/rules/:ruleId",
+        "name": "Rule",
+        "description": "One rule end to end: its text and agreed interpretation, status codes, tests, commits in TDD order with red before green visible, QA step, sign-off and PR.",
+        "section": "requirements",
+        "priority": "MUST",
+        "requirements": ["RULE-1", "RULE-2", "RULE-3", "VERIFY-1", "NAV-3"],
+        "data": ["D1", "D8", "D11", "D12", "D14"],
+        "components": ["page-header", "breadcrumbs", "rule-chip", "rule-evidence", "sha-link", "status-tag", "key-value-list", "diff-viewer", "verify-command", "not-built-yet", "provenance-label"],
+        "icons": ["flask-conical", "git-commit-horizontal", "git-pull-request", "gavel", "check", "x", "external-link"],
+        "flows": ["FL-1", "FL-4", "FL-5", "FL-7"],
+        "states": ["loading", "error", "not-built", "long-content"],
+        "regions": [
+          {"name": "rule text and agreed interpretation", "req": ["RULE-1"]},
+          {"name": "signature: red-before-green evidence (custody chain / TDD ticks / chronology, per style)", "req": ["RULE-2"]},
+          {"name": "tests (count and scope)", "req": ["RULE-1"]},
+          {"name": "QA step and sign-off", "req": ["RULE-1", "HITL-1"]},
+          {"name": "red and green diffs (lazy)", "req": ["RULE-3"]},
+          {"name": "verify it yourself", "req": ["VERIFY-1"]}
+        ]
+      },
+      {
+        "id": "plan",
+        "file": "plan.html",
+        "route": "/plans/:planId",
+        "name": "Plan",
+        "description": "A plan's nodes as a dependency graph coloured by status with a text equivalent; for an investigation (inv-001) its question, hypothesis, findings and recommendations.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": ["DAG-1"],
+        "data": ["D2", "D3"],
+        "components": ["page-header", "dag-graph", "dag-table", "status-tag", "key-value-list", "markdown-text"],
+        "icons": ["git-branch", "check", "clock"],
+        "flows": ["FL-2"],
+        "states": ["loading", "error", "in-flight", "not-built"],
+        "regions": [
+          {"name": "plan header (status, approval, requirements rev)", "req": ["DAG-1"]},
+          {"name": "node graph and its table", "req": ["DAG-1"]},
+          {"name": "investigation body (inv-* plans only)", "req": ["LOOP-2"]}
+        ]
+      },
+      {
+        "id": "node",
+        "file": "node.html",
+        "route": "/plans/:planId/:nodeId",
+        "name": "Node",
+        "description": "One feature node: completeness first, then rules, tasks with status, attempts, PR and merge, and links to its walkthrough, loop and activity.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": ["NODE-1", "DATA-4", "AGENT-1"],
+        "data": ["D3", "D4", "D5", "D8", "D14"],
+        "components": ["page-header", "breadcrumbs", "completeness-banner", "tabs", "data-table", "status-tag", "rule-chip", "attempt-ladder", "agent-badge", "sources-disagree", "verify-command"],
+        "icons": ["check", "x", "clock", "git-merge", "git-pull-request", "bot", "user"],
+        "flows": ["FL-2", "FL-3", "FL-4", "FL-5", "FL-6", "FL-7", "FL-8"],
+        "states": ["loading", "error", "empty", "in-flight", "incomplete", "git-only", "disagreement"],
+        "regions": [
+          {"name": "completeness banner", "req": ["DATA-4"]},
+          {"name": "rules", "req": ["NODE-1"]},
+          {"name": "tasks", "req": ["NODE-1"]},
+          {"name": "attempts", "req": ["LOOP-2"]},
+          {"name": "who touched what", "req": ["AGENT-1"]}
+        ]
+      },
+      {
+        "id": "walkthrough",
+        "file": "walkthrough.html",
+        "route": "/plans/:planId/:nodeId/commits",
+        "name": "Walkthrough",
+        "description": "Every commit of the node in order, by TDD step and author agent, with the commit subject in the agent's words.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": ["TDD-1"],
+        "data": ["D8"],
+        "components": ["page-header", "breadcrumbs", "tabs", "data-table", "sha-link", "tdd-step-tag", "agent-badge", "rule-chip"],
+        "icons": ["git-commit-horizontal", "bot", "user"],
+        "flows": ["FL-7"],
+        "states": ["loading", "error", "empty", "git-only"],
+        "regions": [
+          {"name": "commit sequence", "req": ["TDD-1"]}
+        ]
+      },
+      {
+        "id": "loop",
+        "file": "loop.html",
+        "route": "/plans/:planId/:nodeId/loop",
+        "name": "Loop",
+        "description": "Every gate and state event: command, exit code, expected outcome, ok, detail; FAILs stand out; attempts as a ladder from FAIL to fix.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": ["LOOP-1", "LOOP-2"],
+        "data": ["D5", "D6"],
+        "components": ["page-header", "breadcrumbs", "tabs", "attempt-ladder", "gate-row", "status-tag", "code-block", "disclosure"],
+        "icons": ["check", "x", "triangle-alert", "clock"],
+        "flows": ["FL-2", "FL-7"],
+        "states": ["loading", "error", "empty", "in-flight", "git-only", "long-content"],
+        "regions": [
+          {"name": "attempt ladder", "req": ["LOOP-2"]},
+          {"name": "gate timeline", "req": ["LOOP-1"]}
+        ]
+      },
+      {
+        "id": "verdict",
+        "file": "verdict.html",
+        "route": "/plans/:planId/:nodeId/verdicts/:round/:agent",
+        "name": "Verdict",
+        "description": "A reviewer or security verdict rendered from its JSON: PASS or FAIL, gate refs, head SHA, diff fingerprint, rules covered and missing, findings; raw JSON one click away.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": ["LOOP-3"],
+        "data": ["D9"],
+        "components": ["page-header", "breadcrumbs", "verdict-card", "status-tag", "file-line-link", "sha-link", "json-viewer", "provenance-label"],
+        "icons": ["gavel", "shield", "check", "x", "file-code"],
+        "flows": ["FL-2"],
+        "states": ["loading", "error", "empty", "long-content"],
+        "regions": [
+          {"name": "verdict summary", "req": ["LOOP-3"]},
+          {"name": "findings", "req": ["LOOP-3"]},
+          {"name": "raw JSON", "req": ["LOOP-3", "DATA-2"]}
+        ]
+      },
+      {
+        "id": "finding",
+        "file": "finding.html",
+        "route": "/plans/:planId/:nodeId/findings/:round",
+        "name": "Finding",
+        "description": "An investigator round: each finding's symptom and cause, files, fix direction, suggested test, testable or not, and the commit that fixed it.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": ["LOOP-4"],
+        "data": ["D10", "D8"],
+        "components": ["page-header", "breadcrumbs", "finding-card", "file-line-link", "sha-link", "status-tag", "disclosure", "provenance-label", "json-viewer"],
+        "icons": ["bug", "file-code", "git-commit-horizontal", "check"],
+        "flows": ["FL-2", "FL-4"],
+        "states": ["loading", "error", "long-content"],
+        "regions": [
+          {"name": "findings", "req": ["LOOP-4"]},
+          {"name": "fixed by", "req": ["LOOP-4", "LOOP-2"]}
+        ]
+      },
+      {
+        "id": "activity",
+        "file": "activity.html",
+        "route": "/plans/:planId/:nodeId/activity",
+        "name": "Activity",
+        "description": "Per-agent lanes of the hook log: tool, file and command over time, filterable by agent, with redactions labelled.",
+        "section": "plans",
+        "priority": "SHOULD",
+        "requirements": ["AGENT-1", "AGENT-2"],
+        "data": ["D7", "D8"],
+        "components": ["page-header", "breadcrumbs", "tabs", "filter-bar", "agent-lanes", "agent-badge", "redaction-token", "data-table"],
+        "icons": ["bot", "user", "file-code", "clock"],
+        "flows": ["FL-3"],
+        "states": ["loading", "error", "empty", "git-only", "redacted", "long-content"],
+        "regions": [
+          {"name": "agent lanes", "req": ["AGENT-2"]},
+          {"name": "event table (text equivalent)", "req": ["AGENT-2", "A11Y-1"]}
+        ]
+      },
+      {
+        "id": "commit",
+        "file": "commit.html",
+        "route": "/commits/:sha",
+        "name": "Commit",
+        "description": "One commit: subject, trailers (Agent, Plan, Node, Rule, TDD, Fixes-Finding), the agent the hook saw, the files it touched, its diff, and links out.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": ["NAV-2", "NAV-3", "AGENT-1", "RULE-3"],
+        "data": ["D8", "D7"],
+        "components": ["page-header", "breadcrumbs", "key-value-list", "tdd-step-tag", "agent-badge", "rule-chip", "diff-viewer", "sources-disagree", "verify-command"],
+        "icons": ["git-commit-horizontal", "bot", "external-link", "check", "x"],
+        "flows": ["FL-1", "FL-2", "FL-3", "FL-4", "FL-5"],
+        "states": ["loading", "error", "disagreement", "long-content"],
+        "regions": [
+          {"name": "commit header and trailers", "req": ["NAV-2"]},
+          {"name": "trailer agent vs hook agent", "req": ["AGENT-1"]},
+          {"name": "diff (lazy)", "req": ["RULE-3"]},
+          {"name": "links out", "req": ["NAV-3"]}
+        ]
+      },
+      {
+        "id": "decisions",
+        "file": "decisions.html",
+        "route": "/decisions",
+        "name": "Human decisions",
+        "description": "Every point David decided, across nodes: pause 1, pause 2, steers, rulings, sign-offs and merges, each linked to its evidence.",
+        "section": "decisions",
+        "priority": "MUST",
+        "requirements": ["HITL-1"],
+        "data": ["D6", "D10", "D12", "D14"],
+        "components": ["page-header", "filter-bar", "human-decision-row", "status-tag", "sha-link", "rule-chip"],
+        "icons": ["user", "gavel", "check", "git-merge"],
+        "flows": ["FL-4"],
+        "states": ["loading", "error", "empty"],
+        "regions": [
+          {"name": "decision list", "req": ["HITL-1"]}
+        ]
+      },
+      {
+        "id": "about",
+        "file": "about.html",
+        "route": "/about",
+        "name": "How to read this",
+        "description": "How the trail is made and how to read it: provenance labels, completeness, the compiled-at stamp, a glossary, and the git commands that re-verify everything.",
+        "section": "about",
+        "priority": "MUST",
+        "requirements": ["DATA-2", "DATA-3", "VERIFY-1"],
+        "data": ["D1", "D6", "D9", "D10"],
+        "components": ["page-header", "provenance-label", "status-tag", "markdown-text", "verify-command"],
+        "icons": ["check", "x", "clock", "triangle-alert"],
+        "flows": ["FL-6"],
+        "states": ["loading", "error"],
+        "regions": [
+          {"name": "provenance labels", "req": ["DATA-2"]},
+          {"name": "glossary and status legend", "req": ["A11Y-1"]},
+          {"name": "re-verify with git", "req": ["VERIFY-1"]}
+        ]
+      },
+      {
+        "id": "harness",
+        "file": "harness.html",
+        "route": "/harness",
+        "name": "Harness",
+        "description": "The agents, their tools, preloaded skills and never-dos, and the hooks and what each guards, from the generated harness file.",
+        "section": "about",
+        "priority": "SHOULD",
+        "requirements": ["AGENT-3", "DATA-7"],
+        "data": ["harness file (DATA-7; does not exist yet, emitted by render-trace.mjs)"],
+        "components": ["page-header", "data-table", "agent-badge", "key-value-list"],
+        "icons": ["bot", "shield", "file-code"],
+        "flows": ["FL-6"],
+        "states": ["loading", "error", "empty"],
+        "regions": [
+          {"name": "agents", "req": ["AGENT-3"]},
+          {"name": "hooks", "req": ["AGENT-3"]}
+        ]
+      },
+      {
+        "id": "sessions",
+        "file": "sessions.html",
+        "route": "/sessions",
+        "name": "Sessions",
+        "description": "The context snapshot chain as a timeline across days: where work stood at each hand-off and what came next.",
+        "section": "about",
+        "priority": "COULD",
+        "requirements": ["CTX-1"],
+        "data": ["D13"],
+        "components": ["page-header", "data-table", "timestamp", "markdown-text"],
+        "icons": ["clock", "chart-gantt"],
+        "flows": ["FL-8"],
+        "states": ["loading", "error", "empty"],
+        "regions": [
+          {"name": "snapshot timeline", "req": ["CTX-1"]}
+        ]
+      },
+      {
+        "id": "stats",
+        "file": "stats.html",
+        "route": "/stats",
+        "name": "Delivery stats",
+        "description": "Commits per agent, attempts per node and elapsed time per node from trail timestamps, shown as facts with their sources, never as scores.",
+        "section": "overview",
+        "priority": "COULD",
+        "requirements": ["STATS-1"],
+        "data": ["D3", "D5", "D6", "D8"],
+        "components": ["page-header", "data-table", "receipt-figure", "agent-badge"],
+        "icons": ["bot", "clock", "chart-gantt"],
+        "flows": ["FL-8"],
+        "states": ["loading", "error", "in-flight"],
+        "regions": [
+          {"name": "facts per agent and node", "req": ["STATS-1"]}
+        ]
+      },
+      {
+        "id": "not-found",
+        "file": "not-found.html",
+        "route": "*",
+        "name": "Not found",
+        "description": "Names what was asked for (a rule, node, SHA or round that isn't in this snapshot) and links to the overview, the matrix and search.",
+        "section": "overview",
+        "priority": "MUST",
+        "requirements": ["NAV-2"],
+        "data": [],
+        "components": ["page-header", "empty-state", "search"],
+        "icons": ["triangle-alert"],
+        "flows": ["FL-9"],
+        "states": [],
+        "regions": [
+          {"name": "what was asked for, and where to go", "req": ["NAV-2"]}
+        ]
+      }
+    ]
+  }
+}
