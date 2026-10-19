@@ -99,6 +99,7 @@ collapsed · **dis** sources disagree · **red** redacted · **nb** not built ye
 | quote-cancel-compare | The quote beside the cancellation it led to, field by field, agreeing or not | agree, differ | 1 (W) | B4 (same date preview to commit), WB-4 |
 | reference-preview | The reference as the API will store it (trimmed, upper-cased) as the user types | pop, invalid pattern | 1 (W) | SELL-1, A1 |
 | send-anyway-toggle | Turns off client-side checks so the API's own problems show; while on, a persistent notice says so, and each response's violations are lined up with the client check that would have caught them | off, on, on with a response | 1 (W) | B10 (warn, don't disable), opportunity 5, WB-6 |
+| rung-spine | **ordinal-spine's signature** (`concept.md`, design-system O2): a numbered vertical spine of rungs, label left and receipt right; a retry steps off the spine as a branch and rejoins it; read and keyboard-navigated in order. Composed by `rule-evidence` (commits at their walkthrough numbers, attempts as branches) and by the workbench's quote → cancel → agree. A real ordered list, with a text equivalent where it branches | one rung, many, a branch that rejoins, a marked branch (investigation), a carried value (the quoted date), a rung in progress (BUSY-1) | 2 (E+W) | concept, D5, D8, A10, A11 |
 | recent-policies | References this browser sold or opened, from the request log in local storage; says plainly that it is this browser only | pop, empty, storage unavailable | 1 (W) | WB-9, B6, Hoppscotch history |
 
 ## Coverage

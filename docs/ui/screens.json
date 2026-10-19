@@ -291,7 +291,8 @@
           "verify-command",
           "not-built-yet",
           "provenance-label",
-          "spinner"
+          "spinner",
+          "rung-spine"
         ],
         "icons": [
           "flask-conical",
@@ -1516,7 +1517,8 @@
           "error-summary",
           "problem-banner",
           "inspector-drawer",
-          "spinner"
+          "spinner",
+          "rung-spine"
         ],
         "icons": [
           "receipt",
