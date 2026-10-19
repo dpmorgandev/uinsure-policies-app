@@ -172,8 +172,8 @@ running locally, recorded as the workbench's design fixture.
 | WB-5 | SHOULD | Claims and renew | Record a claim and see the quote drop to £0; renew inside the window; cheque blocked for auto-renew |
 | WB-6 | SHOULD | Send it anyway | A switch that turns off client-side validation, so the API's own violations can be shown |
 | WB-7 | COULD | HTTP inspector | The exact request and response of every action |
-| WB-8 | COULD | Demo clock | Set "today" to show the date windows live. **Needs a backend change** (a Development-only `TimeProvider` override): a new rule ID in `requirements.md` first |
-| WB-9 | COULD | Policy list | **Needs a new endpoint** (`GET /policies`): a new rule ID in `requirements.md` first. Otherwise, recent references kept in the browser |
+| WB-8 | — | Demo clock | **Cut** (David, 2026-10-19: the workbench stays inside the current API). Kept here so the ID isn't reused |
+| WB-9 | COULD | Recent policies | The references this browser has sold or opened, kept in local storage. No list endpoint (David, 2026-10-19) |
 
 ### Non-functional
 
@@ -188,7 +188,8 @@ running locally, recorded as the workbench's design fixture.
 | SEC-1 | MUST | Safe rendering | The trail holds agent-written markdown and command text. It is rendered as text or through a sanitising markdown renderer, never as raw HTML. A strict Content-Security-Policy, no third-party scripts at runtime |
 
 **Out of scope:** authentication, editing the trail, live data (the explorer is a snapshot), the
-workbench's backend additions until their rule IDs exist, and any deployment of the API itself.
+any change to the API for the workbench's sake (it uses the API as built), and any deployment of the
+API itself.
 
 ---
 
@@ -465,11 +466,20 @@ Carried over from agentflow_phase3 (`LESSONS.md`, `DECISIONS.md`, `brief-templat
 
 ## 6. Open items
 
-1. **Rule ID scheme.** Short area prefixes (`DATA-1`, `RULE-1`, …) as drafted, or one family prefix
-   (`UI-DATA-1`) so the matrix can tell UI rules from API rules at a glance?
+**Resolved by David, 2026-10-19:**
+
+1. **Rule ID scheme: short area prefixes** (`DATA-1`, `RULE-1`, `WB-1`, …), as drafted. They don't
+   collide with the API's IDs (`SELL-`, `GET-`, `CANCEL-`, `RENEW-`, `COULD-`).
+4. **F7 sits beside the explorer.** F7 becomes a document, a user guide and architecture write-up on what
+   was built and why, with this UI's style applied. So F7 consumes the design system (tokens, type, the
+   kit's document patterns) and doesn't replace or feed the explorer. The design-system contract must
+   cover long-form document pages, and F7's own scope is the build plan's to settle.
+5. **The workbench stays inside the current API.** No backend additions. WB-8 (demo clock) is cut. WB-9
+   (policy list) is kept in its fallback form only: recent references kept in the browser, no
+   `GET /policies`.
+
+**Still open:**
+
 2. **Deadline.** `requirements.md` gives Monday 2026-10-19. The UI needs its own date, and the cut order
    above depends on it.
 3. **Name.** The explorer's neutral name (BRAND-1).
-4. **F7 overlap.** Does the explorer replace, feed or sit beside the F7 pitch deck?
-5. **Workbench backend additions** (WB-8 demo clock, WB-9 list endpoint): accepted as new API rule IDs,
-   or the workbench stays inside the current API?
