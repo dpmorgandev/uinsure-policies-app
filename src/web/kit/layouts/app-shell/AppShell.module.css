@@ -1,0 +1,54 @@
+/* The shell is a size container: the 1440, 1280 and 390 frames each lay out by their own width. */
+.shell {
+  container-type: inline-size;
+  container-name: shell;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-16);
+  line-height: 1.5;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.skip {
+  position: absolute;
+  top: 0;
+  left: -999px;
+  z-index: 10;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-background);
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.skip:focus {
+  left: var(--space-2);
+  top: var(--space-2);
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.main {
+  flex: 1 1 auto;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 74rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5);
+}
+
+/* Focus lands on main when the skip link is followed; it needs no ring while nothing is operable there. */
+.main:focus {
+  outline: none;
+}
+
+@container shell (max-width: 40rem) {
+  .main {
+    padding: var(--space-5) var(--space-4);
+  }
+}

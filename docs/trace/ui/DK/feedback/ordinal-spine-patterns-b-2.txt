@@ -1,0 +1,124 @@
+
+> test:kit
+> vitest run --config vite.config.ts
+
+
+ RUN  v5.0.5 <root>
+
+ ❯ tests/web/kit/field.test.tsx (13 tests | 2 failed) 332ms
+   ❯ Field (13)
+     × required: says so in words and sets aria-required 28ms
+     × describes the constraint between the hint and the error 21ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/web/kit/field.test.tsx > Field > required: says so in words and sets aria-required
+TestingLibraryElementError: Unable to find an accessible element with the role "textbox" and name "Cancellation date (required)"
+
+Here are the accessible roles:
+
+  textbox:
+
+  Name "Cancellation date(required)":
+  <input
+    aria-describedby="_r_7_-hint"
+    aria-required="true"
+    autocomplete="off"
+    class="_input_e09a8b _mono_e09a8b _date_904fac"
+    id="_r_7_"
+    inputmode="numeric"
+    placeholder="yyyy-MM-dd"
+    spellcheck="false"
+    type="text"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <div
+      class="_field_d38e04"
+    >
+      <label
+        class="_label_d38e04"
+        for="_r_7_"
+      >
+        Cancellation date
+        <span
+          class="_required_d38e04"
+        >
+           (required)
+        </span>
+      </label>
+      <div
+        class="_hint_d38e04"
+        id="_r_7_-hint"
+      >
+        Format yyyy-MM-dd, the only format the API accepts.
+      </div>
+      <span
+        class="_wrap_e09a8b"
+      >
+        <input
+          aria-describedby="_r_7_-hint"
+          aria-required="true"
+          autocomplete="off"
+          class="_input_e09a8b _mono_e09a8b _date_904fac"
+          id="_r_7_"
+          inputmode="numeric"
+          placeholder="yyyy-MM-dd"
+          spellcheck="false"
+          type="text"
+        />
+      </span>
+    </div>
+  </div>
+</body>
+ ❯ Object.getElementError src/web/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ src/web/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ src/web/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ src/web/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/web/kit/field.test.tsx:52:26
+     50|   it('required: says so in words and sets aria-required', () => {
+     51|     render(examples[3]!.element);
+     52|     const input = screen.getByRole('textbox', { name: 'Cancellation da…
+       |                          ^
+     53|     expect(input.getAttribute('aria-required')).toBe('true');
+     54|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/web/kit/field.test.tsx > Field > describes the constraint between the hint and the error
+AssertionError: expected [ 'The hint', '≤ 2 dp', …(1) ] to deeply equal [ 'The hint', '≤ 2 dp', 'The error' ]
+
+- Expected
++ Received
+
+  [
+    "The hint",
+    "≤ 2 dp",
+-   "The error",
++   "Error: The error",
+  ]
+
+ ❯ tests/web/kit/field.test.tsx:76:71
+     74|     );
+     75|     const ids = describedBy(screen.getByRole('textbox', { name: 'Amoun…
+     76|     expect(ids.map((id) => document.getElementById(id)?.textContent)).…
+       |                                                                       ^
+     77|   });
+     78|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 51 passed (52)
+      Tests  2 failed | 605 passed (607)
+   Start at  08:26:40
+   Duration  41.28s (environment 65%, import 20%, tests 9%, transform 6%)
+
+Environment  jsdom was created 52 times · 475.74s total, 65% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

@@ -1,0 +1,76 @@
+.scrim {
+  box-sizing: border-box;
+  font-family: var(--font-sans);
+}
+
+.scrim[data-placement="overlay"] {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+}
+
+.scrim[data-placement="overlay"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-text-primary);
+  opacity: 0.6;
+}
+
+.scrim[data-placement="inline"] {
+  padding: var(--space-4);
+  background: var(--color-surface);
+}
+
+.dialog {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 30rem;
+  max-height: 100%;
+  overflow-y: auto;
+  padding: var(--space-5);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  border: 3px solid var(--color-text-primary);
+  border-radius: var(--radius);
+}
+
+.dialog:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.title {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-24);
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.body {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-16);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.body p {
+  margin: 0 0 var(--space-2);
+}
+
+.body code {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}

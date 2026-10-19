@@ -1,0 +1,129 @@
+.frame {
+  max-width: 100%;
+  max-height: var(--data-table-max-height, 36rem);
+  overflow: auto;
+  font-family: var(--font-sans);
+  font-size: var(--text-14);
+  line-height: 1.4;
+  color: var(--color-text-primary);
+  border-radius: var(--radius);
+}
+
+.frame:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.caption {
+  padding-bottom: var(--space-2);
+  text-align: left;
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  vertical-align: bottom;
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border-bottom: 2px solid var(--color-text-secondary);
+}
+
+.cell {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-border);
+  overflow-wrap: anywhere;
+}
+
+.rowHeader {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.num,
+.table thead th.num {
+  text-align: right;
+}
+
+.cell.num {
+  white-space: nowrap;
+}
+
+.sort {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 1.5rem;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+.sort:hover {
+  color: var(--color-text-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.sort:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.table th[aria-sort] .sort {
+  color: var(--color-text-primary);
+}
+
+.arrow {
+  flex: none;
+  width: 1em;
+  height: 1em;
+}
+
+.message {
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.loading {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+}
+
+.bar {
+  display: block;
+  height: 0.8rem;
+  min-width: 2rem;
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+}
