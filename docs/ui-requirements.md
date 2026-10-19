@@ -1,6 +1,6 @@
 # Uinsure Policies UI: Requirements
 
-Author: David Morgan · Last updated: 2026-10-19 (round 2) · Status: **DRAFT** (gate G0 not passed)
+Author: David Morgan · Last updated: 2026-10-19 (round 2) · Status: **APPROVED** (gate G0 passed, David, 2026-10-19)
 
 This is the **single input** for the UI work: the brief that `requirements.md` §4 reserved ("the React
 frontend gets its own brief, mockups and plan DAG later"). The sequence follows agentflow's design
