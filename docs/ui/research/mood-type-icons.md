@@ -7,8 +7,12 @@ the agent's P1–P3, which clashed with `prior-art-agent-traces.md`).
 
 ## 1. Mood definition
 
-**Primary mood:** a calm, exact case file. Every claim sits next to its evidence, and nothing is trying to
-impress the reader.
+**Primary mood:** calm and exact. Every claim sits next to its evidence, and nothing is trying to impress
+the reader. The governing metaphor is left to each creative direction.
+
+*Edited 2026-10-19, approved by David: the agent's sentence named one metaphor ("a calm, exact case
+file"), which matched round 1's chosen direction and would have steered every round-2 territory toward
+it. The metaphor belongs to the creative director. Keywords and the avoid list are unchanged.*
 
 **Keywords:** evidential, precise, sober, dense-but-legible, quiet, auditable, plain-spoken, durable.
 
