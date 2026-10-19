@@ -184,7 +184,7 @@ running locally, recorded as the workbench's design fixture.
 | RESP-1 | SHOULD | Works on a laptop and a phone | Designed for 1440 and 1280 wide; usable at 390 wide with no horizontal page scroll (wide tables scroll inside their own container) |
 | PERF-1 | SHOULD | Fast from cold | First screen interactive in under 2 s on a laptop from a static host. The data file is split if it grows past a size settled in `trace-data.spec.md` |
 | HONEST-1 | MUST | No invented data | No mockup, screen or build may show a number, status or name that isn't in the trail. Placeholder data is labelled as such and never ships. (agentflow's `honestyViolation`: it can't be waived) |
-| BRAND-1 | MUST | No Uinsure branding | No Uinsure logo, wordmark, colours copied to imitate, or anything that reads as their product. The UI is David's, named neutrally |
+| BRAND-1 | MUST | No Uinsure branding | No Uinsure logo, wordmark, colours copied to imitate, or anything that reads as their product. The UI is David's, named **Docket** |
 | SEC-1 | MUST | Safe rendering | The trail holds agent-written markdown and command text. It is rendered as text or through a sanitising markdown renderer, never as raw HTML. A strict Content-Security-Policy, no third-party scripts at runtime |
 
 **Out of scope:** authentication, editing the trail, live data (the explorer is a snapshot), the
@@ -478,8 +478,12 @@ Carried over from agentflow_phase3 (`LESSONS.md`, `DECISIONS.md`, `brief-templat
    (policy list) is kept in its fallback form only: recent references kept in the browser, no
    `GET /policies`.
 
-**Still open:**
+2. **Deadline: none fixed.** The API is submitted by its own deadline (Monday 2026-10-19); the UI
+   continues after it, aiming to be ready before the final interview (end of that week at the earliest).
+   The cut order stays as written in case time runs short.
 
-2. **Deadline.** `requirements.md` gives Monday 2026-10-19. The UI needs its own date, and the cut order
-   above depends on it.
-3. **Name.** The explorer's neutral name (BRAND-1).
+3. **Name: Docket.** A court's list of cases and their filings: each rule a matter, its evidence filed
+   against it. It names the whole UI (explorer and workbench) and the F7 guide. Not checked for
+   trademarks or existing products.
+
+No open items remain.
