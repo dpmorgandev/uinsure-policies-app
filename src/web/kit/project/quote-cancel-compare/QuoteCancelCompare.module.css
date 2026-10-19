@@ -1,7 +1,9 @@
 .root {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   min-width: 0;
+  max-width: 100%;
   font-family: var(--font-sans);
   font-size: var(--text-14);
   line-height: 1.45;
@@ -37,8 +39,10 @@
   outline-offset: 2px;
 }
 
+/* Four columns of API values do not squeeze: a narrow pane scrolls the table inside its frame. */
 .table {
   width: 100%;
+  min-width: 34rem;
   border-collapse: collapse;
 }
 
@@ -80,7 +84,7 @@
 .value {
   font-family: var(--font-mono);
   font-variant-numeric: tabular-nums lining-nums;
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .differs {

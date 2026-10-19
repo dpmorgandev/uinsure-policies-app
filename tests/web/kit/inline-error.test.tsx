@@ -42,6 +42,14 @@ describe('InlineError', () => {
     expect(items.map((item) => item.textContent)).toEqual(['First problem', 'Second problem']);
   });
 
+  it('several messages carry one icon, not one per item, and stay a list for assistive technology', () => {
+    render(<InlineError id="e4" messages={['First problem', 'Second problem']} />);
+    const el = document.getElementById('e4') as HTMLElement;
+    expect(el.querySelectorAll('svg')).toHaveLength(1);
+    expect(screen.getByRole('list')).toBeTruthy();
+    expect(screen.getAllByRole('listitem')).toHaveLength(2);
+  });
+
   it('draws nothing when there are no messages', () => {
     const { container } = render(<InlineError id="e3" messages={[]} />);
     expect(container.firstChild).toBeNull();

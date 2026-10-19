@@ -11,22 +11,23 @@ const note = {
 } as const;
 
 // Observed: the references are the policies the F2 and F3 QA records name (F2-MVEHF2QGG5, F3-MVEOSVDQJQ, QA-F3-CLAIM).
-// Placeholder: which of them this browser sold or opened, their order, and the /policies/<reference> route are not
-// recorded anywhere, because no request log exists yet.
+// Each links to the workbench route /workbench/policies/<reference>, not the API's own /policies/<reference>.
+// Placeholder: which of them this browser sold or opened and their order are not recorded anywhere, because no
+// request log exists yet.
 export const examples: { state: string; element: JSX.Element }[] = [
   {
     state: 'pop',
     element: (
       <div>
         <p style={note}>
-          Placeholder: the sold or opened word on each reference, their order and the route are invented. The three
-          references are from the F2 and F3 QA records.
+          Placeholder: the sold or opened word on each reference and their order are invented. The three references are
+          from the F2 and F3 QA records.
         </p>
         <RecentPolicies
           policies={[
-            { reference: 'F3-MVEOSVDQJQ', href: '/policies/F3-MVEOSVDQJQ', how: 'opened' },
-            { reference: 'QA-F3-CLAIM', href: '/policies/QA-F3-CLAIM', how: 'opened' },
-            { reference: 'F2-MVEHF2QGG5', href: '/policies/F2-MVEHF2QGG5', how: 'sold' },
+            { reference: 'F3-MVEOSVDQJQ', href: '/workbench/policies/F3-MVEOSVDQJQ', how: 'opened' },
+            { reference: 'QA-F3-CLAIM', href: '/workbench/policies/QA-F3-CLAIM', how: 'opened' },
+            { reference: 'F2-MVEHF2QGG5', href: '/workbench/policies/F2-MVEHF2QGG5', how: 'sold' },
           ]}
         />
       </div>

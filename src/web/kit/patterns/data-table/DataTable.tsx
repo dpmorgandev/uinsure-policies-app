@@ -23,6 +23,12 @@ export interface DataTableColumn<Row> {
   rowHeader?: boolean;
   /** The header becomes a button that asks for this column's sort. */
   sortable?: boolean;
+  /**
+   * How a long unbroken run (a test name, a path) wraps. `words` (the default) keeps whole words together, so a
+   * table that cannot fit scrolls inside its frame. `anywhere` lets the run break at any character, for a free-text
+   * column that should take the space left over.
+   */
+  wrap?: 'words' | 'anywhere';
 }
 
 export interface DataTableEmpty {
@@ -167,7 +173,12 @@ export function DataTable<Row extends { id: string }>({
             rows.map((row) => (
               <tr key={row.id}>
                 {columns.map((column) => {
-                  const classes = [styles.cell, column.numeric ? styles.num : undefined, column.mono ? styles.mono : undefined]
+                  const classes = [
+                    styles.cell,
+                    column.numeric ? styles.num : undefined,
+                    column.mono ? styles.mono : undefined,
+                    column.wrap === 'anywhere' ? styles.anywhere : undefined,
+                  ]
                     .filter(Boolean)
                     .join(' ');
                   return column.rowHeader ? (

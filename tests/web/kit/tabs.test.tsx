@@ -33,9 +33,28 @@ describe('tabs examples', () => {
     expect(current).toEqual(['Node', 'Walkthrough', 'Loop', 'Activity']);
   });
 
+  it('the examples link to the node routes in the catalog, not placeholder hrefs', () => {
+    const { container } = render(examples[0]!.element);
+    const first = container.querySelector('nav');
+    const hrefs = [...first!.querySelectorAll('a')].map((a) => a.getAttribute('href'));
+    expect(hrefs).toEqual([
+      '/plans/build/F3',
+      '/plans/build/F3/commits',
+      '/plans/build/F3/loop',
+      '/plans/build/F3/activity',
+    ]);
+    for (const link of container.querySelectorAll('a')) {
+      expect(link.getAttribute('href')?.startsWith('#')).toBe(false);
+    }
+  });
+
   it('"git-only" shows empty views as links that say they are empty', () => {
     const { container } = render(examples[1]!.element);
     expect(container.querySelectorAll('a[data-empty="true"]').length).toBe(2);
+    expect([...container.querySelectorAll('a[data-empty="true"]')].map((a) => a.getAttribute('href'))).toEqual([
+      '/plans/build/F3/loop',
+      '/plans/build/F3/activity',
+    ]);
   });
 });
 

@@ -92,6 +92,19 @@ describe('AgentLanes', () => {
     );
   });
 
+  it('the TDD column holds each step as one whole word in its own cell, so it can be kept from breaking', () => {
+    render(byState('pop'));
+    const table = screen.getByRole('table', { name: /Activity by agent/ });
+    expect(within(table).getAllByRole('cell', { name: 'refactor' })).toHaveLength(2);
+    expect(within(table).getAllByRole('cell', { name: 'red' })).toHaveLength(9);
+  });
+
+  it('says the lanes scroll inside their frame, and puts the frame and the table frame on the keyboard path', () => {
+    render(byState('pop'));
+    expect(screen.getByText(/scroll sideways inside their frame/)).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'Activity by agent, table' }).getAttribute('tabindex')).toBe('0');
+  });
+
   it('the table is behind a disclosure that starts closed unless asked', () => {
     const closed = render(<AgentLanes lanes={[{ agent: 'tester', events: [{ n: 5, tdd: 'red', sha: '94a7473', label: 'x' }] }]} />);
     const button = closed.getByRole('button', { name: 'Text equivalent: the lanes as a table' });

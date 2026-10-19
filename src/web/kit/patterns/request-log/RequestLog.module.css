@@ -1,4 +1,7 @@
 .root {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
   padding: var(--space-3) var(--space-4) var(--space-4);
   background: var(--color-surface);
   border-top: 4px solid var(--color-primary);
@@ -61,8 +64,10 @@
   outline-offset: 2px;
 }
 
+/* A narrow pane scrolls the table inside its frame instead of squeezing the columns. */
 .table {
   width: 100%;
+  min-width: 32rem;
   border-collapse: collapse;
   font-size: var(--text-14);
 }

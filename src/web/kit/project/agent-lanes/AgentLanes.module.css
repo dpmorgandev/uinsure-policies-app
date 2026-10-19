@@ -1,4 +1,6 @@
 .root {
+  min-width: 0;
+  max-width: 100%;
   font-family: var(--font-sans);
   font-size: var(--text-14);
   color: var(--color-text-primary);
@@ -18,9 +20,18 @@
   border-radius: var(--radius);
 }
 
+/*
+ * Wide content scrolls inside this frame and never widens the page. The two edge shadows show that there is more to
+ * scroll to: they appear only on a side that has content past it.
+ */
 .scroll {
   max-width: 100%;
   overflow-x: auto;
+  background:
+    linear-gradient(to right, var(--color-background) 30%, transparent) left center / 2rem 100% no-repeat local,
+    linear-gradient(to left, var(--color-background) 30%, transparent) right center / 2rem 100% no-repeat local,
+    linear-gradient(to right, var(--color-border), transparent) left center / 0.75rem 100% no-repeat scroll,
+    linear-gradient(to left, var(--color-border), transparent) right center / 0.75rem 100% no-repeat scroll;
 }
 
 .scroll:focus-visible {
@@ -30,8 +41,9 @@
 
 .lanes {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
-  min-width: calc(var(--cols) * 3.5rem + 9rem);
+  min-width: calc(var(--cols) * 3.25rem + 9rem);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -60,7 +72,7 @@
 
 .ticks {
   display: grid;
-  grid-template-columns: repeat(var(--cols), minmax(3.5rem, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(3.25rem, 1fr));
   align-items: center;
   margin: 0;
   padding: var(--space-2) 0;
@@ -75,7 +87,8 @@
   align-items: center;
   gap: 0;
   justify-self: center;
-  min-width: 3rem;
+  box-sizing: border-box;
+  width: 3rem;
   padding: var(--space-1);
   font-family: var(--font-mono);
   font-size: var(--text-12);
@@ -120,10 +133,17 @@
   margin-top: var(--space-3);
 }
 
+/*
+ * The table sits in a disclosure panel that breaks long words anywhere. Here a word is whole ("refactor" is never
+ * "refact" over "or"), and a table too wide for the page scrolls in its frame instead of squeezing its columns.
+ */
 .table {
   width: 100%;
+  min-width: 44rem;
   border-collapse: collapse;
   font-size: var(--text-14);
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .table caption {
@@ -157,6 +177,15 @@
 
 .table tbody th {
   font-weight: 700;
+}
+
+.cellTdd {
+  white-space: nowrap;
+}
+
+.cellWhat {
+  min-width: 18rem;
+  overflow-wrap: break-word;
 }
 
 .absent {

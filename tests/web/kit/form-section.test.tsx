@@ -72,6 +72,17 @@ describe('FormSection', () => {
     expect(document.getElementById(ids[0]!)?.textContent).toBe('2 problems in this section');
   });
 
+  it('with errors: each invalid input is marked by aria-invalid and has no icon beside it', () => {
+    render(examples[1]!.element);
+    const inputs = screen.getAllByRole('textbox') as HTMLInputElement[];
+    expect(inputs).toHaveLength(2);
+    inputs.forEach((input) => {
+      expect(input.getAttribute('aria-invalid')).toBe('true');
+      expect(input.nextElementSibling).toBeNull();
+      expect(input.previousElementSibling?.querySelector('svg')).not.toBeNull();
+    });
+  });
+
   it('says "1 problem" for one', () => {
     render(
       <FormSection title="Policy" errorCount={1}>

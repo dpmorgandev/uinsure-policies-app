@@ -1,6 +1,9 @@
 .root {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
+  min-width: 0;
+  max-width: 100%;
   font-family: var(--font-sans);
   font-size: var(--text-16);
   color: var(--color-text-primary);
@@ -164,10 +167,26 @@ a.ref {
   outline-offset: 2px;
 }
 
+/*
+ * The table sits in a disclosure panel that breaks long words anywhere. Here a word is whole ("Refactor" is never
+ * "Refact" over "or"), and a table too wide for the page scrolls in its frame instead of squeezing its columns.
+ */
 .table {
   width: 100%;
+  min-width: 44rem;
   border-collapse: collapse;
   font-size: var(--text-14);
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.cellTdd {
+  white-space: nowrap;
+}
+
+.cellWhat {
+  min-width: 16rem;
+  overflow-wrap: break-word;
 }
 
 .table caption {

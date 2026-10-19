@@ -26,12 +26,14 @@ describe('status-tag examples', () => {
     });
   }
 
-  it('shows all five values in each theme', () => {
+  it('"both themes" lists all five values once, and sets no theme of its own', () => {
     const both = examples.find((e) => e.state === 'both themes');
     expect(both).toBeDefined();
     const { container } = render(both!.element);
-    expect(container.querySelectorAll('[data-theme="light"] [data-status]').length).toBe(5);
-    expect(container.querySelectorAll('[data-theme="dark"] [data-status]').length).toBe(5);
+    const tags = [...container.querySelectorAll('[data-status]')];
+    expect(tags.map((tag) => tag.getAttribute('data-status'))).toEqual(WORDS.map(([status]) => status));
+    // The kitchen sink draws it under each theme; a pane of its own would nest one theme in the other.
+    expect(container.querySelector('[data-theme]')).toBeNull();
   });
 });
 

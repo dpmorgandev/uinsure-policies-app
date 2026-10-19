@@ -345,10 +345,10 @@ export function RuleEvidence({
                     <tr key={commit.row}>
                       <th scope="row" className={styles.cellMono}>{`#${commit.row}`}</th>
                       <td className={styles.cellMono}>{commit.sha}</td>
-                      <td>{STEPS[commit.tdd].word}</td>
+                      <td className={styles.cellTdd}>{STEPS[commit.tdd].word}</td>
                       <td className={styles.cellMono}>{commit.agent}</td>
                       <td>{commit.layer ?? <span className={styles.absent}>none</span>}</td>
-                      <td>{commit.what}</td>
+                      <td className={styles.cellWhat}>{commit.what}</td>
                     </tr>
                   ))}
                 </tbody>

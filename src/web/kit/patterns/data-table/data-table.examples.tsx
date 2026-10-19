@@ -73,7 +73,7 @@ const DETAIL_ROWS: DetailRow[] = [
 const DETAIL_COLUMNS: DataTableColumn<DetailRow>[] = [
   { id: 'ref', header: 'Ref', cell: (row) => row.ref, rowHeader: true },
   { id: 'gate', header: 'Gate', cell: (row) => row.gate, mono: true },
-  { id: 'detail', header: 'Detail', cell: (row) => row.detail },
+  { id: 'detail', header: 'Detail', cell: (row) => row.detail, wrap: 'anywhere' },
 ];
 
 export const examples: { state: string; element: JSX.Element }[] = [

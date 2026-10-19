@@ -42,7 +42,11 @@ describe('RecentPolicies', () => {
       'QA-F3-CLAIM',
       'F2-MVEHF2QGG5',
     ]);
-    expect(within(items[0]!).getByRole('link').getAttribute('href')).toBe('/policies/F3-MVEOSVDQJQ');
+    expect(items.map((item) => within(item).getByRole('link').getAttribute('href'))).toEqual([
+      '/workbench/policies/F3-MVEOSVDQJQ',
+      '/workbench/policies/QA-F3-CLAIM',
+      '/workbench/policies/F2-MVEHF2QGG5',
+    ]);
     expect(items.map((item) => item.getAttribute('data-how'))).toEqual(['opened', 'opened', 'sold']);
     expect(within(items[2]!).getByText('Sold')).toBeTruthy();
     expect(within(items[0]!).getByText('Opened')).toBeTruthy();
@@ -79,7 +83,7 @@ describe('RecentPolicies', () => {
     const { container } = render(
       <RecentPolicies
         storage="unavailable"
-        policies={[{ reference: 'F3-MVEOSVDQJQ', href: '/policies/F3-MVEOSVDQJQ', how: 'opened' }]}
+        policies={[{ reference: 'F3-MVEOSVDQJQ', href: '/workbench/policies/F3-MVEOSVDQJQ', how: 'opened' }]}
       />,
     );
     expect(container.querySelector('[data-state="unavailable"]')).not.toBeNull();

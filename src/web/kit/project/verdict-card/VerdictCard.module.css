@@ -1,5 +1,8 @@
 .card {
   --c: var(--color-text-secondary);
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
   padding: var(--space-3) var(--space-4);
   font-family: var(--font-sans);
   font-size: var(--text-14);
@@ -18,9 +21,12 @@
   --c: var(--color-error);
 }
 
+/*
+ * A lost receipt has no verdict colour, and its rule is dashed. A dashed border 6px thick is drawn as heavy blocks,
+ * so a lost card keeps a thin dashed border all round, the left side included.
+ */
 .card[data-verdict="lost"] {
-  border-style: dashed;
-  border-left-style: dashed;
+  border: 2px dashed var(--c);
 }
 
 .card p {

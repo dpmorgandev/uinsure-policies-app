@@ -40,11 +40,12 @@ const note = {
   color: 'var(--color-text-secondary)',
 } as const;
 
+// No example sets a width: each one fills the pane it is in, and the lanes and the table scroll inside their own frames.
 export const examples: { state: string; element: JSX.Element }[] = [
   {
     state: 'pop',
     element: (
-      <div style={{ maxWidth: '60rem' }}>
+      <div>
         <AgentLanes lanes={both} tableOpen />
       </div>
     ),
@@ -52,7 +53,7 @@ export const examples: { state: string; element: JSX.Element }[] = [
   {
     state: 'one agent',
     element: (
-      <div style={{ maxWidth: '60rem' }}>
+      <div>
         <AgentLanes lanes={[{ agent: 'tester', events: tester }]} />
         <p style={note}>Only the tester's rows from the same walkthrough, to show a single lane.</p>
       </div>
@@ -61,7 +62,7 @@ export const examples: { state: string; element: JSX.Element }[] = [
   {
     state: 'empty',
     element: (
-      <div style={{ maxWidth: '60rem' }}>
+      <div>
         <AgentLanes lanes={[]} />
         <p style={note}>Placeholder: the mockups hold no node with an empty activity record.</p>
       </div>
@@ -70,7 +71,7 @@ export const examples: { state: string; element: JSX.Element }[] = [
   {
     state: 'git-only',
     element: (
-      <div style={{ maxWidth: '60rem' }}>
+      <div>
         <AgentLanes lanes={[]} gitOnly />
         <p style={note}>F0a is git-only: no loop, activity or verdicts, by design (trail-inventory.md section 4).</p>
       </div>

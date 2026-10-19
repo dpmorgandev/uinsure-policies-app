@@ -44,4 +44,13 @@ describe('MoneyInput', () => {
     const id = input.getAttribute('aria-describedby') as string;
     expect(document.getElementById(id)?.textContent).toContain('Placeholder message');
   });
+
+  it('draws no icon over the right-aligned digits when invalid: the field message carries the only icon', () => {
+    const { container } = render(examples[2]!.element);
+    expect(container.querySelectorAll('svg')).toHaveLength(1);
+    const input = screen.getByRole('textbox', { name: 'Amount' });
+    expect(input.parentElement?.querySelector('input + svg')).toBeNull();
+    const id = input.getAttribute('aria-describedby') as string;
+    expect(document.getElementById(id)?.querySelector('svg')).not.toBeNull();
+  });
 });

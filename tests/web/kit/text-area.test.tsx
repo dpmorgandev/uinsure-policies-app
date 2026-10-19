@@ -57,6 +57,13 @@ describe('TextArea', () => {
     expect(texts.some((t) => t.includes('of 500 characters'))).toBe(true);
   });
 
+  it('when invalid: draws no icon of its own, so the field message carries the only error icon', () => {
+    const { container } = render(examples[3]!.element);
+    expect(container.querySelectorAll('svg')).toHaveLength(1);
+    const box = screen.getByRole('textbox', { name: 'Claim description' });
+    expect(box.parentElement?.querySelector('svg')).toBeNull();
+  });
+
   it('is not marked invalid by default', () => {
     render(<TextArea aria-label="Claim description" maxLength={500} />);
     expect(screen.getByRole('textbox', { name: 'Claim description' }).getAttribute('aria-invalid')).toBeNull();

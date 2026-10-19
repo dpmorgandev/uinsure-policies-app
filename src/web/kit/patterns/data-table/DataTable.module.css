@@ -1,4 +1,7 @@
+/* Wide content scrolls inside this frame and never widens the page. */
 .frame {
+  box-sizing: border-box;
+  min-width: 0;
   max-width: 100%;
   max-height: var(--data-table-max-height, 36rem);
   overflow: auto;
@@ -48,6 +51,10 @@
   text-align: left;
   vertical-align: top;
   border-bottom: 1px solid var(--color-border);
+  overflow-wrap: break-word;
+}
+
+.cell.anywhere {
   overflow-wrap: anywhere;
 }
 

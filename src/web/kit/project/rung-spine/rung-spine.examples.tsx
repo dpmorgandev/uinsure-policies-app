@@ -28,7 +28,8 @@ const note = {
 const mono = { fontFamily: 'var(--font-mono)', fontSize: 'var(--text-14)' } as const;
 const layer = { ...mono, color: 'var(--color-text-secondary)' } as const;
 const caption = { margin: 'var(--space-3) 0 0', fontSize: 'var(--text-14)', color: 'var(--color-text-secondary)' } as const;
-const frame = { maxWidth: '60rem' } as const;
+// Each example fills the pane it is in; none sets a width of its own.
+const frame = { maxWidth: '100%' } as const;
 
 const STEPS: Record<'red' | 'stub' | 'green' | 'refactor', { status: Status; word: string; tone: RungTone }> = {
   red: { status: 'fail', word: 'Red', tone: 'red' },

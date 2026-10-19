@@ -10,7 +10,7 @@ export interface FieldControlProps {
   'aria-describedby'?: string;
   'aria-invalid'?: true;
   'aria-required'?: true;
-  /** For kit controls, which draw their own invalid border and glyph from it. */
+  /** For kit controls, which mark it with their border. They draw no icon: the field's message carries it. */
   invalid: boolean;
 }
 

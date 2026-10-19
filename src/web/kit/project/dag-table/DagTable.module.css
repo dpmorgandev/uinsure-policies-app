@@ -1,4 +1,6 @@
 .frame {
+  box-sizing: border-box;
+  min-width: 0;
   max-width: 100%;
   overflow-x: auto;
   font-family: var(--font-sans);
@@ -13,10 +15,17 @@
   outline-offset: 2px;
 }
 
+/*
+ * The table also sits in the graph's disclosure panel, which breaks words anywhere. Here a word stays whole, and a
+ * table too wide for the page scrolls in its frame instead of squeezing its columns.
+ */
 .table {
   width: 100%;
+  min-width: 30rem;
   border-collapse: collapse;
   font-variant-numeric: tabular-nums lining-nums;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .caption {
@@ -46,7 +55,7 @@
   text-align: left;
   vertical-align: top;
   border-bottom: 1px solid var(--color-border);
-  overflow-wrap: anywhere;
+  overflow-wrap: break-word;
 }
 
 .node {

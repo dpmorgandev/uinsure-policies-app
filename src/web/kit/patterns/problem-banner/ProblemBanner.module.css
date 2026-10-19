@@ -1,4 +1,6 @@
 .root {
+  box-sizing: border-box;
+  max-width: 100%;
   margin: 0 0 var(--space-4);
   padding: var(--space-3) var(--space-4);
   background: var(--color-surface);
@@ -8,8 +10,12 @@
   overflow-wrap: anywhere;
 }
 
+/* A dashed rule drawn as short, fine dashes: a 6px dashed border renders as heavy blocks. */
 .root[data-kind="unreachable"] {
-  border-left-style: dashed;
+  border-left-color: transparent;
+  background:
+    repeating-linear-gradient(to bottom, var(--color-error) 0 0.5rem, transparent 0.5rem 0.875rem) left top / 4px 100% no-repeat border-box,
+    var(--color-surface);
 }
 
 .title {

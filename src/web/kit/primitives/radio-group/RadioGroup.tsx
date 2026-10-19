@@ -1,5 +1,4 @@
 import { useId, useState } from 'react';
-import { CircleAlert } from 'lucide-react';
 import styles from './RadioGroup.module.css';
 
 export interface RadioOption {
@@ -16,6 +15,7 @@ export interface RadioGroupProps {
   defaultValue?: string;
   onChange?: (value: string) => void;
   name?: string;
+  /** aria-invalid on the group and error-coloured radios; the options stay where they are. The icon and message belong to `field`. */
   invalid?: boolean;
   disabled?: boolean;
   /** The id of the error message `field` draws. */
@@ -50,10 +50,7 @@ export function RadioGroup({
       aria-describedby={describedBy}
       data-invalid={invalid ? 'true' : undefined}
     >
-      <legend className={styles.legend}>
-        {invalid ? <CircleAlert size="1.25em" aria-hidden="true" /> : null}
-        {legend}
-      </legend>
+      <legend className={styles.legend}>{legend}</legend>
       <div className={styles.options}>
         {options.map((option) => (
           <label key={option.value} className={styles.option}>

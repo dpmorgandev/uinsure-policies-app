@@ -1,31 +1,19 @@
 import { useId } from 'react';
 import type { JSX, ReactNode } from 'react';
-import { CircleAlert } from 'lucide-react';
+import { InlineError } from '../../patterns/inline-error/InlineError';
 import { Select } from './Select';
 import type { SelectOption } from './Select';
 
 const box = { maxWidth: '22rem' } as const;
 const stack = { display: 'flex', flexDirection: 'column', gap: 'var(--space-3)', maxWidth: '22rem' } as const;
-const message = {
-  display: 'flex',
-  gap: 'var(--space-2)',
-  alignItems: 'flex-start',
-  margin: 'var(--space-1) 0 0',
-  color: 'var(--color-error)',
-  fontWeight: 700,
-  fontSize: 'var(--text-14)',
-} as const;
 
-/** Stands in for `field`: wires an error message to the select with aria-describedby. */
+/** Stands in for `field`: the one error message (inline-error) sits above the select and is wired by aria-describedby. */
 function WithMessage({ text, children }: { text: string; children: (describedBy: string) => ReactNode }) {
   const id = useId();
   return (
     <div style={box}>
+      <InlineError id={id} messages={[text]} />
       {children(id)}
-      <p id={id} style={message}>
-        <CircleAlert size="1.25em" aria-hidden="true" />
-        <span>{text}</span>
-      </p>
     </div>
   );
 }

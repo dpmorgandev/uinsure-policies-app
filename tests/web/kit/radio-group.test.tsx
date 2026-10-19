@@ -62,4 +62,13 @@ describe('RadioGroup', () => {
     const id = group.getAttribute('aria-describedby') as string;
     expect(document.getElementById(id)?.textContent).toContain('Placeholder message');
   });
+
+  it('invalid: the legend carries no icon, so the options line up with the valid state', () => {
+    const { container } = render(examples[1]!.element);
+    const group = screen.getByRole('radiogroup', { name: 'Payment method' });
+    expect(group.querySelector('legend svg')).toBeNull();
+    expect(container.querySelectorAll('svg')).toHaveLength(1);
+    const id = group.getAttribute('aria-describedby') as string;
+    expect(document.getElementById(id)?.querySelector('svg')).not.toBeNull();
+  });
 });

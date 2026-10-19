@@ -26,7 +26,7 @@ export const examples: { state: string; element: JSX.Element }[] = [
   {
     state: 'pop',
     element: (
-      <div style={{ maxWidth: '48rem' }}>
+      <div>
         <RequestLog entries={entries} />
         {caption}
       </div>
@@ -35,7 +35,7 @@ export const examples: { state: string; element: JSX.Element }[] = [
   {
     state: 'empty',
     element: (
-      <div style={{ maxWidth: '48rem' }}>
+      <div>
         <RequestLog entries={[]} />
       </div>
     ),
@@ -43,7 +43,7 @@ export const examples: { state: string; element: JSX.Element }[] = [
   {
     state: 'filtered',
     element: (
-      <div style={{ maxWidth: '48rem' }}>
+      <div>
         <RequestLog entries={entries} defaultFilter="POST" />
         {caption}
       </div>

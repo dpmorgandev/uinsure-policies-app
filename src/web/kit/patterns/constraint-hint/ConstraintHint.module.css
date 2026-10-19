@@ -46,6 +46,10 @@
   border-left-width: 6px;
 }
 
+/* Check off: the rule is drawn as fine dashes, since a 4px dashed border renders as heavy blocks. */
 .root[data-state="off"] {
-  border-left-style: dashed;
+  border-left-color: transparent;
+  background:
+    repeating-linear-gradient(to bottom, var(--color-text-secondary) 0 0.25rem, transparent 0.25rem 0.5rem) left top / 4px 100% no-repeat border-box,
+    var(--color-surface);
 }

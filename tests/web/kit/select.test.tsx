@@ -47,6 +47,15 @@ describe('Select', () => {
     expect(document.getElementById(id)?.textContent).toContain('Placeholder message');
   });
 
+  it('invalid: only the chevron is in the box, and the field message carries the one error icon', () => {
+    const { container } = render(examples[1]!.element);
+    const select = screen.getByRole('combobox', { name: 'Payment method' });
+    expect(select.parentElement?.querySelectorAll('svg')).toHaveLength(1);
+    expect(container.querySelectorAll('svg')).toHaveLength(2);
+    const id = select.getAttribute('aria-describedby') as string;
+    expect(document.getElementById(id)?.querySelector('svg')).not.toBeNull();
+  });
+
   it('the placeholder option is disabled, so it cannot be chosen back', () => {
     render(<Select aria-label="Payment method" options={options} placeholder="Choose" />);
     const placeholder = screen.getByRole('option', { name: 'Choose' }) as HTMLOptionElement;

@@ -1,5 +1,6 @@
 import type { JSX } from 'react';
-import { PrimaryNav, primaryNavItems } from './PrimaryNav';
+import { PrimaryNav } from './PrimaryNav';
+import type { NavItem } from './PrimaryNav';
 
 const column = { display: 'grid', gap: 'var(--space-4)' } as const;
 const caption = {
@@ -11,16 +12,28 @@ const caption = {
   color: 'var(--color-text-secondary)',
 } as const;
 
-// One bar per item, each with a different item current. The five labels are the catalog row's.
+// The entries are docs/ui/screens.json `primaryNav`, in its order: id is the key, name the label, route the href and
+// scope the scope. The Plan route is `/plans/:planId`; the plan the mockups read is "build", so the link here is
+// /plans/build. The component holds no routes of its own: a screen passes these in.
+export const catalogNav: NavItem[] = [
+  { key: 'overview', label: 'Overview', href: '/', scope: 'explorer' },
+  { key: 'matrix', label: 'Requirements matrix', href: '/rules', scope: 'explorer' },
+  { key: 'plan', label: 'Plan', href: '/plans/build', scope: 'explorer' },
+  { key: 'decisions', label: 'Human decisions', href: '/decisions', scope: 'explorer' },
+  { key: 'about', label: 'How to read this', href: '/about', scope: 'explorer' },
+  { key: 'wb-home', label: 'Workbench', href: '/workbench', scope: 'workbench' },
+];
+
+// One bar per item, each with a different item current: the five explorer entries, then the workbench.
 export const examples: { state: string; element: JSX.Element }[] = [
   {
     state: 'each active item',
     element: (
       <div style={column}>
-        {primaryNavItems.map((item) => (
+        {catalogNav.map((item) => (
           <div key={item.key}>
             <p style={caption}>Current: {item.label}</p>
-            <PrimaryNav current={item.key} label={`Primary, ${item.label} current`} />
+            <PrimaryNav current={item.key} items={catalogNav} label={`Primary, ${item.label} current`} />
           </div>
         ))}
       </div>
