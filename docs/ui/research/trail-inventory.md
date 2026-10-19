@@ -5,8 +5,16 @@ F2 sign-off trail. Written to this file by the main session, lightly condensed; 
 was added or changed. Two findings were re-checked by the main session and hold (marked **verified**).
 Byte sizes are estimates from line counts (the agent's shell was blocked). Entry IDs: D1–D14.
 
-**This is a snapshot.** F3 is in flight in parallel; counts here will move. The compiler (DATA-8) reads
-whatever exists at build time.
+**Shapes, not counts.** This file describes what the trail's entities look like: fields, vocabularies,
+edge cases, links and orders of magnitude. **It holds no live counts.** For how many rules are built,
+which have refactor commits, or which nodes are done, read `docs/trace/requirements-matrix.md`,
+`docs/plans/active/build.dag.yaml` and each node's `docs/trace/build/<node>/README.md`, which change as
+the build moves. The compiler (DATA-8) reads whatever exists at build time.
+
+*Edited 2026-10-19, approved by David: the round-1 counts were removed. They were taken at `ad7b6b0`,
+before F3 merged, and misled round 2's creative director, who read "built 8" and "GET-1 is the only rule
+with a refactor SHA" when the matrix by then said 21 and four. Examples below that name a commit, PR or
+node are dated to `ad7b6b0` and stay true as examples.*
 
 ## 1. Entities
 
@@ -20,7 +28,8 @@ Provenance labels (generated, recorded, written) come from each file's first lin
   `sign-off`, `PR`. The matrix has no rule-text column.
 - Built: `SELL-1 | build/F1 | 22/22 | b716734 | 7d3f791 | | docs/qa/build-F1.md#1 | David 2026-10-18 | #10`.
 - Not built: `CANCEL-1a | build/F3 | not built yet |` and empty cells.
-- `GET-1` is the only rule with a refactor SHA (`80d3ee2`).
+- Any of `red`, `green` and `refactor` may be empty on a built row (a rule can be built with no refactor
+  commit, or pinned with no green of its own). Example refactor SHA: `GET-1` `80d3ee2`.
 
 **D2 Plan** (written: `docs/plans/active/build.dag.yaml`, `build.plan.md`, `inv-001.plan.md`)
 - DAG: `plan_id`, `kind`, `title`, `status` (`approved`), `created`, `approved_by`, `approved_on`,
@@ -115,41 +124,24 @@ URL ending `#issuecomment-6256697305`; `merged(ad7b6b096e2dba88f3a3c71d860b557b7
 (`PreToolUse`), `agent_type`, `subagent`, `tool_name`, `cwd`, `project_dir`, `process_cwd`, `target`,
 `keys[]`).
 
-## 2. Counts (snapshot)
+## 2. Where the counts live
 
-**Rules:** 29 (SELL 7, GET 1, CANCEL 9, RENEW 6, COULD 6). Built 8 (SELL-1..7 in F1, GET-1 in F2); not
-built yet 21 (F3 13, F4 8).
+Counts are read live, never from this file:
 
-| Rule | Tests (matrix) |
+| Figure | Source |
 |---|---|
-| SELL-1 | 22/22 |
-| SELL-2 | 26/26 |
-| SELL-3 | 13/13 |
-| SELL-4 | 11/11 |
-| SELL-5 | 16/16 |
-| SELL-6 | 14/14 |
-| SELL-7 | 10/10 |
-| GET-1 | 59/59 |
+| Rules, built or not, tests pass/total, red/green/refactor SHAs, QA step, sign-off, PR | `docs/trace/requirements-matrix.md` |
+| Nodes, status, attempts, PR | `docs/plans/active/build.dag.yaml` |
+| A node's commits, gates, verdicts, findings, completeness | `docs/trace/build/<node>/README.md` and the files beside it |
 
-**Verified discrepancy:** the matrix shows SELL-7 at 10/10 (its F1 row), but 15 tests in `tests/` carry
-`[Trait("Rule", "SELL-7")]`: F2 pinned more SELL-7 rows (`docs/qa/build-F2.md`:3, H5, H6). The matrix
-counts tests at the rule's own node, not across nodes. The explorer must either show the count with its
-scope ("at F1") or the compiler must count across nodes. Settle in `trace-data.spec.md`; the matrix
-itself is a build-plan artifact, outside this plan.
+**The matrix counts tests at the rule's own node, not across nodes** (verified at `ad7b6b0`): SELL-7 read
+10/10 on its F1 row while 15 tests in `tests/` carried `[Trait("Rule", "SELL-7")]`, because F2 pinned more
+SELL-7 rows (`docs/qa/build-F2.md`:3, H5, H6). The explorer must show a count with its scope ("at F1"),
+or the compiler must count across nodes: `trace-data.spec.md` settles it. The matrix is a build-plan
+artifact; F6 owns the defect.
 
-**Nodes:** done F0a, F0b, F1, F1b, F2; pending F3, F4, F5, F6, F7. Attempts: F0a 0, F0b 2, F1 2, F1b 2,
-F2 3.
-
-| Node | Commits | loop.jsonl lines | activity.jsonl lines | Verdicts | Findings | diff.patch lines | Final suite |
-|---|---|---|---|---|---|---|---|
-| F0a | git-only | — | — | — | — | — | — |
-| F0b | 34 | 65 | 616 | 5 | 2 (A1, D1) | 2648 | 74/74 |
-| F1 | 92 | 84 | 1253 | 4 | 3 (A1, D1, D2) | 8914 | 277/277 |
-| F1b | 44 | 46 | 748 | 4 | 1 (A1) | 3302 | 339/339 |
-| F2 | 44 | 58 | 756 | 6 | 2 (A1, A2) | 5759 | 374/374 |
-
-F0a has no walkthrough and no packet. `packet/gates.jsonl` lines: F0b 11, F1 8, F1b 8, F2 30.
-`trailers.txt` Agent lines: F0b 29, F1 79, F1b 36, F2 34. F2 has three verdict rounds and inv-001.
+**Shapes that don't change with the count:** F0a is git-only (no walkthrough, no packet). A node may
+have several verdict rounds (F2 had three) and an investigation (inv-001).
 
 ## 3. Vocabularies
 
@@ -184,7 +176,7 @@ like `API3:2023`, `NET:money`.
 
 - **F0a git-only:** a written README ("witnessed by git and trailers only"), no loop, activity, verdicts
   or matrix rows; receipts are hook logs and markdown (probes G1–G14, S1–S9).
-- **TRAIL INCOMPLETE:** no README shows it today. The only instance is F1's loop event
+- **TRAIL INCOMPLETE:** no README showed it at `ad7b6b0`. The instance found then was F1's loop event
   `trace.rendered(incomplete)` at attempt 2 (`BLOCKED. (1) QA rows use [SELL-n] in the Rule column; …`):
   a past state, not a final one. A fixture must supply the final-state case.
 - **Empty rule tables:** F0b and F1b have a Rules header with no rows.
@@ -231,11 +223,14 @@ like `API3:2023`, `NET:money`.
   `https://github.com/dpmorgandev/uinsure-policies-api/pull/17`; comment URLs `…#issuecomment-<id>`;
   commit URLs buildable from full SHAs. Merge SHAs: F2 `ad7b6b09…`, F1b `b2584f7a…`, F1 `c16703b4…`,
   F0b `b9d6774c…`.
-- **PRs:** F0b #6 (README), F1 #10, F1b #15, F2 #17; harness PRs #3, #4, #16 in prose only.
+- **PRs** (examples at `ad7b6b0`; later nodes add more): F0b #6 (README), F1 #10, F1b #15, F2 #17;
+  harness PRs #3, #4, #16 in prose only.
 - **Not linkable today:** rule IDs to `requirements.md` anchors; tests to source files. Both are
   compiler work (`trace-data.spec.md`).
 
 ## 6. Sizes
+
+Orders of magnitude at `ad7b6b0` (F0b–F2 only), kept as evidence for PERF-1. They only grow as nodes land.
 
 | File | Lines | Est. bytes |
 |---|---|---|
