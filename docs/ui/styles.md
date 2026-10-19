@@ -37,7 +37,10 @@ From the research, binding whichever direction is picked:
 
 ## Style 0: Case file
 
-**Governing idea (draft):** the explorer reads like a well-kept case file. Each rule is a matter, each
+**Chosen at G2 (2026-10-19).** **Concept:** David adopted the draft governing idea below as the concept,
+unchanged ("keep your draft governing idea as the concept").
+
+**Governing idea:** the explorer reads like a well-kept case file. Each rule is a matter, each
 commit, gate and verdict an exhibit, numbered and dated, and every claim has its exhibit beside it.
 
 **Layout archetype:** a document, not a dashboard. A single reading column (about 72 characters for
