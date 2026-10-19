@@ -1,0 +1,60 @@
+.banner {
+  --c: var(--color-text-secondary);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+  background: color-mix(in srgb, var(--c) 8%, var(--color-background));
+  border: 1.5px solid var(--c);
+  border-left-width: 6px;
+  border-radius: var(--radius);
+}
+
+.ok {
+  --c: var(--color-success);
+}
+
+.gitOnly {
+  --c: var(--color-success);
+  border-left-style: dashed;
+}
+
+.incomplete {
+  --c: var(--color-error);
+  border-width: 3px;
+  border-left-width: 8px;
+}
+
+.unrecognised {
+  --c: var(--color-warn);
+  border-style: dashed;
+}
+
+.icon {
+  flex: none;
+  width: 1.5em;
+  height: 1.5em;
+  margin-top: 0.1em;
+  color: var(--c);
+}
+
+.body {
+  min-width: 0;
+}
+
+.value {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-18);
+  font-weight: 700;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.explanation {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+}

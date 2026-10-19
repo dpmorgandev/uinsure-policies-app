@@ -1,0 +1,2 @@
+pre-commit: G10: private content in the staged files:
+src/web/kit/project/rung-spine/RungSpine.tsx:170:    const key = event[.]key.toLowerCase();
