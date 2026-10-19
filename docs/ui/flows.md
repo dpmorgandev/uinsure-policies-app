@@ -119,11 +119,16 @@ COULD-2 on every paid term → `wb-policy` (`hasClaims` true, the claim on the t
 
 ## FL-14: Renew inside the window
 
-Primary reader R3. Requirements: WB-5. **Designed from `requirements.md` only until F4 merges.**
+Primary reader R3. Requirements: WB-5, WB-3. Endpoint E6 (F4, `api-inventory.md` §8).
 
-`wb-policy` → `wb-renew` → the payment method defaults from the current term (RENEW-3a/3b) → Cheque with
-auto-renew is refused (COULD-3) → `wb-policy` (a new term on the timeline). Until the endpoint exists,
-`wb-renew` shows the api-not-built state.
+`wb-policy` → `wb-renew` → the amount, and the payment method (defaulted from the current term on an
+auto-renewing policy (RENEW-3a); not sent when it doesn't auto-renew (RENEW-3b)) → Cheque with
+auto-renew is refused (COULD-3) → `wb-policy` (the new term last on the timeline; the current term
+unchanged until it starts).
+
+Most live attempts land outside the window: a policy sold today becomes renewable about 11 months later.
+So the screen's usual live result is the RENEW-1/2 problem, which states the window. A success is shown
+from the design fixture, recorded from the tests that use a fake clock.
 
 ## FL-15: See exactly what was sent
 

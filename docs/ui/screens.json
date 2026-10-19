@@ -1647,21 +1647,25 @@
       },
       {
         "scope": "workbench",
-        "priority": "SHOULD",
+        "priority": "MUST",
         "id": "wb-renew",
         "route": "/workbench/policies/:reference/renew",
         "name": "Renew",
         "section": "workbench",
-        "description": "Renew inside the window; the payment method defaults from the current term; Cheque is refused for an auto-renewing renewal. Designed from requirements.md RENEW-1..6 and COULD-3; the API has no renew endpoint until F4 merges, so real responses join the design fixture then.",
+        "description": "Renew inside the window (E6): the amount, and the payment method, which defaults from the current term on an auto-renewing policy and must not be sent when it does not auto-renew; Cheque is refused for an auto-renewing renewal. The window is shown only when the API states it (a single-rule RENEW-1/2 problem), never computed. Success returns the full policy with the new term last.",
         "requirements": [
           "WB-5",
           "WB-3",
+          "WB-2",
           "BUSY-1"
         ],
         "data": [
+          "E6",
           "A1",
           "A2",
-          "A12"
+          "A5",
+          "A15",
+          "A16"
         ],
         "components": [
           "page-header",
@@ -1669,10 +1673,11 @@
           "money-input",
           "select",
           "button",
-          "not-built-yet",
           "error-summary",
           "rule-chip",
-          "spinner"
+          "spinner",
+          "problem-banner",
+          "term-timeline"
         ],
         "icons": [
           "refresh-cw",
@@ -1682,21 +1687,27 @@
           "FL-14"
         ],
         "states": [
-          "api-not-built",
           "submitting",
           "api-error"
         ],
         "regions": [
           {
-            "name": "renewal amount and payment method",
+            "name": "renewal amount and payment method (default shown from the current term; omitted when auto-renew is off)",
             "req": [
               "WB-5"
             ]
           },
           {
-            "name": "problems (RENEW-*, COULD-3)",
+            "name": "problems (RENEW-1/2 with its window, RENEW-3b, RENEW-5, RENEW-6, COULD-3; several at once listed, not placed)",
             "req": [
               "WB-3"
+            ]
+          },
+          {
+            "name": "the new term, last on the timeline",
+            "req": [
+              "WB-5",
+              "WB-2"
             ]
           },
           {

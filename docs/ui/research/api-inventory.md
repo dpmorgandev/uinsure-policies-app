@@ -3,7 +3,11 @@
 Researched 2026-10-19 (round 2) by a read-only Explore subagent over `docs/requirements.md`, `src/**`,
 `tests/**` and `docs/qa/*.md` on the `ui` branch (F3 merged, F4 in progress elsewhere). Written to this
 file by the main session, condensed; no field, status code, rule ID or citation was added or changed.
-Entry IDs: endpoints E1–E5, entities A1–A14. Paths are repo-relative.
+Entry IDs: endpoints E1–E6, entities A1–A16. Paths are repo-relative.
+
+**Updated 2026-10-19 after F4 (renew) merged, approved by David.** A second read-only Explore pass over the
+same sources added E6 (renew), A15 (its request) and A16 (its problems), and replaced the "not built"
+passages. IDs E1–E5 and A1–A14 are unchanged.
 
 **No full JSON response example exists in the sources read.** Postman holds request bodies and `pm.test`
 checks; tests build expected values from literals. Real response values are quoted from the QA scripts,
@@ -20,7 +24,7 @@ labelled as such.
 | E5 | `POST /policies/{reference}/claims` | COULD-2, 2a, 2b, 2c | **201**, `Location: /policies/{reference}`, `RecordClaimResponse` | `writes` rate limit |
 | — | `GET /health/live`, `/health/ready` | — | 200 | not rate limited |
 | — | OpenAPI + Scalar | — | — | Development only (`Program.cs:119-123`) |
-| — | **Renew** | RENEW-1..6, COULD-3, CANCEL-5 | — | **not built** (§8) |
+| E6 | `POST /policies/{reference}/renewals` | RENEW-1/2, 3a, 3b, 4, 5, 6, COULD-3 (+ GET-1 404) | **201**, `Location: /policies/{reference}`, full `PolicyResponse` (A1) | `writes` rate limit; reference normalised; one UK today per request (§8) |
 
 No list or search endpoint; lookup is by reference only.
 
@@ -138,9 +142,7 @@ checks; any other query key → 400.
 **Claim:** `claimDate` required; `description` optional, max 500 (501 → 400); future → 422 COULD-2a;
 outside every term → 422 COULD-2b; cancelled policy → 409 COULD-2c.
 
-**Renew:** not built. Only the rules exist (`requirements.md:90-95,106`): window end − 30 to end;
-RENEW-3a/3b on the payment method; RENEW-5 amount > 0; RENEW-6 cancelled → 409; COULD-3 no Cheque on an
-auto-renewing renewal. No request contract in `src/`.
+**Renew (E6, A15 `RenewPolicyRequest`):** see §8.
 
 ## 4. Errors
 
@@ -200,7 +202,7 @@ Examples recorded by QA:
 | Status | **yes**, `status` (Cancelled overrides; Pending before the first start; Expired after the last end) | `Policy.cs:51-65` |
 | Current term | **yes**, `currentTermNumber` and the policy-level dates and amount (the term covering today, else the latest) | `Policy.cs:48-49` |
 | Cooling-off window dates | **no**; seen only afterwards as `ruleApplied` `CANCEL-1b` on a quote or cancel | — |
-| Renewal window | **no** (renew not built) | — |
+| Renewal window | **no** on GET or in the 201. Only as `windowStart`/`windowEnd` on a **single-violation** RENEW-1/2 422 | `Policy.cs:141-151`, `ResultExtensions.cs:24-30` |
 | Refund amount and `ruleApplied` | **yes**, per term and in total, via E4 (no side effects) or E3; on GET only the A8 summary | `RefundCalculator.cs` |
 | Claims effect on refunds | **yes**, indirectly: `hasClaims`, and `ruleApplied` `COULD-2` with `0.00` on every paid term | `RefundCalculator.cs:30-33` |
 | Unpaid term | **yes**: `paymentReference` null; `UNPAID-TERM` on cancel lines (takes precedence over COULD-2) | `RefundCalculator.cs:24-28` |
@@ -219,7 +221,7 @@ Examples recorded by QA:
 | Pro-rata | after start + 14: amount × unused ÷ 365/366, the cancel day counted as used | CANCEL-1c |
 | Cancellation date | today ≤ date ≤ latest term end | CANCEL-3, CANCEL-7 |
 | Claim date | ≤ today and inside some term | COULD-2a, COULD-2b |
-| Renewal | latest end − 30 … latest end, inclusive | RENEW-1/2, **requirements only, not in code** |
+| Renewal | **latest** term's end − 30 … latest end, inclusive (`Policy.cs:12, 141-151`) | RENEW-1/2 |
 
 **Clock override: none.** Production uses `TimeProvider.System` (`Program.cs:58`); only the test
 factory swaps in a `FakeTimeProvider`.
@@ -227,7 +229,8 @@ factory swaps in a `FakeTimeProvider`.
 ## 7. Edge cases a screen must handle
 
 - **Multiple terms:**
-  - They can't yet be created through the API (no renew); tests seed them.
+  - Created through the API by renewing (E6). Until term 2 starts, the policy-level dates and amount stay
+    on term 1; the new term is `terms[last]` (`RenewTermTests.cs:59-86`).
   - `currentTermNumber` may differ from the latest term.
   - Cancel and quote list every term: a current term at CANCEL-1c and a future one at CANCEL-1a, with
     different refund methods (`Domain.Tests/CancelRefundMethodTests.cs:32-50`).
@@ -240,7 +243,8 @@ factory swaps in a `FakeTimeProvider`.
   - a further cancel or quote → 409 CANCEL-4, and a claim → 409 COULD-2c, before any date rule;
   - a cancel on the last day of cover → `totalRefund` 0.00, `refunds` `[]`.
 - **Expired:** can't be cancelled (CANCEL-7 alone).
-- **Cheque with auto-renew:** accepted at sale. COULD-3 applies only at renewal (not built).
+- **Cheque with auto-renew:** accepted at sale. At renewal, COULD-3 refuses it, whether sent or
+  defaulted from the current term (§8).
 - **Unknown query parameters → 400** on every action, including names that match route, body or
   special parameters (`?reference=`, `?cancellationToken=`). Keys are matched case-insensitively;
   `?REFERENCE=X` comes back keyed `reference`.
@@ -252,24 +256,86 @@ factory swaps in a `FakeTimeProvider`.
 - **Rate limits:** 100/min global and 10 writes/min per IP by default (Development: 10000 and 1000); a
   429 carries `Retry-After`.
 
-## 8. Not built: RENEW-*, CANCEL-5, COULD-3
+## 8. Renew (F4): E6, A15, A16
 
-- **What exists:**
-  - the rules (`requirements.md:86-95,106`);
-  - the pending list (`tests/rule-coverage.pending.txt:1-9`: CANCEL-5, RENEW-1, RENEW-2, RENEW-3a,
-    RENEW-3b, RENEW-4, RENEW-5, RENEW-6, COULD-3);
-  - multi-term support in the domain and the GET mapping, so a renewed policy would already render.
-- **What doesn't:** a renew route, service method, domain method, rule constants, problem titles, or a
-  Postman folder.
-- **CANCEL-5** has no dedicated code or trait. The cancel logic already refunds a future term in full as
-  CANCEL-1a, but the rule is still pending.
+**E6** `POST /policies/{reference}/renewals` (`PoliciesController.cs:83-106` → `PolicyService.Renew`
+`:99-116` → `Policy.Renew` `:129-186`). **201**, `Location: /policies/{normalised reference}`, and the body
+is the full **A1** policy (no new shape). The same 16 members.
+
+**A15 `RenewPolicyRequest`** (`RenewPolicyRequest.cs:6-25`):
+
+| Field | Rule | Failure |
+|---|---|---|
+| `amount` (required JSON number) | missing or null → "The Amount field is required."; a string → `$.amount`; > 1,000,000.00 or > 2 dp → 400. ≤ 0 → **RENEW-5**. 0.01 and 1,000,000.00 accepted | 400 / 422 |
+| `paymentMethod` (optional, `Card` \| `DirectDebit` \| `Cheque`) | **RENEW-3a:** absent on an auto-renew policy → the **current** term's method. **RENEW-3b:** any method sent when `autoRenew` is false. **COULD-3:** an effective Cheque on an auto-renew policy, sent or defaulted. JSON `null` counts as absent | 422 |
+| any other member (e.g. `startDate`) | unknown member (the tests tag it RENEW-4: a renewal can't choose its start) | 400 |
+| no body / malformed JSON | "A request body with an amount is required." / 400 | 400 |
+
+**Order:**
+1. Shape 400.
+2. 404 GET-1.
+3. **RENEW-6 409 alone** (cancelled, even with a future cancellation date).
+4. RENEW-1/2, RENEW-3b, RENEW-5 and COULD-3 collected into one 422.
+5. A concurrency 409 on save.
+
+**RENEW-4:** the new term starts at latest end + 1 and runs 1 year − 1 day; its payment is the full amount,
+or none if unpaid.
+
+**A16, renew problems** (`ProblemCatalog.cs:23-27`; extensions only when a single rule fails):
+
+| type | title | status | extensions |
+|---|---|---|---|
+| `/problems/renew-1-2` | Outside the renewal window | 422 | `windowStart`, `windowEnd` |
+| `/problems/renew-3b` | Payment method sent for an unpaid renewal | 422 | — |
+| `/problems/renew-5` | Renewal amount must be greater than zero | 422 | `amount` |
+| `/problems/renew-6` | Cancelled policy cannot be renewed | **409** | `cancellationDate` |
+| `/problems/could-3` | Cheque not allowed for auto-renewal | 422 | `paymentMethod` |
+
+Recorded by QA (`docs/qa/build-F4.md`):
+- step 26: "Renewal `422` `application/problem+json`: /problems/renew-1-2, "Outside the renewal window",
+  `status` 422, `detail` "A policy can be renewed from 2027-09-18 to 2027-10-18.", `instance`
+  /policies/QA-F4-WIN/renewals, `traceId` set, `ruleId` RENEW-1/2, `windowStart` 2027-09-18, `windowEnd`
+  2027-10-18, `violations` = [{RENEW-1/2, the same text}]";
+- step 28: "`422` /problems/renew-1-2, `ruleId` RENEW-1/2, `detail` "3 rules failed.", `violations` =
+  [{RENEW-1/2, …}, {RENEW-5, …}, {COULD-3, …}] in that order. Top level has none of `windowStart`,
+  `windowEnd`, `amount`, `paymentMethod`";
+- step 32: "Renewal `409` /problems/renew-6, "Cancelled policy cannot be renewed", `detail` "The policy was
+  cancelled on 2026-11-18, so it cannot be renewed.", … `cancellationDate` 2026-11-18, … no
+  `violations`."
+
+**No recorded success response exists.** Every live success needs a clock inside the window (a policy sold
+today becomes renewable about 11 months later), so QA covers them by tests with a fake clock and
+describes them in prose only (build-F4.md:17-23, 202-207, 215). A design fixture for a renewed policy
+must come from those tests, not from a live call.
+
+**CANCEL-5** (`requirements.md:82`) has no branch of its own. Every term runs through
+`RefundCalculator.ForTerm`:
+- a future term is refunded in full as CANCEL-1a;
+- a past term refunds 0.00;
+- an unpaid term is `UNPAID-TERM` 0.00.
+
+`tests/Uinsure.Policies.Api.Tests/CancelRenewedPolicyTests.cs` covers it. One example: term 1 at
+CANCEL-1c 17.36 plus term 2 at CANCEL-1a 512.66, a total of 530.02, with two refunds.
+
+**Renew edge cases:**
+- **Outside the window:** this covers every freshly sold policy.
+- **Renewing twice:** the next window is about 11 months away.
+- **Cheque with auto-renew:** refused, whether the method was sent or defaulted.
+- **`autoRenew` false:** sending any `paymentMethod` → RENEW-3b, and the new term is unpaid.
+- **Cancelled:** 409, before any other check.
+- **Multiple 422s lose the window dates.**
+- **After success:** the body still shows term 1 as current.
+- **Also:** 404, 429, and a concurrency 409.
 
 ## 9. Gaps a workbench would want filled
 
 1. **No CORS.** A browser app on another origin is blocked; it needs the same origin or a proxy.
 2. **No list or search** (exact reference only).
-3. **No renew endpoint** (§8).
+3. **Renew gives no help in advance** (§8): no "renewable now", no next-term dates, no resolved default
+   payment method (it has to be joined from the current term's `paymentReference` to `payments[].type`),
+   and no paid or unpaid flag on a term beyond a null `paymentReference`.
 4. **No window dates:** no cooling-off end, renewal window, "cancellable until", or server today on GET.
+   The renewal window appears only on a single-rule RENEW-1/2 422.
 5. **The GET's cancellation is thin:** the per-term breakdown is returned once, in the E3 201, and can't
    be fetched again.
 6. **Payments and refunds join terms only via `paymentReference`.**
