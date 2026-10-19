@@ -31,7 +31,7 @@ pipeline, run through this repo's own spec format and HITL:
 7. **Build:** `/feature ui <node>` per node, with David's two pauses, PRs into the `ui` branch. The
    explorer is built first, then the workbench.
 
-**Round 2.** Round 1 (2026-10-19) ran research, mockups and a G2 pick (case-file) on the explorer alone.
+**Round 2.** Round 1 (2026-10-19) ran research, mockups and a G2 pick on the explorer alone.
 Three things were wrong with it:
 - the screen catalog had no workbench screen, though this brief required one;
 - the directions were written by the main session from its own summary of the research, not by an
@@ -483,8 +483,8 @@ Carried over from agentflow_phase3 (`LESSONS.md`, `DECISIONS.md`, `brief-templat
    continues after it, aiming to be ready before the final interview (end of that week at the earliest).
    The cut order stays as written in case time runs short.
 
-3. **Name: Docket.** A court's list of cases and their filings: each rule a matter, its evidence filed
-   against it. It names the whole UI (explorer and workbench) and the F7 guide. Not checked for
+3. **Name: Docket.** It names the whole UI (explorer and workbench) and the F7 guide. The name carries no
+   design metaphor: the visual concept is the creative direction's (David, 2026-10-19). Not checked for
    trademarks or existing products.
 
 No open items remain.
