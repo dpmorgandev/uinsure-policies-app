@@ -1,0 +1,177 @@
+{
+ "item": "CANCEL-4 · quote a cancelled policy → 409",
+ "folder": "F3 Cancel / rule violations",
+ "rule": "CANCEL-4",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:47:40Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "327"
+   },
+   "requestBody": {
+    "reference": "F3-MVFJROKG89",
+    "type": "Household",
+    "startDate": "2026-10-19",
+    "amount": 318.9,
+    "autoRenew": true,
+    "paymentMethod": "Cheque",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:38 GMT",
+    "server": "Kestrel",
+    "location": "/policies/F3-MVFJROKG89",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F3-MVFJROKG89",
+    "type": "Household",
+    "status": "Active",
+    "currentTermNumber": 1,
+    "startDate": "2026-10-19",
+    "endDate": "2027-10-18",
+    "amount": 318.9,
+    "hasClaims": false,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-10-19",
+      "endDate": "2027-10-18",
+      "amount": 318.9,
+      "paymentReference": "PAY-1571b72382554e7ab2de2f81471349ca"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-1571b72382554e7ab2de2f81471349ca",
+      "type": "Cheque",
+      "amount": 318.9
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  },
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies/F3-MVFJROKG89/cancellation",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "33"
+   },
+   "requestBody": {
+    "cancellationDate": "2026-12-03"
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:38 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F3-MVFJROKG89",
+    "cancellationDate": "2026-12-03",
+    "ruleApplied": "CANCEL-1c",
+    "totalRefund": 278.71,
+    "terms": [
+     {
+      "termNumber": 1,
+      "ruleApplied": "CANCEL-1c",
+      "daysInTerm": 365,
+      "daysUsed": 46,
+      "unusedDays": 319,
+      "refundAmount": 278.71
+     }
+    ],
+    "refunds": [
+     {
+      "reference": "REF-55a97bc4454f4c08a3baa9f3c7b78096",
+      "type": "Cheque",
+      "amount": 278.71,
+      "paymentReference": "PAY-1571b72382554e7ab2de2f81471349ca"
+     }
+    ]
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F3-MVFJROKG89/cancellation-quote?cancellationDate=2027-01-07",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 409,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:38 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/cancel-4",
+    "title": "Policy already cancelled",
+    "status": 409,
+    "detail": "The policy was already cancelled on 2026-12-03.",
+    "instance": "/policies/F3-MVFJROKG89/cancellation-quote",
+    "traceId": "00-dd0c128dc4af8e8c128ec3e7e4bd40c9-a7917494ac10e572-00",
+    "ruleId": "CANCEL-4",
+    "cancellationDate": "2026-12-03"
+   }
+  }
+ ]
+}

@@ -1,0 +1,130 @@
+{
+ "item": "SHAPE · unknown query parameter on GET → 400",
+ "folder": "F2 Retrieve / rule violations",
+ "rule": "SHAPE",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:46:56Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "333"
+   },
+   "requestBody": {
+    "reference": "F2-MVFJQR8EVA",
+    "type": "Household",
+    "startDate": "2026-11-10",
+    "amount": 527.18,
+    "autoRenew": true,
+    "paymentMethod": "DirectDebit",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:46:55 GMT",
+    "server": "Kestrel",
+    "location": "/policies/F2-MVFJQR8EVA",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F2-MVFJQR8EVA",
+    "type": "Household",
+    "status": "Pending",
+    "currentTermNumber": 1,
+    "startDate": "2026-11-10",
+    "endDate": "2027-11-09",
+    "amount": 527.18,
+    "hasClaims": false,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-11-10",
+      "endDate": "2027-11-09",
+      "amount": 527.18,
+      "paymentReference": "PAY-b20b8e83a3674eeaa111d1bb739fef0f"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-b20b8e83a3674eeaa111d1bb739fef0f",
+      "type": "DirectDebit",
+      "amount": 527.18
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F2-MVFJQR8EVA?colour=red",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 400,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:46:55 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+    "title": "One or more validation errors occurred.",
+    "status": 400,
+    "instance": "/policies/F2-MVFJQR8EVA",
+    "errors": {
+     "colour": [
+      "Unknown query parameter."
+     ]
+    },
+    "traceId": "00-963b957e59c51f23b13e51bf5edd2695-a3818a8353ba9bb6-00"
+   }
+  }
+ ]
+}

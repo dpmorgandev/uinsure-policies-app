@@ -1,0 +1,94 @@
+{
+ "item": "SELL-4 · 0 policyholders → 422",
+ "folder": "F1 Sell / rule violations",
+ "rule": "SELL-4",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:45:50Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "320"
+   },
+   "requestBody": {
+    "reference": "F1-MVFJPBUKMY",
+    "type": "Household",
+    "startDate": "2026-11-10",
+    "amount": 527.18,
+    "autoRenew": true,
+    "paymentMethod": "DirectDebit",
+    "policyholders": [],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 422,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:48 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/sell-4",
+    "title": "Wrong number of policyholders",
+    "status": 422,
+    "detail": "A policy needs 1 to 3 policyholders.",
+    "instance": "/policies",
+    "traceId": "00-e977e351898a7e3a42bae8fc30cf417f-80d1fc66bf367c55-00",
+    "ruleId": "SELL-4",
+    "count": 0,
+    "violations": [
+     {
+      "ruleId": "SELL-4",
+      "detail": "A policy needs 1 to 3 policyholders."
+     }
+    ]
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F1-MVFJPBUKMY",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 404,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:49 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/get-1",
+    "title": "Policy not found",
+    "status": 404,
+    "detail": "No policy with reference 'F1-MVFJPBUKMY'.",
+    "instance": "/policies/F1-MVFJPBUKMY",
+    "traceId": "00-92ccd530d6ea5d176911ff63a33ee2b0-ab35a4d768511fb1-00",
+    "ruleId": "GET-1",
+    "reference": "F1-MVFJPBUKMY"
+   }
+  }
+ ]
+}

@@ -1,0 +1,895 @@
+{
+ "api": "http://localhost:5080",
+ "collection": "tests/postman/Uinsure.Policies.postman_collection.json",
+ "recorded": [
+  {
+   "file": "001-health-live-200.json",
+   "item": "HEALTH · live → 200",
+   "folder": "F0b Walking skeleton / happy path",
+   "rule": "HEALTH",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "002-health-ready-database-answers-200.json",
+   "item": "HEALTH · ready (database answers) → 200",
+   "folder": "F0b Walking skeleton / happy path",
+   "rule": "HEALTH",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "003-sell-1-new-reference-201.json",
+   "item": "SELL-1 · new reference → 201",
+   "folder": "F1 Sell / happy path",
+   "rule": "SELL-1",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "004-sell-1-lower-case-reference-with-spaces-is-normalised-201.json",
+   "item": "SELL-1 · lower-case reference with spaces is normalised → 201",
+   "folder": "F1 Sell / happy path",
+   "rule": "SELL-1",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "005-sell-1-reference-of-20-characters-201.json",
+   "item": "SELL-1 · reference of 20 characters → 201",
+   "folder": "F1 Sell / happy path",
+   "rule": "SELL-1",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "006-sell-2-start-today-201.json",
+   "item": "SELL-2 · start today → 201",
+   "folder": "F1 Sell / happy path",
+   "rule": "SELL-2",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "007-sell-2-start-today-60-201.json",
+   "item": "SELL-2 · start today+60 → 201",
+   "folder": "F1 Sell / happy path",
+   "rule": "SELL-2",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "008-sell-3-end-start-1-year-1-day-201.json",
+   "item": "SELL-3 · end = start + 1 year − 1 day → 201",
+   "folder": "F1 Sell / happy path",
+   "rule": "SELL-3",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "009-sell-4-3-policyholders-201.json",
+   "item": "SELL-4 · 3 policyholders → 201",
+   "folder": "F1 Sell / happy path",
+   "rule": "SELL-4",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "010-sell-5-16th-birthday-on-the-start-date-201.json",
+   "item": "SELL-5 · 16th birthday on the start date → 201",
+   "folder": "F1 Sell / happy path",
+   "rule": "SELL-5",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "011-sell-6-payment-for-the-full-amount-201.json",
+   "item": "SELL-6 · payment for the full amount → 201",
+   "folder": "F1 Sell / happy path",
+   "rule": "SELL-6",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "012-sell-7-amount-0-01-201.json",
+   "item": "SELL-7 · amount 0.01 → 201",
+   "folder": "F1 Sell / happy path",
+   "rule": "SELL-7",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "013-shape-postcode-of-8-characters-201.json",
+   "item": "SHAPE · postcode of 8 characters → 201",
+   "folder": "F1 Sell / happy path",
+   "rule": "SHAPE",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "014-sell-1-duplicate-reference-409.json",
+   "item": "SELL-1 · duplicate reference → 409",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-1",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "015-sell-1-duplicate-differing-only-in-case-409.json",
+   "item": "SELL-1 · duplicate differing only in case → 409",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-1",
+   "status": 409,
+   "postmanExit": 0
+  },
+  {
+   "file": "016-sell-1-reference-of-2-characters-400.json",
+   "item": "SELL-1 · reference of 2 characters → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-1",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "017-sell-1-reference-of-21-characters-400.json",
+   "item": "SELL-1 · reference of 21 characters → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-1",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "018-sell-1-reference-with-an-underscore-400.json",
+   "item": "SELL-1 · reference with an underscore → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-1",
+   "status": 400,
+   "postmanExit": 0
+  },
+  {
+   "file": "019-sell-2-start-today-61-422.json",
+   "item": "SELL-2 · start today+61 → 422",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-2",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "020-sell-2-start-yesterday-422.json",
+   "item": "SELL-2 · start yesterday → 422",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-2",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.json",
+   "item": "SELL-2 · start today+61, 4 policyholders, one under 16, amount 0 → 422",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-2",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "022-sell-3-enddate-sent-400.json",
+   "item": "SELL-3 · endDate sent → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-3",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "023-sell-4-0-policyholders-422.json",
+   "item": "SELL-4 · 0 policyholders → 422",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-4",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "024-sell-4-4-policyholders-422.json",
+   "item": "SELL-4 · 4 policyholders → 422",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-4",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "025-sell-5-16th-birthday-the-day-after-the-start-date-422.json",
+   "item": "SELL-5 · 16th birthday the day after the start date → 422",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-5",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "026-sell-6-paymentmethod-missing-400.json",
+   "item": "SELL-6 · paymentMethod missing → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-6",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "027-sell-7-amount-0-422.json",
+   "item": "SELL-7 · amount 0 → 422",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-7",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "028-sell-7-amount-negative-422.json",
+   "item": "SELL-7 · amount negative → 422",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SELL-7",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "029-shape-malformed-json-400.json",
+   "item": "SHAPE · malformed JSON → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "030-shape-unknown-field-400.json",
+   "item": "SHAPE · unknown field → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "031-shape-hasclaims-sent-400.json",
+   "item": "SHAPE · hasClaims sent → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "032-shape-startdate-missing-400.json",
+   "item": "SHAPE · startDate missing → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "033-shape-startdate-not-yyyy-mm-dd-400.json",
+   "item": "SHAPE · startDate not yyyy-MM-dd → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "034-shape-unknown-policy-type-400.json",
+   "item": "SHAPE · unknown policy type → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "035-shape-integer-policy-type-400.json",
+   "item": "SHAPE · integer policy type → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "036-shape-integer-payment-method-400.json",
+   "item": "SHAPE · integer payment method → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "037-shape-postcode-of-9-characters-400.json",
+   "item": "SHAPE · postcode of 9 characters → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "038-shape-address-line-1-missing-400.json",
+   "item": "SHAPE · address line 1 missing → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "039-shape-policyholder-date-of-birth-missing-400.json",
+   "item": "SHAPE · policyholder date of birth missing → 400",
+   "folder": "F1 Sell / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "040-shape-amount-with-2-decimal-places-201.json",
+   "item": "SHAPE · amount with 2 decimal places → 201",
+   "folder": "F1b Layered models / happy path",
+   "rule": "SHAPE",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "041-shape-amount-1-000-000-00-201.json",
+   "item": "SHAPE · amount 1,000,000.00 → 201",
+   "folder": "F1b Layered models / happy path",
+   "rule": "SHAPE",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "042-shape-amount-with-3-decimal-places-400.json",
+   "item": "SHAPE · amount with 3 decimal places → 400",
+   "folder": "F1b Layered models / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "043-shape-amount-0-001-400.json",
+   "item": "SHAPE · amount 0.001 → 400",
+   "folder": "F1b Layered models / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "044-shape-amount-1-000-000-01-400.json",
+   "item": "SHAPE · amount 1,000,000.01 → 400",
+   "folder": "F1b Layered models / rule violations",
+   "rule": "SHAPE",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "045-get-1-sold-policy-reads-back-in-full-200.json",
+   "item": "GET-1 · sold policy reads back in full → 200",
+   "folder": "F2 Retrieve / happy path",
+   "rule": "GET-1",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "046-get-1-start-today-reads-back-active-200.json",
+   "item": "GET-1 · start today reads back Active → 200",
+   "folder": "F2 Retrieve / happy path",
+   "rule": "GET-1",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "047-get-1-start-today-22-reads-back-pending-200.json",
+   "item": "GET-1 · start today+22 reads back Pending → 200",
+   "folder": "F2 Retrieve / happy path",
+   "rule": "GET-1",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "048-get-1-lower-case-reference-finds-the-policy-200.json",
+   "item": "GET-1 · lower-case reference finds the policy → 200",
+   "folder": "F2 Retrieve / happy path",
+   "rule": "GET-1",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "049-get-1-amount-1000000-00-is-written-1000000-00-201.json",
+   "item": "GET-1 · amount 1000000.00 is written 1000000.00 → 201",
+   "folder": "F2 Retrieve / happy path",
+   "rule": "GET-1",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "050-get-1-amount-803-40-is-written-803-40-201.json",
+   "item": "GET-1 · amount 803.40 is written 803.40 → 201",
+   "folder": "F2 Retrieve / happy path",
+   "rule": "GET-1",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "051-get-1-amount-100-is-written-100-00-201.json",
+   "item": "GET-1 · amount 100 is written 100.00 → 201",
+   "folder": "F2 Retrieve / happy path",
+   "rule": "GET-1",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "052-get-1-amount-527-180-is-written-527-18-201.json",
+   "item": "GET-1 · amount 527.180 is written 527.18 → 201",
+   "folder": "F2 Retrieve / happy path",
+   "rule": "GET-1",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "053-get-1-unknown-reference-404.json",
+   "item": "GET-1 · unknown reference → 404",
+   "folder": "F2 Retrieve / rule violations",
+   "rule": "GET-1",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "054-get-1-unknown-lower-case-reference-is-named-upper-cased-404.json",
+   "item": "GET-1 · unknown lower-case reference is named upper-cased → 404",
+   "folder": "F2 Retrieve / rule violations",
+   "rule": "GET-1",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "055-get-1-reference-failing-the-sell-1-pattern-404.json",
+   "item": "GET-1 · reference failing the SELL-1 pattern → 404",
+   "folder": "F2 Retrieve / rule violations",
+   "rule": "GET-1",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "056-shape-unknown-query-parameter-on-get-400.json",
+   "item": "SHAPE · unknown query parameter on GET → 400",
+   "folder": "F2 Retrieve / rule violations",
+   "rule": "SHAPE",
+   "status": 400,
+   "postmanExit": 0
+  },
+  {
+   "file": "057-sell-7-amount-1e27-422.json",
+   "item": "SELL-7 · amount -1e27 → 422",
+   "folder": "F2 Retrieve / rule violations",
+   "rule": "SELL-7",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "058-sell-7-amount-decimal-minvalue-422.json",
+   "item": "SELL-7 · amount decimal.MinValue → 422",
+   "folder": "F2 Retrieve / rule violations",
+   "rule": "SELL-7",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "059-cancel-1a-cancel-with-no-body-before-a-future-start-201.json",
+   "item": "CANCEL-1a · cancel with no body before a future start → 201",
+   "folder": "F3 Cancel / happy path",
+   "rule": "CANCEL-1a",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "060-cancel-1b-cancel-on-the-start-date-201.json",
+   "item": "CANCEL-1b · cancel on the start date → 201",
+   "folder": "F3 Cancel / happy path",
+   "rule": "CANCEL-1b",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "061-cancel-1b-cancel-on-start-14-201.json",
+   "item": "CANCEL-1b · cancel on start+14 → 201",
+   "folder": "F3 Cancel / happy path",
+   "rule": "CANCEL-1b",
+   "status": 201,
+   "postmanExit": 0
+  },
+  {
+   "file": "062-cancel-1c-cancel-on-start-15-201.json",
+   "item": "CANCEL-1c · cancel on start+15 → 201",
+   "folder": "F3 Cancel / happy path",
+   "rule": "CANCEL-1c",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "063-cancel-2-refund-goes-to-the-card-payment-it-reverses-201.json",
+   "item": "CANCEL-2 · refund goes to the Card payment it reverses → 201",
+   "folder": "F3 Cancel / happy path",
+   "rule": "CANCEL-2",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "064-cancel-3-empty-object-means-today-201.json",
+   "item": "CANCEL-3 · empty object means today → 201",
+   "folder": "F3 Cancel / happy path",
+   "rule": "CANCEL-3",
+   "status": 201,
+   "postmanExit": 0
+  },
+  {
+   "file": "065-cancel-3-null-cancellationdate-means-today-201.json",
+   "item": "CANCEL-3 · null cancellationDate means today → 201",
+   "folder": "F3 Cancel / happy path",
+   "rule": "CANCEL-3",
+   "status": 201,
+   "postmanExit": 0
+  },
+  {
+   "file": "066-cancel-6-pro-rata-refund-rounded-once-to-2-dp-half-away-from-zero-201.json",
+   "item": "CANCEL-6 · pro-rata refund rounded once to 2 dp, half away from zero → 201",
+   "folder": "F3 Cancel / happy path",
+   "rule": "CANCEL-6",
+   "status": 201,
+   "postmanExit": 0
+  },
+  {
+   "file": "067-cancel-7-cancel-on-the-last-day-of-cover-201.json",
+   "item": "CANCEL-7 · cancel on the last day of cover → 201",
+   "folder": "F3 Cancel / happy path",
+   "rule": "CANCEL-7",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "068-could-1-quote-then-cancel-for-the-same-date-agree-201.json",
+   "item": "COULD-1 · quote then cancel for the same date agree → 201",
+   "folder": "F3 Cancel / happy path",
+   "rule": "COULD-1",
+   "status": 201,
+   "postmanExit": 0
+  },
+  {
+   "file": "069-could-1-quote-changes-nothing-200.json",
+   "item": "COULD-1 · quote changes nothing → 200",
+   "folder": "F3 Cancel / happy path",
+   "rule": "COULD-1",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "070-could-2-claim-dated-today-201.json",
+   "item": "COULD-2 · claim dated today → 201",
+   "folder": "F3 Cancel / happy path",
+   "rule": "COULD-2",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "071-could-2-claim-then-cancel-refunds-nothing-201.json",
+   "item": "COULD-2 · claim then cancel refunds nothing → 201",
+   "folder": "F3 Cancel / happy path",
+   "rule": "COULD-2",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "072-could-2-quote-for-a-policy-with-a-claim-quotes-nothing-200.json",
+   "item": "COULD-2 · quote for a policy with a claim quotes nothing → 200",
+   "folder": "F3 Cancel / happy path",
+   "rule": "COULD-2",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "073-cancel-3-cancellation-date-yesterday-422.json",
+   "item": "CANCEL-3 · cancellation date yesterday → 422",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "CANCEL-3",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "074-cancel-3-quote-dated-yesterday-422.json",
+   "item": "CANCEL-3 · quote dated yesterday → 422",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "CANCEL-3",
+   "status": 422,
+   "postmanExit": 0
+  },
+  {
+   "file": "075-cancel-3-unknown-field-in-the-cancellation-body-400.json",
+   "item": "CANCEL-3 · unknown field in the cancellation body → 400",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "CANCEL-3",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "076-cancel-4-cancel-twice-409.json",
+   "item": "CANCEL-4 · cancel twice → 409",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "CANCEL-4",
+   "status": 409,
+   "postmanExit": 0
+  },
+  {
+   "file": "077-cancel-4-quote-a-cancelled-policy-409.json",
+   "item": "CANCEL-4 · quote a cancelled policy → 409",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "CANCEL-4",
+   "status": 409,
+   "postmanExit": 0
+  },
+  {
+   "file": "078-cancel-7-cancellation-date-the-day-after-the-end-422.json",
+   "item": "CANCEL-7 · cancellation date the day after the end → 422",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "CANCEL-7",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "079-cancel-7-quote-the-day-after-the-end-422.json",
+   "item": "CANCEL-7 · quote the day after the end → 422",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "CANCEL-7",
+   "status": 422,
+   "postmanExit": 0
+  },
+  {
+   "file": "080-could-1-quote-without-cancellationdate-400.json",
+   "item": "COULD-1 · quote without cancellationDate → 400",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "COULD-1",
+   "status": 400,
+   "postmanExit": 0
+  },
+  {
+   "file": "081-could-1-unknown-query-parameter-on-the-quote-400.json",
+   "item": "COULD-1 · unknown query parameter on the quote → 400",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "COULD-1",
+   "status": 400,
+   "postmanExit": 0
+  },
+  {
+   "file": "082-could-2-claim-without-claimdate-400.json",
+   "item": "COULD-2 · claim without claimDate → 400",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "COULD-2",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "083-could-2-description-of-501-characters-400.json",
+   "item": "COULD-2 · description of 501 characters → 400",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "COULD-2",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "084-could-2a-claim-dated-tomorrow-422.json",
+   "item": "COULD-2a · claim dated tomorrow → 422",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "COULD-2a",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "085-could-2a-claim-dated-after-today-and-after-the-end-422.json",
+   "item": "COULD-2a · claim dated after today and after the end → 422",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "COULD-2a",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "086-could-2b-claim-before-a-future-start-422.json",
+   "item": "COULD-2b · claim before a future start → 422",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "COULD-2b",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "087-could-2b-claim-dated-yesterday-on-a-policy-starting-today-422.json",
+   "item": "COULD-2b · claim dated yesterday on a policy starting today → 422",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "COULD-2b",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "088-could-2c-claim-on-a-cancelled-policy-409.json",
+   "item": "COULD-2c · claim on a cancelled policy → 409",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "COULD-2c",
+   "status": 409,
+   "postmanExit": 0
+  },
+  {
+   "file": "089-get-1-cancel-an-unknown-policy-404.json",
+   "item": "GET-1 · cancel an unknown policy → 404",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "GET-1",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "090-get-1-quote-an-unknown-policy-404.json",
+   "item": "GET-1 · quote an unknown policy → 404",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "GET-1",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "091-get-1-claim-on-an-unknown-policy-404.json",
+   "item": "GET-1 · claim on an unknown policy → 404",
+   "folder": "F3 Cancel / rule violations",
+   "rule": "GET-1",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "092-renew-1-2-renew-on-the-day-of-sale-422.json",
+   "item": "RENEW-1/2 · renew on the day of sale → 422",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-1/2",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "093-renew-1-2-renew-a-pending-policy-starting-today-30-422.json",
+   "item": "RENEW-1/2 · renew a Pending policy starting today+30 → 422",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-1/2",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "094-renew-1-2-auto-renew-off-card-and-amount-0-today-422.json",
+   "item": "RENEW-1/2 · auto-renew off, Card and amount 0, today → 422",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-1/2",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "095-renew-3b-auto-renew-off-with-a-paymentmethod-today-422.json",
+   "item": "RENEW-3b · auto-renew off with a paymentMethod, today → 422",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-3b",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "096-renew-5-amount-0-today-422.json",
+   "item": "RENEW-5 · amount 0, today → 422",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-5",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "097-renew-5-amount-negative-today-422.json",
+   "item": "RENEW-5 · amount negative, today → 422",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-5",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "098-could-3-explicit-cheque-on-an-auto-renewing-policy-today-422.json",
+   "item": "COULD-3 · explicit Cheque on an auto-renewing policy, today → 422",
+   "folder": "F4 Renew / rule violations",
+   "rule": "COULD-3",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "099-could-3-cheque-defaulted-from-the-current-term-today-422.json",
+   "item": "COULD-3 · Cheque defaulted from the current term, today → 422",
+   "folder": "F4 Renew / rule violations",
+   "rule": "COULD-3",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "100-renew-6-renew-a-policy-cancelled-today-409.json",
+   "item": "RENEW-6 · renew a policy cancelled today → 409",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-6",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "101-renew-6-cancelled-from-today-30-amount-0-by-cheque-409-alone.json",
+   "item": "RENEW-6 · cancelled from today+30, amount 0 by Cheque → 409 alone",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-6",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "102-get-1-renew-an-unknown-policy-404.json",
+   "item": "GET-1 · renew an unknown policy → 404",
+   "folder": "F4 Renew / rule violations",
+   "rule": "GET-1",
+   "status": 404,
+   "postmanExit": 0
+  },
+  {
+   "file": "103-renew-5-amount-missing-400.json",
+   "item": "RENEW-5 · amount missing → 400",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-5",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "104-renew-5-amount-with-3-decimal-places-400.json",
+   "item": "RENEW-5 · amount with 3 decimal places → 400",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-5",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "105-renew-5-amount-1-000-000-01-400.json",
+   "item": "RENEW-5 · amount 1,000,000.01 → 400",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-5",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "106-renew-3a-unknown-payment-method-400.json",
+   "item": "RENEW-3a · unknown payment method → 400",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-3a",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "107-renew-3a-integer-payment-method-400.json",
+   "item": "RENEW-3a · integer payment method → 400",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-3a",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "108-renew-4-startdate-sent-400.json",
+   "item": "RENEW-4 · startDate sent → 400",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-4",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "109-renew-4-malformed-json-400.json",
+   "item": "RENEW-4 · malformed JSON → 400",
+   "folder": "F4 Renew / rule violations",
+   "rule": "RENEW-4",
+   "status": 200,
+   "postmanExit": 0
+  },
+  {
+   "file": "fake-clock/Renewal_30_days_before_the_end_is_accepted.txt",
+   "item": "Renewal_30_days_before_the_end_is_accepted",
+   "folder": "fake-clock",
+   "rule": "RENEW-1/2",
+   "status": null,
+   "provenance": "fake-clock test, not live: tests/Uinsure.Policies.Api.Tests/RenewWindowTests.cs:51-70"
+  },
+  {
+   "file": "fake-clock/Cancelling_in_term_1_after_a_renewal_refunds_term_1_pro_rata_and_the_future_term_2_in_full.txt",
+   "item": "Cancelling_in_term_1_after_a_renewal_refunds_term_1_pro_rata_and_the_future_term_2_in_full",
+   "folder": "fake-clock",
+   "rule": "CANCEL-1c",
+   "status": null,
+   "provenance": "fake-clock test, not live: tests/Uinsure.Policies.Api.Tests/CancelRenewedPolicyTests.cs:38-86"
+  }
+ ],
+ "problems": []
+}

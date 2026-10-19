@@ -1,0 +1,201 @@
+{
+ "item": "COULD-2 · claim dated today → 201",
+ "folder": "F3 Cancel / happy path",
+ "rule": "COULD-2",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:47:25Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "326"
+   },
+   "requestBody": {
+    "reference": "F3-MVFJRDH152",
+    "type": "Household",
+    "startDate": "2026-10-19",
+    "amount": 389.17,
+    "autoRenew": true,
+    "paymentMethod": "Card",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:24 GMT",
+    "server": "Kestrel",
+    "location": "/policies/F3-MVFJRDH152",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F3-MVFJRDH152",
+    "type": "Household",
+    "status": "Active",
+    "currentTermNumber": 1,
+    "startDate": "2026-10-19",
+    "endDate": "2027-10-18",
+    "amount": 389.17,
+    "hasClaims": false,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-10-19",
+      "endDate": "2027-10-18",
+      "amount": 389.17,
+      "paymentReference": "PAY-1733b57549ae4cc99b6dd4ef40049496"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-1733b57549ae4cc99b6dd4ef40049496",
+      "type": "Card",
+      "amount": 389.17
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  },
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies/F3-MVFJRDH152/claims",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "83"
+   },
+   "requestBody": {
+    "claimDate": "2026-10-19",
+    "description": "Escape of water from the boiler"
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:24 GMT",
+    "server": "Kestrel",
+    "location": "/policies/F3-MVFJRDH152",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "CLM-F3-MVFJRDH152-1",
+    "policyReference": "F3-MVFJRDH152",
+    "claimDate": "2026-10-19",
+    "description": "Escape of water from the boiler",
+    "hasClaims": true
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F3-MVFJRDH152",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 200,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:24 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F3-MVFJRDH152",
+    "type": "Household",
+    "status": "Active",
+    "currentTermNumber": 1,
+    "startDate": "2026-10-19",
+    "endDate": "2027-10-18",
+    "amount": 389.17,
+    "hasClaims": true,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-10-19",
+      "endDate": "2027-10-18",
+      "amount": 389.17,
+      "paymentReference": "PAY-1733b57549ae4cc99b6dd4ef40049496"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-1733b57549ae4cc99b6dd4ef40049496",
+      "type": "Card",
+      "amount": 389.17
+     }
+    ],
+    "refunds": [],
+    "claims": [
+     {
+      "reference": "CLM-F3-MVFJRDH152-1",
+      "claimDate": "2026-10-19",
+      "description": "Escape of water from the boiler"
+     }
+    ],
+    "cancellation": null
+   }
+  }
+ ]
+}

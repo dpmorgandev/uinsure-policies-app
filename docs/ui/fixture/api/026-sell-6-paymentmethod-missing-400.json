@@ -1,0 +1,95 @@
+{
+ "item": "SELL-6 · paymentMethod missing → 400",
+ "folder": "F1 Sell / rule violations",
+ "rule": "SELL-6",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:45:56Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "396"
+   },
+   "requestBody": {
+    "reference": "F1-MVFJPGIHT9",
+    "type": "Household",
+    "startDate": "2026-11-10",
+    "amount": 527.18,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 400,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:54 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+    "title": "One or more validation errors occurred.",
+    "status": 400,
+    "instance": "/policies",
+    "errors": {
+     "paymentMethod": [
+      "The PaymentMethod field is required."
+     ]
+    },
+    "traceId": "00-32632e7b108595f2a6a6ba004e0d9b7f-9c808432e65bab9e-00"
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F1-MVFJPGIHT9",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 404,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:54 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/get-1",
+    "title": "Policy not found",
+    "status": 404,
+    "detail": "No policy with reference 'F1-MVFJPGIHT9'.",
+    "instance": "/policies/F1-MVFJPGIHT9",
+    "traceId": "00-c3417d7567ff78b900f872a5df490c99-b4b69c4a8e5006df-00",
+    "ruleId": "GET-1",
+    "reference": "F1-MVFJPGIHT9"
+   }
+  }
+ ]
+}

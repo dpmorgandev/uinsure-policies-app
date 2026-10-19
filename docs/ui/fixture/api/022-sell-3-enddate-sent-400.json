@@ -1,0 +1,100 @@
+{
+ "item": "SELL-3 · endDate sent → 400",
+ "folder": "F1 Sell / rule violations",
+ "rule": "SELL-3",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:45:48Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "457"
+   },
+   "requestBody": {
+    "reference": "F1-MVFJPAAVSM",
+    "type": "Household",
+    "startDate": "2026-11-10",
+    "amount": 527.18,
+    "autoRenew": true,
+    "paymentMethod": "DirectDebit",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "endDate": "2027-11-09"
+   },
+   "status": 400,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:46 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+    "title": "One or more validation errors occurred.",
+    "status": 400,
+    "instance": "/policies",
+    "errors": {
+     "request": [
+      "The request field is required."
+     ],
+     "$.endDate": [
+      "The JSON property 'endDate' could not be mapped to any .NET member contained in type 'Uinsure.Policies.Api.Contracts.SellPolicyRequest'."
+     ]
+    },
+    "traceId": "00-e8dd0b3821b5325fb1d8054777f6126d-df77c09a52943446-00"
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F1-MVFJPAAVSM",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 404,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:47 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/get-1",
+    "title": "Policy not found",
+    "status": 404,
+    "detail": "No policy with reference 'F1-MVFJPAAVSM'.",
+    "instance": "/policies/F1-MVFJPAAVSM",
+    "traceId": "00-068a4dd0a291be1fd5a8d0d32af9a7f5-20918053919773d9-00",
+    "ruleId": "GET-1",
+    "reference": "F1-MVFJPAAVSM"
+   }
+  }
+ ]
+}
