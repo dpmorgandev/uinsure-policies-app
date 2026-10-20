@@ -9,7 +9,8 @@ the same way it reads the real one. The live `docs/trace/` is never a test input
 ```text
 <name>/
   README.md      what it proves, what it is cut from, and the expected check label
-  base/          the repo before the node: docs/requirements.md, docs/plans/active/<plan>.dag.yaml
+  base/          the repo before the node: docs/requirements.md, docs/plans/active/<plan>.dag.yaml,
+                 docs/trace/privacy-denylist.txt
   commits.json   { date, branch, commits: [{ id, subject, trailers, files }] }, in order
   files/         the content each commit adds, by repo path
   trail/         docs/trace/<plan>/<node>/: loop, activity, verdicts, findings, written last
@@ -23,6 +24,10 @@ the same way it reads the real one. The live `docs/trace/` is never a test input
   names commits made before it is placed.
 - **`.fixture`:** a path ending `.fixture` loses the suffix when placed. Test files carry it, so this
   repo's own rule-tag walker never counts a fixture's `SELL-1 · ` titles as real markers.
+- **The denylist:** every base holds `docs/trace/privacy-denylist.txt`, a byte-for-byte copy of the committed
+  `.claude/hooks/privacy-denylist.txt`, as `render-trace.mjs` emits it into a real trail. The compiler reads
+  the list from there alone (DATA-5, DATA-7), and fails without it. The pre-commit privacy scan skips an
+  exact copy of the list, so a change to the committed list is copied into every base in the same change.
 - **Checked by hand and by the real tool:** each README's label is what `render-trace check build F1`
   printed on the replayed repo when the fixture was made. A compiler test asserts its own fields from the
   README's facts, not from re-running the harness.

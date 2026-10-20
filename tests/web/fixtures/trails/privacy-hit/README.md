@@ -13,6 +13,10 @@ The compiler must fail on them, naming each file and line and never the value (D
   - `{{privacy-hit:token}}` becomes a GitHub token shape: `ghp_` and 36 letters and digits.
   - `{{privacy-hit:path}}` becomes an absolute Windows user path: a drive, `Users`, a name and a file.
 
+- **The compiler's unit tests place other values too** (`tests/web/unit/compiler/data-5.test.ts`): an
+  upper-case token, an allowed and a refused address, a value only an added pattern refuses, each in the
+  token's place with a clean path in the other, so each proves one side of the denylist's format.
+
 **Expected from the compiler:** exit 1, two problems listed, `docs/trace/build/F1/activity.jsonl` line 2
 and `docs/trace/build/F1/loop.jsonl` line 3; neither value appears in its output, and it writes no
 `trace.json`.
