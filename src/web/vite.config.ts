@@ -16,8 +16,15 @@ const alias = deps.map((name) => ({
 // The workbench calls /api/...; the app proxies it to the API port it is given.
 const proxy = { '/api': `http://localhost:${process.env.DOCKET_API_PORT ?? 5080}` };
 
+// A kit class is kit-<component>__<local>, as in the stylekit the screens were signed off against (parity reads it).
+function scopedName(local: string, filename: string): string {
+  const kit = /[\\/]kit[\\/](?:primitives|patterns|layouts|project)[\\/]([a-z0-9-]+)[\\/][^\\/]+\.module\.css/.exec(filename);
+  return kit ? `kit-${kit[1]}__${local}` : `${local}_${Buffer.from(filename).toString('base64url').slice(-6)}`;
+}
+
 export default defineConfig({
   plugins: [react()],
+  css: { modules: { generateScopedName: scopedName } },
   base: './',
   cacheDir: resolve(import.meta.dirname, 'node_modules/.vite'),
   resolve: { alias },
