@@ -31,10 +31,10 @@ nodes:
       - "render-trace.mjs emits the harness file AGENT-3 reads into docs/trace/, so the compiler never reads .claude/ (DATA-7)"
     tasks:
       - {id: t1, role: david, step: session, layer: null, rules: [], title: "web-testing.spec.md, and /feature extended to ui nodes (web gates, diff scopes, the tester and builder web skills), by harness PR", status: done}
-      - {id: t2, role: david, step: session, layer: null, rules: [], title: "Kit fixes from g4-defects.md section 2 (data-table clipping and class undefined, dark-mode contrast, refund-worked-sum alignment, request-log at 390) as a supervised kit change; stylekit rebuilt; changed screens re-signed", status: pending}
-      - {id: t3, role: david, step: session, layer: null, rules: [], title: "derive-screens.mjs and its tests", status: pending}
-      - {id: t4, role: david, step: session, layer: null, rules: [], title: "Fixture trails for behaviour tests: complete, incomplete, FAIL-and-fix", status: pending}
-      - {id: t5, role: david, step: session, layer: null, rules: [], title: "render-trace.mjs emits the harness file (the roster, skills and hooks) into docs/trace/", status: pending}
+      - {id: t2, role: david, step: session, layer: null, rules: [], title: "Kit fixes from g4-defects.md section 2 (data-table clipping and class undefined, dark-mode contrast, refund-worked-sum alignment, request-log at 390) as a supervised kit change; stylekit rebuilt; changed screens re-signed", status: done}
+      - {id: t3, role: david, step: session, layer: null, rules: [], title: "derive-screens.mjs and its tests", status: done}
+      - {id: t4, role: david, step: session, layer: null, rules: [], title: "Fixture trails for behaviour tests: complete, incomplete, FAIL-and-fix", status: done}
+      - {id: t5, role: david, step: session, layer: null, rules: [], title: "render-trace.mjs emits the harness file (the roster, skills and hooks) into docs/trace/", status: done}
   - id: U0b
     title: Walking skeleton: compiler, trace.json, the app shell, static build
     kind: feature
