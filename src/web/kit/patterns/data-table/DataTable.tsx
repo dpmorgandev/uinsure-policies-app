@@ -58,7 +58,10 @@ export interface DataTableProps<Row extends { id: string }> {
   retrying?: boolean;
   /** Shown when there are no rows. */
   empty?: DataTableEmpty;
-  /** Past this height the table scrolls inside its own frame and the header stays put. A CSS length. */
+  /**
+   * Past this height the table scrolls inside its own frame and the header stays put. A CSS length. With none, the
+   * table is as tall as its rows: a cap is the caller's choice, never a default that hides rows.
+   */
   maxHeight?: string;
 }
 
@@ -104,7 +107,7 @@ export function DataTable<Row extends { id: string }>({
                 <th
                   key={column.id}
                   scope="col"
-                  className={column.numeric ? `${styles.th} ${styles.num}` : styles.th}
+                  className={column.numeric ? styles.num : undefined}
                   data-numeric={column.numeric ? 'true' : undefined}
                   aria-sort={sorted}
                 >

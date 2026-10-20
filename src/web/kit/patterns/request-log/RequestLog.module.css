@@ -121,7 +121,9 @@
   white-space: nowrap;
 }
 
-.table thead th.num {
+/* As specific as `.table td` above, so a duration sits right under its right-aligned header. */
+.table th.num,
+.table td.num {
   text-align: right;
 }
 
@@ -163,7 +165,13 @@
   }
 
   .path {
-    min-width: 6rem;
+    min-width: 5rem;
+  }
+
+  /* The header and "not recorded" wrap at their spaces, so the five columns fit the frame. */
+  .table thead th,
+  .table td.num {
+    white-space: normal;
   }
 }
 
