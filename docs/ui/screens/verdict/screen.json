@@ -1,0 +1,70 @@
+{
+  "screen": "verdict",
+  "route": "/plans/:planId/:nodeId/verdicts/:round/:agent",
+  "regions": [
+    {
+      "name": "verdict summary",
+      "req": ["LOOP-3"],
+      "components": ["breadcrumbs", "page-header", "verdict-card", "status-tag", "sha-link", "provenance-label"],
+      "fields": [
+        "verdicts[node=:nodeId][round=:round][agent=:agent].plan",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].node",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].round",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].agent",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].attempt",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].ts",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].verdict",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].head",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].base",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].rulesCovered",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].rulesMissing",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].findings[].id",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].findings[].severity",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].findings[].what",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].findings[].route_to",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].gateRefs"
+      ]
+    },
+    {
+      "name": "findings",
+      "req": ["LOOP-3"],
+      "components": ["file-line-link", "status-tag"],
+      "fields": [
+        "verdicts[node=:nodeId][round=:round][agent=:agent].head",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].findings[].id",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].findings[].rule_id",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].findings[].severity",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].findings[].file",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].findings[].line",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].findings[].why",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].findings[].route_to"
+      ]
+    },
+    {
+      "name": "raw JSON",
+      "req": ["LOOP-3", "DATA-2"],
+      "components": ["json-viewer", "provenance-label", "file-line-link"],
+      "fields": [
+        "verdicts[node=:nodeId][round=:round][agent=:agent]",
+        "verdicts[node=:nodeId][round=:round][agent=:agent].file",
+        "stamp.sha"
+      ]
+    }
+  ],
+  "states": [
+    { "name": "populated", "file": "populated.html", "variant": "the ref's own data: verdicts[node=F3][round=A2.3][agent=reviewer], PASS, 13 rules covered, none missing, one P2 finding" },
+    { "name": "long-content", "file": "long-content.html", "variant": "verdicts[node=F2][round=A2][agent=reviewer]: FAIL, the verdict with the most findings (6), GET-1 missing, long finding text; labelled on the page as a variant" }
+  ],
+  "actions": [
+    { "label": "Breadcrumb: Plans", "kind": "link", "to": "/plans/:planId" },
+    { "label": "Breadcrumb: build", "kind": "link", "to": "/plans/:planId" },
+    { "label": "Breadcrumb: node", "kind": "link", "to": "/plans/:planId/:nodeId" },
+    { "label": "Breadcrumb: Loop", "kind": "link", "to": "/plans/:planId/:nodeId/loop" },
+    { "label": "Open the raw JSON", "kind": "control", "to": "opens the raw JSON disclosure on this page; sends no request" },
+    { "label": "Copy JSON", "kind": "control", "to": "copies the raw JSON to the clipboard; sends no request" },
+    { "label": "Show UTC time", "kind": "control", "to": "toggles the time zone of a timestamp; sends no request" },
+    { "label": "Head and base SHA, gate reference SHAs", "kind": "link", "to": "GitHub commit page at that SHA" },
+    { "label": "Finding file:line", "kind": "link", "to": "GitHub blob at the verdict's head SHA, line anchor" },
+    { "label": "Verdict file in docs/trace", "kind": "link", "to": "GitHub blob at the snapshot SHA" }
+  ]
+}
