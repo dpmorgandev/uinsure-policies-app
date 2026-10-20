@@ -16,10 +16,10 @@ nodes:
     rules: []
     cuttable: false
     budget: null
-    status: pending
-    attempt: 0
-    branch: null
-    worktree: null
+    status: in_progress
+    attempt: 1
+    branch: feature/ui/U0a
+    worktree: .claude/worktrees/ui-U0a
     pr: null
     qa: docs/qa/ui-U0a.md
     trace: docs/trace/ui/U0a/
@@ -30,7 +30,7 @@ nodes:
       - "Small hand-checked fixture trails (complete, incomplete, FAIL-and-fix) exist for behaviour tests"
       - "render-trace.mjs emits the harness file AGENT-3 reads into docs/trace/, so the compiler never reads .claude/ (DATA-7)"
     tasks:
-      - {id: t1, role: david, step: session, layer: null, rules: [], title: "web-testing.spec.md, and /feature extended to ui nodes (web gates, diff scopes, the tester and builder web skills), by harness PR", status: pending}
+      - {id: t1, role: david, step: session, layer: null, rules: [], title: "web-testing.spec.md, and /feature extended to ui nodes (web gates, diff scopes, the tester and builder web skills), by harness PR", status: done}
       - {id: t2, role: david, step: session, layer: null, rules: [], title: "Kit fixes from g4-defects.md section 2 (data-table clipping and class undefined, dark-mode contrast, refund-worked-sum alignment, request-log at 390) as a supervised kit change; stylekit rebuilt; changed screens re-signed", status: pending}
       - {id: t3, role: david, step: session, layer: null, rules: [], title: "derive-screens.mjs and its tests", status: pending}
       - {id: t4, role: david, step: session, layer: null, rules: [], title: "Fixture trails for behaviour tests: complete, incomplete, FAIL-and-fix", status: pending}
