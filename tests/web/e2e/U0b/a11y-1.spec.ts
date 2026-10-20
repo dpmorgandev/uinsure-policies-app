@@ -141,7 +141,8 @@ test.describe('a text equivalent', () => {
     await expect(table.locator('caption')).toContainText('build/F1');
     const rows = table.locator('tbody tr');
     await expect(rows).toHaveCount(5);
-    const headers = (await table.locator('thead th').allInnerTexts()).map((h) => h.trim());
+    // The header words as the DOM holds them: the kit's table uppercases its headers in CSS, which innerText reports.
+    const headers = (await table.locator('thead th').allTextContents()).map((h) => h.trim());
     const column = (name: string): number => {
       const i = headers.findIndex((h) => h.startsWith(name));
       expect(i, `the table has a "${name}" column`).toBeGreaterThanOrEqual(0);
