@@ -26,7 +26,7 @@ nodes:
     acceptance:
       - "web-testing.spec.md settles red, stub and green for a screen; /feature runs a ui node with the web gates: typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference"
       - "The kit defects in docs/trace/ui/DS/g4-defects.md section 2 are fixed through one supervised kit change, the stylekit rebuilt, and David re-signs the changed screens"
-      - "derive-screens.mjs renders a node reference screens from the signed-off set (screens C7), with its tests"
+      - "derive-screens.mjs renders a node reference screens from the signed-off set (screens C7), with its tests, setting the shell (current nav item and tab, title, one in-flow drawer) from each screen, never its frame (g4-defects.md section 1)"
       - "Small hand-checked fixture trails (complete, incomplete, FAIL-and-fix) exist for behaviour tests"
       - "render-trace.mjs emits the harness file AGENT-3 reads into docs/trace/, so the compiler never reads .claude/ (DATA-7)"
     tasks:
@@ -55,6 +55,7 @@ nodes:
       - "npm run build then npm run preview serves the app; every nav entry routes, and unbuilt screens show the not-built-yet pattern"
       - "The app shell sets the current nav item, the page title and the footer stamp (compiled-at SHA and UTC time) from the route and trace.json, as g4-defects.md section 1 requires"
       - "Light and dark both render; axe finds no violation; no page scrolls sideways at 390"
+      - "No page shows a raw placeholder (‹nodeId›, ‹ruleId›, ‹planId›, ‹reference›); a loading, error or not-built page makes no snapshot claim (g4-defects.md section 1, section 3)"
     tasks:
       - {id: t1, role: builder, step: scaffold, layer: null, rules: [], title: "The app entry, the hash router and the trace npm script; no screens", status: pending}
       - {id: t2, role: tester, step: red, layer: acceptance, rules: [DATA-1, DATA-3, DATA-5, DATA-6, DATA-7, THEME-1, SEC-1, BRAND-1, HONEST-1, A11Y-1, RESP-1], title: "Playwright acceptance for U0b on fixture trails, and parity with its derived reference; every node rule", status: pending}
@@ -94,6 +95,7 @@ nodes:
       - "The matrix lists every rule with its node, tests and status, and filters by node and status"
       - "A rule page shows the rule red before green, each step linked to its commit; links out open the commit and the file on GitHub"
       - "A rule with no node or no tests shows not built yet; an incomplete trail shows its reasons verbatim, never clean"
+      - "Every rule chip opens its own rule; the overview draws the search and theme toggle once, and an incomplete node's reasons as rendered text, not raw Markdown (g4-defects.md section 3)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "Playwright acceptance for U1 on fixture trails, and parity with its derived reference; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U1 routes render the derived reference as canned content", status: pending}
@@ -128,6 +130,7 @@ nodes:
     acceptance:
       - "The plan page shows the DAG with each node status and a text equivalent, in file order"
       - "The node page shows the node header, its tasks and tabs from the route"
+      - "Every node link opens the node it names, and every node page (node, walkthrough, loop, activity) heads the node shown, not F3 (g4-defects.md sections 1 and 3)"
       - "The walkthrough lists the node commits in order with their TDD steps; a commit shows its diff"
       - "A node in flight compiles with what exists and shows as in progress; malformed lines are reported, never dropped"
     tasks:
@@ -201,6 +204,7 @@ nodes:
       - "Each commit names the agent its trailers give and the hook-seen agent; the activity page shows agent swimlanes with a text table"
       - "The decisions page lists every pause, steer, sign-off and merge with its evidence"
       - "The about page explains how to verify the trail yourself; every entity has a URL and an unknown path shows not-found; search finds rules, nodes, SHAs and paths"
+      - "Not-found uses the triangle-alert state and claims nothing was compiled only when nothing was; decisions labels its filters, never raw ids (g4-defects.md section 3)"
       - "The cross-node flow gates pass (follow the F2 FAIL to its fix across node, loop and finding); every built explorer screen matches its signed-off reference; cold load within budget"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [AGENT-1, AGENT-2, HITL-1, VERIFY-1, NAV-2, NAV-4, PERF-1], title: "Playwright acceptance for U4 on fixture trails, and parity with its derived reference; every node rule", status: pending}
@@ -239,6 +243,7 @@ nodes:
       - "The sessions page lists the context snapshots and opens one at /sessions/:file"
       - "The harness page shows each agent, its tools, skills and never-dos, and the hooks that guard it, from the generated harness file"
       - "The stats page and the guided tour render from the trail"
+      - "Each stats figure has one value from the trail (F6 A2's reviewer FAIL has one time), and each sessions entry opens its own file (g4-defects.md section 3)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], title: "Playwright acceptance for U5 on fixture trails, and parity with its derived reference; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U5 routes render the derived reference as canned content", status: pending}
@@ -302,6 +307,7 @@ nodes:
       - "With the API on port 5080, the sell form sells a policy and opens its policy view, with the dates the API returns"
       - "A 400 or 422 shows the problem details against each field; send anyway sends the body as typed and shows the API answer"
       - "A running request shows busy; recent policies in this browser are listed on the workbench home"
+      - "A submitting form shows its request in flight; a field error never sits beside a valid value; the home's reference input has a label; a policy link opens that policy (g4-defects.md section 3)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1], title: "Playwright acceptance for W1 on fixture trails, and parity with its derived reference; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The W1 routes render the derived reference as canned content", status: pending}
@@ -335,6 +341,7 @@ nodes:
     trace: docs/trace/ui/W2/
     acceptance:
       - "Cancel quotes first, cancels with the quoted date, and compares quote and cancellation"
+      - "A successful cancel is shown; submitting shows one busy Cancel button and its request in flight (g4-defects.md section 3)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-4], title: "Playwright acceptance for W2 on fixture trails, and parity with its derived reference; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The W2 routes render the derived reference as canned content", status: pending}
@@ -369,6 +376,7 @@ nodes:
     acceptance:
       - "A claim is recorded and the re-quote shows its effect; renew renews within the window"
       - "The inspector shows every request this page sent as an overlay that never covers content; the requests page lists them all"
+      - "One inspector per page; the requests page has one filter and one count and shows only times it recorded; the claim description has a label and renew's amount is named as shown (g4-defects.md sections 1 and 3)"
       - "The workbench cross-node flow gates pass: sell, then cancel, claim and renew the same policy"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-5, WB-7], title: "Playwright acceptance for W3 on fixture trails, and parity with its derived reference; every node rule", status: pending}

@@ -9,6 +9,11 @@ where they are wrong.
 A screen pastes its family frame unchanged, so these came out the same on every page. The build's app
 shell derives each one from the route, never from the page.
 
+*Found again at David's U0a re-sign (2026-10-20). The screens stay frozen; `derive-screens.mjs` now sets the
+current nav item and tab, the title and the one in-flow drawer from each screen in every derived
+reference (web-testing.spec C7), and each item here and in section 3 is an acceptance line on the node
+that builds it (`ui.dag.yaml`).*
+
 - **Current nav item.** The explorer frame marks Requirements matrix current on all 13 explorer screens;
   the workbench frame marks Workbench (wb-home) on all 7. Mark the screen's own section; mark nothing on
   not-found. The workbench needs a way to show which form is open.
