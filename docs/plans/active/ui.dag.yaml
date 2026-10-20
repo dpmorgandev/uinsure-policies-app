@@ -43,7 +43,7 @@ nodes:
     rules: [DATA-1, DATA-3, DATA-5, DATA-6, DATA-7, THEME-1, SEC-1, BRAND-1, HONEST-1, A11Y-1, RESP-1]
     cuttable: false
     budget: null
-    status: paused_acceptance
+    status: in_progress
     attempt: 2
     branch: feature/ui/U0b
     worktree: .claude/worktrees/ui-U0b
@@ -60,7 +60,7 @@ nodes:
       - {id: t1, role: builder, step: scaffold, layer: null, rules: [], title: "The app entry, the hash router and the trace npm script; no screens", status: done}
       - {id: t2, role: tester, step: red, layer: acceptance, rules: [DATA-1, DATA-3, DATA-5, DATA-6, DATA-7, THEME-1, SEC-1, BRAND-1, HONEST-1, A11Y-1, RESP-1], title: "Playwright acceptance for U0b on fixture trails, and parity with its derived reference; every node rule", status: done}
       - {id: t3, role: builder, step: stub, layer: screen, rules: [], title: "The U0b routes render the derived reference as canned content", status: done}
-      - {id: t4, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U0b stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: pending}
+      - {id: t4, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U0b stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: done}
       - {id: t5, role: tester, step: red, layer: compiler, rules: [DATA-1, DATA-3, DATA-5, DATA-6, DATA-7], title: "Unit tests for the trail compiler: trace.json with its SHA and UTC stamp, read-only, privacy denylist", status: pending}
       - {id: t6, role: builder, step: green, layer: compiler, rules: [DATA-1, DATA-3, DATA-5, DATA-6, DATA-7], title: "Green: the trail compiler: trace.json with its SHA and UTC stamp, read-only, privacy denylist", status: pending}
       - {id: t7, role: tester, step: red, layer: loader, rules: [DATA-1, DATA-3], title: "Unit tests for the data loader: one versioned trace.json, no runtime repo reads", status: pending}
