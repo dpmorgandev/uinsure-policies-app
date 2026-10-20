@@ -35,5 +35,7 @@ the same way it reads the real one. The live `docs/trace/` is never a test input
 | `incomplete/` | An incomplete trail is shown with every reason, never as clean (DATA-4) |
 | `fail-and-fix/` | A reviewer FAIL, its findings, a red test and a fix carrying `Fixes-Finding`, then a PASS |
 
+`replay.d.mts` types `replay.mjs` for the TypeScript tests that import it.
+
 A test that needs a case none of these has (a git-only node, an in-flight node, a malformed line, a
 privacy hit, a lost verdict) adds a fixture in its red commit, in this form.
