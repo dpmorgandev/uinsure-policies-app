@@ -6,6 +6,7 @@ import '@fontsource/atkinson-hyperlegible-mono/400.css';
 import '@fontsource/atkinson-hyperlegible-mono/600.css';
 import '@fontsource/atkinson-hyperlegible-mono/700.css';
 import '../kit/tokens/tokens.css';
+import './shell/page.css';
 import { App } from './shell/App';
 
 const root = document.getElementById('root');
