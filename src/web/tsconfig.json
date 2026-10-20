@@ -25,8 +25,14 @@
     }
   },
   "include": [
+    "app",
+    "compiler",
     "kit",
     "vite.config.ts",
-    "../../tests/web/kit"
+    "playwright.config.ts",
+    "eslint.config.js",
+    "../../tests/web/kit",
+    "../../tests/web/unit",
+    "../../tests/web/e2e"
   ]
 }

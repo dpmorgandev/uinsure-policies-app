@@ -13,11 +13,21 @@ const alias = deps.map((name) => ({
   replacement: resolve(import.meta.dirname, 'node_modules', name) + '$1',
 }));
 
+// The workbench calls /api/...; the app proxies it to the API port it is given.
+const proxy = { '/api': `http://localhost:${process.env.DOCKET_API_PORT ?? 5080}` };
+
 export default defineConfig({
   plugins: [react()],
   base: './',
+  cacheDir: resolve(import.meta.dirname, 'node_modules/.vite'),
   resolve: { alias },
-  server: { fs: { allow: [resolve(import.meta.dirname, '../..')] } },
-  build: { rollupOptions: { input: { 'kitchen-sink': resolve(import.meta.dirname, 'kitchen-sink.html') } } },
-  test: { environment: 'jsdom', root: resolve(import.meta.dirname, '../..'), include: ['tests/web/kit/**/*.test.tsx'] },
+  preview: { proxy },
+  server: { proxy, fs: { allow: [resolve(import.meta.dirname, '../..')] } },
+  build: { rollupOptions: {
+      input: {
+        index: resolve(import.meta.dirname, 'index.html'),
+        'kitchen-sink': resolve(import.meta.dirname, 'kitchen-sink.html'),
+      },
+    }, },
+  test: { environment: 'jsdom', root: resolve(import.meta.dirname, '../..'), include: ['tests/web/kit/**/*.test.tsx', 'tests/web/unit/**/*.test.{ts,tsx}'] },
 });
