@@ -36,6 +36,7 @@ the same way it reads the real one. The live `docs/trace/` is never a test input
 | `fail-and-fix/` | A reviewer FAIL, its findings, a red test and a fix carrying `Fixes-Finding`, then a PASS |
 | `privacy-hit/` | Two denylisted values in the trail fail the compile, each named by file and line, never by value (DATA-5); the test places them |
 | `bounded/` | The harness comes from `docs/trace/harness.json`, never `.claude/` (DATA-7); the trail's own `<user>` and `<outside-repo>` stay as written (DATA-5) |
+| `awkward-text/` | Markup in a plan title and in commands renders as text and runs nothing (SEC-1); a 400-character unbroken command doesn't widen the page (RESP-1) |
 
 `replay.d.mts` types `replay.mjs` for the TypeScript tests that import it.
 
