@@ -1,0 +1,51 @@
+{
+  "screen": "wb-home",
+  "route": "/workbench",
+  "regions": [
+    {
+      "name": "open a policy by reference",
+      "req": ["WB-2"],
+      "components": ["page-header", "text-input", "button"],
+      "fields": [
+        "docs/ui/fixture/api/045-get-1-sold-policy-reads-back-in-full-200.json#exchanges[role=setup].responseBody.reference",
+        "docs/ui/fixture/api/003-sell-1-new-reference-201.json#exchanges[role=request].path"
+      ]
+    },
+    {
+      "name": "open by reference, busy while the policy loads",
+      "req": ["BUSY-1"],
+      "components": ["button", "spinner", "problem-banner"],
+      "fields": [
+        "docs/ui/fixture/api/003-sell-1-new-reference-201.json#exchanges[role=request].path",
+        "docs/ui/fixture/api/003-sell-1-new-reference-201.json#exchanges[role=setup].responseBody.reference"
+      ]
+    },
+    {
+      "name": "sell a new policy (entry)",
+      "req": ["WB-1"],
+      "components": [],
+      "fields": []
+    },
+    {
+      "name": "recent policies, kept in this browser",
+      "req": ["WB-9"],
+      "components": ["recent-policies", "empty-state"],
+      "fields": [
+        "docs/ui/fixture/api/045-get-1-sold-policy-reads-back-in-full-200.json#exchanges[role=setup].responseBody.reference",
+        "docs/ui/fixture/api/003-sell-1-new-reference-201.json#exchanges[role=setup].responseBody.reference"
+      ]
+    }
+  ],
+  "states": [
+    { "name": "populated", "file": "populated.html", "variant": "recorded fixtures 003-sell-1-new-reference-201 and 045-get-1-sold-policy-reads-back-in-full-200: the references F1-MVFJOFJ8IS and F2-MVFJQA9DQG" },
+    { "name": "empty", "file": "empty.html", "variant": "no data: recent-policies' empty state, no policy sold or opened in this browser" },
+    { "name": "api-unreachable", "file": "api-unreachable.html", "variant": "no data: the API at http://localhost:5080 does not answer; reference F1-MVFJOFJ8IS from fixture 003 is the typed value" },
+    { "name": "submitting", "file": "submitting.html", "variant": "populated values with one request in flight (BUSY-1): reference F1-MVFJOFJ8IS from fixture 003" }
+  ],
+  "actions": [
+    { "label": "Open policy", "kind": "submit", "to": "GET /policies/:reference, then /workbench/policies/:reference" },
+    { "label": "Try again", "kind": "submit", "to": "GET /policies/:reference" },
+    { "label": "Sell a new policy", "kind": "link", "to": "/workbench/sell" },
+    { "label": "A recent policy's reference", "kind": "link", "to": "/workbench/policies/:reference" }
+  ]
+}

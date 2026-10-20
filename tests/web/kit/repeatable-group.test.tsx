@@ -63,6 +63,15 @@ describe('RepeatableGroup', () => {
     expect(within(first).queryByText('Needs fixing')).toBeNull();
   });
 
+  it('invalid member: the input has no icon beside it, and the member message carries one', () => {
+    render(examples[3]!.element);
+    const second = screen.getByRole('group', { name: 'Policyholder 2' });
+    const input = within(second).getByRole('textbox', { name: 'Name' });
+    expect(input.nextElementSibling).toBeNull();
+    const id = second.getAttribute('aria-describedby') as string;
+    expect(document.getElementById(id)?.querySelectorAll('svg')).toHaveLength(1);
+  });
+
   it('uses the API index when the member carries one', () => {
     render(
       <RepeatableGroup

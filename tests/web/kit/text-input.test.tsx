@@ -35,7 +35,18 @@ describe('TextInput', () => {
     const input = screen.getByRole('textbox', { name: 'Policy reference' });
     expect(input.getAttribute('aria-invalid')).toBe('true');
     expect(input.getAttribute('aria-describedby')).toBe('why');
-    expect(input.parentElement?.querySelector('svg')).not.toBeNull();
+  });
+
+  it('draws no icon of its own when invalid: the field message carries the only one', () => {
+    const { container } = render(<TextInput aria-label="Policy reference" invalid />);
+    expect(container.querySelector('svg')).toBeNull();
+  });
+
+  it('the invalid example has exactly one error icon, in the message', () => {
+    const { container } = render(examples[2]!.element);
+    expect(container.querySelectorAll('svg')).toHaveLength(1);
+    const id = screen.getByRole('textbox', { name: 'Policy reference' }).getAttribute('aria-describedby') as string;
+    expect(document.getElementById(id)?.querySelector('svg')).not.toBeNull();
   });
 
   it('the invalid example links its message', () => {

@@ -83,7 +83,7 @@
       "long-content": "root causes 1-3k chars, details up to ~600, commands truncated at ~200: collapsed with a full-text disclosure",
       "api-error": "the API answered with a problem (400/404/409/422/429/500): rendered from its ProblemDetails, never a generic failure",
       "api-unreachable": "the API is not running or the proxy failed: says so, names the base URL, and how to start it",
-      "api-not-built": "the endpoint is not in the API yet (renew until F4 merges): the not-built-yet pattern, never a failure",
+      "api-not-built": "the endpoint is not in the API yet: the not-built-yet pattern, never a failure",
       "submitting": "a process is running (a request, a quote, a lazy load): the control that started it shows a spinner, says what is happening, and is disabled until it ends; the form keeps its values (BUSY-1)"
     },
     "screens": [
@@ -185,6 +185,12 @@
             "req": [
               "NAV-4",
               "THEME-1"
+            ]
+          },
+          {
+            "name": "trail completeness: TRAIL INCOMPLETE reasons verbatim, \"not built yet\", and F0a as git-only",
+            "req": [
+              "DATA-4"
             ]
           }
         ],
@@ -358,6 +364,12 @@
             "name": "load diff, busy while the diff chunk loads",
             "req": [
               "BUSY-1"
+            ]
+          },
+          {
+            "name": "links out: commit SHAs, PR numbers and file:line references, to GitHub at that SHA",
+            "req": [
+              "NAV-3"
             ]
           }
         ],
@@ -1004,6 +1016,12 @@
             "req": [
               "NAV-5"
             ]
+          },
+          {
+            "name": "compiled-at stamp: the commit SHA and UTC time trace.json was compiled from",
+            "req": [
+              "DATA-3"
+            ]
           }
         ],
         "scope": "explorer"
@@ -1017,8 +1035,7 @@
         "section": "about",
         "priority": "SHOULD",
         "requirements": [
-          "AGENT-3",
-          "DATA-7"
+          "AGENT-3"
         ],
         "data": [
           "harness file (DATA-7; does not exist yet, emitted by render-trace.mjs)"
@@ -1061,13 +1078,14 @@
       {
         "id": "sessions",
         "file": "sessions.html",
-        "route": "/sessions",
+        "route": "/sessions/:file?",
         "name": "Sessions",
         "description": "The context snapshot chain as a timeline across days: where work stood at each hand-off and what came next.",
         "section": "about",
         "priority": "COULD",
         "requirements": [
-          "CTX-1"
+          "CTX-1",
+          "NAV-2"
         ],
         "data": [
           "D13"
@@ -1095,6 +1113,12 @@
             "name": "snapshot timeline",
             "req": [
               "CTX-1"
+            ]
+          },
+          {
+            "name": "one snapshot, open at its own URL (/sessions/:file)",
+            "req": [
+              "NAV-2"
             ]
           }
         ],
@@ -1204,7 +1228,8 @@
           "button",
           "recent-policies",
           "empty-state",
-          "spinner"
+          "spinner",
+          "problem-banner"
         ],
         "icons": [
           "search",
@@ -1290,7 +1315,8 @@
           "send-anyway-toggle",
           "button",
           "inspector-drawer",
-          "spinner"
+          "spinner",
+          "problem-banner"
         ],
         "icons": [
           "file-plus",
@@ -1533,6 +1559,7 @@
         "states": [
           "submitting",
           "api-error",
+          "api-unreachable",
           "empty"
         ],
         "regions": [
@@ -1606,7 +1633,8 @@
           "problem-banner",
           "rule-chip",
           "inspector-drawer",
-          "spinner"
+          "spinner",
+          "rung-spine"
         ],
         "icons": [
           "receipt",
@@ -1617,7 +1645,8 @@
         ],
         "states": [
           "submitting",
-          "api-error"
+          "api-error",
+          "api-unreachable"
         ],
         "regions": [
           {
@@ -1678,6 +1707,7 @@
           "error-summary",
           "rule-chip",
           "spinner",
+          "inspector-drawer",
           "problem-banner",
           "term-timeline"
         ],
@@ -1690,7 +1720,8 @@
         ],
         "states": [
           "submitting",
-          "api-error"
+          "api-error",
+          "api-unreachable"
         ],
         "regions": [
           {
@@ -1738,6 +1769,7 @@
           "E3",
           "E4",
           "E5",
+          "E6",
           "A12",
           "A13",
           "A14"
@@ -1829,6 +1861,11 @@
         "id": "SEC-1",
         "reason": "rendering safety and CSP, on every screen",
         "verifiedBy": "security agent web checks; a CSP header test; the markdown sanitiser's tests"
+      },
+      {
+        "id": "WB-8",
+        "reason": "cut (David, 2026-10-19): the workbench stays inside the current API; the ID is kept so it is not reused",
+        "verifiedBy": "no screen lists WB-8; coverage.mjs accounts for it here"
       }
     ]
   }

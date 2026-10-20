@@ -1,6 +1,7 @@
 /* The bar is its own size container, so it lays out by its own width (a 390 frame or a phone). */
 .bar {
   container-type: inline-size;
+  position: relative;
   background: var(--color-surface);
   border-bottom: 2px solid var(--color-border);
   color: var(--color-text-primary);

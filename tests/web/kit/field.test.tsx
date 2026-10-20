@@ -47,6 +47,15 @@ describe('Field', () => {
     expect(document.getElementById(ids[1]!)?.textContent).toContain('Cancellation date in the past. Today is 2026-10-19.');
   });
 
+  it('invalid: exactly one error icon, in the message, none on the input', () => {
+    const { container } = render(examples[2]!.element);
+    expect(container.querySelectorAll('svg')).toHaveLength(1);
+    const input = screen.getByRole('textbox', { name: 'Cancellation date' });
+    const ids = describedBy(input);
+    expect(document.getElementById(ids[1]!)?.querySelector('svg')).not.toBeNull();
+    expect(input.parentElement?.tagName).toBe('DIV');
+  });
+
   it('required: says so in words and sets aria-required', () => {
     render(examples[3]!.element);
     const input = screen.getByRole('textbox', { name: 'Cancellation date (required)' });

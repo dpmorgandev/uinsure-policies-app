@@ -1,29 +1,17 @@
 import { useId } from 'react';
 import type { JSX, ReactNode } from 'react';
-import { CircleAlert } from 'lucide-react';
+import { InlineError } from '../../patterns/inline-error/InlineError';
 import { TextArea } from './TextArea';
 
 const box = { maxWidth: '32rem' } as const;
-const message = {
-  display: 'flex',
-  gap: 'var(--space-2)',
-  alignItems: 'flex-start',
-  margin: 'var(--space-1) 0 0',
-  color: 'var(--color-error)',
-  fontWeight: 700,
-  fontSize: 'var(--text-14)',
-} as const;
 
-/** Stands in for `field`: wires an error message to the box with aria-describedby. */
+/** Stands in for `field`: the one error message (inline-error) sits above the box and is wired by aria-describedby. */
 function WithMessage({ text, children }: { text: string; children: (describedBy: string) => ReactNode }) {
   const id = useId();
   return (
     <div style={box}>
+      <InlineError id={id} messages={[text]} />
       {children(id)}
-      <p id={id} style={message}>
-        <CircleAlert size="1.25em" aria-hidden="true" />
-        <span>{text}</span>
-      </p>
     </div>
   );
 }

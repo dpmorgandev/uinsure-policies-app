@@ -1,0 +1,74 @@
+{
+  "screen": "activity",
+  "route": "/plans/:planId/:nodeId/activity",
+  "regions": [
+    {
+      "name": "agent lanes",
+      "req": ["AGENT-2"],
+      "components": ["filter-bar", "agent-lanes", "agent-badge"],
+      "fields": [
+        "trace/build/F3/activity.json[].line",
+        "trace/build/F3/activity.json[].attempt",
+        "trace/build/F3/activity.json[].agent",
+        "trace/build/F3/activity.json[].tool",
+        "trace/build/F3/activity.json[].file",
+        "trace/build/F3/activity.json[].command",
+        "trace/build/F3/activity.json[].commit.sha",
+        "trace/build/F3/activity.json[].commit.subject",
+        "trace/build/F3/activity.json[].commit.tdd",
+        "trace/build/F1/activity.json[].line",
+        "trace/build/F1/activity.json[].attempt",
+        "trace/build/F1/activity.json[].agent",
+        "trace/build/F1/activity.json[].commit.sha",
+        "trace/build/F1/activity.json[].commit.subject",
+        "trace/build/F1/activity.json[].commit.tdd",
+        "nodes[plan=build][id=F0a].completenessReasons"
+      ]
+    },
+    {
+      "name": "event table (text equivalent)",
+      "req": ["AGENT-2", "A11Y-1"],
+      "components": ["data-table", "redaction-token"],
+      "fields": [
+        "trace/build/F3/activity.json[].line",
+        "trace/build/F3/activity.json[].attempt",
+        "trace/build/F3/activity.json[].agent",
+        "trace/build/F3/activity.json[].tool",
+        "trace/build/F3/activity.json[].file",
+        "trace/build/F3/activity.json[].command",
+        "trace/build/F3/activity.json[].commit.sha",
+        "trace/build/F3/activity.json[].commit.subject",
+        "trace/build/F3/activity.json[].commit.tdd",
+        "trace/build/F1/activity.json[].line",
+        "trace/build/F1/activity.json[].attempt",
+        "trace/build/F1/activity.json[].agent",
+        "trace/build/F1/activity.json[].tool",
+        "trace/build/F1/activity.json[].command",
+        "trace/build/F1/activity.json[].commit.sha",
+        "trace/build/F1/activity.json[].commit.subject",
+        "trace/build/F1/activity.json[].commit.tdd"
+      ]
+    }
+  ],
+  "states": [
+    { "name": "populated", "file": "populated.html", "variant": "the ref's own data: the first 80 lines of build/F3's activity.json, all attempt 1, main on lines 1 to 17 and tester on lines 18 to 80; four commits (lines 4, 7, 11, 16), none with a TDD trailer; every line is a tick, columns are the log line" },
+    { "name": "git-only", "file": "git-only.html", "variant": "nodes[plan=build][id=F0a]: predates the trail, no activity.jsonl, so no lanes and no rows; the frame above still names F3 because the frame is pasted byte for byte" },
+    { "name": "redacted", "file": "redacted.html", "variant": "the first 20 lines of build/F3's activity.json whose command held <user>: lines 2 to 425, attempts 1 and 2, all main, all Bash; lane columns are the order within this cut, tick labels are the real log lines" },
+    { "name": "long-content", "file": "long-content.html", "variant": "build/F1's activity.json, first 200 lines, filtered to the 10 lines that carry a TDD trailer: eight tester red commits at lines 51 to 58, one builder stub at line 83, one tester red at line 200; the frame above still names F3 because the frame is pasted byte for byte" }
+  ],
+  "actions": [
+    { "label": "Walkthrough tab: read the commits in rung order", "kind": "link", "to": "/plans/:planId/:nodeId/commits" },
+    { "label": "Node tab and Back to the node", "kind": "link", "to": "/plans/:planId/:nodeId" },
+    { "label": "Loop tab", "kind": "link", "to": "/plans/:planId/:nodeId/loop" },
+    { "label": "Activity tab", "kind": "link", "to": "/plans/:planId/:nodeId/activity" },
+    { "label": "Filter by agent", "kind": "control", "to": "narrows the lanes and the table to one agent; sends no request" },
+    { "label": "Filter by tool", "kind": "control", "to": "narrows the lanes and the table to one tool; sends no request" },
+    { "label": "Filter by attempt", "kind": "control", "to": "narrows the lanes and the table to one attempt; sends no request" },
+    { "label": "Filter by redaction", "kind": "control", "to": "narrows the lanes and the table to lines with or without a redaction; sends no request" },
+    { "label": "Filter by TDD trailer", "kind": "control", "to": "narrows the lanes and the table to lines with or without a TDD trailer; sends no request" },
+    { "label": "Clear filters", "kind": "control", "to": "removes every filter; sends no request" },
+    { "label": "Sort by Line", "kind": "control", "to": "re-orders the table by log line; sends no request" },
+    { "label": "Text equivalent: the lanes as a table", "kind": "control", "to": "opens the lanes table beside the lanes; sends no request" },
+    { "label": "Show UTC time", "kind": "control", "to": "toggles the time zone of the snapshot stamp; sends no request" }
+  ]
+}

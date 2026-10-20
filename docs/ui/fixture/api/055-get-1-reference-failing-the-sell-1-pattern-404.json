@@ -1,0 +1,41 @@
+{
+ "item": "GET-1 · reference failing the SELL-1 pattern → 404",
+ "folder": "F2 Retrieve / rule violations",
+ "rule": "GET-1",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:46:54Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F2-MVFJQPQSZM_X",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 404,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:46:54 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/get-1",
+    "title": "Policy not found",
+    "status": 404,
+    "detail": "No policy with reference 'F2-MVFJQPQSZM_X'.",
+    "instance": "/policies/F2-MVFJQPQSZM_X",
+    "traceId": "00-7e5faf8c6da0c46be7fd9f1ed6c3867d-1834b48493bfcd6a-00",
+    "ruleId": "GET-1",
+    "reference": "F2-MVFJQPQSZM_X"
+   }
+  }
+ ]
+}

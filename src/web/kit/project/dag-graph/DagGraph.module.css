@@ -1,7 +1,10 @@
 .root {
+  position: relative;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   min-width: 0;
+  max-width: 100%;
   margin: 0;
   font-family: var(--font-sans);
   font-size: var(--text-14);
@@ -35,7 +38,11 @@
   color: var(--color-text-secondary);
 }
 
+/* The graph is the widest thing here. It scrolls inside this frame and never widens the page. */
 .scroll {
+  position: relative;
+  box-sizing: border-box;
+  min-width: 0;
   max-width: 100%;
   overflow-x: auto;
   padding: var(--space-2);
@@ -51,7 +58,7 @@
 
 .canvas {
   position: relative;
-  min-width: calc(var(--dag-columns, 1) * 11rem);
+  min-width: calc(var(--dag-columns, 1) * 9.5rem);
 }
 
 .edges {

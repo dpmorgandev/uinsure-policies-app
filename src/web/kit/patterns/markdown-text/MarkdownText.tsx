@@ -191,10 +191,14 @@ function renderBlocks(blocks: Block[], keyBase: string, headingStart: number): R
         return <Tag key={key}>{renderInline(block.text, key)}</Tag>;
       }
       case 'code':
+        // Code is the widest thing markdown makes. It scrolls inside this frame, which the keyboard can reach, and
+        // never widens the page.
         return (
-          <pre key={key}>
-            <code>{block.text}</code>
-          </pre>
+          <div key={key} className={styles.codeFrame} role="region" aria-label="Code, scrolls sideways" tabIndex={0}>
+            <pre>
+              <code>{block.text}</code>
+            </pre>
+          </div>
         );
       case 'list': {
         const List = block.ordered ? 'ol' : 'ul';

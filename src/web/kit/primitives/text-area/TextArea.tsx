@@ -10,6 +10,7 @@ export interface TextAreaProps
   /** Controlled text. Leave out to let the box hold its own text, starting from `defaultValue`. */
   value?: string;
   defaultValue?: string;
+  /** aria-invalid and an error-coloured border at the same width as the valid state. The icon and message belong to `field`. */
   invalid?: boolean;
 }
 
@@ -38,19 +39,16 @@ export function TextArea({
 
   return (
     <div className={styles.root}>
-      <span className={styles.wrap}>
-        <textarea
-          {...rest}
-          rows={rows}
-          className={classes}
-          value={text}
-          maxLength={maxLength}
-          onChange={handleChange}
-          aria-invalid={invalid ? 'true' : undefined}
-          aria-describedby={[describedBy, countId].filter(Boolean).join(' ')}
-        />
-        {invalid ? <CircleAlert className={styles.glyph} size="1.25em" aria-hidden="true" /> : null}
-      </span>
+      <textarea
+        {...rest}
+        rows={rows}
+        className={classes}
+        value={text}
+        maxLength={maxLength}
+        onChange={handleChange}
+        aria-invalid={invalid ? 'true' : undefined}
+        aria-describedby={[describedBy, countId].filter(Boolean).join(' ')}
+      />
       <div className={styles.meta}>
         <span id={countId} className={styles.count} data-at-limit={atLimit ? 'true' : undefined}>
           {text.length} of {maxLength} characters

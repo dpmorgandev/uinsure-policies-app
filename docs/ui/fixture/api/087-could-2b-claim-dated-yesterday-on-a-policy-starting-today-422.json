@@ -1,0 +1,203 @@
+{
+ "item": "COULD-2b · claim dated yesterday on a policy starting today → 422",
+ "folder": "F3 Cancel / rule violations",
+ "rule": "COULD-2b",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:48:00Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "327"
+   },
+   "requestBody": {
+    "reference": "F3-MVFJS4E24V",
+    "type": "Household",
+    "startDate": "2026-10-19",
+    "amount": 425.3,
+    "autoRenew": true,
+    "paymentMethod": "Cheque",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:59 GMT",
+    "server": "Kestrel",
+    "location": "/policies/F3-MVFJS4E24V",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F3-MVFJS4E24V",
+    "type": "Household",
+    "status": "Active",
+    "currentTermNumber": 1,
+    "startDate": "2026-10-19",
+    "endDate": "2027-10-18",
+    "amount": 425.3,
+    "hasClaims": false,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-10-19",
+      "endDate": "2027-10-18",
+      "amount": 425.3,
+      "paymentReference": "PAY-09f56062d1f14ff08fd1760b4a7c01e5"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-09f56062d1f14ff08fd1760b4a7c01e5",
+      "type": "Cheque",
+      "amount": 425.3
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  },
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies/F3-MVFJS4E24V/claims",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "31"
+   },
+   "requestBody": {
+    "claimDate": "2026-10-18"
+   },
+   "status": 422,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:59 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/could-2b",
+    "title": "Claim date outside cover",
+    "status": 422,
+    "detail": "The claim date must be within the cover, 2026-10-19 to 2027-10-18.",
+    "instance": "/policies/F3-MVFJS4E24V/claims",
+    "traceId": "00-2444fd43456f4bebb6d1acc7a16ba786-0905558363f1d1e8-00",
+    "ruleId": "COULD-2b",
+    "coverStart": "2026-10-19",
+    "coverEnd": "2027-10-18",
+    "violations": [
+     {
+      "ruleId": "COULD-2b",
+      "detail": "The claim date must be within the cover, 2026-10-19 to 2027-10-18."
+     }
+    ]
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F3-MVFJS4E24V",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 200,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:59 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F3-MVFJS4E24V",
+    "type": "Household",
+    "status": "Active",
+    "currentTermNumber": 1,
+    "startDate": "2026-10-19",
+    "endDate": "2027-10-18",
+    "amount": 425.3,
+    "hasClaims": false,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-10-19",
+      "endDate": "2027-10-18",
+      "amount": 425.3,
+      "paymentReference": "PAY-09f56062d1f14ff08fd1760b4a7c01e5"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-09f56062d1f14ff08fd1760b4a7c01e5",
+      "type": "Cheque",
+      "amount": 425.3
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  }
+ ]
+}

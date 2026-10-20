@@ -1,0 +1,2 @@
+screens: screens/plan/in-flight.html: <span.kit-status-tag__pending.kit-status-tag__tag> inside page-header is not in page-header's stylekit markup
+screens: screens/plan/in-flight.html: <svg.kit-status-tag__icon.lucide.lucide-clock> inside page-header is not in page-header's stylekit markup

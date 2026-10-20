@@ -1,0 +1,3 @@
+screens: screens/_frames/workbench.html: <span.kit-sha-link__wrap> inside app-shell is not in app-shell's stylekit markup
+screens: screens/_frames/workbench.html: <a.kit-sha-link__link.kit-sha-link__sha> inside app-shell is not in app-shell's stylekit markup
+screens: screens/_frames/workbench.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside app-shell is not in app-shell's stylekit markup

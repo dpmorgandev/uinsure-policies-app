@@ -1,5 +1,5 @@
 import type { SelectHTMLAttributes } from 'react';
-import { ChevronDown, CircleAlert } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import styles from './Select.module.css';
 
 export interface SelectOption {
@@ -11,6 +11,7 @@ export interface SelectProps extends Omit<SelectHTMLAttributes<HTMLSelectElement
   options: SelectOption[];
   /** A first, unselectable option shown while nothing is chosen. */
   placeholder?: string;
+  /** aria-invalid and an error-coloured border at the same width as the valid state. The icon and message belong to `field`. */
   invalid?: boolean;
 }
 
@@ -40,8 +41,7 @@ export function Select({ options, placeholder, invalid = false, className, ...re
           </option>
         ))}
       </select>
-      {invalid ? <CircleAlert className={styles.invalidGlyph} size="1.25em" aria-hidden="true" /> : null}
-      <ChevronDown className={styles.chevron} size="1.25em" aria-hidden="true" />
+      <ChevronDown className={styles.chevron} size="1.25rem" aria-hidden="true" />
     </span>
   );
 }

@@ -1,0 +1,19 @@
+screens: screens/wb-policy/populated.html: <span.kit-money__money> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/wb-policy/populated.html: <span.kit-money__money> inside data-table is not in data-table's stylekit markup
+screens: screens/wb-policy/populated.html: <span.kit-status-tag__pass.kit-status-tag__tag> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-policy/populated.html: <svg.kit-status-tag__icon.lucide.lucide-check> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-policy/populated.html: "PAY-0e2c2302…" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/wb-policy/api-unreachable.html: "localhost:5080" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/wb-policy/long-content.html: <a.kit-rule-chip__chip.kit-rule-chip__link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/wb-policy/long-content.html: <a.kit-rule-chip__chip.kit-rule-chip__link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/wb-policy/long-content.html: <a.kit-rule-chip__chip.kit-rule-chip__link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/wb-policy/long-content.html: <span.kit-money__money> inside data-table is not in data-table's stylekit markup
+screens: screens/wb-policy/long-content.html: <span.kit-money__money> inside data-table is not in data-table's stylekit markup
+screens: screens/wb-policy/long-content.html: <span.kit-money__money> inside data-table is not in data-table's stylekit markup
+screens: screens/wb-policy/long-content.html: <span.kit-money__money> inside data-table is not in data-table's stylekit markup
+screens: screens/wb-policy/long-content.html: <a.kit-rule-chip__chip.kit-rule-chip__link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/wb-policy/long-content.html: <span.kit-money__money> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/wb-policy/long-content.html: <a.kit-rule-chip__chip.kit-rule-chip__link> inside data-table is not in data-table's stylekit markup
+screens: screens/wb-policy/long-content.html: <span.kit-money__money> inside data-table is not in data-table's stylekit markup
+screens: screens/wb-policy/long-content.html: <a.kit-rule-chip__chip.kit-rule-chip__link> inside data-table is not in data-table's stylekit markup
+screens: screens/wb-policy/long-content.html: <span.kit-money__money> inside data-table is not in data-table's stylekit markup

@@ -1,0 +1,115 @@
+{
+ "item": "SELL-4 · 4 policyholders → 422",
+ "folder": "F1 Sell / rule violations",
+ "rule": "SELL-4",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:45:52Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "744"
+   },
+   "requestBody": {
+    "reference": "F1-MVFJPDFYSB",
+    "type": "Household",
+    "startDate": "2026-11-10",
+    "amount": 527.18,
+    "autoRenew": true,
+    "paymentMethod": "DirectDebit",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     },
+     {
+      "firstName": "Charles",
+      "lastName": "Babbage",
+      "dateOfBirth": "1981-08-26"
+     },
+     {
+      "firstName": "Mary",
+      "lastName": "Somerville",
+      "dateOfBirth": "1981-08-26"
+     },
+     {
+      "firstName": "Alan",
+      "lastName": "Turing",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 422,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:51 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/sell-4",
+    "title": "Wrong number of policyholders",
+    "status": 422,
+    "detail": "A policy needs 1 to 3 policyholders.",
+    "instance": "/policies",
+    "traceId": "00-0759d240f158ffc62c8c84a503bf9704-1478b05f3db6b353-00",
+    "ruleId": "SELL-4",
+    "count": 4,
+    "violations": [
+     {
+      "ruleId": "SELL-4",
+      "detail": "A policy needs 1 to 3 policyholders."
+     }
+    ]
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F1-MVFJPDFYSB",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 404,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:51 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/get-1",
+    "title": "Policy not found",
+    "status": 404,
+    "detail": "No policy with reference 'F1-MVFJPDFYSB'.",
+    "instance": "/policies/F1-MVFJPDFYSB",
+    "traceId": "00-28ecbe624f1750ace58879c6a9879e03-4a9366754a8c8bc2-00",
+    "ruleId": "GET-1",
+    "reference": "F1-MVFJPDFYSB"
+   }
+  }
+ ]
+}

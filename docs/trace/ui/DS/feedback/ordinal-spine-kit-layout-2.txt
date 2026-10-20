@@ -1,0 +1,4 @@
+audit-kit.mjs --shots: exit 0, "kit audit: clean". Its measured horizontal overflow, from docs/ui/kit/review.html, verbatim:
+
+1440 wide: the page is 1743 wide (303px of horizontal overflow); content past the viewport in markdown-text (to 1501), agent-lanes (to 1767)
+390 wide: the page is 1033 wide (643px of horizontal overflow); content past the viewport in data-table (to 633), markdown-text (to 791), request-log (to 557), attempt-ladder (to 414), agent-lanes (to 1057), dag-graph (to 549), dag-table (to 509), refund-worked-sum (to 645), quote-cancel-compare (to 573)

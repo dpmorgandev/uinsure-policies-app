@@ -1,0 +1,33 @@
+{
+  "screen": "decisions",
+  "route": "/decisions",
+  "regions": [
+    {
+      "name": "decision list",
+      "req": ["HITL-1"],
+      "components": ["page-header", "filter-bar", "human-decision-row", "status-tag", "sha-link"],
+      "fields": [
+        "decisions[*].kind",
+        "decisions[*].round",
+        "decisions[*].at",
+        "decisions[*].plan",
+        "decisions[*].node",
+        "decisions[*].when",
+        "decisions[*].what",
+        "decisions[*].sha",
+        "decisions[*].evidence.file",
+        "decisions[*].evidence.line"
+      ]
+    }
+  ],
+  "states": [
+    { "name": "populated", "file": "populated.html", "variant": "the fixture's own decisions list: 35 records across 12 nodes of the build and ui plans" }
+  ],
+  "actions": [
+    { "label": "Open the evidence line in a node's loop.jsonl", "kind": "link", "to": "https://github.com/dpmorgandev/uinsure-policies-api/blob/main/docs/trace/:plan/:node/loop.jsonl#L:line" },
+    { "label": "Open the QA document named by a sign-off", "kind": "link", "to": "https://github.com/dpmorgandev/uinsure-policies-api/blob/main/docs/qa/build-:node.md" },
+    { "label": "Open the merged PR", "kind": "link", "to": "https://github.com/dpmorgandev/uinsure-policies-api/pull/:number" },
+    { "label": "Open the commit a decision names", "kind": "link", "to": "https://github.com/dpmorgandev/uinsure-policies-api/commit/:sha" },
+    { "label": "Show the time in UTC", "kind": "control", "to": "toggle on the page, no request" }
+  ]
+}

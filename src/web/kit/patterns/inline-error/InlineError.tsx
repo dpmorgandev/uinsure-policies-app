@@ -18,7 +18,7 @@ export function InlineError({ id, messages }: InlineErrorProps) {
       <div className={styles.body}>
         <span className={styles.srOnly}>{several ? 'Errors: ' : 'Error: '}</span>
         {several ? (
-          <ul className={styles.list}>
+          <ul className={styles.list} role="list">
             {messages.map((message, position) => (
               <li key={`${position}-${message}`}>{message}</li>
             ))}

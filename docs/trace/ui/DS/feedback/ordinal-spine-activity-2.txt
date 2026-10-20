@@ -1,0 +1,223 @@
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/populated.html: "docs/ui/fixture/trace/build/F3/activity.json" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/populated.html: "236,240p" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/populated.html: "45,130p" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/populated.html: "1,200p" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/populated.html: "1,80p" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/populated.html: "1,60p" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/populated.html: "f3" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/populated.html: 414 wide at 390 light (horizontal overflow from app-shell · layout · 1440, data-table · pattern · pop, redaction-token · primitive · each token)
+screens: screens/activity/populated.html: 414 wide at 390 dark (horizontal overflow from app-shell · layout · 1440, data-table · pattern · pop, redaction-token · primitive · each token)
+screens: screens/activity/redacted.html: a raw colour in the markup: "filter-bar__field" data-"
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/redacted.html: "docs/ui/fixture/trace/build/F3/activity.json" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/redacted.html: "CANCEL-3,COULD-1,COULD-2a,CANCE" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/redacted.html: 414 wide at 390 light (horizontal overflow from app-shell · layout · 1440, data-table · pattern · pop, redaction-token · primitive · each token)
+screens: screens/activity/redacted.html: 414 wide at 390 dark (horizontal overflow from app-shell · layout · 1440, data-table · pattern · pop, redaction-token · primitive · each token)
+screens: screens/activity/long-content.html: a raw colour in the markup: "path><path d="M10 12.5 8"
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: <svg.kit-agent-lanes__icon.lucide.lucide-file-code> inside agent-lanes is not in agent-lanes's stylekit markup
+screens: screens/activity/long-content.html: "docs/ui/fixture/trace/build/F1/activity.json" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "1,200p" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "40,135p" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "60,105p" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "1,60p" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "SELL-1,SELL-" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "SELL-1,SELL-2" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "SELL-1,SELL-2,SELL-3" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "SELL-1,SELL-2,SELL-3,SELL-4" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "SELL-1,SELL-2,SELL-3,SELL-4,SELL-5" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "SELL-1,SELL-2,SELL-3,SELL-4,SELL-5,SELL-6" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "SELL-1,SELL-2,SELL-3,SELL-4,SELL-5,SELL-6,SELL-7,MULTI" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "SELL-1,SELL-2,SELL-3,SELL-4,SELL-5,SELL-6,SELL-7,MULTI,SHAPE" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "120,200p" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: "55,120p" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/activity/long-content.html: 414 wide at 390 light (horizontal overflow from app-shell · layout · 1440, data-table · pattern · pop, redaction-token · primitive · each token)
+screens: screens/activity/long-content.html: 414 wide at 390 dark (horizontal overflow from app-shell · layout · 1440, data-table · pattern · pop, redaction-token · primitive · each token)

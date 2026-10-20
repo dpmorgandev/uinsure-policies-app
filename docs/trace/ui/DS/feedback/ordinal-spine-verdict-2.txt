@@ -1,0 +1,134 @@
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/populated.html: <span.kit-sha-link__srOnly> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/populated.html: <span.kit-sha-link__srOnly> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-provenance-label__root> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-provenance-label__label> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <svg.kit-provenance-label__icon.lucide.lucide-database> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/populated.html: <span.kit-provenance-label__meaning> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/long-content.html: <span.kit-sha-link__srOnly> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/long-content.html: <span.kit-sha-link__srOnly> inside page-header is not in page-header's stylekit markup
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-sha-link__wrap> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-provenance-label__root> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-provenance-label__label> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <svg.kit-provenance-label__icon.lucide.lucide-database> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: <span.kit-provenance-label__meaning> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/verdict/long-content.html: 455 wide at 390 light (horizontal overflow from )
+screens: screens/verdict/long-content.html: 455 wide at 390 dark (horizontal overflow from )

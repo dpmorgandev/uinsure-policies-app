@@ -1,0 +1,4 @@
+gate-design (guardrails A8), at your stop, verbatim:
+A8: you wrote docs/ui/screens/_frames/workbench.html before reading every line of your prompt .claude/scripts/design/.out/screens-frame-workbench-2.md: line(s) 407-428, 492-510 of 529 were unread at your first write
+
+audit-screens.mjs --frames on your file: clean.

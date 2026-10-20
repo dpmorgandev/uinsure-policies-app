@@ -1,0 +1,82 @@
+{
+  "screen": "wb-cancel",
+  "route": "/workbench/policies/:reference/cancel",
+  "regions": [
+    {
+      "name": "cancellation date and quote",
+      "req": ["WB-4"],
+      "components": ["page-header", "field"],
+      "fields": [
+        "069-could-1-quote-changes-nothing-200.json exchanges[path=/policies/F3-MVFJRBS7C7/cancellation-quote?cancellationDate=2026-12-02].responseBody.{cancellationDate,quotedOn}",
+        "069-could-1-quote-changes-nothing-200.json exchanges[path=/policies/F3-MVFJRBS7C7].responseBody.{reference,status,terms[0].startDate,terms[0].endDate}",
+        "076-cancel-4-cancel-twice-409.json exchanges[role=request].requestBody.cancellationDate",
+        "076-cancel-4-cancel-twice-409.json exchanges[role=setup,path=/policies].responseBody.{reference,terms[0].startDate,terms[0].endDate}"
+      ]
+    },
+    {
+      "name": "quote and cancel actions, each busy while its request runs",
+      "req": ["BUSY-1"],
+      "components": ["button", "confirm-dialog"],
+      "fields": [
+        "069-could-1-quote-changes-nothing-200.json exchanges[path=/policies/F3-MVFJRBS7C7/cancellation-quote?cancellationDate=2026-12-02].responseBody.{cancellationDate,totalRefund,refunds[0].type}"
+      ]
+    },
+    {
+      "name": "problems (CANCEL-3, CANCEL-4, CANCEL-7)",
+      "req": ["WB-3"],
+      "components": ["problem-banner", "rule-chip"],
+      "fields": [
+        "076-cancel-4-cancel-twice-409.json exchanges[role=request].responseBody.{title,status,detail,instance,ruleId,cancellationDate,type}",
+        "the API at localhost:5080 not answering (api-unreachable): no field"
+      ]
+    },
+    {
+      "name": "the refund as a worked sum, per term, with the rule applied",
+      "req": ["WB-4"],
+      "components": ["refund-worked-sum", "rule-chip", "money"],
+      "fields": [
+        "069-could-1-quote-changes-nothing-200.json exchanges[path=/policies/F3-MVFJRBS7C7].responseBody.terms[0].amount",
+        "069-could-1-quote-changes-nothing-200.json exchanges[path=/policies/F3-MVFJRBS7C7/cancellation-quote?cancellationDate=2026-12-02].responseBody.{ruleApplied,totalRefund,terms[0].{termNumber,ruleApplied,daysInTerm,daysUsed,unusedDays,refundAmount}}",
+        "076-cancel-4-cancel-twice-409.json exchanges[role=setup,path=/policies/F3-MVFJRN08DV/cancellation].responseBody.{cancellationDate,ruleApplied,totalRefund,terms[0]} (the earlier cancellation, api-error page only)",
+        "076-cancel-4-cancel-twice-409.json exchanges[role=setup,path=/policies].responseBody.terms[0].amount"
+      ]
+    },
+    {
+      "name": "cancel with the quoted date, then quote and cancellation compared",
+      "req": ["WB-4"],
+      "components": ["rung-spine", "spinner"],
+      "fields": [
+        "069-could-1-quote-changes-nothing-200.json exchanges[path=/policies/F3-MVFJRBS7C7/cancellation-quote?cancellationDate=2026-12-02].{status,responseBody.quotedOn}",
+        "the quoted date carried from rung 1 into rung 2 (not typed again)",
+        "076-cancel-4-cancel-twice-409.json exchanges[role=request].{requestBody.cancellationDate,status}"
+      ]
+    },
+    {
+      "name": "the requests as sent (inspector)",
+      "req": ["WB-7"],
+      "components": ["inspector-drawer"],
+      "fields": [
+        "069-could-1-quote-changes-nothing-200.json exchanges[path=/policies/F3-MVFJRBS7C7/cancellation-quote?cancellationDate=2026-12-02].{method,path,status,responseBody}",
+        "076-cancel-4-cancel-twice-409.json exchanges[role=request].{method,path,requestBody,status,responseBody}"
+      ]
+    }
+  ],
+  "states": [
+    { "name": "populated", "file": "populated.html", "variant": "069-could-1-quote-changes-nothing-200.json (recorded 2026-10-19T17:47:23Z): policy F3-MVFJRBS7C7 quoted for 2026-12-02; the cancel is ready, not sent" },
+    { "name": "submitting", "file": "submitting.html", "variant": "the populated page's values, with the cancel request in flight (BUSY-1)" },
+    { "name": "api-error", "file": "api-error.html", "variant": "076-cancel-4-cancel-twice-409.json (recorded 2026-10-19T17:47:37Z): policy F3-MVFJRN08DV, cancel on 2026-11-28 refused 409 under CANCEL-4" },
+    { "name": "api-unreachable", "file": "api-unreachable.html", "variant": "no data: the API at localhost:5080 does not answer; problem-banner unreachable" },
+    { "name": "empty", "file": "empty.html", "variant": "the populated page's policy only (F3-MVFJRBS7C7); no quote asked for yet" }
+  ],
+  "actions": [
+    { "label": "Quote this date", "kind": "request", "to": "GET /policies/:reference/cancellation-quote?cancellationDate=:date" },
+    { "label": "Quote again", "kind": "request", "to": "GET /policies/:reference/cancellation-quote?cancellationDate=:date" },
+    { "label": "Cancel on the quoted date", "kind": "request", "to": "POST /policies/:reference/cancellation (opens the confirmation first; sends the quoted date, not a typed one)" },
+    { "label": "Cancel policy on the quoted date (in the confirmation)", "kind": "request", "to": "POST /policies/:reference/cancellation" },
+    { "label": "Go back (in the confirmation)", "kind": "control", "to": "closes the confirmation, sends nothing" },
+    { "label": "Try again", "kind": "request", "to": "repeats the request that did not answer" },
+    { "label": "Show requests / Hide requests", "kind": "control", "to": "opens or closes the inspector drawer" },
+    { "label": "Open policy", "kind": "link", "to": "/workbench/policies/:reference" },
+    { "label": "Rule chips (CANCEL-1c, CANCEL-3, CANCEL-4, CANCEL-7)", "kind": "link", "to": "/rules/:ruleId" }
+  ]
+}

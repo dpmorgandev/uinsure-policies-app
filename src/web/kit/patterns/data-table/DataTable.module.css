@@ -1,4 +1,9 @@
+/* Wide content scrolls inside this frame and never widens the page. */
 .frame {
+  container-type: inline-size;
+  position: relative;
+  box-sizing: border-box;
+  min-width: 0;
   max-width: 100%;
   max-height: var(--data-table-max-height, 36rem);
   overflow: auto;
@@ -48,6 +53,10 @@
   text-align: left;
   vertical-align: top;
   border-bottom: 1px solid var(--color-border);
+  overflow-wrap: break-word;
+}
+
+.cell.anywhere {
   overflow-wrap: anywhere;
 }
 
@@ -117,6 +126,23 @@
   align-items: center;
   gap: var(--space-2);
   color: var(--color-text-secondary);
+}
+
+/*
+ * A frame under 40rem wide (390 wide) packs the cells tighter and lets a numeric cell that is really a phrase ("13
+ * failed, 12 passed of 25") wrap at its spaces. A true number has no space to wrap at. What still does not fit scrolls
+ * inside this frame, with the header held in place.
+ */
+@container (max-width: 40rem) {
+  .table thead th,
+  .cell,
+  .message {
+    padding: var(--space-2);
+  }
+
+  .cell.num {
+    white-space: normal;
+  }
 }
 
 .bar {

@@ -14,7 +14,8 @@ const note = {
   fontSize: 'var(--text-14)',
   color: 'var(--color-text-secondary)',
 } as const;
-const frame = { maxWidth: '64rem' } as const;
+// Each example fills the pane it is in; none sets a width of its own.
+const frame = { maxWidth: '100%' } as const;
 
 function c(
   row: number,
@@ -167,7 +168,7 @@ export const examples: { state: string; element: JSX.Element }[] = [
   {
     state: 'nb',
     element: (
-      <div style={{ maxWidth: '40rem' }}>
+      <div style={frame}>
         <RuleEvidence ruleId="‹ruleId›" commits={[]} notBuilt back={{ href: '#', label: 'Back to the requirements matrix' }} />
         <p style={note}>Placeholder: no unbuilt rule ID is in the mockup's data.</p>
       </div>

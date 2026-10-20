@@ -7,7 +7,8 @@ import { VerdictCard } from './VerdictCard';
 // rather than show a value. The A3 verdict's head SHA is not in the excerpt either.
 
 const GITHUB = 'https://github.com/dpmorgandev/uinsure-policies-api/commit/';
-const frame = { maxWidth: '44rem' } as const;
+// Each card fills the pane it is in; no example sets a width of its own.
+const frame = { maxWidth: '100%' } as const;
 
 export const examples: { state: string; element: JSX.Element }[] = [
   {

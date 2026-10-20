@@ -3,6 +3,7 @@ import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AppShell } from '../../../src/web/kit/layouts/app-shell/AppShell';
 import { examples } from '../../../src/web/kit/layouts/app-shell/app-shell.examples';
+import { catalogNav } from '../../../src/web/kit/layouts/primary-nav/primary-nav.examples';
 
 afterEach(cleanup);
 
@@ -25,12 +26,31 @@ describe('app-shell examples', () => {
     expect(container.querySelector('footer')).not.toBeNull();
     expect(screen.getByRole('heading', { name: 'Page title (placeholder)' })).toBeTruthy();
   });
+
+  it.each(examples)('shows the catalog nav inside the frame: $state', ({ element }) => {
+    render(element);
+    const nav = screen.getByRole('navigation', { name: 'Primary' });
+    expect(within(nav).getAllByRole('link').map((a) => a.textContent)).toEqual(catalogNav.map((item) => item.label));
+    expect(within(nav).getByRole('link', { name: 'Workbench' }).getAttribute('href')).toBe('/workbench');
+  });
+
+  it('names its frame by the width it shows', () => {
+    const labels = examples.map((example) => {
+      const { container, unmount } = render(example.element);
+      const text = container.querySelector('p')?.textContent ?? '';
+      unmount();
+      return text;
+    });
+    expect(labels[0]).toMatch(/^1440 wide/);
+    expect(labels[1]).toMatch(/^1280 wide/);
+    expect(labels[2]).toMatch(/^390 wide/);
+  });
 });
 
 describe('AppShell', () => {
   it('has the four regions in reading order: top bar, navigation, main, footer', () => {
     const { container } = render(
-      <AppShell topBar={{ appName: 'Docket' }} nav={{ current: 'overview' }} footer={footer}>
+      <AppShell topBar={{ appName: 'Docket' }} nav={{ current: 'overview', items: catalogNav }} footer={footer}>
         <p>Screen</p>
       </AppShell>,
     );
@@ -49,17 +69,36 @@ describe('AppShell', () => {
 
   it('marks the current section in the navigation', () => {
     render(
-      <AppShell topBar={{ appName: 'Docket' }} nav={{ current: 'decisions' }} footer={footer}>
+      <AppShell topBar={{ appName: 'Docket' }} nav={{ current: 'decisions', items: catalogNav }} footer={footer}>
         <p>Screen</p>
       </AppShell>,
     );
-    expect(screen.getByRole('link', { name: 'Decisions' }).getAttribute('aria-current')).toBe('page');
+    expect(screen.getByRole('link', { name: 'Human decisions' }).getAttribute('aria-current')).toBe('page');
     expect(screen.getByRole('link', { name: 'Overview' }).hasAttribute('aria-current')).toBe(false);
+  });
+
+  it('offers the links it is given and none of its own', () => {
+    render(
+      <AppShell
+        topBar={{ appName: 'Docket' }}
+        nav={{ current: 'a', items: [{ key: 'a', label: 'Alpha (placeholder)', href: '/alpha-placeholder' }] }}
+        footer={footer}
+      >
+        <p>Screen</p>
+      </AppShell>,
+    );
+    const nav = screen.getByRole('navigation', { name: 'Primary' });
+    expect(within(nav).getAllByRole('link').map((a) => a.getAttribute('href'))).toEqual(['/alpha-placeholder']);
   });
 
   it('starts with a skip link that points at main, and main can take focus', async () => {
     render(
-      <AppShell topBar={{ appName: 'Docket' }} nav={{ current: 'overview' }} footer={footer} skipLabel="Skip to the rule">
+      <AppShell
+        topBar={{ appName: 'Docket' }}
+        nav={{ current: 'overview', items: catalogNav }}
+        footer={footer}
+        skipLabel="Skip to the rule"
+      >
         <p>Screen</p>
       </AppShell>,
     );
@@ -75,10 +114,10 @@ describe('AppShell', () => {
   it('gives each shell its own main id, so two on a page do not clash', () => {
     render(
       <>
-        <AppShell topBar={{ appName: 'Docket' }} nav={{ current: 'overview' }} footer={footer}>
+        <AppShell topBar={{ appName: 'Docket' }} nav={{ current: 'overview', items: catalogNav }} footer={footer}>
           <p>One</p>
         </AppShell>
-        <AppShell topBar={{ appName: 'Docket' }} nav={{ current: 'about' }} footer={footer}>
+        <AppShell topBar={{ appName: 'Docket' }} nav={{ current: 'about', items: catalogNav }} footer={footer}>
           <p>Two</p>
         </AppShell>
       </>,
@@ -93,7 +132,7 @@ describe('AppShell', () => {
     render(
       <AppShell
         topBar={{ appName: 'Docket', defaultQuery: 'GET-1', onSearch, onThemeChange, defaultTheme: 'light' }}
-        nav={{ current: 'overview' }}
+        nav={{ current: 'overview', items: catalogNav }}
         footer={footer}
       >
         <p>Screen</p>
@@ -107,7 +146,12 @@ describe('AppShell', () => {
 
   it('tabs through the frame in order: skip, name, search, theme, navigation, then the screen, then the footer', async () => {
     render(
-      <AppShell topBar={{ appName: 'Docket' }} nav={{ current: 'overview' }} footer={footer} skipLabel="Skip">
+      <AppShell
+        topBar={{ appName: 'Docket' }}
+        nav={{ current: 'overview', items: catalogNav }}
+        footer={footer}
+        skipLabel="Skip"
+      >
         <a href="#x">In the screen</a>
       </AppShell>,
     );
@@ -123,7 +167,7 @@ describe('AppShell', () => {
       await userEvent.tab();
       expect(document.activeElement).toBe(stop);
     }
-    for (const name of ['Requirements', 'Plans', 'Decisions', 'About', 'In the screen']) {
+    for (const name of ['Requirements matrix', 'Plan', 'Human decisions', 'How to read this', 'Workbench', 'In the screen']) {
       await userEvent.tab();
       expect(document.activeElement).toBe(screen.getByRole('link', { name }));
     }

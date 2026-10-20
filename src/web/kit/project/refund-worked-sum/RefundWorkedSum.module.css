@@ -1,7 +1,12 @@
+/* The sum lays out by the width of its own box, so a narrow pane stacks the way a phone does. */
 .root {
+  container-type: inline-size;
+  position: relative;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
   min-width: 0;
+  max-width: 100%;
   margin: 0;
   font-family: var(--font-sans);
   font-size: var(--text-14);
@@ -164,6 +169,7 @@
 }
 
 .frame {
+  position: relative;
   max-width: 100%;
   overflow-x: auto;
   border-radius: var(--radius);
@@ -174,8 +180,13 @@
   outline-offset: 2px;
 }
 
+/*
+ * Seven columns do not squeeze below about 30rem: a narrower pane scrolls the table inside its frame. A wider one
+ * (the 640px of a half-width pane) shows all seven.
+ */
 .table {
   width: 100%;
+  min-width: 30rem;
   border-collapse: collapse;
   font-variant-numeric: tabular-nums lining-nums;
 }
@@ -247,7 +258,7 @@
   white-space: nowrap;
 }
 
-@media (max-width: 40rem) {
+@container (max-width: 40rem) {
   .rung {
     grid-template-columns: 3.4rem minmax(0, 1fr);
     column-gap: var(--space-2);

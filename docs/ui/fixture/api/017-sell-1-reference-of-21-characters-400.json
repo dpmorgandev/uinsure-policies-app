@@ -1,0 +1,96 @@
+{
+ "item": "SELL-1 · reference of 21 characters → 400",
+ "folder": "F1 Sell / rule violations",
+ "rule": "SELL-1",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:45:38Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "438"
+   },
+   "requestBody": {
+    "reference": "F1-MVFJP2ILYLXXXXXXXX",
+    "type": "Household",
+    "startDate": "2026-11-10",
+    "amount": 527.18,
+    "autoRenew": true,
+    "paymentMethod": "DirectDebit",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 400,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:36 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+    "title": "One or more validation errors occurred.",
+    "status": 400,
+    "instance": "/policies",
+    "errors": {
+     "reference": [
+      "The reference must be 3 to 20 characters: letters, digits or hyphens."
+     ]
+    },
+    "traceId": "00-e339b7b8b2fea1227eeb0cf83f7ecd8f-31409bc2cc40314b-00"
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F1-MVFJP2ILYLXXXXXXXX",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 404,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:37 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/get-1",
+    "title": "Policy not found",
+    "status": 404,
+    "detail": "No policy with reference 'F1-MVFJP2ILYLXXXXXXXX'.",
+    "instance": "/policies/F1-MVFJP2ILYLXXXXXXXX",
+    "traceId": "00-8d887480065722c18a1d7c3b80cc7f23-44f0a7a1cc894b50-00",
+    "ruleId": "GET-1",
+    "reference": "F1-MVFJP2ILYLXXXXXXXX"
+   }
+  }
+ ]
+}

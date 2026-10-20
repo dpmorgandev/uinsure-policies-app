@@ -45,6 +45,13 @@ describe('DateInput', () => {
     const input = screen.getByRole('textbox', { name: 'Cancellation date' });
     expect(input.getAttribute('aria-invalid')).toBe('true');
     const id = input.getAttribute('aria-describedby') as string;
-    expect(document.getElementById(id)?.textContent).toBe(text);
+    const message = document.getElementById(id) as HTMLElement;
+    expect(message.textContent).toBe(`Error: ${text}`);
+    expect(message.querySelectorAll('svg')).toHaveLength(1);
+  });
+
+  it('draws no icon of its own when invalid', () => {
+    const { container } = render(<DateInput aria-label="Cancellation date" invalid />);
+    expect(container.querySelector('svg')).toBeNull();
   });
 });

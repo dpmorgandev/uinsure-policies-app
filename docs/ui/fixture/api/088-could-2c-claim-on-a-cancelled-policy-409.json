@@ -1,0 +1,181 @@
+{
+ "item": "COULD-2c · claim on a cancelled policy → 409",
+ "folder": "F3 Cancel / rule violations",
+ "rule": "COULD-2c",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:48:02Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "333"
+   },
+   "requestBody": {
+    "reference": "F3-MVFJS5YBSP",
+    "type": "Household",
+    "startDate": "2026-10-19",
+    "amount": 433.25,
+    "autoRenew": true,
+    "paymentMethod": "DirectDebit",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:48:01 GMT",
+    "server": "Kestrel",
+    "location": "/policies/F3-MVFJS5YBSP",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F3-MVFJS5YBSP",
+    "type": "Household",
+    "status": "Active",
+    "currentTermNumber": 1,
+    "startDate": "2026-10-19",
+    "endDate": "2027-10-18",
+    "amount": 433.25,
+    "hasClaims": false,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-10-19",
+      "endDate": "2027-10-18",
+      "amount": 433.25,
+      "paymentReference": "PAY-171695672c7c462ab114f5cfc2181f26"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-171695672c7c462ab114f5cfc2181f26",
+      "type": "DirectDebit",
+      "amount": 433.25
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  },
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies/F3-MVFJS5YBSP/cancellation",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "33"
+   },
+   "requestBody": {
+    "cancellationDate": "2026-12-17"
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:48:01 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F3-MVFJS5YBSP",
+    "cancellationDate": "2026-12-17",
+    "ruleApplied": "CANCEL-1c",
+    "totalRefund": 362.03,
+    "terms": [
+     {
+      "termNumber": 1,
+      "ruleApplied": "CANCEL-1c",
+      "daysInTerm": 365,
+      "daysUsed": 60,
+      "unusedDays": 305,
+      "refundAmount": 362.03
+     }
+    ],
+    "refunds": [
+     {
+      "reference": "REF-4d9039f0550b4821b56bbc0c3f1f38a4",
+      "type": "DirectDebit",
+      "amount": 362.03,
+      "paymentReference": "PAY-171695672c7c462ab114f5cfc2181f26"
+     }
+    ]
+   }
+  },
+  {
+   "role": "request",
+   "method": "POST",
+   "path": "/policies/F3-MVFJS5YBSP/claims",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "31"
+   },
+   "requestBody": {
+    "claimDate": "2026-10-19"
+   },
+   "status": 409,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:48:01 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/could-2c",
+    "title": "Claim on a cancelled policy",
+    "status": 409,
+    "detail": "The policy was cancelled on 2026-12-17, so a claim cannot be recorded.",
+    "instance": "/policies/F3-MVFJS5YBSP/claims",
+    "traceId": "00-43bc8a7ddb078ba6d5b170676db61646-7659171b28ae9900-00",
+    "ruleId": "COULD-2c",
+    "cancellationDate": "2026-12-17"
+   }
+  }
+ ]
+}

@@ -73,7 +73,7 @@ const DETAIL_ROWS: DetailRow[] = [
 const DETAIL_COLUMNS: DataTableColumn<DetailRow>[] = [
   { id: 'ref', header: 'Ref', cell: (row) => row.ref, rowHeader: true },
   { id: 'gate', header: 'Gate', cell: (row) => row.gate, mono: true },
-  { id: 'detail', header: 'Detail', cell: (row) => row.detail },
+  { id: 'detail', header: 'Detail', cell: (row) => row.detail, wrap: 'anywhere' },
 ];
 
 export const examples: { state: string; element: JSX.Element }[] = [
@@ -124,7 +124,7 @@ export const examples: { state: string; element: JSX.Element }[] = [
   {
     state: 'long rows',
     element: (
-      <div style={{ maxWidth: '22rem' }}>
+      <div style={{ maxWidth: 'min(22rem, 100%)' }}>
         <DataTable
           caption="Gate detail for GET-1. Long names wrap inside their column; the table scrolls inside its own frame."
           columns={DETAIL_COLUMNS}

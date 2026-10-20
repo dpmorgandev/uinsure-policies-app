@@ -162,6 +162,14 @@ describe('MarkdownText: the markdown it understands', () => {
     expect(root.querySelector('b')).toBeNull();
   });
 
+  it('puts fenced code in its own keyboard-reachable scroll region, so a long line never widens the page', () => {
+    const fence = '`'.repeat(3);
+    render(<MarkdownText source={`${fence}\n${'x'.repeat(300)}\n${fence}`} />);
+    const region = screen.getByRole('region', { name: 'Code, scrolls sideways' });
+    expect(region.getAttribute('tabindex')).toBe('0');
+    expect(region.querySelector('pre code')?.textContent).toBe('x'.repeat(300));
+  });
+
   it('makes block quotes and rules', () => {
     const root = html('> quoted **text**\n\n---\n\nafter');
     expect(root.querySelector('blockquote strong')?.textContent).toBe('text');

@@ -1,0 +1,229 @@
+{
+ "item": "SELL-1 · duplicate reference → 409",
+ "folder": "F1 Sell / rule violations",
+ "rule": "SELL-1",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:45:31Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "394"
+   },
+   "requestBody": {
+    "reference": "F1-MVFJOXHYS1",
+    "type": "BuyToLet",
+    "startDate": "2026-11-18",
+    "amount": 412.34,
+    "autoRenew": false,
+    "paymentMethod": "Card",
+    "policyholders": [
+     {
+      "firstName": "Grace",
+      "lastName": "Hopper",
+      "dateOfBirth": "1990-04-12"
+     },
+     {
+      "firstName": "Alan",
+      "lastName": "Turing",
+      "dateOfBirth": "1992-06-23"
+     }
+    ],
+    "property": {
+     "addressLine1": "7 Canal St",
+     "addressLine2": "Flat 3",
+     "addressLine3": "Ancoats",
+     "postcode": "M4 6BX"
+    }
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:30 GMT",
+    "server": "Kestrel",
+    "location": "/policies/F1-MVFJOXHYS1",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F1-MVFJOXHYS1",
+    "type": "BuyToLet",
+    "status": "Pending",
+    "currentTermNumber": 1,
+    "startDate": "2026-11-18",
+    "endDate": "2027-11-17",
+    "amount": 412.34,
+    "hasClaims": false,
+    "autoRenew": false,
+    "policyholders": [
+     {
+      "firstName": "Grace",
+      "lastName": "Hopper",
+      "dateOfBirth": "1990-04-12"
+     },
+     {
+      "firstName": "Alan",
+      "lastName": "Turing",
+      "dateOfBirth": "1992-06-23"
+     }
+    ],
+    "property": {
+     "addressLine1": "7 Canal St",
+     "addressLine2": "Flat 3",
+     "addressLine3": "Ancoats",
+     "postcode": "M4 6BX"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-11-18",
+      "endDate": "2027-11-17",
+      "amount": 412.34,
+      "paymentReference": "PAY-9b37c7dabb8c4cecbb80f7058c8f178b"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-9b37c7dabb8c4cecbb80f7058c8f178b",
+      "type": "Card",
+      "amount": 412.34
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  },
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "427"
+   },
+   "requestBody": {
+    "reference": "F1-MVFJOXHYS1",
+    "type": "Household",
+    "startDate": "2026-11-10",
+    "amount": 500,
+    "autoRenew": true,
+    "paymentMethod": "DirectDebit",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 409,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:30 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/sell-1",
+    "title": "Policy reference already exists",
+    "status": 409,
+    "detail": "A policy with reference 'F1-MVFJOXHYS1' already exists.",
+    "instance": "/policies",
+    "traceId": "00-a0c24f1681f6296b1a0c88cbde0889a5-1761830db4cef41b-00",
+    "ruleId": "SELL-1",
+    "reference": "F1-MVFJOXHYS1"
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F1-MVFJOXHYS1",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 200,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:30 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F1-MVFJOXHYS1",
+    "type": "BuyToLet",
+    "status": "Pending",
+    "currentTermNumber": 1,
+    "startDate": "2026-11-18",
+    "endDate": "2027-11-17",
+    "amount": 412.34,
+    "hasClaims": false,
+    "autoRenew": false,
+    "policyholders": [
+     {
+      "firstName": "Grace",
+      "lastName": "Hopper",
+      "dateOfBirth": "1990-04-12"
+     },
+     {
+      "firstName": "Alan",
+      "lastName": "Turing",
+      "dateOfBirth": "1992-06-23"
+     }
+    ],
+    "property": {
+     "addressLine1": "7 Canal St",
+     "addressLine2": "Flat 3",
+     "addressLine3": "Ancoats",
+     "postcode": "M4 6BX"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-11-18",
+      "endDate": "2027-11-17",
+      "amount": 412.34,
+      "paymentReference": "PAY-9b37c7dabb8c4cecbb80f7058c8f178b"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-9b37c7dabb8c4cecbb80f7058c8f178b",
+      "type": "Card",
+      "amount": 412.34
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  }
+ ]
+}

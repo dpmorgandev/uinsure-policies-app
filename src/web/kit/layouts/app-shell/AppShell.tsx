@@ -10,8 +10,8 @@ import styles from './AppShell.module.css';
 
 export interface AppShellProps {
   topBar: TopBarProps;
-  /** The `key` of the section being shown, and the links if the default five are not wanted. */
-  nav: { current: string; items?: NavItem[] };
+  /** The `key` of the section being shown, and the links the screen offers. The shell holds no routes of its own. */
+  nav: { current: string; items: readonly NavItem[] };
   footer: FooterProps;
   /** Words on the skip link, the first stop for the keyboard. */
   skipLabel?: string;

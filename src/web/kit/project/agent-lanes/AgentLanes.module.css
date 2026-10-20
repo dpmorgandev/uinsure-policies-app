@@ -1,4 +1,13 @@
+/*
+ * The root is a positioned size container. Positioned, so that an absolutely placed word for a screen reader (the TDD
+ * step in each tick) is held inside the frame it is in and cannot widen the page when the lanes scroll. A size
+ * container, so the lanes lay out by the width of their own box, not the window's.
+ */
 .root {
+  container-type: inline-size;
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
   font-family: var(--font-sans);
   font-size: var(--text-14);
   color: var(--color-text-primary);
@@ -18,9 +27,19 @@
   border-radius: var(--radius);
 }
 
+/*
+ * Wide content scrolls inside this frame and never widens the page. The two edge shadows show that there is more to
+ * scroll to: they appear only on a side that has content past it.
+ */
 .scroll {
+  position: relative;
   max-width: 100%;
   overflow-x: auto;
+  background:
+    linear-gradient(to right, var(--color-background) 30%, transparent) left center / 2rem 100% no-repeat local,
+    linear-gradient(to left, var(--color-background) 30%, transparent) right center / 2rem 100% no-repeat local,
+    linear-gradient(to right, var(--color-border), transparent) left center / 0.75rem 100% no-repeat scroll,
+    linear-gradient(to left, var(--color-border), transparent) right center / 0.75rem 100% no-repeat scroll;
 }
 
 .scroll:focus-visible {
@@ -28,10 +47,16 @@
   outline-offset: 2px;
 }
 
+/*
+ * One lane is a name over a row of ticks. Every lane shares the same columns, so a tick in one lane sits above or below
+ * the tick of the same rung in another. The columns are narrow enough for the 17 rungs of the recorded node to fit a
+ * 640px frame without scrolling. A frame with more rungs than fit scrolls sideways instead.
+ */
 .lanes {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
-  min-width: calc(var(--cols) * 3.5rem + 9rem);
+  min-width: calc(var(--cols) * 2.25rem);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -39,8 +64,7 @@
 
 .lane {
   display: grid;
-  grid-template-columns: 9rem minmax(0, 1fr);
-  align-items: center;
+  grid-template-columns: minmax(0, 1fr);
   background: var(--color-surface);
   border: 1.5px solid var(--color-border);
   border-radius: var(--radius);
@@ -50,17 +74,18 @@
   position: sticky;
   left: 0;
   z-index: 1;
-  align-self: stretch;
   display: flex;
   align-items: center;
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-surface);
-  border-right: 1.5px solid var(--color-border);
+  align-self: start;
+  justify-self: start;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding: var(--space-2) var(--space-3) 0;
 }
 
 .ticks {
   display: grid;
-  grid-template-columns: repeat(var(--cols), minmax(3.5rem, 1fr));
+  grid-template-columns: repeat(var(--cols), minmax(2.25rem, 1fr));
   align-items: center;
   margin: 0;
   padding: var(--space-2) 0;
@@ -70,13 +95,16 @@
 
 .tick {
   --c: var(--color-text-secondary);
+  grid-column: var(--col);
+  grid-row: 1;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
   gap: 0;
   justify-self: center;
-  min-width: 3rem;
-  padding: var(--space-1);
+  box-sizing: border-box;
+  min-width: 2rem;
+  padding: var(--space-1) 2px;
   font-family: var(--font-mono);
   font-size: var(--text-12);
   font-weight: 700;
@@ -120,10 +148,16 @@
   margin-top: var(--space-3);
 }
 
+/*
+ * The table sits in a disclosure panel that breaks long words anywhere. Here a word is whole ("refactor" is never
+ * "refact" over "or"), and a table too wide for the page scrolls in its frame instead of squeezing its columns.
+ */
 .table {
   width: 100%;
   border-collapse: collapse;
   font-size: var(--text-14);
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .table caption {
@@ -159,9 +193,46 @@
   font-weight: 700;
 }
 
+.cellTdd {
+  white-space: nowrap;
+}
+
+.cellWhat {
+  min-width: 12rem;
+  overflow-wrap: break-word;
+}
+
 .absent {
   color: var(--color-text-secondary);
   font-style: italic;
+}
+
+/*
+ * A frame narrower than the shared columns need (about 40rem for the recorded node): the lanes stop sharing columns.
+ * Each lane wraps its ticks onto more lines, still left to right and top to bottom in rung order, so nothing scrolls.
+ */
+@container (max-width: 40rem) {
+  .lanes {
+    min-width: 0;
+  }
+
+  .ticks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3) var(--space-3);
+    background: none;
+  }
+
+  .tick {
+    flex: none;
+    grid-column: auto;
+  }
+
+  .table th,
+  .table td {
+    padding: var(--space-2);
+  }
 }
 
 .srOnly {

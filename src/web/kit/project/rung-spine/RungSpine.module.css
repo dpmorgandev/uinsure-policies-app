@@ -1,4 +1,9 @@
+/* The spine lays out by the width of its own box: a narrow pane moves the rail to the left edge as a phone does. */
 .root {
+  container-type: inline-size;
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
   font-family: var(--font-sans);
   font-size: var(--text-16);
   line-height: 1.5;
@@ -450,7 +455,7 @@
 }
 
 /* 390 wide: the rail moves to the left edge and the receipt stacks under its label */
-@media (max-width: 40rem) {
+@container (max-width: 40rem) {
   .item {
     grid-template-columns: 3.4rem minmax(0, 1fr);
     column-gap: var(--space-2);
