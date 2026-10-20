@@ -34,7 +34,11 @@ shell derives each one from the route, never from the page.
   walkthrough #13 of 77, activity 8 of 80 lines, stats loses F7; about 2 rows at 390). Numeric headers
   carry a literal `class="undefined"`.
 - **Dark mode contrast**: the current nav item, primary buttons, Search and the theme toggle read as
-  disabled.
+  disabled. *Measured in U0a and kept (David, 2026-10-20): text on the `#6fc3d6` fill 8.40:1, the fill on
+  the page 8.40:1, the current nav item 14.29:1 with its bar. Not a defect; the build keeps the tokens.*
+
+*U0a fixed every other item in this section (`fix(kit)` on `feature/ui/U0a`), measured before and after
+on the built kitchen sink.*
 - **refund-worked-sum**: `td { text-align: left }` beats `.num { text-align: right }`, so figures sit
   under the wrong headers.
 - **request-log** clips its last column at 390; the top-bar search placeholder is cut ("Rule ID, node, S").
