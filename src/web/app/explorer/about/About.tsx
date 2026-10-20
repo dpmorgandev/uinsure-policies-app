@@ -1,6 +1,9 @@
 import { MarkdownText, StatusTag } from '../../../kit';
 import type { Status } from '../../../kit';
+import type { Snapshot, Trace } from '../../data/trace';
+import { DataNotice } from '../../shell/DataNotice';
 import { NotBuiltRegion, Rung } from '../../shell/Rung';
+import { useShell } from '../../shell/ShellContext';
 import './about.css';
 
 const LEGEND: { status: Status; label: string; meaning: string }[] = [
@@ -30,31 +33,66 @@ const GLOSSARY = [
   '- **Snapshot.** The commit this site was compiled from, stamped in step 5.',
 ].join('\n');
 
-// Canned for the stub: the loader replaces the snapshot and its plans with trace.json's.
-const STAMP = [
-  '**Snapshot compiled from origin/main b394466.**',
-  '',
-  '- Commit: `b394466f9e89d823fbe13a904ab45296d782b033` on `origin/main`',
-  '- Time: `2026-10-19T17:45:08Z`, shown as 2026-10-19 17:45:08 UTC',
-  '- The ui plan is read from `origin/ui` at `64e52cf3e4ac4ad4efdd9fead4befe0b71118b8d`',
-  '',
-  '**What the snapshot holds.** 5 plans, counted from plans in trace.json:',
-  '',
-  '- `build`, the API build plan: approved, by David Morgan on 2026-10-17, 10 nodes.',
-  '- `inv-001`, F2 attempt-3 escalation: parent build/F2, created 2026-10-18. No status recorded.',
-  '- `inv-002`, F5 what-if still precedes the prod approval: parent build/F5, created 2026-10-19. No status recorded.',
-  '- `inv-003`, F6 docs state claims the repo does not prove: parent build/F6, created 2026-10-19. No status recorded.',
-  '- `ui`: design stage, no DAG yet. No title recorded.',
-].join('\n');
+const SNAPSHOT_LEAD = '**The snapshot.** Where this site was compiled from:';
+const PLANS_LEAD = '**What the snapshot holds.** Counted from `plans` in trace.json:';
+const NO_HARNESS = 'docs/trace/harness.json: not found at this ref, so the trace holds no harness index.';
 
-const GAPS = [
-  '- `docs/trace/ui/`: the ui plan is read from origin/ui (64e52cf); it is not on origin/main yet.',
-  '- `docs/trace/harness.json`: not at origin/main; the harness index was generated from .claude/ instead (DATA-7).',
-].join('\n');
+/** What the compiler reported or did not find, one line each. Nothing is added that the trace does not hold. */
+function gapsOf(trace: Trace): string[] {
+  const reported = trace.problems.map((p) => {
+    const where = p.file === null ? 'trace.json' : p.line === null ? p.file : `${p.file}:${p.line}`;
+    return `${where}: ${p.reason}`;
+  });
+  return trace.harness === null ? [...reported, NO_HARNESS] : reported;
+}
 
-export function About() {
+function Stamp({ trace, snapshot }: { trace: Trace; snapshot: Snapshot }) {
+  const gaps = gapsOf(trace);
+  const gapWord = gaps.length === 1 ? 'gap' : 'gaps';
   return (
     <>
+      <p className="s-text">Everything on this site was compiled once, from one commit. Nothing here is newer than the stamp.</p>
+      <MarkdownText source={SNAPSHOT_LEAD} />
+      <ul className="s-lines">
+        <li>
+          Ref: <code>{snapshot.ref}</code>
+        </li>
+        <li>
+          Commit: <code>{snapshot.sha}</code>
+        </li>
+        <li>
+          Time: <code>{snapshot.utc}</code>
+        </li>
+      </ul>
+      <MarkdownText source={PLANS_LEAD} />
+      <ul className="s-lines">
+        {trace.plans.map((plan) => (
+          <li key={plan.id}>
+            <code>{plan.id}</code>, {plan.title ?? 'no title recorded'}: {plan.nodes.length} {plan.nodes.length === 1 ? 'node' : 'nodes'}.
+          </li>
+        ))}
+      </ul>
+      <div className="s-gaps">
+        <p className="s-stop">
+          <StatusTag status={gaps.length === 0 ? 'pass' : 'warn'}>
+            {gaps.length === 0 ? 'No gaps in the trail' : `Warn ${gaps.length} ${gapWord} in the trail`}
+          </StatusTag>
+        </p>
+        <ul className="s-lines">
+          {gaps.map((gap) => (
+            <li key={gap}>{gap}</li>
+          ))}
+        </ul>
+      </div>
+    </>
+  );
+}
+
+export function About() {
+  const { trace } = useShell();
+  return (
+    <>
+      {trace.state === 'ready' ? null : <DataNotice trace={trace} />}
       <NotBuiltRegion region="provenance-labels" name="provenance labels" />
       <Rung region="glossary-and-status-legend" req="A11Y-1" ordinal="Step 2" heading="Look up the terms">
         <p className="s-text">A status is always a word, a glyph and a colour. Colour is never the only signal.</p>
@@ -73,23 +111,16 @@ export function About() {
         region="guided-tour-entry-one-rule-end-to-end-could"
         name="guided tour entry: one rule end to end (COULD)"
       />
-      <Rung
-        region="compiled-at-stamp-the-commit-sha-and-utc-time-trace-json-was-compiled-from"
-        req="DATA-3"
-        ordinal="Step 5"
-        heading="Check the stamp"
-      >
-        <p className="s-text">
-          Everything on this site was compiled once, from one commit. Nothing here is newer than the stamp.
-        </p>
-        <MarkdownText source={STAMP} />
-        <div className="s-gaps">
-          <p className="s-stop">
-            <StatusTag status="warn">Warn 2 gaps in the trail</StatusTag>
-          </p>
-          <MarkdownText source={GAPS} />
-        </div>
-      </Rung>
+      {trace.state === 'ready' ? (
+        <Rung
+          region="compiled-at-stamp-the-commit-sha-and-utc-time-trace-json-was-compiled-from"
+          req="DATA-3"
+          ordinal="Step 5"
+          heading="Check the stamp"
+        >
+          <Stamp trace={trace.trace} snapshot={trace.snapshot} />
+        </Rung>
+      ) : null}
     </>
   );
 }

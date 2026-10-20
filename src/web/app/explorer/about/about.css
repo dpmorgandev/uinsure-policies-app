@@ -23,6 +23,13 @@
   min-width: 0;
 }
 
+.s-lines {
+  margin: 0;
+  padding: 0 0 0 var(--space-6);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .s-stop {
   margin: 0;
   min-width: 0;

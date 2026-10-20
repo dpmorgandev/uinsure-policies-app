@@ -1,35 +1,50 @@
-import { Breadcrumbs, CompletenessBanner, PageHeader, Tabs } from '../../kit';
+import { Breadcrumbs, CompletenessBanner, NotBuiltYet, PageHeader, Tabs } from '../../kit';
+import type { Status } from '../../kit';
+import type { TraceNode } from '../data/trace';
 
-/** Canned for the stub: the loader replaces these values with the node's own. */
-export function NodeHeader({ planId, nodeId }: { planId: string; nodeId: string }) {
-  const node = `#/plans/${planId}/${nodeId}`;
+const STATUS: Record<string, { value: Status; label: string }> = {
+  done: { value: 'pass', label: 'Done' },
+  in_progress: { value: 'pending', label: 'In progress' },
+  pending: { value: 'pending', label: 'Pending' },
+};
+
+/** A status the table does not know is shown as the trail wrote it, as a warning, never mapped to a friendlier one. */
+function statusOf(status: string | null): { value: Status; label: string } | null {
+  if (status === null) return null;
+  return STATUS[status] ?? { value: 'warn', label: status };
+}
+
+/** The node's header and tabs, from the node's own entry in trace.json. */
+export function NodeHeader({ node, compiledAt }: { node: TraceNode; compiledAt: string }) {
+  const base = `#/plans/${node.plan}/${node.id}`;
   return (
     <>
       <Breadcrumbs
         items={[
-          { label: 'Plans', href: `#/plans/${planId}` },
-          { label: planId, href: `#/plans/${planId}` },
-          { label: nodeId, href: node, mono: true },
+          { label: 'Plans', href: `#/plans/${node.plan}` },
+          { label: node.plan, href: `#/plans/${node.plan}` },
+          { label: node.id, href: base, mono: true },
         ]}
       />
       <PageHeader
-        eyebrow={`Node · ${planId}/${nodeId}`}
-        title="F3 Cancel (+ quote, + claims)"
-        status={{ value: 'pass', label: 'Done' }}
-        ids={[
-          { label: 'Attempt', value: '2' },
-          { label: 'PR', value: '#20', href: 'https://github.com/dpmorgandev/uinsure-policies-api/pull/20' },
-          { label: 'Depends on', value: 'F2' },
-        ]}
+        eyebrow={`Node · ${node.plan}/${node.id}`}
+        title={node.title === null ? node.id : `${node.id} ${node.title}`}
+        status={statusOf(node.status)}
+        ids={[{ label: 'Attempt', value: node.attempt === null ? null : String(node.attempt) }]}
+        compiledAt={compiledAt}
       />
-      <CompletenessBanner value="OK" />
+      {node.completeness === null ? (
+        <NotBuiltYet kind="region" name="trail completeness" />
+      ) : (
+        <CompletenessBanner value={node.completeness} />
+      )}
       <Tabs
         current="activity"
         items={[
-          { key: 'node', label: 'Node', href: node },
-          { key: 'walkthrough', label: 'Walkthrough', href: `${node}/commits` },
-          { key: 'loop', label: 'Loop', href: `${node}/loop` },
-          { key: 'activity', label: 'Activity', href: `${node}/activity` },
+          { key: 'node', label: 'Node', href: base },
+          { key: 'walkthrough', label: 'Walkthrough', href: `${base}/commits` },
+          { key: 'loop', label: 'Loop', href: `${base}/loop` },
+          { key: 'activity', label: 'Activity', href: `${base}/activity` },
         ]}
       />
     </>

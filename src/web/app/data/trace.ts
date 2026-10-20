@@ -62,6 +62,7 @@ export interface Trace {
 
 export interface ActivityRecord {
   line: number;
+  attempt?: number | null;
   ts?: string | null;
   agent?: string | null;
   tool?: string | null;

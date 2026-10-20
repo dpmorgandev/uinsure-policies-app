@@ -30,7 +30,8 @@ export default defineConfig({
   resolve: { alias },
   preview: { proxy },
   server: { proxy, fs: { allow: [resolve(import.meta.dirname, '../..')] } },
-  build: { rollupOptions: {
+  // THEME-1: the tokens ship as written (#ffffff, not #fff), so a token read back in the browser is the token's own value.
+  build: { cssMinify: false, rollupOptions: {
       input: {
         index: resolve(import.meta.dirname, 'index.html'),
         'kitchen-sink': resolve(import.meta.dirname, 'kitchen-sink.html'),

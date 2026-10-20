@@ -1,0 +1,33 @@
+/* The frame shown while trace.json is unread: the kit's footer always states a snapshot, so this one has none. */
+.s-bare {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 100%;
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-16);
+  line-height: 1.5;
+}
+
+.s-bare-main {
+  flex: 1 1 auto;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 74rem;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5);
+}
+
+.s-bare-main:focus {
+  outline: none;
+}
+
+.s-notice {
+  margin: 0 0 var(--space-6);
+  overflow-wrap: anywhere;
+}
