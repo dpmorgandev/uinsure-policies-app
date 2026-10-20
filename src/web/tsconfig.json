@@ -18,10 +18,12 @@
       "vite/client"
     ],
     "paths": {
-      "*": [
-        "./node_modules/@types/*",
-        "./node_modules/*"
-      ]
+      "@axe-core/playwright": ["./node_modules/@axe-core/playwright"],
+      "@playwright/test": ["./node_modules/@playwright/test"],
+      "@testing-library/*": ["./node_modules/@testing-library/*"],
+      "react": ["./node_modules/@types/react"],
+      "react/*": ["./node_modules/@types/react/*"],
+      "vitest": ["./node_modules/vitest"]
     }
   },
   "include": [
