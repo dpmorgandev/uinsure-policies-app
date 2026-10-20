@@ -86,6 +86,17 @@ test.describe('the keyboard', () => {
     await expect(page.getByRole('main')).toBeFocused();
   });
 
+  test("A11Y-1 · on the page shown when trace.json can't be read, the keyboard reaches the skip link first, it takes focus to the content, and the page keeps its footer landmark", async ({ page }) => {
+    await serveTrace(page, null);
+    await page.goto(route.overview);
+    await expect(page.getByRole('main').locator('[data-status="fail"]').first(), 'the read-failure notice is shown').toBeVisible();
+    await page.keyboard.press('Tab');
+    await expect(page.locator(':focus'), 'the first Tab lands on the skip link').toHaveText('Skip to the content');
+    await page.keyboard.press('Enter');
+    await expect(page.getByRole('main')).toBeFocused();
+    await expect(page.getByRole('contentinfo'), 'the page has one footer landmark').toHaveCount(1);
+  });
+
   test('A11Y-1 · every stop on the keyboard path shows a visible focus indicator', async ({ page }) => {
     const snap = snapshotOf(fixture.compiled);
     await serveTrace(page, fixture.compiled.publicDir);
