@@ -26,6 +26,15 @@
   border-left: 2px solid var(--color-border);
 }
 
+/* A not-built entry holds the place of a link: same row height, the dashed "not built yet" pattern, no hover. */
+.unbuilt {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
+  padding: 0 var(--space-1);
+  border-bottom: 4px solid transparent;
+}
+
 /* The current link is told by weight and a thick rule under it, not by colour alone. */
 .link {
   display: inline-flex;

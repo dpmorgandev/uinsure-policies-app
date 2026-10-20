@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { PrimaryNav } from '../../../src/web/kit/layouts/primary-nav/PrimaryNav';
-import { catalogNav, examples } from '../../../src/web/kit/layouts/primary-nav/primary-nav.examples';
+import { catalogNav, examples, partlyBuiltNav } from '../../../src/web/kit/layouts/primary-nav/primary-nav.examples';
 
 afterEach(cleanup);
 
@@ -36,13 +36,20 @@ describe('primary-nav examples', () => {
   it('shows one bar per item, each with a different single item current', () => {
     render(examples[0]!.element);
     const bars = screen.getAllByRole('navigation');
-    expect(bars).toHaveLength(6);
-    const currents = bars.map((bar) => {
+    expect(bars).toHaveLength(7);
+    const currents = bars.slice(0, 6).map((bar) => {
       const marked = within(bar).getAllByRole('link').filter((a) => a.getAttribute('aria-current') === 'page');
       expect(marked).toHaveLength(1);
       return marked[0]!.textContent;
     });
     expect(currents).toEqual(LABELS);
+  });
+
+  it('ends with a bar whose unbuilt entries say so and are not links', () => {
+    render(examples[0]!.element);
+    const bar = screen.getByRole('navigation', { name: 'Primary, some entries not built yet' });
+    expect(within(bar).getAllByRole('link').map((a) => a.textContent)).toEqual(['Overview', 'How to read this']);
+    expect(within(bar).getAllByText('not built yet')).toHaveLength(4);
   });
 });
 
@@ -110,6 +117,57 @@ describe('PrimaryNav', () => {
       />,
     );
     expect(document.querySelector('[data-scope-start]')).toBeNull();
+  });
+
+  describe('an entry that is not built', () => {
+    const NOT_BUILT = ['Requirements matrix', 'Plan', 'Human decisions', 'Workbench'];
+
+    it('says "not built yet" for each unbuilt entry and draws it as no link', () => {
+      render(<PrimaryNav current="overview" items={partlyBuiltNav} />);
+      const nav = screen.getByRole('navigation', { name: 'Primary' });
+      expect(within(nav).getAllByRole('link').map((a) => a.textContent)).toEqual(['Overview', 'How to read this']);
+      expect(within(nav).getAllByText('not built yet')).toHaveLength(NOT_BUILT.length);
+      const items = within(nav).getAllByRole('listitem');
+      expect(items).toHaveLength(LABELS.length);
+      for (const name of NOT_BUILT) {
+        const item = items.find((li) => li.textContent?.includes(name))!;
+        expect(item.textContent).toContain('not built yet');
+        expect(within(item).queryByRole('link')).toBeNull();
+        expect(item.querySelector('a')).toBeNull();
+        expect(item.getAttribute('data-built')).toBe('false');
+      }
+    });
+
+    it('keeps the order and the scope divider of the entries it is given', () => {
+      render(<PrimaryNav current="overview" items={partlyBuiltNav} />);
+      const items = screen.getAllByRole('listitem');
+      expect(items.map((li) => li.getAttribute('data-scope'))).toEqual([
+        'explorer',
+        'explorer',
+        'explorer',
+        'explorer',
+        'explorer',
+        'workbench',
+      ]);
+      expect(items.map((li) => li.getAttribute('data-scope-start'))).toEqual([null, null, null, null, null, 'true']);
+      expect(items[5]!.textContent).toContain('Workbench');
+    });
+
+    it('is never the current page, even when its key is current', () => {
+      render(<PrimaryNav current="matrix" items={partlyBuiltNav} />);
+      expect(document.querySelector('[aria-current]')).toBeNull();
+      expect(document.querySelector('[data-active]')).toBeNull();
+    });
+
+    it('is skipped by the keyboard: Tab visits only the built links', async () => {
+      render(<PrimaryNav current="overview" items={partlyBuiltNav} />);
+      await userEvent.tab();
+      expect(document.activeElement).toBe(screen.getByRole('link', { name: 'Overview' }));
+      await userEvent.tab();
+      expect(document.activeElement).toBe(screen.getByRole('link', { name: 'How to read this' }));
+      await userEvent.tab();
+      expect(document.activeElement).toBe(document.body);
+    });
   });
 
   it('takes its own landmark name', () => {
