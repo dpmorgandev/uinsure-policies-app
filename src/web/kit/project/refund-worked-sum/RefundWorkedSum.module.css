@@ -227,8 +227,9 @@
   border-top: 2px solid var(--color-text-secondary);
 }
 
-.table thead th.num,
-.num {
+/* As specific as `.table td` above, so a figure sits right under its right-aligned header. */
+.table th.num,
+.table td.num {
   text-align: right;
   white-space: nowrap;
 }

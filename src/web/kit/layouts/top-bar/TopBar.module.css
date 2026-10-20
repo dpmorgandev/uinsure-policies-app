@@ -102,4 +102,13 @@
   .theme {
     justify-self: start;
   }
+
+  /* The field takes the whole row, so its placeholder ("Rule ID, node, SHA or path") is read whole. */
+  .search {
+    flex-wrap: wrap;
+  }
+
+  .field {
+    flex-basis: 100%;
+  }
 }

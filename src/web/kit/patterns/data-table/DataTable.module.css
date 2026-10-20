@@ -5,7 +5,7 @@
   box-sizing: border-box;
   min-width: 0;
   max-width: 100%;
-  max-height: var(--data-table-max-height, 36rem);
+  max-height: var(--data-table-max-height, none);
   overflow: auto;
   font-family: var(--font-sans);
   font-size: var(--text-14);

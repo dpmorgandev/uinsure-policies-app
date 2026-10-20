@@ -77,7 +77,7 @@ export function FindingCard({
             <span>Testable</span>
           </span>
         ) : (
-          <span className={`${styles.testable} ${styles.untestable}`}>
+          <span className={styles.testable}>
             <FlaskConicalOff className={styles.icon} aria-hidden="true" focusable="false" />
             <span>Untestable</span>
           </span>

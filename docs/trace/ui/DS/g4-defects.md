@@ -9,6 +9,11 @@ where they are wrong.
 A screen pastes its family frame unchanged, so these came out the same on every page. The build's app
 shell derives each one from the route, never from the page.
 
+*Found again at David's U0a re-sign (2026-10-20). The screens stay frozen; `derive-screens.mjs` now sets the
+current nav item and tab, the title and the one in-flow drawer from each screen in every derived
+reference (web-testing.spec C7), and each item here and in section 3 is an acceptance line on the node
+that builds it (`ui.dag.yaml`).*
+
 - **Current nav item.** The explorer frame marks Requirements matrix current on all 13 explorer screens;
   the workbench frame marks Workbench (wb-home) on all 7. Mark the screen's own section; mark nothing on
   not-found. The workbench needs a way to show which form is open.
@@ -34,7 +39,11 @@ shell derives each one from the route, never from the page.
   walkthrough #13 of 77, activity 8 of 80 lines, stats loses F7; about 2 rows at 390). Numeric headers
   carry a literal `class="undefined"`.
 - **Dark mode contrast**: the current nav item, primary buttons, Search and the theme toggle read as
-  disabled.
+  disabled. *Measured in U0a and kept (David, 2026-10-20): text on the `#6fc3d6` fill 8.40:1, the fill on
+  the page 8.40:1, the current nav item 14.29:1 with its bar. Not a defect; the build keeps the tokens.*
+
+*U0a fixed every other item in this section (`fix(kit)` on `feature/ui/U0a`), measured before and after
+on the built kitchen sink.*
 - **refund-worked-sum**: `td { text-align: left }` beats `.num { text-align: right }`, so figures sit
   under the wrong headers.
 - **request-log** clips its last column at 390; the top-bar search placeholder is cut ("Rule ID, node, S").
