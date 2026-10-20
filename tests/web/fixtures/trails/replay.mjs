@@ -6,7 +6,7 @@
 //
 //   import { replay } from './replay.mjs';  const { root, shas } = replay('<fixture dir>', '<empty dir>');
 import { execFileSync } from 'node:child_process';
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 
 const files = (dir) => readdirSync(dir).flatMap((n) => (statSync(join(dir, n)).isDirectory() ? files(join(dir, n)) : [join(dir, n)]));
@@ -18,8 +18,13 @@ const fill = (text, shas) => text.replace(/\{\{(c\d+)(?::(\d+))?\}\}/g, (m, id, 
 function place(from, root, rel, shas) {
   const to = join(root, rel.replace(/\.fixture$/, ''));
   mkdirSync(dirname(to), { recursive: true });
-  writeFileSync(to, fill(readFileSync(from, 'utf8'), shas));
+  // LF always: a Windows checkout gives the fixture CRLF, and the trail it stands for is LF.
+  writeFileSync(to, fill(readFileSync(from, 'utf8').replace(/\r\n/g, '\n'), shas));
 }
+
+const placeAll = (dir, root, shas) => {
+  for (const f of files(dir)) place(f, root, relative(dir, f).replace(/\\/g, '/'), shas);
+};
 
 export function replay(fixture, root, { trail = true } = {}) {
   const spec = JSON.parse(readFileSync(join(fixture, 'commits.json'), 'utf8'));
@@ -29,7 +34,7 @@ export function replay(fixture, root, { trail = true } = {}) {
   git('config', 'user.email', 'fixture@example.com');
   git('config', 'user.name', 'Fixture');
   git('config', 'core.autocrlf', 'false');
-  cpSync(join(fixture, 'base'), root, { recursive: true });
+  placeAll(join(fixture, 'base'), root, {});
   git('add', '-A');
   git('commit', '-q', '-m', 'base');
   git('update-ref', 'refs/remotes/origin/main', 'HEAD');
@@ -42,8 +47,6 @@ export function replay(fixture, root, { trail = true } = {}) {
     git('commit', '-q', '--allow-empty', '-m', c.subject, '-m', trailers);
     shas[c.id] = git('rev-parse', 'HEAD');
   }
-  if (trail && existsSync(join(fixture, 'trail'))) {
-    for (const f of files(join(fixture, 'trail'))) place(f, root, relative(join(fixture, 'trail'), f).replace(/\\/g, '/'), shas);
-  }
+  if (trail && existsSync(join(fixture, 'trail'))) placeAll(join(fixture, 'trail'), root, shas);
   return { root, shas };
 }
