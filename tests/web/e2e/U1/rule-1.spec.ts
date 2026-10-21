@@ -154,6 +154,17 @@ test.describe('on a trail with a merge, a sign-off SHA and a parameterised title
     await expect(link).toHaveCount(1);
     await expect(link).toHaveAttribute('href', commitHref(REPO, c4));
   });
+
+  test("RULE-1 · NAV-1's tests list its loop title once, marked parameterised, with no raw interpolation", async ({ page }) => {
+    await openRule(page, two, 'NAV-1');
+    const tests = region(page, TESTS);
+    await expect(tests).toContainText('the overview opens on the question, before any other region');
+    const loop = tests.locator('li').filter({ hasText: /receipt figure/ });
+    await expect(loop, 'the loop title is one entry').toHaveCount(1);
+    await expect(loop).toContainText(/parameteri[sz]ed/i);
+    await expect(loop).toContainText(/reads .+ from the fixture/);
+    await expect(tests).not.toContainText('${');
+  });
 });
 
 test.describe('reachable', () => {

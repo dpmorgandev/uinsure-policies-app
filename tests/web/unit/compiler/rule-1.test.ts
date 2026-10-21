@@ -129,6 +129,7 @@ describe('its tests, by name', () => {
 // and a backtick title that interpolates nothing.
 describe('both plans: the sign-off and merge, and a parameterised title', () => {
   const F1_LOOP = 'docs/trace/build/F1/loop.jsonl';
+  const NAV_SPEC = 'tests/web/e2e/U1/nav-1.spec.ts';
   let two: Trail;
   let t: Run;
   beforeAll(() => {
@@ -151,5 +152,31 @@ describe('both plans: the sign-off and merge, and a parameterised title', () => 
   test("RULE-1 · a merged(<sha>) event is a merge decision carrying its SHA: build/F1's PR #10 merged at c5, loop.jsonl line 5", () => {
     expect(t.error, thrown(t)).toBeUndefined();
     expect(decisions('merge')).toEqual([['merge', shaOf(two, 'c5'), F1_LOOP, 5]]);
+  });
+
+  test('RULE-1 · a template-literal title that interpolates is one entry marked parameterised; a title that interpolates nothing is a plain name', () => {
+    expect(t.error, thrown(t)).toBeUndefined();
+    const tests: TestOut[] = ruleOf(t, 'NAV-1')?.tests ?? [];
+    const plain = tests.filter((x) => x.parameterised !== true).map((x) => [x.name ?? null, x.file ?? null]);
+    const marked = tests.filter((x) => x.parameterised === true).map((x) => x.file ?? null);
+    expect({ plain: plain.sort(), marked }).toEqual({
+      plain: [
+        ['the overview draws the search and the theme toggle once, in the top bar', NAV_SPEC],
+        ['the overview opens on the question, before any other region', NAV_SPEC],
+      ],
+      marked: [NAV_SPEC],
+    });
+  });
+
+  test("RULE-1 · a parameterised title's name keeps its words and shows each interpolation as a placeholder, never as raw source", () => {
+    expect(t.error, thrown(t)).toBeUndefined();
+    const marked = (ruleOf(t, 'NAV-1')?.tests ?? []).filter((x) => x.parameterised === true);
+    expect(marked, 'one parameterised entry for the loop title').toHaveLength(1);
+    const name = marked[0]?.name ?? '';
+    expect(name, 'no raw interpolation in the name').not.toContain('${');
+    // The title's own words, in order, with a placeholder in each of its three slots.
+    const slots = /^receipt figure (.+), (.+), reads (.+) from the fixture$/.exec(name);
+    expect(slots, `"${name}" keeps the title's words around three placeholders`).not.toBeNull();
+    for (const slot of slots?.slice(1) ?? []) expect(slot.trim(), 'a placeholder is not empty').not.toBe('');
   });
 });
