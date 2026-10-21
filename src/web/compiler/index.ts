@@ -6,7 +6,8 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
-import { listDocs, readBlob, readCommits, resolveRef } from './git.ts';
+import { listDocs, listPaths, readBlob, readCommits, resolveRef } from './git.ts';
+import { isTestSource, parseTests } from './test-sources.ts';
 import { isHit, parseDenylist, scan } from './privacy.ts';
 import { parseDag, parseRequirements } from './plans.ts';
 import { parseCompleteness, parseMatrix, parseWalkthrough } from './trace-files.ts';
@@ -134,7 +135,13 @@ export function compile(options: CompileOptions): void {
   const dags = [...paths]
     .filter((path) => /^docs\/plans\/(active|archive)\/[^/]+\.dag\.yaml$/.test(path))
     .map((path) => ({ path, dag: parseDag(read(path) ?? '') }));
-  const rows = REQUIREMENTS.flatMap((path) => parseRequirements(read(path) ?? ''));
+  const rows = REQUIREMENTS.flatMap((path) => parseRequirements(read(path) ?? '').map((row) => ({ ...row, file: path })));
+
+  // Test names are emitted, so each is scanned; the source files are not (a hit names the file and line, never the text).
+  const testNames = listPaths(root, sha, 'tests').filter(isTestSource).flatMap((path) => parseTests(path, readBlob(root, sha, path)));
+  for (const test of testNames) {
+    if (isHit(denylist.list, test.name)) fatal.push({ file: test.file, line: test.line, reason: 'matches the privacy denylist' });
+  }
 
   const commits = readCommits(root, sha).map((commit) => {
     // Subject and every trailer value: a hit names the commit, never the text.
@@ -153,6 +160,7 @@ export function compile(options: CompileOptions): void {
       tdd: TDD ?? null,
       fixesFinding: fixesFinding(commit.trailers['Fixes-Finding']),
       date: commit.date,
+      parents: commit.parents,
     };
   });
 
@@ -226,12 +234,13 @@ export function compile(options: CompileOptions): void {
       const cells = matrix.get(row.id) ?? null;
       const commitsOf = (short: string | null): string[] => (short === null ? [] : [short]);
       return {
-        id: row.id, title: row.title, priority: row.priority,
-        feature: nodes.find((n) => list(n['rules']).includes(row.id))?.['id'] ?? null,
+        id: row.id, title: row.title, priority: row.priority, feature: row.feature,
+        interpretation: row.interpretation, source: { file: row.file, line: row.line },
         // A rule is built when its matrix row holds a test count; no matrix row, no status (never a default).
         status: cells === null ? null : cells.tests === null ? 'not-built' : 'built',
         red: commitsOf(cells?.red ?? null), green: commitsOf(cells?.green ?? null), refactor: commitsOf(cells?.refactor ?? null),
-        qaStep: cells?.qaStep ?? null, signoff: cells?.signoff ?? null, tests: [], matrix: cells,
+        qaStep: cells?.qaStep ?? null, signoff: cells?.signoff ?? null, matrix: cells,
+        tests: testNames.filter((t) => t.rule === row.id).map(({ name, file }) => ({ name, file })),
       };
     });
   const placed = commits.map((commit) => ({

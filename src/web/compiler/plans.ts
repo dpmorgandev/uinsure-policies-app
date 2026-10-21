@@ -21,7 +21,11 @@ export interface Dag {
 export interface Requirement {
   id: string;
   title: string | null;
+  feature: string | null;
   priority: string | null;
+  interpretation: string | null;
+  /** The row's line in its file, counting from 1. */
+  line: number;
 }
 
 type Scalar = string | number | null | string[];
@@ -67,17 +71,37 @@ export function parseDag(source: string): Dag {
   };
 }
 
-/** The rule rows of a requirements table: `| ID | Priority | [Title |] Rule |`. */
+/**
+ * The rule rows of a requirements table: `| ID | Rule | Agreed interpretation |` under `### Sell (MUST-1)`, or
+ * `| ID | Priority | Requirement | Draft interpretation |` under a heading with no tag. The feature is the heading's
+ * name; the priority is the heading's tag without its number, or the Priority column. A cell the file lacks is null.
+ */
 export function parseRequirements(source: string): Requirement[] {
   const found: Requirement[] = [];
-  let titleColumn = -1;
-  for (const line of source.split(/\r?\n/)) {
-    if (!line.startsWith('|')) continue;
-    const cells = line.split('|').slice(1, -1).map((cell) => cell.trim());
-    if (cells[0] === 'ID') titleColumn = cells.indexOf('Title');
-    else if (/^[A-Z][A-Z0-9]*-\d+[a-z]?$/.test(cells[0] ?? '')) {
-      found.push({ id: cells[0] ?? '', priority: cells[1] ?? null, title: titleColumn >= 0 ? (cells[titleColumn] ?? null) : null });
+  let feature: string | null = null;
+  let tag: string | null = null;
+  let columns = { title: -1, priority: -1 };
+  source.split(/\r?\n/).forEach((text, index) => {
+    const heading = /^###\s+(.*?)(?:\s+\(([A-Z]+)-\d+\))?\s*$/.exec(text);
+    if (heading) {
+      feature = heading[1] ?? null;
+      tag = heading[2] ?? null;
+      return;
     }
-  }
+    if (!text.startsWith('|')) return;
+    const cells = text.split('|').slice(1, -1).map((cell) => cell.trim());
+    if (cells[0] === 'ID') {
+      columns = { title: cells.findIndex((c) => ['Title', 'Rule', 'Requirement'].includes(c)), priority: cells.indexOf('Priority') };
+    } else if (/^[A-Z][A-Z0-9]*-\d+[a-z]?(\/\d+)?$/.test(cells[0] ?? '')) {
+      found.push({
+        id: cells[0] ?? '',
+        title: columns.title >= 0 ? (cells[columns.title] ?? null) : null,
+        feature,
+        priority: columns.priority >= 0 ? (cells[columns.priority] ?? null) : tag,
+        interpretation: cells.length > 1 ? (cells[cells.length - 1] ?? null) : null,
+        line: index + 1,
+      });
+    }
+  });
   return found;
 }
