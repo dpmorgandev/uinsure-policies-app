@@ -238,3 +238,31 @@ Each direction is mocked on **two screens**: `overview` and `rule` (the rule pag
 signature graphic: the custody chain, the lanes' TDD ticks, the chronology), in light and dark, at 1440
 and 390 wide, with real trail data (SELL-5 and GET-1 from `trail-inventory.md`). That is 2–3 directions ×
 2 screens, inside the `efficiency.spec.md` budget.
+
+## Shipped palette (ordinal-spine): status tags on their own fill
+
+Added 2026-10-21, after KG2. The three styles above are the G2 record of what was considered; the kit's
+tokens come from `docs/ui/directions.json` (ordinal-spine) through `derive-tokens.mjs`, into
+`src/web/kit/tokens/tokens.css`. The figures above measure each colour on the background and surface,
+but a tag's text sits on its own fill: error #ca3535 is 4.73:1 on white and only 4.45:1 on its tag's
+fill, which is the gap KG2 closed. Every tag is measured
+here on its own fill with the same WCAG 2.x formula: fill is `color-mix(in srgb, <colour> 10%,
+background)`; text is the colour itself, except fail's, which since KG2 is `color-mix(in srgb, error 85%,
+textPrimary)`. Not built has no fill, so it is measured on the background.
+
+| Tag | Colour (light / dark) | Light: text on fill | Dark: text on fill |
+|---|---|---|---|
+| pass | success #0f7a52 / #42be65 | 4.66 | 6.00 |
+| fail | error #ca3535 / #fb747b | 5.43 (4.45 before KG2) | 6.12 (5.48 before KG2) |
+| warn | warn #8a5a00 / #f1c21b | 5.15 | 8.14 |
+| pending | textSecondary #555b62 / #a3a9b0 | 5.94 | 5.99 |
+| not built | textSecondary, no fill | 6.86 | 7.12 |
+
+**Every tag passes AA as text in both themes.** Light pass, at 4.66, has the narrowest margin: re-measure
+it if the success token changes.
+
+**Borders.** The tag's border is its colour mixed 55% into the background: against the background it
+measures pass 2.33, fail 2.44, warn 2.39, pending and not built 2.48 in light, and pass 3.04, fail 2.80,
+warn 3.93, pending and not built 3.10 in dark. Tags aren't interactive and their word and glyph identify
+them, so the 3:1 bar for component boundaries doesn't apply; the figures are recorded so the choice is
+visible.

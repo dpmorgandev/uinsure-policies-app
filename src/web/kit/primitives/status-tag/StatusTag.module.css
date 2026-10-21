@@ -1,5 +1,6 @@
 .tag {
   --c: var(--color-text-secondary);
+  --ink: var(--c);
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
@@ -10,7 +11,7 @@
   font-weight: 600;
   line-height: 1.2;
   font-variant-numeric: tabular-nums lining-nums;
-  color: var(--c);
+  color: var(--ink);
   background: color-mix(in srgb, var(--c) 10%, var(--color-background));
   border: 1px solid color-mix(in srgb, var(--c) 55%, var(--color-background));
   border-radius: var(--radius);
@@ -23,6 +24,7 @@
 
 .fail {
   --c: var(--color-error);
+  --ink: color-mix(in srgb, var(--color-error) 85%, var(--color-text-primary));
 }
 
 .warn {

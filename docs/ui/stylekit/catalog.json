@@ -1,7 +1,7 @@
 {
  "stamp": {
-  "kitTree": "ce6da366fae25d4bc2bbc13a5966fc69d0acb603",
-  "builtAt": "2026-10-20T23:23:27Z",
+  "kitTree": "e7401a76dcb1128520972ee67d1464c99c16f7c6",
+  "builtAt": "2026-10-21T00:35:02Z",
   "from": "src/web/kit",
   "script": ".claude/scripts/design/build-stylekit.mjs"
  },
@@ -6785,6 +6785,17 @@
        ]
       }
      ]
+    },
+    "no snapshot": {
+     "file": "components/footer/no-snapshot.html",
+     "roots": [
+      {
+       "tag": "footer",
+       "classes": [
+        "kit-footer__footer"
+       ]
+      }
+     ]
     }
    },
    "vocab": [
@@ -6820,6 +6831,13 @@
      "tag": "p",
      "classes": [
       "kit-compiled-at-stamp__stamp"
+     ],
+     "style": false
+    },
+    {
+     "tag": "p",
+     "classes": [
+      "kit-footer__none"
      ],
      "style": false
     },
@@ -6867,6 +6885,15 @@
       "kit-footer__icon",
       "lucide",
       "lucide-file-text"
+     ],
+     "style": false
+    },
+    {
+     "tag": "svg",
+     "classes": [
+      "kit-footer__noneIcon",
+      "lucide",
+      "lucide-info"
      ],
      "style": false
     },
