@@ -10,6 +10,10 @@ export const route = {
   home: '/#/workbench',
   sell: '/#/workbench/sell',
   policy: (reference: string): string => `/#/workbench/policies/${reference}`,
+  /** W2's and W3's screens (wb-cancel, wb-renew, wb-claim): W1 doesn't build them (inv-006, I1). */
+  cancel: (reference: string): string => `/#/workbench/policies/${reference}/cancel`,
+  renew: (reference: string): string => `/#/workbench/policies/${reference}/renew`,
+  claim: (reference: string): string => `/#/workbench/policies/${reference}/claims/new`,
 };
 
 /** The rule page a rule chip links to (RULE-1's route, /rules/:ruleId). */
