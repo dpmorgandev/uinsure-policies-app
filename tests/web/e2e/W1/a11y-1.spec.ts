@@ -5,6 +5,7 @@
 import { expect, test } from './support/api';
 import type { Page } from '@playwright/test';
 import { axeViolations, backgroundToken, setTheme, themes, tokenBackground, viewports } from '../U0b/support/app';
+import type { Theme } from '../U0b/support/app';
 import {
   PAST_START,
   answered,
@@ -24,12 +25,30 @@ import type { Policy, Problem } from './support/workbench';
 
 const widths = [1440, 390] as const;
 
+/**
+ * Waits until a switch of system theme has taken effect. The page applies it from its matchMedia listener, after
+ * emulateMedia has resolved, so <html> carries the new theme a moment later; then the kit's controls fade their
+ * colours to it over --duration-short. Only once both are done are the theme's colours the ones on the page.
+ */
+async function themeApplied(page: Page, theme: Theme): Promise<void> {
+  await expect(page.locator('html'), `the ${theme} theme has been applied`).toHaveAttribute('data-theme', theme);
+  await page.evaluate(() =>
+    Promise.all(
+      document
+        .getAnimations()
+        .filter((running) => running instanceof CSSTransition)
+        .map((running) => running.finished.catch(() => undefined)),
+    ),
+  );
+}
+
 /** axe on the page as it stands, in each theme and width. */
 async function auditEverywhere(page: Page): Promise<void> {
   for (const theme of themes) {
     for (const width of widths) {
       await setTheme(page, theme);
       await page.setViewportSize(viewports[width]);
+      await themeApplied(page, theme);
       expect(await backgroundToken(page), `the ${theme} theme's tokens are in force at ${width}`).toBe(tokenBackground[theme]);
       expect.soft(await axeViolations(page), `axe, ${theme} at ${width}`).toEqual([]);
     }
