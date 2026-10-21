@@ -298,7 +298,7 @@ nodes:
     rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1]
     cuttable: false
     budget: null
-    status: in_progress
+    status: paused_acceptance
     attempt: 1
     branch: feature/ui/W1
     worktree: .claude/worktrees/ui-W1
