@@ -443,6 +443,30 @@ export async function readThroughApi(reference: string): Promise<{ status: numbe
   return { status: answer.status, body: JSON.parse(text) as unknown };
 }
 
+/** One answer of the API, as it came: its status, content type and body text. */
+export interface RawAnswer {
+  status: number;
+  contentType: string;
+  text: string;
+}
+
+/** GET of an API path (/policies/…, a query string kept as written) straight from the API: a test's setup. */
+export async function askApi(path: string): Promise<RawAnswer> {
+  const answer = await call(`${apiUrl}${path}`);
+  return { status: answer.status, contentType: answer.headers.get('content-type') ?? '', text: await answer.text() };
+}
+
+/** The page's GET of an /api/… path is answered with `answer`, exactly as the API gave it. */
+export async function relay(page: Page, path: string, answer: RawAnswer): Promise<void> {
+  await page.route(
+    (url) => url.pathname === path,
+    (handled: Route) =>
+      handled.request().method() === 'GET'
+        ? handled.fulfill({ status: answer.status, contentType: answer.contentType, body: answer.text })
+        : handled.fallback(),
+  );
+}
+
 /** Every yyyy-MM-dd anywhere in a JSON value. */
 export function datesIn(value: unknown): Set<string> {
   const dates = new Set<string>();

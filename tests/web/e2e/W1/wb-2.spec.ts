@@ -7,19 +7,21 @@ import { expectRegionComponents, expectRegionsInOrder, expectShell, expectTokens
 import {
   ADA,
   EDSGER,
+  askApi,
   datesIn,
   datesShown,
   field,
   openFromHome,
   readThroughApi,
   region,
+  relay,
   requestOf,
   route,
   sellForm,
   sellThroughApi,
   valueOf,
 } from './support/workbench';
-import type { Policy } from './support/workbench';
+import type { Policy, Problem } from './support/workbench';
 
 /** Sells `reference` through the API and returns the policy as the API's GET answers it. */
 async function soldPolicy(reference: string): Promise<Policy> {
@@ -134,6 +136,29 @@ test.describe('the policy', () => {
       region(page, 'cancellation-summary-from-get-per-term-breakdown-from-the-logged-cancel-response'),
       'cancellation: null',
     ).toContainText(/not been cancelled/i);
+  });
+});
+
+// inv-006 I5: the view words a policy it couldn't read from the problem the API returned, not as "not found".
+test.describe('a problem that is not a 404', () => {
+  test("WB-2 · a policy view the API answers 400 shows the API's 400, and never says the policy was not found", async ({ page, api }) => {
+    void api;
+    const policy = await soldPolicy('W1-BAD-1');
+    // The API reads a reference that fails SELL-1's pattern as a 404 (GET-1, recorded in 055), so no reference the
+    // view can be opened on draws a 400 from it, and the view's own GET can't carry a query parameter (the reference
+    // is one encoded path segment). So the live API is asked for this policy with an unknown query parameter, and
+    // its 400 is relayed to the page's GET as it came.
+    const refused = await askApi(`/policies/${policy.reference}?colour=red`);
+    expect(refused.status, 'setup: the API refuses an unknown query parameter').toBe(400);
+    const problem = JSON.parse(refused.text) as Problem;
+    const message = Object.values(problem.errors ?? {})[0]?.[0] ?? '';
+    expect(message, "setup: the API's 400 names a message").not.toBe('');
+    await relay(page, `/api/policies/${policy.reference}`, refused);
+    await page.goto(route.policy(policy.reference));
+    const main = page.getByRole('main');
+    await expect(main, "the API's message").toContainText(message, live);
+    await expect(region(page, 'status-and-current-term'), "the API's status").toContainText('400');
+    await expect(main, 'the API said 400, not that the policy was not found').not.toContainText(/not found/i);
   });
 });
 
