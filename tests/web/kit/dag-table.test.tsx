@@ -70,6 +70,16 @@ describe('DagTable', () => {
     expect(screen.getByRole('link', { name: /CANCEL-1a/ }).getAttribute('data-status')).toBe('nb');
   });
 
+  it('sends a caller-set link to each rule chip, and keeps the default when it sets none', () => {
+    const { rerender } = render(<DagTable nodes={nodes} />);
+    expect(screen.getByRole('link', { name: 'GET-1' }).getAttribute('href')).toBe('/rules/GET-1');
+    rerender(<DagTable nodes={nodes} ruleHref={(id) => `#/rules/${id}`} />);
+    expect(screen.getByRole('link', { name: 'GET-1' }).getAttribute('href')).toBe('#/rules/GET-1');
+    expect(screen.getByRole('link', { name: /CANCEL-1a/ }).getAttribute('href')).toBe('#/rules/CANCEL-1a');
+    rerender(<DagTable nodes={nodes} ruleHref={() => undefined} />);
+    expect(screen.getByRole('link', { name: 'GET-1' }).getAttribute('href')).toBe('/rules/GET-1');
+  });
+
   it('links the node id only when the node has a page', () => {
     render(<DagTable nodes={nodes} />);
     expect(screen.getByRole('link', { name: 'F5' }).getAttribute('href')).toBe('/plans/build/F5');

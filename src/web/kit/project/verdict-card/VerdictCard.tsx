@@ -45,15 +45,26 @@ export interface VerdictCardProps {
   /** The verdict's own summary text. */
   summary?: ReactNode;
   headingLevel?: 2 | 3 | 4;
+  /**
+   * Where each rule chip links, given the rule ID. Return `undefined` (or leave the prop out) to keep the chip's own
+   * default, `/rules/<ruleId>`.
+   */
+  ruleHref?: (ruleId: string) => string | undefined;
 }
 
-function Rules({ ids }: { ids: readonly string[] | undefined }) {
+function Rules({
+  ids,
+  ruleHref,
+}: {
+  ids: readonly string[] | undefined;
+  ruleHref?: (ruleId: string) => string | undefined;
+}) {
   if (ids === undefined) return <span className={styles.absent}>not in the excerpt</span>;
   if (ids.length === 0) return <span>none</span>;
   return (
     <span className={styles.chips}>
       {ids.map((id) => (
-        <RuleChip key={id} ruleId={id} />
+        <RuleChip key={id} ruleId={id} href={ruleHref?.(id)} />
       ))}
     </span>
   );
@@ -72,6 +83,7 @@ export function VerdictCard({
   findings,
   summary,
   headingLevel = 3,
+  ruleHref,
 }: VerdictCardProps) {
   const headingId = useId();
   const Heading = `h${headingLevel}` as 'h2' | 'h3' | 'h4';
@@ -127,13 +139,13 @@ export function VerdictCard({
             <div className={styles.fact}>
               <dt>Rules covered</dt>
               <dd>
-                <Rules ids={rulesCovered} />
+                <Rules ids={rulesCovered} ruleHref={ruleHref} />
               </dd>
             </div>
             <div className={styles.fact}>
               <dt>Rules missing</dt>
               <dd>
-                <Rules ids={rulesMissing} />
+                <Rules ids={rulesMissing} ruleHref={ruleHref} />
               </dd>
             </div>
           </dl>
