@@ -1,0 +1,26 @@
+// Cut from tests/Uinsure.Policies.Api.Tests: xUnit facts and a theory, each traited with the rules it proves.
+namespace Fixture.Api.Tests;
+
+public class RetrieveTests
+{
+    [Fact]
+    [Trait("Rule", "GET-1")]
+    public async Task Retrieve_of_an_unknown_reference_answers_404()
+    {
+        await Task.CompletedTask;
+    }
+
+    [Theory]
+    [InlineData("abc-1")]
+    [Trait("Rule", "SELL-1")]
+    [Trait("Rule", "GET-1")]
+    public async Task A_reference_sold_in_lower_case_is_retrieved_in_upper_case(string reference)
+    {
+        await Task.CompletedTask;
+    }
+
+    [Fact]
+    public void The_client_is_created()
+    {
+    }
+}

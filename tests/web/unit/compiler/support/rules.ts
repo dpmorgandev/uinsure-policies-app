@@ -8,6 +8,10 @@ import { fixturesDir } from './trail';
 import type { Run, Trail } from './trail';
 
 export const RULES = 'rules';
+/** tests/web/fixtures/trails/requirements-shapes/README.md: both requirements files' table shapes, and a C# test source. */
+export const SHAPES = 'requirements-shapes';
+export const REQUIREMENTS_FILE = 'docs/requirements.md';
+export const UI_REQUIREMENTS_FILE = 'docs/ui-requirements.md';
 export const MATRIX_FILE = 'docs/trace/requirements-matrix.md';
 export const DAG_FILE = 'docs/plans/active/build.dag.yaml';
 export const F1_LOOP = 'docs/trace/build/F1/loop.jsonl';
@@ -37,8 +41,20 @@ export interface MatrixOut {
   source?: { file?: string | null; line?: number | null } | null;
 }
 
+/** One of a rule's tests, by name: the test's own name, and the test source it is declared in. */
+export interface TestOut {
+  name?: string | null;
+  file?: string | null;
+}
+
 export interface RuleOut {
   id?: string;
+  title?: string | null;
+  feature?: string | null;
+  priority?: string | null;
+  interpretation?: string | null;
+  source?: { file?: string | null; line?: number | null } | null;
+  tests?: TestOut[];
   status?: string | null;
   matrix?: MatrixOut | null;
 }
@@ -68,6 +84,7 @@ export interface CommitOut {
   tdd?: string | null;
   order?: number | null;
   date?: string | null;
+  parents?: string[];
 }
 
 export interface VerdictOut {

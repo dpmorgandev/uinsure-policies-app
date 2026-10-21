@@ -44,6 +44,7 @@ the same way it reads the real one. The live `docs/trace/` is never a test input
 | `bounded/` | The harness comes from `docs/trace/harness.json`, never `.claude/` (DATA-7); the trail's own `<user>` and `<outside-repo>` stay as written (DATA-5) |
 | `awkward-text/` | Markup in a plan title and in commands renders as text and runs nothing (SEC-1); a 400-character unbroken command doesn't widen the page (RESP-1) |
 | `rules/` | A rendered trail across four nodes: a git-only F0a, a clean F1 with a FAIL fixed, an F2 TRAIL INCOMPLETE with green before red, an unstarted F3, and a rule no node owns; the README, matrix and per-commit dates as `render-trace.mjs` writes them (NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3) |
+| `requirements-shapes/` | The rule tables of `requirements.md` and `ui-requirements.md` as each writes them (a heading's priority tag or a Priority column, `RENEW-1/2`, a dash note row, a heading with no tag), and a C# test source traited per rule (MATRIX-1, RULE-1, NAV-3) |
 
 `replay.d.mts` types `replay.mjs` for the TypeScript tests that import it.
 
