@@ -3,7 +3,7 @@
 // fixture against docs/ui/derived/U0b/.
 import { expect, test } from '@playwright/test';
 import { backgroundToken, expectFooterStamp, route, serveTrace, setTheme, snapshotOf, tokenBackground } from './support/app';
-import { about, activity, expectRegionComponents, expectTokensOnly, overview } from './support/parity';
+import { about, activity, expectRegionControlsInTopBar, expectTokensOnly, overview } from './support/parity';
 import { compileFixture } from './support/trail';
 import type { CompiledTrail } from './support/trail';
 
@@ -88,8 +88,8 @@ test("THEME-1 · the top bar's toggle overrides the system setting, holds across
 });
 
 test.describe('parity', () => {
-  test("THEME-1 · parity: the overview's top-bar region carries the search and the theme toggle", async ({ page }) => {
-    await expectRegionComponents(page, overview, 'top-bar-search-and-theme-toggle-global-tagged-here-once');
+  test("THEME-1 · parity: the overview's top-bar region tags the search and the theme toggle, which the top bar carries", async ({ page }) => {
+    await expectRegionControlsInTopBar(page, overview, 'top-bar-search-and-theme-toggle-global-tagged-here-once');
   });
 
   for (const s of [overview, about, activity]) {
