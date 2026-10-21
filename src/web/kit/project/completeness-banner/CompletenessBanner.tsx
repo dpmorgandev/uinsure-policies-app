@@ -6,7 +6,7 @@ export type Completeness = 'ok' | 'git-only' | 'incomplete' | 'unrecognised';
 
 export interface CompletenessBannerProps {
   /**
-   * The compiler's completeness value, verbatim: "OK", "OK (git-only, F0a)" or "TRAIL INCOMPLETE: <reasons>".
+   * The compiler's completeness value, verbatim: "OK" (or "OK: <nodes>"), "OK (git-only, F0a)" or "TRAIL INCOMPLETE: <reasons>".
    * It is shown exactly as given and is never reworded.
    */
   value: string;
@@ -15,7 +15,7 @@ export interface CompletenessBannerProps {
 }
 
 function classify(value: string): Completeness {
-  if (value === 'OK') return 'ok';
+  if (value === 'OK' || value.startsWith('OK:')) return 'ok';
   if (value.startsWith('OK (git-only')) return 'git-only';
   if (value.startsWith('TRAIL INCOMPLETE')) return 'incomplete';
   return 'unrecognised';
