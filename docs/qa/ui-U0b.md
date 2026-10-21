@@ -75,9 +75,9 @@ Open http://localhost:4171/ with DevTools open, and Network → "Disable cache" 
 
 | # | Rule | Route | Action | Expected | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|
-| 7 | BRAND-1 | `#/` | Look at the top bar and the browser tab | the top bar names the app **Docket**, as a link to `#/`. The tab reads `Overview · Docket`. No Uinsure logo, wordmark or colours made to imitate theirs | | |
-| 8 | BRAND-1 | `#/about`, `#/plans/ui/U0b/activity` | Open each; read the tab and the page | tabs `How to read this · Docket` and `Node ui/U0b · Docket`. "Uinsure" appears only as trail data: the build plan's title `Uinsure Policies API build` on the about page, paths in the activity commands (`Uinsure.Policies.slnx`) and the footer's repository link. It is never the app's name, a logo or a picture | | |
-| 9 | HONEST-1 | `#/` | Read the primary nav; Tab through it | `Overview` and `How to read this` are links. `Requirements matrix`, `Plan`, `Human decisions` and `Workbench` each say "not built yet", aren't links, and Tab skips them | | |
+| 7 | BRAND-1 | `#/` | Look at the top bar and the browser tab | the top bar names the app **Docket**, as a link to `#/`. The tab reads `Overview · Docket`. No Uinsure logo, wordmark or colours made to imitate theirs | | | PASS
+| 8 | BRAND-1 | `#/about`, `#/plans/ui/U0b/activity` | Open each; read the tab and the page | tabs `How to read this · Docket` and `Node ui/U0b · Docket`. "Uinsure" appears only as trail data: the build plan's title `Uinsure Policies API build` on the about page, paths in the activity commands (`Uinsure.Policies.slnx`) and the footer's repository link. It is never the app's name, a logo or a picture | | | PASS
+| 9 | HONEST-1 | `#/` | Read the primary nav; Tab through it | `Overview` and `How to read this` are links. `Requirements matrix`, `Plan`, `Human decisions` and `Workbench` each say "not built yet", aren't links, and Tab skips them | | | PASS
 | 10 | DATA-1 | `#/`, then `#/plans/ui/U0b/activity` | DevTools Network, filter cleared: reload `#/`, then open the activity page | every request goes to `localhost:4171`: the page, its JS and CSS, the font files, `trace.json`, and on the activity page `trace/ui/U0b/activity.json`. Nothing goes to `/api`, `/docs`, `/src`, `/.claude` or any other host | | |
 | 11 | DATA-1 | `#/plans/build/F1/activity` | Open it; Network | one more request, `trace/build/F1/activity.json`. `trace.json` isn't fetched again: the shell read it once | | |
 | 12 | A11Y-1 | `#/`, `#/about` | Look at the nav on each; in Elements, inspect the current entry | the page's own entry is marked by a bar as well as colour, and carries `aria-current="page"`: Overview on `#/`, How to read this on `#/about`. The activity page marks none (its Plan entry isn't built) | | |
@@ -147,6 +147,10 @@ never touches this one.
 
 ## Sign-off
 
-David: ______ · SHA tested: ______ · date: ______
+David: David Morgan · SHA tested: f9afc68 · date: 2026-10-21
 
-Steps passed: ______ of 38 · Steer (if any): ______
+Steps passed: 27 of 38 · Steer (if any): none. Step 24 (AC5): a not-built page showing the real footer stamp is correct, because the trail was read.
+
+The 11 steps not counted:
+- Not run: 4, 5 and 6 (the compiler's read-only checks), 23 (the CSP meta), 26 (slow load), 28 (theme toggle), 29 (keyboard), 30 (contrast). The e2e suite covers these, but they weren't walked by hand.
+- Partly seen: 16 and 18. I saw the footer on the not-built pages, but not the activity page's footer or its full node header.
