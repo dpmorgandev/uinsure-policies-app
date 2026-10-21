@@ -44,7 +44,7 @@ nodes:
     cuttable: false
     budget: null
     status: in_progress
-    attempt: 3
+    attempt: 4
     branch: feature/ui/U0b
     worktree: .claude/worktrees/ui-U0b
     pr: null
