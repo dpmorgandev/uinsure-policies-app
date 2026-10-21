@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
 import { listDocs, readBlob, readCommits, resolveRef } from './git.ts';
-import { parseDenylist, scan } from './privacy.ts';
+import { isHit, parseDenylist, scan } from './privacy.ts';
 import { parseDag, parseRequirements } from './plans.ts';
 
 export interface CompileOptions {
@@ -76,7 +76,13 @@ function fixesFinding(trailer: string | undefined): { round: number | null; id: 
 export function compile(options: CompileOptions): void {
   const { root, ref } = options;
   const sha = resolveRef(root, ref);
-  if (sha === null) fail([{ file: null, line: null, reason: `the ref ${ref} names no commit` }]);
+  if (sha === null) {
+    // The ref's own tree can't be read, so the ref is scanned with HEAD's denylist; it is named only when that finds it clean.
+    const head = resolveRef(root, 'HEAD');
+    const text = head !== null && listDocs(root, head).includes(DENYLIST) ? readBlob(root, head, DENYLIST) : null;
+    const clean = text !== null && !isHit(parseDenylist(text, DENYLIST).list, ref);
+    fail([{ file: null, line: null, reason: clean ? `the ref ${ref} names no commit` : 'the ref names no commit' }]);
+  }
 
   const paths = new Set(listDocs(root, sha));
   if (!paths.has(DENYLIST)) fail([{ file: DENYLIST, line: null, reason: 'the privacy denylist is missing' }]);
@@ -85,6 +91,7 @@ export function compile(options: CompileOptions): void {
 
   const fatal: Problem[] = [];
   const problems: Problem[] = [];
+  if (isHit(denylist.list, ref)) fatal.push({ file: 'the ref', line: null, reason: 'matches the privacy denylist' });
   const read = (path: string): string | null => {
     if (!paths.has(path)) return null;
     const text = readBlob(root, sha, path);
@@ -108,7 +115,10 @@ export function compile(options: CompileOptions): void {
   const rows = REQUIREMENTS.flatMap((path) => parseRequirements(read(path) ?? ''));
 
   const commits = readCommits(root, sha).map((commit, order) => {
-    fatal.push(...scan(denylist.list, `git commit ${commit.sha.slice(0, 7)}`, commit.subject).map((p) => ({ ...p, line: null })));
+    // Subject and every trailer value: a hit names the commit, never the text.
+    if ([commit.subject, ...Object.values(commit.trailers)].some((value) => isHit(denylist.list, value))) {
+      fatal.push({ file: `commit ${commit.sha.slice(0, 7)}`, line: null, reason: 'matches the privacy denylist' });
+    }
     const { Agent, Plan, Node, Rule, TDD } = commit.trailers;
     return {
       sha: commit.sha,
@@ -126,12 +136,12 @@ export function compile(options: CompileOptions): void {
 
   const plans: Json[] = [];
   const nodes: Json[] = [];
-  const events: Json[] = [];
-  const verdicts: Json[] = [];
   const chunks = new Map<string, unknown>();
   for (const { path, dag } of dags) {
     if (dag.id === null) {
-      problems.push({ file: path, line: null, reason: 'the plan has no plan_id' });
+      // A path from git is scanned before it is said; a hit fails the compile without naming the path.
+      if (isHit(denylist.list, path)) fatal.push({ file: 'a plan file', line: null, reason: 'its path matches the privacy denylist' });
+      problems.push({ file: isHit(denylist.list, path) ? null : path, line: null, reason: 'the plan has no plan_id' });
       continue;
     }
     plans.push({ id: dag.id, kind: dag.kind, title: dag.title, nodes: dag.nodes.map((node) => node.id) });
@@ -146,37 +156,13 @@ export function compile(options: CompileOptions): void {
           readLines(activityPath, activityText, problems).map(({ line, record, raw }) =>
             record === null
               ? { line, raw }
-              : { line, ts: str(record['ts']), agent: str(record['agent']), tool: str(record['tool']), file: str(record['file']), command: str(record['command']), commit: record['commit'] ?? null },
+              : { line, ts: str(record['ts']), attempt: num(record['attempt']), agent: str(record['agent']), tool: str(record['tool']), file: str(record['file']), command: str(record['command']), commit: record['commit'] ?? null },
           ),
         );
       }
-      const loopPath = `${dir}/loop.jsonl`;
-      for (const { line, record, raw } of readLines(loopPath, read(loopPath) ?? '', problems)) {
-        const event = str(record?.['event']);
-        events.push({
-          plan: dag.id, node: node.id, line, event, kind: event === null ? null : event.replace(/[.(].*$/, ''),
-          gate: event?.startsWith('gate.') ? event.slice(5) : null,
-          cmd: str(record?.['cmd']), exit: num(record?.['exit']), expect: str(record?.['expect']),
-          ok: typeof record?.['ok'] === 'boolean' ? record['ok'] : null, head: str(record?.['head']), detail: str(record?.['detail']),
-          raw: record === null ? raw : null,
-        });
-      }
-      for (const path of [...paths].filter((p) => p.startsWith(`${dir}/verdicts/`) && p.endsWith('.json')).sort()) {
-        const envelope = read(path);
-        let body: Json | null = null;
-        try {
-          body = (JSON.parse(envelope ?? '') as Json)['verdict'] as Json;
-        } catch {
-          problems.push({ file: path, line: null, reason: 'the verdict file is not JSON with a verdict' });
-        }
-        if (body === null) continue;
-        verdicts.push({
-          plan: dag.id, node: node.id, round: Number(/\/A(\d+)-[^/]+$/.exec(path)?.[1] ?? NaN) || null,
-          agent: str(body['agent']), verdict: str(body['verdict']), head: str(body['head_sha']),
-          rulesCovered: list(body['rules_covered']), rulesMissing: list(body['rules_missing']),
-          findings: Array.isArray(body['findings']) ? body['findings'] : [],
-        });
-      }
+      // U1 and U3 drive the loop events and the verdicts; until then the files are only read, through the denylist scan.
+      read(`${dir}/loop.jsonl`);
+      for (const path of [...paths].filter((p) => p.startsWith(`${dir}/verdicts/`) && p.endsWith('.json'))) read(path);
       nodes.push({
         plan: dag.id, id: node.id, title: node.title, status: node.status, attempt: node.attempt,
         completeness: null, completenessReasons: [], rules: node.rules,
@@ -188,23 +174,19 @@ export function compile(options: CompileOptions): void {
   const seen = new Set<string>();
   const rules = rows
     .filter((row) => !seen.has(row.id) && seen.add(row.id))
-    .map((row) => {
-      const commitsOf = (tdd: string): string[] => commits.filter((c) => c.tdd === tdd && c.rule.includes(row.id)).map((c) => c.sha);
-      const green = commitsOf('green');
-      return {
-        id: row.id, title: row.title, priority: row.priority,
-        feature: nodes.find((n) => list(n['rules']).includes(row.id))?.['id'] ?? null,
-        status: green.length > 0 ? 'built' : 'not-built',
-        red: commitsOf('red'), green, refactor: commitsOf('refactor'), qaStep: null, signoff: null, tests: [],
-      };
-    });
+    // Status and the red, green and refactor commits are U1's; a status the compile doesn't derive is null, never a default.
+    .map((row) => ({
+      id: row.id, title: row.title, priority: row.priority,
+      feature: nodes.find((n) => list(n['rules']).includes(row.id))?.['id'] ?? null,
+      status: null, red: [], green: [], refactor: [], qaStep: null, signoff: null, tests: [],
+    }));
 
   if (fatal.length > 0) fail(fatal);
 
   const trace = {
     schemaVersion: SCHEMA_VERSION,
     compiledAt: { ref, sha, utc: (options.now ?? (() => new Date()))().toISOString() },
-    problems, rules, plans, nodes, commits, events, verdicts, findings: [], decisions: [], sessions: [], harness,
+    problems, rules, plans, nodes, commits, events: [], verdicts: [], findings: [], decisions: [], sessions: [], harness,
   };
   const out = join(root, 'src', 'web', 'public');
   for (const [name, content] of [['trace.json', trace], ...chunks] as [string, unknown][]) {
