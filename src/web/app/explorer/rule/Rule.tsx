@@ -175,6 +175,7 @@ function RulePage({ trace, snapshot, rule }: { trace: Trace; snapshot: Snapshot;
             {rule.tests.map((test) => (
               <li key={`${test.file} ${test.name}`}>
                 {test.name} <code>{test.file}</code>
+                {test.parameterised ? ' (parameterised: one title, several generated tests)' : null}
               </li>
             ))}
           </ul>

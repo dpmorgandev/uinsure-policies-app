@@ -1,6 +1,9 @@
 import type { Status } from '../../kit';
 import type { TestCount, Trace, TraceCommit, TraceRule } from '../data/trace';
 
+/** The build plan's rules are docs/requirements.md's; trace.json also holds the ui plan's, which the overview and matrix leave out. */
+export const buildRules = (trace: Trace): TraceRule[] => trace.rules.filter((rule) => rule.source?.file === 'docs/requirements.md');
+
 /** "2 of 2", or "? of 1" when the trail holds no pass count; null when the rule has no tests yet. */
 export function testsText(tests: TestCount | null | undefined): string | null {
   if (!tests) return null;

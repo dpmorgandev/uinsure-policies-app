@@ -6,7 +6,7 @@ import { DataNotice } from '../../shell/DataNotice';
 import { blobUrl, commitUrl, pullUrl } from '../../shell/repo';
 import { Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
-import { fullShaOf, ruleStatus, rulesSummary, testsText } from '../ruleFacts';
+import { buildRules, fullShaOf, ruleStatus, rulesSummary, testsText } from '../ruleFacts';
 import '../explorer.css';
 
 interface Row {
@@ -90,7 +90,7 @@ function columnsOf(trace: Trace, snapshotSha: string): DataTableColumn<Row>[] {
 
 function MatrixTables({ trace, snapshotSha, snapshotShort, utc }: { trace: Trace; snapshotSha: string; snapshotShort: string; utc: string }) {
   const [filter, setFilter] = useState({ status: '', feature: '' });
-  const all: Row[] = trace.rules.map((rule) => ({ id: rule.id, rule, status: ruleStatus(rule) }));
+  const all: Row[] = buildRules(trace).map((rule) => ({ id: rule.id, rule, status: ruleStatus(rule) }));
   const rows = all.filter(
     (row) => (filter.status === '' || row.status === filter.status) && (filter.feature === '' || row.rule.feature === filter.feature),
   );
@@ -115,7 +115,7 @@ function MatrixTables({ trace, snapshotSha, snapshotShort, utc }: { trace: Trace
         <PageHeader
           eyebrow="Index · requirements matrix"
           title="Requirements matrix"
-          status={rulesSummary(trace.rules)}
+          status={rulesSummary(buildRules(trace))}
           compiledAt={utc}
         />
         <p className="s-text">

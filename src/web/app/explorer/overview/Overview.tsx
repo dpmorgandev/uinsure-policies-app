@@ -12,7 +12,7 @@ import type { Snapshot, Trace, TraceNode } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
 import { NotBuiltRegion, Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
-import { rulesSummary } from '../ruleFacts';
+import { buildRules, rulesSummary } from '../ruleFacts';
 import { buildPlan, checkedRule, headlineAnswer, nodesOf, receiptFigures } from './figures';
 import '../explorer.css';
 
@@ -34,8 +34,8 @@ function TrailCompleteness({ trace }: { trace: Trace }) {
   const ok = nodes.filter((node) => node.completeness === 'OK');
   const noTrail = nodes.filter((node) => node.completeness === null);
   const others = nodes.filter((node) => node.completeness !== null && node.completeness !== 'OK');
-  const notBuilt = trace.rules.filter((rule) => rule.status !== 'built').map((rule) => rule.id);
-  const redOnly = trace.rules.filter((rule) => rule.status === 'built' && rule.matrix?.red && !rule.matrix.green).map((rule) => rule.id);
+  const notBuilt = buildRules(trace).filter((rule) => rule.status !== 'built').map((rule) => rule.id);
+  const redOnly = buildRules(trace).filter((rule) => rule.status === 'built' && rule.matrix?.red && !rule.matrix.green).map((rule) => rule.id);
   const ids = (list: TraceNode[]): string => list.map((node) => node.id).join(', ');
 
   return (
@@ -142,12 +142,12 @@ export function Overview() {
           title="Overview"
           question="Was this really test-driven, and was the AI really checked?"
           answer={headlineAnswer(trace)}
-          status={rulesSummary(trace.rules)}
+          status={rulesSummary(buildRules(trace))}
           ids={[{ label: 'Snapshot SHA', value: `${snapshot.ref} ${snapshot.short}` }]}
           compiledAt={snapshot.utc}
         />
         <p className="s-next">
-          <a href="#/rules">Show me the proof: open the requirements matrix, {trace.rules.length} rules with their red and green commits</a>
+          <a href="#/rules">Show me the proof: open the requirements matrix, {buildRules(trace).length} rules with their red and green commits</a>
         </p>
       </Rung>
       <Rung

@@ -1,6 +1,6 @@
 import type { Trace, TraceNode, TracePlan, TraceRule } from '../../data/trace';
 import { blobUrl, treeUrl } from '../../shell/repo';
-import { ruleStatus } from '../ruleFacts';
+import { buildRules, ruleStatus } from '../ruleFacts';
 
 export interface Figure {
   /** "3 of 5", or null when there is nothing to count from. */
@@ -45,18 +45,19 @@ export function receiptFigures(trace: Trace, sha: string): Figure[] {
   const verdicts = trace.verdicts.filter((verdict) => plan !== undefined && verdict.plan === plan.id);
   const decisions = trace.decisions.filter((decision) => plan !== undefined && decision.plan === plan.id);
   const looped = nodes.filter((node) => (node.attempt ?? 0) >= 1);
-  const matrixSource = sourceOf(trace.rules.map((rule) => rule.matrix?.source?.file), sha);
+  const rules = buildRules(trace);
+  const matrixSource = sourceOf(rules.map((rule) => rule.matrix?.source?.file), sha);
   const planSource = sourceOf([plan?.source], sha);
-  const built = trace.rules.filter((rule) => rule.status === 'built');
-  const passing = trace.rules.filter((rule) => ruleStatus(rule) === 'pass');
+  const built = rules.filter((rule) => rule.status === 'built');
+  const passing = rules.filter((rule) => ruleStatus(rule) === 'pass');
   return [
     {
-      value: ofTotal(built.length, trace.rules.length),
-      unit: `rules built, counted from the ${trace.rules.length} rows of the requirements matrix, each with status built`,
+      value: ofTotal(built.length, rules.length),
+      unit: `rules built, counted from the ${rules.length} rows of the requirements matrix, each with status built`,
       source: matrixSource,
     },
     {
-      value: ofTotal(passing.length, trace.rules.length),
+      value: ofTotal(passing.length, rules.length),
       unit: 'rules whose own test count passes in full: pass equals total in the matrix row',
       source: matrixSource,
     },
@@ -85,22 +86,23 @@ export function receiptFigures(trace: Trace, sha: string): Figure[] {
 
 /** The rule the verify command re-checks: the first with both a red and a green commit in the matrix. */
 export function checkedRule(trace: Trace): TraceRule | undefined {
-  return trace.rules.find((rule) => rule.matrix?.red && rule.matrix.green);
+  return buildRules(trace).find((rule) => rule.matrix?.red && rule.matrix.green);
 }
 
 /** The headline answer, counted from the matrix and the verdicts. */
 export function headlineAnswer(trace: Trace): string {
   const plan = buildPlan(trace);
   const verdicts = trace.verdicts.filter((verdict) => plan !== undefined && verdict.plan === plan.id);
-  const red = trace.rules.filter((rule) => rule.matrix?.red);
+  const rules = buildRules(trace);
+  const red = rules.filter((rule) => rule.matrix?.red);
   const green = red.filter((rule) => rule.matrix?.green);
   const failed = verdicts.filter((verdict) => verdict.verdict === 'FAIL');
   const followed = failed.every((fail) =>
     verdicts.slice(verdicts.indexOf(fail) + 1).some((later) => later.node === fail.node && later.agent === fail.agent && later.verdict === 'PASS'),
   );
-  const rules = `${red.length} of ${trace.rules.length} rules list a red commit. ${green.length} also list a green commit and ${red.length - green.length} list none.`;
-  if (verdicts.length === 0) return `${rules} No reviewer or security verdict is recorded.`;
+  const counts = `${red.length} of ${rules.length} rules list a red commit. ${green.length} also list a green commit and ${red.length - green.length} list none.`;
+  if (verdicts.length === 0) return `${counts} No reviewer or security verdict is recorded.`;
   const was = failed.length === 1 ? 'was' : 'were';
   const later = followed && failed.length > 0 ? ', and each was later followed by a PASS from the same agent on the same node' : '';
-  return `${rules} ${failed.length} of ${verdicts.length} reviewer and security verdicts ${was} FAIL${later}.`;
+  return `${counts} ${failed.length} of ${verdicts.length} reviewer and security verdicts ${was} FAIL${later}.`;
 }

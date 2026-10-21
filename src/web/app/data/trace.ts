@@ -77,6 +77,8 @@ export interface MatrixRow {
 export interface RuleTest {
   name: string;
   file: string;
+  /** A template-literal title: one source line standing for several generated tests, its interpolations shown as {expression}. */
+  parameterised?: boolean;
 }
 
 export interface TraceRule {
