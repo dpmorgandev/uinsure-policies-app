@@ -46,6 +46,11 @@ export interface TermTimelineProps {
   cancellation?: TimelineCancellation | null;
   /** Names the list for assistive technology. */
   policyReference?: string;
+  /**
+   * Where the cancellation's rule chip links, given the rule's ID. Leave it out, or return `undefined`, to keep the
+   * rule chip's own default link.
+   */
+  ruleHref?: (ruleId: string) => string | undefined;
 }
 
 type Entry =
@@ -128,7 +133,13 @@ function wordsOf(entry: Entry): Words {
   }
 }
 
-function Receipt({ entry }: { entry: Entry }) {
+function Receipt({
+  entry,
+  ruleHref,
+}: {
+  entry: Entry;
+  ruleHref?: (ruleId: string) => string | undefined;
+}) {
   switch (entry.kind) {
     case 'start': {
       const { term } = entry;
@@ -183,7 +194,9 @@ function Receipt({ entry }: { entry: Entry }) {
           <p className={styles.line}>
             <Timestamp value={entry.date} />
             <StatusTag status="fail">Cancelled</StatusTag>
-            {entry.cancellation.ruleApplied ? <RuleChip ruleId={entry.cancellation.ruleApplied} /> : null}
+            {entry.cancellation.ruleApplied ? (
+              <RuleChip ruleId={entry.cancellation.ruleApplied} href={ruleHref?.(entry.cancellation.ruleApplied)} />
+            ) : null}
           </p>
           <p className={styles.detail}>
             {entry.cancellation.totalRefund ? (
@@ -203,7 +216,7 @@ function Receipt({ entry }: { entry: Entry }) {
  * scale: no bar is longer for a longer term. No window (cooling-off, renewal) is drawn, because the API does not
  * return one; a quote asks it.
  */
-export function TermTimeline({ terms, claims = [], cancellation, policyReference }: TermTimelineProps) {
+export function TermTimeline({ terms, claims = [], cancellation, policyReference, ruleHref }: TermTimelineProps) {
   const captionId = useId();
   const rungs = ruler(entriesOf(terms, claims, cancellation));
   const cancelled = Boolean(cancellation);
@@ -241,7 +254,7 @@ export function TermTimeline({ terms, claims = [], cancellation, policyReference
                 </span>
               </div>
               <div className={styles.rcp}>
-                <Receipt entry={rung.entry} />
+                <Receipt entry={rung.entry} ruleHref={ruleHref} />
               </div>
             </li>
           );

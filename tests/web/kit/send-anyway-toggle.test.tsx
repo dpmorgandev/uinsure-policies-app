@@ -131,6 +131,47 @@ describe('SendAnywayToggle', () => {
     expect(region.getAttribute('tabindex')).toBe('0');
   });
 
+  it('keeps the rule chip default link when the caller sets none', () => {
+    render(exampleFor('on with a response'));
+    expect(screen.getByRole('link', { name: 'COULD-2a' }).getAttribute('href')).toBe('/rules/COULD-2a');
+    expect(screen.getByRole('link', { name: 'COULD-2b' }).getAttribute('href')).toBe('/rules/COULD-2b');
+  });
+
+  it('passes a caller-set link through to each rule chip', () => {
+    render(
+      <SendAnywayToggle
+        defaultChecked
+        ruleHref={(ruleId) => `#/rules/${ruleId}`}
+        response={{
+          status: 422,
+          violations: [
+            { ruleId: 'COULD-2a', detail: 'Placeholder detail one' },
+            { ruleId: 'COULD-2b', detail: 'Placeholder detail two' },
+          ],
+        }}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'COULD-2a' }).getAttribute('href')).toBe('#/rules/COULD-2a');
+    expect(screen.getByRole('link', { name: 'COULD-2b' }).getAttribute('href')).toBe('#/rules/COULD-2b');
+  });
+
+  it('keeps the default for a rule the caller returns no link for, and follows a changed link on re-render', () => {
+    const response = {
+      status: 422,
+      violations: [
+        { ruleId: 'COULD-2a', detail: 'Placeholder detail one' },
+        { ruleId: 'COULD-2b', detail: 'Placeholder detail two' },
+      ],
+    };
+    const { rerender } = render(
+      <SendAnywayToggle defaultChecked response={response} ruleHref={(id) => (id === 'COULD-2a' ? '#/rules/COULD-2a' : undefined)} />,
+    );
+    expect(screen.getByRole('link', { name: 'COULD-2a' }).getAttribute('href')).toBe('#/rules/COULD-2a');
+    expect(screen.getByRole('link', { name: 'COULD-2b' }).getAttribute('href')).toBe('/rules/COULD-2b');
+    rerender(<SendAnywayToggle defaultChecked response={response} ruleHref={(id) => `/other/${id}`} />);
+    expect(screen.getByRole('link', { name: 'COULD-2a' }).getAttribute('href')).toBe('/other/COULD-2a');
+  });
+
   it('starts no process, so it carries no busy state', () => {
     render(exampleFor('on'));
     expect(screen.queryAllByRole('button').length).toBe(0);
