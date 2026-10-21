@@ -7,7 +7,7 @@
 import { describe, expect, test } from 'vitest';
 import { getPolicy, readProblem, sellPolicy } from '../../../../src/web/app/data/api';
 import type { ApiAnswer, Policy, Problem, SellRequest } from '../../../../src/web/app/data/api';
-import { REC, answering, exchange, memoryStore, outcome, settle } from './support/recorded';
+import { REC, answering, answeringText, exchange, memoryStore, outcome, settle } from './support/recorded';
 import type { RecordedExchange } from './support/recorded';
 
 interface RecordedProblem {
@@ -160,6 +160,29 @@ describe('404', () => {
       ruleId: 'GET-1',
       items: [],
     });
+  });
+});
+
+// inv-006 I4: an answer that came, with a body that can't be read as JSON, is still an answer with its status.
+// Only a request that never got an answer is unreachable.
+describe('an answer whose body is not JSON', () => {
+  const BAD_GATEWAY = '<html><head><title>502 Bad Gateway</title></head><body><h1>502 Bad Gateway</h1></body></html>';
+
+  test('WB-3 · a 502 with a body that is not JSON, from the policy read, keeps its status and is never "unreachable"', async () => {
+    const served = answeringText(502, BAD_GATEWAY);
+    const answer = await settle(() => getPolicy({ fetch: served.fetch, storage: memoryStore() }, 'F2-MVFJQA9DQG'));
+    expect(served.sent, 'the request was sent, and answered').toHaveLength(1);
+    expect(answer.kind, `an answer came (it was: ${JSON.stringify(answer)})`).not.toBe('unreachable');
+    expect(answer).toHaveProperty('status', 502);
+  });
+
+  test('WB-3 · a 502 with a body that is not JSON, from the sale, keeps its status and is never "unreachable"', async () => {
+    const recorded = exchange(REC.sold, 0);
+    const served = answeringText(502, BAD_GATEWAY);
+    const answer = await settle(() => sellPolicy({ fetch: served.fetch, storage: memoryStore() }, recorded.requestBody as SellRequest));
+    expect(served.sent, 'the request was sent, and answered').toHaveLength(1);
+    expect(answer.kind, `an answer came (it was: ${JSON.stringify(answer)})`).not.toBe('unreachable');
+    expect(answer).toHaveProperty('status', 502);
   });
 });
 

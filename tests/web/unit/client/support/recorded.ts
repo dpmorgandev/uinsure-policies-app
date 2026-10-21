@@ -100,6 +100,19 @@ export function answering(recorded: RecordedExchange): Served {
   return { fetch, sent };
 }
 
+/**
+ * A fetch that answers every request with this status and a body that is not JSON, as a proxy's 502 page does
+ * when the API behind it is down: an answer did come, it just can't be read as JSON.
+ */
+export function answeringText(status: number, body: string, contentType = 'text/html'): Served {
+  const sent: SentRequest[] = [];
+  const fetch: Fetch = async (input, init) => {
+    record(sent, input, init);
+    return new Response(body, { status, headers: { 'content-type': contentType } });
+  };
+  return { fetch, sent };
+}
+
 /** A fetch whose every request fails before an answer, as when the API isn't running. */
 export function unreachable(): Served {
   const sent: SentRequest[] = [];
