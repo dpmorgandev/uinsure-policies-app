@@ -2,8 +2,10 @@
 // it runs, so it can't be fired twice; its label says what is happening; aria-busy and aria-disabled are set; the
 // form keeps its values; when the request ends, the control re-enables and the result or problem appears.
 // Each request is held in flight by the test (support/workbench.ts `hold`), then let through to the live API.
+// A wait for a held request to arrive, or for the API's answer once it is let go, has the live API's timeout
+// (support/api.ts `live`): a worker's first request can take longer than expect's default to come through.
 // Parity on the recorded states, against docs/ui/derived/W1/wb-sell/ and wb-home/.
-import { expect, test } from './support/api';
+import { expect, live, test } from './support/api';
 import { expectRegionComponents, expectRegionsInOrder, homeStates, sellStates } from './support/parity';
 import {
   ADA,
@@ -45,7 +47,7 @@ test.describe('selling', () => {
     const held = await hold(page, 'POST', '/api/policies');
     await fillSell(page, sellForm('W1-BUSY-1'));
     await sellButton(page).click();
-    await expect.poll(() => held.count(), 'the sale is sent').toBe(1);
+    await expect.poll(() => held.count(), { message: 'the sale is sent', ...live }).toBe(1);
     await expectBusy(sellButton(page), 'Selling…');
     held.release();
   });
@@ -56,7 +58,7 @@ test.describe('selling', () => {
     const held = await hold(page, 'POST', '/api/policies');
     await fillSell(page, form);
     await sellButton(page).click();
-    await expect.poll(() => held.count(), 'the sale is sent').toBe(1);
+    await expect.poll(() => held.count(), { message: 'the sale is sent', ...live }).toBe(1);
     await expect(sellButton(page)).toHaveText('Selling…');
     expect(await formValues(page, 2), 'every value as typed').toEqual(form);
     await expect(page.getByRole('main'), 'the page names the request in flight').toContainText('POST /policies');
@@ -69,12 +71,12 @@ test.describe('selling', () => {
     const held = await hold(page, 'POST', '/api/policies');
     await fillSell(page, sellForm('W1-BUSY-3'));
     await sellButton(page).click();
-    await expect.poll(() => held.count(), 'the sale is sent').toBe(1);
+    await expect.poll(() => held.count(), { message: 'the sale is sent', ...live }).toBe(1);
     await expect(sellButton(page)).toHaveText('Selling…');
     await sellButton(page).dispatchEvent('click');
     await field(page, 'Postcode').press('Enter');
     held.release();
-    await expect(page.getByRole('main').getByRole('link', { name: 'Open policy W1-BUSY-3' }), 'the one sale is answered').toBeVisible();
+    await expect(page.getByRole('main').getByRole('link', { name: 'Open policy W1-BUSY-3' }), 'the one sale is answered').toBeVisible(live);
     expect(held.count(), 'one request, however often it was pressed').toBe(1);
   });
 
@@ -83,10 +85,10 @@ test.describe('selling', () => {
     const held = await hold(page, 'POST', '/api/policies');
     await fillSell(page, sellForm('W1-BUSY-4'));
     await sellButton(page).click();
-    await expect.poll(() => held.count(), 'the sale is sent').toBe(1);
+    await expect.poll(() => held.count(), { message: 'the sale is sent', ...live }).toBe(1);
     await expect(sellButton(page)).toHaveText('Selling…');
     held.release();
-    await expect(page.getByRole('main').getByRole('link', { name: 'Open policy W1-BUSY-4' }), 'the result').toBeVisible();
+    await expect(page.getByRole('main').getByRole('link', { name: 'Open policy W1-BUSY-4' }), 'the result').toBeVisible(live);
     await expectIdle(sellButton(page), 'Sell this policy');
   });
 
@@ -108,7 +110,7 @@ test.describe('opening a policy', () => {
     const stored = await sellThroughApi(requestOf(sellForm('W1-BUSY-6')));
     const held = await hold(page, 'GET', `/api/policies/${stored.reference}`);
     await openFromHome(page, stored.reference);
-    await expect.poll(() => held.count(), 'the policy is asked for').toBe(1);
+    await expect.poll(() => held.count(), { message: 'the policy is asked for', ...live }).toBe(1);
     await expectBusy(openButton(page), 'Opening…');
     await expect(field(page, 'Policy reference'), 'the reference is kept').toHaveValue(stored.reference);
     held.release();
@@ -119,10 +121,10 @@ test.describe('opening a policy', () => {
     const stored = await sellThroughApi(requestOf(sellForm('W1-BUSY-7')));
     const held = await hold(page, 'GET', `/api/policies/${stored.reference}`);
     await openFromHome(page, stored.reference);
-    await expect.poll(() => held.count(), 'the policy is asked for').toBe(1);
+    await expect.poll(() => held.count(), { message: 'the policy is asked for', ...live }).toBe(1);
     await expect(openButton(page)).toHaveText('Opening…');
     held.release();
-    await expect(page).toHaveURL(new RegExp(`#/workbench/policies/${stored.reference}$`));
+    await expect(page).toHaveURL(new RegExp(`#/workbench/policies/${stored.reference}$`), live);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(`Policy ${stored.reference}`);
   });
 
