@@ -107,7 +107,7 @@ nodes:
       - {id: t8, role: builder, step: green, layer: screen, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "The overview, matrix and rule screens; whole acceptance suite green", status: done}
       - {id: t9, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: done}
       - {id: t10, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: done}
-      - {id: t11, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t11, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
       - {id: t12, role: tester, step: qa, layer: null, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "QA script docs/qa/ui-U1.md: steps in the running app, tagged per rule", status: pending}
       - {id: t13, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: pending}
       - {id: t14, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: pending}
@@ -418,6 +418,9 @@ nodes:
       - "src/web/public/, src/web/test-results/ and src/web/playwright-report/ are git-ignored, so generated output can't be staged"
       - "The node's e2e suite and every earlier node's pass at the default Playwright worker count, not only at one worker"
       - "The theme toggle's choice survives a reload; with no choice made, the theme follows the system (U0b carry-over, David 2026-10-21)"
+      - "The overview and node page decide 'no trail' from the compiler's nodes[*].trail flag, which TraceNode declares, not from completeness being null (U1 review A2 R1, DATA-4)"
+      - "TraceRule.status is typed string | null, as the compiler emits it (U1 review A2 R2, MATRIX-1)"
+      - "The matrix links a PR cell out only when it matches #<n>, as the rule page does, from one shared parser (U1 review A2 R3, NAV-3)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for U7: rel=noreferrer, the CSP directives, ids refused, repeated trailers kept; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
