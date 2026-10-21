@@ -80,6 +80,20 @@ describe('the compiler writes one versioned trace.json', () => {
     // The comma form of the Rule trailer, "SELL-1, SELL-2", is two rules.
     expect(r.trace?.commits?.find((c) => c.sha === sha('c1'))?.rule).toEqual(['SELL-1', 'SELL-2']);
   });
+
+  test('DATA-1 · events, verdicts and rule status stay empty until a node drives them', () => {
+    // The lists exist (the index test above); no U0b test drives filling them, so they hold nothing yet: U1 owns
+    // rule status and its red, green and refactor commits, U3 the loop events and the verdicts. The complete trail
+    // has a nine-line loop.jsonl, two A1 verdicts and a green commit c3 naming SELL-1 and SELL-2, so a parser that
+    // runs anyway shows here. A status the compile doesn't derive is null, never a default such as not-built.
+    expect(r.error, thrown(r)).toBeUndefined();
+    expect(r.trace?.events, 'events').toEqual([]);
+    expect(r.trace?.['verdicts'], 'verdicts').toEqual([]);
+    expect(r.trace?.rules?.map((rule) => [rule.id, rule.status, rule.red, rule.green, rule.refactor])).toEqual([
+      ['SELL-1', null, [], [], []],
+      ['SELL-2', null, [], [], []],
+    ]);
+  });
 });
 
 describe('the lazy chunks', () => {

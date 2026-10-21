@@ -24,7 +24,7 @@ export interface TraceIndex {
   schemaVersion?: string;
   compiledAt?: { ref?: string; sha?: string; utc?: string };
   problems?: { file?: string | null; line?: number | null; reason?: string }[];
-  rules?: { id?: string }[];
+  rules?: { id?: string; status?: string | null; red?: string[]; green?: string[]; refactor?: string[] }[];
   plans?: { id?: string; kind?: string; title?: string | null; nodes?: string[] }[];
   nodes?: {
     plan?: string;
