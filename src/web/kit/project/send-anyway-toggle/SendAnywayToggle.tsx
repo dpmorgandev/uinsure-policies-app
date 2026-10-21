@@ -27,6 +27,11 @@ export interface SendAnywayToggleProps {
   onChange?: (checked: boolean) => void;
   /** The API's answer to a request sent with the checks off. Shown only while the toggle is on. */
   response?: SendAnywayResponse | null;
+  /**
+   * Where a rule chip in the response table links, given the rule's ID. Leave it out, or return `undefined`, to keep
+   * the rule chip's own default link.
+   */
+  ruleHref?: (ruleId: string) => string | undefined;
 }
 
 /**
@@ -34,7 +39,7 @@ export interface SendAnywayToggleProps {
  * While on, a notice stays on the page, and a response's violations are lined up with the client check that would have
  * caught each.
  */
-export function SendAnywayToggle({ checked, defaultChecked = false, onChange, response }: SendAnywayToggleProps) {
+export function SendAnywayToggle({ checked, defaultChecked = false, onChange, response, ruleHref }: SendAnywayToggleProps) {
   const hintId = useId();
   const captionId = useId();
   const [inner, setInner] = useState(defaultChecked);
@@ -87,7 +92,7 @@ export function SendAnywayToggle({ checked, defaultChecked = false, onChange, re
                 {shown.violations.map((violation) => (
                   <tr key={violation.ruleId}>
                     <th scope="row">
-                      <RuleChip ruleId={violation.ruleId} />
+                      <RuleChip ruleId={violation.ruleId} href={ruleHref?.(violation.ruleId)} />
                     </th>
                     <td>{violation.detail}</td>
                     <td>
