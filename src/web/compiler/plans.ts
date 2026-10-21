@@ -5,6 +5,7 @@
 export interface DagNode {
   id: string;
   title: string | null;
+  owner: string | null;
   status: string | null;
   attempt: number | null;
   rules: string[];
@@ -58,6 +59,7 @@ export function parseDag(source: string): Dag {
     nodes: items.map((node) => ({
       id: text(node['id']) ?? '',
       title: text(node['title']),
+      owner: text(node['owner']),
       status: text(node['status']),
       attempt: typeof node['attempt'] === 'number' ? node['attempt'] : null,
       rules: Array.isArray(node['rules']) ? node['rules'] : [],

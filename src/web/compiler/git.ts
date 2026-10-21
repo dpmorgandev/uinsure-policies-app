@@ -4,6 +4,8 @@ import { execFileSync } from 'node:child_process';
 export interface GitCommit {
   sha: string;
   subject: string;
+  /** The author date git recorded, in UTC. */
+  date: string;
   trailers: Record<string, string>;
 }
 
@@ -42,13 +44,13 @@ function trailersOf(body: string): Record<string, string> {
 
 /** Every commit reachable from the commit, oldest first. */
 export function readCommits(root: string, sha: string): GitCommit[] {
-  const log = git(root, ['log', '--reverse', '--format=%H%x1f%s%x1f%b%x1e', sha]);
+  const log = git(root, ['log', '--reverse', '--format=%H%x1f%s%x1f%aI%x1f%b%x1e', sha]);
   return log
     .split('\x1e')
     .map((record) => record.replace(/^\n/, ''))
     .filter((record) => record.trim() !== '')
     .map((record) => {
-      const [commit = '', subject = '', body = ''] = record.split('\x1f');
-      return { sha: commit, subject, trailers: trailersOf(body) };
+      const [commit = '', subject = '', date = '', body = ''] = record.split('\x1f');
+      return { sha: commit, subject, date: new Date(date).toISOString(), trailers: trailersOf(body) };
     });
 }
