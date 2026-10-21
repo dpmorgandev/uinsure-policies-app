@@ -24,6 +24,11 @@ export interface DagTableProps {
   nodes: readonly DagNode[];
   /** Says what the table is. Defaults to the text-equivalent wording. */
   caption?: string;
+  /**
+   * Where each rule chip links, given the rule ID. Return `undefined` (or leave the prop out) to keep the chip's own
+   * default, `/rules/<ruleId>`.
+   */
+  ruleHref?: (ruleId: string) => string | undefined;
 }
 
 /** A node's status as a word, a glyph and a colour. Shared by the graph and the table, so they never disagree. */
@@ -43,6 +48,7 @@ export function DagStatusTag({ status }: { status: DagNodeStatus }) {
 export function DagTable({
   nodes,
   caption = 'The plan as an adjacency table: each node, what it waits for, its status and its rules',
+  ruleHref,
 }: DagTableProps) {
   return (
     <div className={styles.frame} role="region" aria-label="Plan nodes table, scrolls sideways" tabIndex={0}>
@@ -93,7 +99,11 @@ export function DagTable({
                   <ul className={styles.rules} aria-label={`${node.id} rules`}>
                     {node.rules.map((rule) => (
                       <li key={rule}>
-                        <RuleChip ruleId={rule} status={node.status === 'not-built' ? 'nb' : 'built'} />
+                        <RuleChip
+                          ruleId={rule}
+                          status={node.status === 'not-built' ? 'nb' : 'built'}
+                          href={ruleHref?.(rule)}
+                        />
                       </li>
                     ))}
                   </ul>

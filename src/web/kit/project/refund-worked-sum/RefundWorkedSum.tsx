@@ -28,6 +28,11 @@ export interface RefundWorkedSumProps {
   note?: ReactNode;
   /** Names the table. */
   caption?: string;
+  /**
+   * Where each rule chip links, given the rule ID. Return `undefined` (or leave the prop out) to keep the chip's own
+   * default, `/rules/<ruleId>`. A rule the kit does not recognise is not a link, so it is never asked.
+   */
+  ruleHref?: (ruleId: string) => string | undefined;
 }
 
 interface RuleInfo {
@@ -83,6 +88,7 @@ export function RefundWorkedSum({
   totalRefund,
   note,
   caption = "Refund per term, from the quote's own fields",
+  ruleHref,
 }: RefundWorkedSumProps) {
   const captionId = useId();
   const hasTotal = totalRefund !== undefined && totalRefund !== null && totalRefund !== '';
@@ -100,7 +106,11 @@ export function RefundWorkedSum({
             <li key={line.termNumber} className={styles.rung} data-rule={line.ruleApplied} data-zero={zero ? 'true' : undefined}>
               <div className={styles.lbl}>
                 <span className={styles.step}>Term {line.termNumber}</span>
-                <RuleChip ruleId={line.ruleApplied} status={info ? 'built' : 'unknown'} />
+                <RuleChip
+                  ruleId={line.ruleApplied}
+                  status={info ? 'built' : 'unknown'}
+                  href={info ? ruleHref?.(line.ruleApplied) : undefined}
+                />
               </div>
               <div className={styles.rail}>
                 <span className={styles.mk} aria-hidden="true">

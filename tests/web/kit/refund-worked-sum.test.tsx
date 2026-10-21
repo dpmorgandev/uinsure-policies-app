@@ -138,6 +138,18 @@ describe('RefundWorkedSum', () => {
     expect(screen.getByText(/The unrounded quotient is 445\.1112/)).toBeTruthy();
   });
 
+  it('sends a caller-set link to the rule chip, and keeps the default when it sets none', () => {
+    const terms = [{ termNumber: 1, ruleApplied: 'CANCEL-1c', refundAmount: '445.11' }];
+    const { rerender } = render(<RefundWorkedSum terms={terms} />);
+    expect(screen.getByRole('link', { name: 'CANCEL-1c' }).getAttribute('href')).toBe('/rules/CANCEL-1c');
+    rerender(<RefundWorkedSum terms={terms} ruleHref={(id) => `#/rules/${id}`} />);
+    expect(screen.getByRole('link', { name: 'CANCEL-1c' }).getAttribute('href')).toBe('#/rules/CANCEL-1c');
+    rerender(<RefundWorkedSum terms={terms} ruleHref={() => `#/rules/other`} />);
+    expect(screen.getByRole('link', { name: 'CANCEL-1c' }).getAttribute('href')).toBe('#/rules/other');
+    rerender(<RefundWorkedSum terms={terms} ruleHref={() => undefined} />);
+    expect(screen.getByRole('link', { name: 'CANCEL-1c' }).getAttribute('href')).toBe('/rules/CANCEL-1c');
+  });
+
   it('has nothing to press', () => {
     render(exampleFor('total'));
     expect(screen.queryAllByRole('button').length).toBe(0);

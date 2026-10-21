@@ -53,6 +53,22 @@ describe('ProblemBanner', () => {
     expect(within(alert).getByText('No response')).toBeTruthy();
   });
 
+  it('the rule chip keeps its default link when the caller sets none', () => {
+    render(<ProblemBanner status={409} title="Policy already cancelled" ruleId="CANCEL-4" />);
+    expect(screen.getByRole('link', { name: 'CANCEL-4' }).getAttribute('href')).toBe('/rules/CANCEL-4');
+  });
+
+  it('a caller-set ruleHref reaches the rule chip, and follows a re-render', () => {
+    const { rerender } = render(
+      <ProblemBanner status={409} title="Policy already cancelled" ruleId="CANCEL-4" ruleHref="#/rules/CANCEL-4" />,
+    );
+    expect(screen.getByRole('link', { name: 'CANCEL-4' }).getAttribute('href')).toBe('#/rules/CANCEL-4');
+    rerender(
+      <ProblemBanner status={409} title="Policy already cancelled" ruleId="CANCEL-4" ruleHref="#/plans/p/rules/CANCEL-4" />,
+    );
+    expect(screen.getByRole('link', { name: 'CANCEL-4' }).getAttribute('href')).toBe('#/plans/p/rules/CANCEL-4');
+  });
+
   it('uses the heading level it is given', () => {
     render(<ProblemBanner title="Not found" status={404} headingLevel={2} />);
     expect(screen.getByRole('heading', { level: 2, name: 'Not found' })).toBeTruthy();
