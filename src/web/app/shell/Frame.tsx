@@ -6,6 +6,7 @@ import { loadTrace } from '../data/trace';
 import { workbenchRoutes } from '../workbench/routes';
 import { NodeHeader } from './NodeHeader';
 import { REPO } from './repo';
+import { useHashRuleLinks } from './RuleLinks';
 import { ShellProvider } from './ShellContext';
 import type { TraceState } from './ShellContext';
 import './notice.css';
@@ -56,6 +57,7 @@ export function Frame() {
   const trace = useTraceFile();
   const [theme, setTheme] = useState<ThemeChoice>('system');
   useAppliedTheme(theme);
+  useHashRuleLinks();
 
   const about = useMatch('/about');
   const activity = useMatch('/plans/:planId/:nodeId/activity');
