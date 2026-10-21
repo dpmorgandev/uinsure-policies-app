@@ -23,6 +23,8 @@ export interface TracePlan {
   id: string;
   kind: string | null;
   title: string | null;
+  /** The plan file the node list was read from, when the plan has one. */
+  source?: string | null;
   nodes: string[];
 }
 
@@ -35,6 +37,7 @@ export interface TraceNode {
   plan: string;
   id: string;
   title: string | null;
+  owner?: string | null;
   status: string | null;
   attempt: number | null;
   completeness: string | null;
@@ -44,18 +47,96 @@ export interface TraceNode {
   chunks: TraceChunks;
 }
 
+/** A file and the 1-based line a value was read from. */
+export interface SourceLine {
+  file: string;
+  line: number;
+}
+
+/** A rule's test count. `pass` is null when the trail holds none (the matrix reads `?/3`). */
+export interface TestCount {
+  pass: number | null;
+  total: number | null;
+  raw: string;
+}
+
+/** One row of docs/trace/requirements-matrix.md. A commit is the short SHA the matrix gives. */
+export interface MatrixRow {
+  plan: string | null;
+  node: string | null;
+  tests: TestCount | null;
+  red: string | null;
+  green: string | null;
+  refactor: string | null;
+  qaStep: string | null;
+  signoff: string | null;
+  pr: string | null;
+  source?: SourceLine | null;
+}
+
+export interface RuleTest {
+  name: string;
+  file: string;
+}
+
+export interface TraceRule {
+  id: string;
+  title: string | null;
+  priority: string | null;
+  feature: string | null;
+  /** The agreed interpretation as written in requirements.md, Markdown kept. */
+  interpretation: string | null;
+  source: SourceLine | null;
+  status: string;
+  matrix: MatrixRow | null;
+  tests?: RuleTest[];
+}
+
+export interface TraceCommit {
+  sha: string;
+  short: string;
+  subject: string;
+  plan: string | null;
+  node: string | null;
+  agent: string | null;
+  rule: string[];
+  tdd: string | null;
+  /** The commit's row in its node's walkthrough. */
+  order: number | null;
+  /** The commit date, an ISO instant. */
+  date?: string | null;
+  parents?: string[];
+}
+
+export interface TraceVerdict {
+  plan: string;
+  node: string;
+  round: string;
+  agent: string;
+  verdict: string;
+  file?: string | null;
+}
+
+export interface TraceDecision {
+  kind: string;
+  plan: string;
+  node: string | null;
+  sha?: string | null;
+  evidence?: SourceLine | null;
+}
+
 export interface Trace {
   schemaVersion: string;
   compiledAt: CompiledAt;
   problems: TraceProblem[];
-  rules: unknown[];
+  rules: TraceRule[];
   plans: TracePlan[];
   nodes: TraceNode[];
-  commits: unknown[];
+  commits: TraceCommit[];
   events: unknown[];
-  verdicts: unknown[];
+  verdicts: TraceVerdict[];
   findings: unknown[];
-  decisions: unknown[];
+  decisions: TraceDecision[];
   sessions: unknown[];
   harness: unknown;
 }

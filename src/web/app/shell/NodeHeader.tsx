@@ -1,6 +1,7 @@
 import { AgentBadge, Breadcrumbs, CompletenessBanner, NotBuiltYet, PageHeader, Tabs } from '../../kit';
 import type { Status } from '../../kit';
 import type { TraceNode } from '../data/trace';
+import { agentOf } from './agents';
 
 const STATUS: Record<string, { value: Status; label: string }> = {
   done: { value: 'pass', label: 'Done' },
@@ -18,6 +19,7 @@ function statusOf(status: string | null): { value: Status; label: string } | nul
 export function NodeHeader({ node, compiledAt, current }: { node: TraceNode; compiledAt: string; current: 'node' | 'activity' }) {
   const base = `#/plans/${node.plan}/${node.id}`;
   const gitOnly = node.completeness?.includes('git-only') ?? false;
+  const owner = agentOf(node.owner);
   return (
     <>
       <Breadcrumbs
@@ -33,7 +35,7 @@ export function NodeHeader({ node, compiledAt, current }: { node: TraceNode; com
         status={statusOf(node.status)}
         ids={[{ label: 'Attempt', value: node.attempt === null ? null : String(node.attempt) }]}
         compiledAt={compiledAt}
-        note={gitOnly ? <AgentBadge agent="david" /> : undefined}
+        note={owner === null ? undefined : <AgentBadge agent={owner} />}
       />
       {node.completeness === null ? (
         <NotBuiltYet kind="region" name="trail completeness" />
