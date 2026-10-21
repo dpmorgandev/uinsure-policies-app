@@ -9,7 +9,7 @@
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { git, replayTrail, run, SLOW, thrown } from './support/trail';
 import type { Run, Trail } from './support/trail';
-import { commitOf, commitsOf, REQUIREMENTS_FILE, ruleOf, RULES, SHAPES, UI_REQUIREMENTS_FILE } from './support/rules';
+import { commitOf, commitsOf, MATRIX_FILE, REQUIREMENTS_FILE, ruleOf, RULES, SHAPES, shortOf, TWO_PLANS, UI_REQUIREMENTS_FILE } from './support/rules';
 
 let trail: Trail;
 let r: Run;
@@ -94,5 +94,38 @@ describe("each commit's parents, for the commit page's parent links", () => {
     const found = commitsOf(s).find((c) => c.sha === merge.sha);
     expect(found?.sha ?? null, 'the merge commit is compiled').toBe(merge.sha);
     expect(found?.parents ?? null).toEqual([shapes.shas['c1'], merge.side]);
+  });
+});
+
+// U1 D2: the `two-plans` fixture trail (its README). docs/trace/requirements-matrix.md, as the real one has it:
+// SELL-1's refactor cell is a short SHA (c3, line 6); CANCEL-5's (line 7) and RENEW-1/2's (line 8) read `undefined`,
+// the literal an earlier render-trace wrote and the current one copies forward.
+describe('a matrix commit cell that is not a SHA', () => {
+  let two: Trail;
+  let t: Run;
+  beforeAll(() => {
+    two = replayTrail(TWO_PLANS);
+    t = run(two.root);
+  }, SLOW);
+  afterAll(() => two?.cleanup());
+
+  const refactorOf = (id: string): unknown[] => {
+    const rule = ruleOf(t, id);
+    return [id, rule?.matrix?.refactor ?? null, rule?.refactor ?? null];
+  };
+
+  test("NAV-3 · an 'undefined' refactor cell is no commit: CANCEL-5 has none, while SELL-1's SHA cell stays its commit", () => {
+    expect(t.error, thrown(t)).toBeUndefined();
+    expect([refactorOf('SELL-1'), refactorOf('CANCEL-5')]).toEqual([
+      ['SELL-1', shortOf(two, 'c3'), [shortOf(two, 'c3')]],
+      ['CANCEL-5', null, []],
+    ]);
+  });
+
+  test("NAV-3 · an 'undefined' commit cell is reported in problems[] at its file and line, requirements-matrix.md line 7, and a SHA cell is not", () => {
+    expect(t.error, thrown(t)).toBeUndefined();
+    const lines = (t.trace?.problems ?? []).filter((p) => p.file === MATRIX_FILE).map((p) => p.line ?? null);
+    expect(lines, 'CANCEL-5, line 7').toContain(7);
+    expect(lines, 'SELL-1, line 6, holds a SHA').not.toContain(6);
   });
 });

@@ -11,6 +11,7 @@ import {
   auditEverywhere,
   commitHref,
   compileRules,
+  compileTwoPlans,
   matrixLine,
   matrixRuleIds,
   openOnFixture,
@@ -126,6 +127,40 @@ test.describe('the matrix', () => {
       const pr = rows.find((r) => (r['Rule']?.text ?? '').startsWith(id))?.['PR'];
       expect(pr?.links, `${id}'s PR`).toEqual([{ text: '#10', href: `${REPO}/pull/10` }]);
     }
+  });
+});
+
+// U1 D2/I5, on the `two-plans` fixture (its README): docs/trace/requirements-matrix.md's refactor cell reads
+// `undefined` for CANCEL-5 (and RENEW-1/2), as the real matrix has it for 7 build rules; SELL-1's holds c3's SHA.
+test.describe('a matrix commit cell that is not a SHA', () => {
+  let two: CompiledTrail;
+  test.beforeAll(() => {
+    two = compileTwoPlans();
+  });
+  test.afterAll(() => {
+    two?.trail.cleanup();
+  });
+
+  test("NAV-3 · the matrix links no commit from CANCEL-5's 'undefined' refactor cell, and still links SELL-1's refactor c3", async ({ page }) => {
+    await openOnFixture(page, two, route.matrix);
+    await expect.poll(() => matrixRuleIds(page)).toContain('CANCEL-5');
+    const { rows } = await readMatrix(page);
+    const refactor = (id: string) => rows.find((r) => (r['Rule']?.text ?? '').split(' ')[0] === id)?.['Refactor'];
+    const c3 = shaOf(two, 'c3');
+    expect(refactor('SELL-1')?.links.map((l) => l.href), "SELL-1's refactor is c3 on GitHub").toEqual([expect.stringMatching(commitHref(REPO, c3))]);
+    expect(refactor('CANCEL-5')?.links, "CANCEL-5's refactor cell links nothing").toEqual([]);
+    await expect(page.locator('a[href*="/commit/undefined"]'), 'no link to a commit named undefined').toHaveCount(0);
+  });
+
+  test("NAV-3 · CANCEL-5's rule page links its red and green commits and no commit named 'undefined'", async ({ page }) => {
+    await openRule(page, two, 'CANCEL-5');
+    const links = region(page, RULE_LINKS);
+    for (const id of ['c7', 'c8']) {
+      const sha = shaOf(two, id);
+      await expect(links.getByRole('link', { name: short(sha) }).first(), `${id} on GitHub`).toHaveAttribute('href', commitHref(REPO, sha));
+    }
+    await expect(page.locator('a[href*="/commit/undefined"]'), 'no link to a commit named undefined').toHaveCount(0);
+    await expect(links.getByRole('link', { name: 'undefined' }), 'no SHA link reads undefined').toHaveCount(0);
   });
 });
 
