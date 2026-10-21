@@ -7,6 +7,7 @@
     "strict": true,
     "noUncheckedIndexedAccess": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "skipLibCheck": true,
     "isolatedModules": true,
     "lib": [
@@ -18,15 +19,23 @@
       "vite/client"
     ],
     "paths": {
-      "*": [
-        "./node_modules/@types/*",
-        "./node_modules/*"
-      ]
+      "@axe-core/playwright": ["./node_modules/@axe-core/playwright"],
+      "@playwright/test": ["./node_modules/@playwright/test"],
+      "@testing-library/*": ["./node_modules/@testing-library/*"],
+      "react": ["./node_modules/@types/react"],
+      "react/*": ["./node_modules/@types/react/*"],
+      "vitest": ["./node_modules/vitest"]
     }
   },
   "include": [
+    "app",
+    "compiler",
     "kit",
     "vite.config.ts",
-    "../../tests/web/kit"
+    "playwright.config.ts",
+    "eslint.config.js",
+    "../../tests/web/kit",
+    "../../tests/web/unit",
+    "../../tests/web/e2e"
   ]
 }
