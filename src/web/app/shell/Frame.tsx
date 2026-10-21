@@ -12,7 +12,7 @@ import './notice.css';
 // The built sections are links. The ones the app has not built are drawn as "not built yet", never as a link.
 const NAV: NavItem[] = [
   { key: 'overview', label: 'Overview', href: '#/', scope: 'explorer' },
-  { key: 'matrix', label: 'Requirements matrix', notBuilt: true, scope: 'explorer' },
+  { key: 'matrix', label: 'Requirements matrix', href: '#/rules', scope: 'explorer' },
   { key: 'plan', label: 'Plan', notBuilt: true, scope: 'explorer' },
   { key: 'decisions', label: 'Human decisions', notBuilt: true, scope: 'explorer' },
   { key: 'about', label: 'How to read this', href: '#/about', scope: 'explorer' },
@@ -59,10 +59,22 @@ export function Frame() {
   const about = useMatch('/about');
   const activity = useMatch('/plans/:planId/:nodeId/activity');
   const overview = useMatch('/');
-  const { planId, nodeId } = activity?.params ?? {};
+  const matrix = useMatch('/rules');
+  const rule = useMatch('/rules/:ruleId');
+  const nodePage = useMatch('/plans/:planId/:nodeId');
+  const commit = useMatch('/commits/:sha');
+  const { planId, nodeId } = (activity ?? nodePage)?.params ?? {};
 
-  const title = activity ? `Node ${planId}/${nodeId}` : about ? 'How to read this' : overview ? 'Overview' : 'Not built yet';
-  const current = about ? 'about' : overview ? 'overview' : '';
+  const titles: [boolean, string][] = [
+    [activity !== null || nodePage !== null, `Node ${planId}/${nodeId}`],
+    [commit !== null, `Commit ${(commit?.params.sha ?? '').slice(0, 7)}`],
+    [rule !== null, 'Rule'],
+    [matrix !== null, 'Requirements matrix'],
+    [about !== null, 'How to read this'],
+    [overview !== null, 'Overview'],
+  ];
+  const title = titles.find(([matched]) => matched)?.[1] ?? 'Not built yet';
+  const current = about ? 'about' : overview ? 'overview' : matrix || rule ? 'matrix' : '';
 
   useEffect(() => {
     document.title = `${title} · Docket`;
@@ -71,7 +83,7 @@ export function Frame() {
   const node = trace.state === 'ready' ? trace.trace.nodes.find((n) => n.plan === planId && n.id === nodeId) : undefined;
   const content = (
     <ShellProvider value={{ trace, theme, setTheme }}>
-      {node !== undefined && trace.state === 'ready' ? <NodeHeader node={node} compiledAt={trace.snapshot.utc} /> : null}
+      {node !== undefined && trace.state === 'ready' ? <NodeHeader node={node} compiledAt={trace.snapshot.utc} current={activity ? 'activity' : 'node'} /> : null}
       <Outlet />
     </ShellProvider>
   );
