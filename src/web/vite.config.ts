@@ -13,8 +13,13 @@ const alias = deps.map((name) => ({
   replacement: resolve(import.meta.dirname, 'node_modules', name) + '$1',
 }));
 
-// The workbench calls /api/...; the app proxies it to the API port it is given.
-const proxy = { '/api': `http://localhost:${process.env.DOCKET_API_PORT ?? 5080}` };
+// The workbench calls /api/...; the app proxies it to the API port it is given, whose routes have no /api prefix.
+const proxy = {
+  '/api': {
+    target: `http://localhost:${process.env.DOCKET_API_PORT ?? 5080}`,
+    rewrite: (path: string) => path.replace(/^\/api/, ''),
+  },
+};
 
 // A kit class is kit-<component>__<local>, as in the stylekit the screens were signed off against (parity reads it).
 function scopedName(local: string, filename: string): string {

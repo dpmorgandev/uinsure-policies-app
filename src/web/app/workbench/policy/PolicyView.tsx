@@ -1,202 +1,399 @@
-import { DataTable, KeyValueList, PageHeader, StatusTag, TermTimeline } from '../../../kit';
-import type { DataTableColumn } from '../../../kit';
+import { useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useParams } from 'react-router';
+import { DataTable, KeyValueList, PageHeader, ProblemBanner, StatusTag, TermTimeline } from '../../../kit';
+import type { DataTableColumn, KeyValueItem, Status, TermTimelineProps } from '../../../kit';
+import { getPolicy } from '../../data/api';
+import type { ApiAnswer, Policy } from '../../data/api';
 import { NotBuiltRegion } from '../../shell/Rung';
+import { browserDeps } from '../browser';
+import { ProblemView } from '../ProblemView';
 import '../workbench.css';
 
-// Stub: the canned content of docs/ui/derived/W1/wb-policy/populated.html. The client replaces it.
-const REFERENCE = 'F2-MVFJQA9DQG';
-const PAYMENT_REFERENCE = 'PAY-0e2c23022f8e492885b80b36e774a63d';
+// How the API's status word is drawn. The word shown is always the API's own.
+const STATUS_TAGS: Record<string, Status> = { Pending: 'pending', Active: 'pass', Expired: 'warn', Cancelled: 'fail' };
 
-interface HolderRow {
+type JsonRecord = Record<string, unknown>;
+type TimelineClaim = NonNullable<TermTimelineProps['claims']>[number];
+type TimelineCancellation = NonNullable<TermTimelineProps['cancellation']>;
+
+interface Row {
   id: string;
-  firstName: string;
-  lastName: string;
-  dateOfBirth: string;
+  cells: (string | null)[];
 }
 
-interface PaymentRow {
-  id: string;
-  reference: string;
-  type: string;
-  amount: string;
+const isRecord = (value: unknown): value is JsonRecord => typeof value === 'object' && value !== null && !Array.isArray(value);
+
+/** A value of the API's answer as text, a money amount to two places; null when the answer holds none. */
+function textOf(value: unknown): string | null {
+  if (typeof value === 'number') return value.toFixed(2);
+  return typeof value === 'string' ? value : null;
 }
 
-const HOLDER_COLUMNS: DataTableColumn<HolderRow>[] = [
-  { id: 'n', header: '#', cell: (row) => `#${row.id}`, rowHeader: true, sortable: true },
-  { id: 'firstName', header: 'First name', cell: (row) => row.firstName },
-  { id: 'lastName', header: 'Last name', cell: (row) => row.lastName },
-  { id: 'dateOfBirth', header: 'Date of birth', cell: (row) => row.dateOfBirth, mono: true },
-];
+function recordsOf(list: unknown[]): JsonRecord[] {
+  return list.filter(isRecord);
+}
 
-const PAYMENT_COLUMNS: DataTableColumn<PaymentRow>[] = [
-  { id: 'n', header: '#', cell: (row) => `#${row.id}`, rowHeader: true, sortable: true },
-  { id: 'reference', header: 'Reference', cell: (row) => row.reference, mono: true },
-  { id: 'type', header: 'Type', cell: (row) => row.type },
-  { id: 'amount', header: 'Amount', cell: (row) => row.amount, numeric: true },
-];
+function columns(headers: string[], mono: number[] = [], numeric: number[] = []): DataTableColumn<Row>[] {
+  return [
+    { id: 'n', header: '#', cell: (row) => `#${row.id}`, rowHeader: true, sortable: true },
+    ...headers.map((header, index) => ({
+      id: `c${index}`,
+      header,
+      cell: (row: Row) => row.cells[index] ?? null,
+      mono: mono.includes(index),
+      numeric: numeric.includes(index),
+    })),
+  ];
+}
 
-const HOLDERS: HolderRow[] = [
-  { id: '1', firstName: 'Grace', lastName: 'Hopper', dateOfBirth: '1990-04-12' },
-  { id: '2', firstName: 'Alan', lastName: 'Turing', dateOfBirth: '1992-06-23' },
-];
+const HOLDER_COLUMNS = columns(['First name', 'Last name', 'Date of birth'], [2]);
+const PAYMENT_COLUMNS = columns(['Reference', 'Type', 'Amount'], [0], [2]);
+const REFUND_COLUMNS = columns(['Refund reference', 'Type', 'Amount', 'Payment reference'], [0, 3], [2]);
+const CLAIM_COLUMNS = columns(['Claim reference', 'Date', 'Description'], [0, 1]);
 
-const PAYMENTS: PaymentRow[] = [{ id: '1', reference: PAYMENT_REFERENCE, type: 'Card', amount: '412.34' }];
+const numbered = (cells: (string | null)[][]): Row[] => cells.map((row, index) => ({ id: String(index + 1), cells: row }));
 
-export function PolicyView() {
+const sorted = { columnId: 'n', direction: 'ascending' } as const;
+
+const plural = (count: number, one: string, many: string): string => `${count} ${count === 1 ? one : many}`;
+
+function Region({ slug, req, heading, children }: { slug: string; req: string; heading: string; children: ReactNode }) {
   return (
-    <div className="s-wb-page">
-      <section className="s-wb-region" data-region="status-and-current-term" data-req="WB-2">
-        <PageHeader
-          mode="live"
-          title={`Policy ${REFERENCE}`}
-          eyebrow={`Workbench · Policy · ${REFERENCE}`}
-          question="What does the API say this policy is, term by term, and what has happened to it?"
-          answer="Pending. Term 1 runs 2026-11-18 to 2027-11-17, with one payment of 412.34 by Card. No claims, no refunds, no cancellation."
-          status={{ value: 'pending', label: 'Pending' }}
-          ids={[
-            { label: 'Policy', value: REFERENCE },
-            { label: 'Type', value: 'BuyToLet' },
-            { label: 'Term 1', value: '2026-11-18 to 2027-11-17' },
-          ]}
-          liveNote={`GET /policies/${REFERENCE} answered 200, recorded 2026-10-19T17:46:34Z (GET-1 · sold policy reads back in full → 200)`}
-        />
-        <div className="s-wb-stack">
-          <h2 className="s-wb-heading">Current term</h2>
-          <KeyValueList
-            items={[
-              { label: 'Current term number', value: '1', mono: true },
-              { label: 'Start date', value: '2026-11-18', mono: true },
-              { label: 'End date', value: '2027-11-17', mono: true },
-              { label: 'Amount', value: '412.34', mono: true },
-              { label: 'Has claims', value: 'false', mono: true },
-              { label: 'Auto renew', value: 'false', mono: true },
-            ]}
-          />
-        </div>
-      </section>
+    <section className="s-wb-region" data-region={slug} data-req={req}>
+      <h2 className="s-wb-heading">{heading}</h2>
+      {children}
+    </section>
+  );
+}
 
-      <section
-        className="s-wb-region"
-        data-region="terms-timeline-terms-payments-claims-cancellation-dates-the-api-returned-only"
-        data-req="WB-2"
-      >
-        <h2 className="s-wb-heading">Terms timeline</h2>
+/** A section's value when the API sent no policy: the words say why, and no figure is drawn. */
+function notReturned(label: string, why: string): ReactNode {
+  return <KeyValueList items={[{ label, missing: why }]} />;
+}
+
+interface PolicyDetailProps {
+  policy: Policy;
+}
+
+function PolicyDetail({ policy }: PolicyDetailProps) {
+  const reference = policy.reference;
+  const claims = recordsOf(policy.claims);
+  const refunds = recordsOf(policy.refunds);
+  const cancellation = isRecord(policy.cancellation) ? policy.cancellation : null;
+
+  const timelineClaims: TimelineClaim[] = claims.flatMap((claim) => {
+    const claimDate = textOf(claim['claimDate']);
+    return claimDate === null ? [] : [{ reference: textOf(claim['reference']) ?? '', claimDate, description: textOf(claim['description']) }];
+  });
+  const cancelledOn = cancellation ? textOf(cancellation['cancellationDate']) : null;
+  const timelineCancellation: TimelineCancellation | null =
+    cancellation && cancelledOn !== null
+      ? { cancellationDate: cancelledOn, ruleApplied: textOf(cancellation['ruleApplied']), totalRefund: textOf(cancellation['totalRefund']) }
+      : null;
+
+  return (
+    <>
+      <Region slug="terms-timeline-terms-payments-claims-cancellation-dates-the-api-returned-only" req="WB-2" heading="Terms timeline">
         <TermTimeline
-          policyReference={REFERENCE}
-          terms={[
-            {
-              termNumber: 1,
-              startDate: '2026-11-18',
-              endDate: '2027-11-17',
-              amount: '412.34',
-              payment: { type: 'Card', reference: PAYMENT_REFERENCE, amount: '412.34' },
-            },
-          ]}
+          policyReference={reference}
+          claims={timelineClaims}
+          cancellation={timelineCancellation}
+          terms={policy.terms.map((term) => {
+            const payment = policy.payments.find((p) => p.reference === term.paymentReference);
+            return {
+              termNumber: term.termNumber,
+              startDate: term.startDate,
+              endDate: term.endDate,
+              amount: term.amount.toFixed(2),
+              payment: payment
+                ? { type: payment.type, reference: payment.reference, amount: payment.amount.toFixed(2) }
+                : { type: 'not returned', reference: term.paymentReference },
+            };
+          })}
         />
-        <p className="s-wb-note">
-          The response holds no claim and no cancellation, so the timeline has no rung for either. The payment reference is the
-          one on term 1 in the response.
-        </p>
-      </section>
+        {claims.length === 0 && cancellation === null ? (
+          <p className="s-wb-note">The response holds no claim and no cancellation, so the timeline has no rung for either.</p>
+        ) : null}
+      </Region>
 
-      <section className="s-wb-region" data-region="policyholders-and-property" data-req="WB-2">
-        <h2 className="s-wb-heading">Policyholders and property</h2>
+      <Region slug="policyholders-and-property" req="WB-2" heading="Policyholders and property">
         <div className="s-wb-stack">
           <h3 className="s-wb-heading">Policyholders</h3>
           <DataTable
-            caption={`Policyholders on ${REFERENCE}, numbered in the order the API returned them. Two policyholders.`}
+            caption={`Policyholders on ${reference}, numbered in the order the API returned them. ${plural(policy.policyholders.length, 'policyholder', 'policyholders')}.`}
             columns={HOLDER_COLUMNS}
-            rows={HOLDERS}
-            sort={{ columnId: 'n', direction: 'ascending' }}
+            rows={numbered(policy.policyholders.map((h) => [h.firstName, h.lastName, h.dateOfBirth]))}
+            sort={sorted}
           />
         </div>
         <div className="s-wb-stack">
           <h3 className="s-wb-heading">Property</h3>
           <KeyValueList
+            missingLabel="null: the API returned none"
             items={[
-              { label: 'Address line 1', value: '7 Canal St' },
-              { label: 'Address line 2', value: 'Flat 3' },
-              { label: 'Address line 3', value: 'Ancoats' },
-              { label: 'Postcode', value: 'M4 6BX', mono: true },
+              { label: 'Address line 1', value: policy.property.addressLine1 },
+              { label: 'Address line 2', value: policy.property.addressLine2 },
+              { label: 'Address line 3', value: policy.property.addressLine3 },
+              { label: 'Postcode', value: policy.property.postcode, mono: true },
             ]}
           />
         </div>
-      </section>
+      </Region>
 
-      <section className="s-wb-region" data-region="payments-and-refunds" data-req="WB-2">
-        <h2 className="s-wb-heading">Payments and refunds</h2>
+      <Region slug="payments-and-refunds" req="WB-2" heading="Payments and refunds">
         <div className="s-wb-stack">
           <h3 className="s-wb-heading">Payments</h3>
           <DataTable
-            caption={`Payments on ${REFERENCE}, numbered in the order the API returned them. One payment.`}
+            caption={`Payments on ${reference}, numbered in the order the API returned them. ${plural(policy.payments.length, 'payment', 'payments')}.`}
             columns={PAYMENT_COLUMNS}
-            rows={PAYMENTS}
-            sort={{ columnId: 'n', direction: 'ascending' }}
+            rows={numbered(policy.payments.map((p) => [p.reference, p.type, p.amount.toFixed(2)]))}
+            sort={sorted}
+            empty={{ context: 'empty', title: `The API returned no payments for ${reference}.` }}
           />
         </div>
         <div className="s-wb-stack">
           <h3 className="s-wb-heading">Refunds</h3>
           <DataTable
-            caption={`Refunds on ${REFERENCE}: none returned.`}
-            columns={[
-              { id: 'n', header: '#', cell: () => null, sortable: true },
-              { id: 'reference', header: 'Refund reference', cell: () => null },
-              { id: 'type', header: 'Type', cell: () => null },
-              { id: 'amount', header: 'Amount', cell: () => null, numeric: true },
-              { id: 'payment', header: 'Payment reference', cell: () => null },
-            ]}
-            rows={[]}
+            caption={`Refunds on ${reference}: ${plural(refunds.length, 'refund', 'refunds')} returned.`}
+            columns={REFUND_COLUMNS}
+            rows={numbered(
+              refunds.map((r) => [textOf(r['reference']), textOf(r['type']), textOf(r['amount']), textOf(r['paymentReference'])]),
+            )}
+            sort={sorted}
             empty={{
               context: 'empty',
-              title: `The API returned no refunds for ${REFERENCE}.`,
-              why: 'refunds is an empty list and cancellation is null: nothing has been cancelled.',
-              to: { label: 'Quote a cancellation', href: `#/workbench/policies/${REFERENCE}/cancel` },
+              title: `The API returned no refunds for ${reference}.`,
+              why: 'refunds is an empty list.',
+              to: { label: 'Quote a cancellation', href: `#/workbench/policies/${encodeURIComponent(reference)}/cancel` },
             }}
           />
         </div>
-      </section>
+      </Region>
 
-      <section className="s-wb-region" data-region="claims" data-req="WB-2 WB-5">
-        <h2 className="s-wb-heading">Claims</h2>
+      <Region slug="claims" req="WB-2 WB-5" heading="Claims">
         <DataTable
-          caption={`Claims on ${REFERENCE}: none returned (hasClaims is false).`}
-          columns={[
-            { id: 'n', header: '#', cell: () => null, sortable: true },
-            { id: 'reference', header: 'Claim reference', cell: () => null },
-            { id: 'date', header: 'Date', cell: () => null },
-            { id: 'description', header: 'Description', cell: () => null },
-          ]}
-          rows={[]}
+          caption={`Claims on ${reference}: ${plural(claims.length, 'claim', 'claims')} returned (hasClaims is ${String(policy.hasClaims)}).`}
+          columns={CLAIM_COLUMNS}
+          rows={numbered(claims.map((c) => [textOf(c['reference']), textOf(c['claimDate']), textOf(c['description'])]))}
+          sort={sorted}
           empty={{
             context: 'empty',
-            title: `The API returned no claims for ${REFERENCE}.`,
-            why: 'claims is an empty list and hasClaims is false. A recorded claim would appear here as one numbered row.',
-            to: { label: 'Record a claim', href: `#/workbench/policies/${REFERENCE}/claims/new` },
+            title: `The API returned no claims for ${reference}.`,
+            why: 'claims is an empty list. A recorded claim would appear here as one numbered row.',
+            to: { label: 'Record a claim', href: `#/workbench/policies/${encodeURIComponent(reference)}/claims/new` },
           }}
         />
-      </section>
+      </Region>
 
-      <section
-        className="s-wb-region"
-        data-region="cancellation-summary-from-get-per-term-breakdown-from-the-logged-cancel-response"
-        data-req="WB-2 WB-4"
+      <Region
+        slug="cancellation-summary-from-get-per-term-breakdown-from-the-logged-cancel-response"
+        req="WB-2 WB-4"
+        heading="Cancellation"
       >
-        <h2 className="s-wb-heading">Cancellation</h2>
+        <KeyValueList
+          items={
+            cancellation
+              ? [
+                  { label: 'Cancellation date', value: textOf(cancellation['cancellationDate']), mono: true },
+                  { label: 'Rule applied', value: textOf(cancellation['ruleApplied']), mono: true },
+                  { label: 'Total refund', value: textOf(cancellation['totalRefund']), mono: true },
+                  { label: 'Per-term breakdown, from the cancel response', missing: 'no cancel response is logged for this policy' },
+                ]
+              : [
+                  { label: 'Summary, from the GET', missing: 'cancellation is null: this policy has not been cancelled' },
+                  { label: 'Per-term breakdown, from the cancel response', missing: 'no cancel response is logged for this policy' },
+                ]
+          }
+        />
+      </Region>
+
+      <Region slug="record-level-problem-banner-404-409" req="WB-3" heading="Record-level problem">
+        <p className="s-wb-note">
+          <StatusTag status="pass">200</StatusTag> GET /policies/{reference} answered 200, so there is no problem to show. A 404 or
+          a 409 on this policy would appear here as a banner.
+        </p>
+      </Region>
+    </>
+  );
+}
+
+/** What a policy that did not come back leaves in each section: the API's own words, and no figure. */
+function NoPolicy({ why, problem }: { why: string; problem: ReactNode }) {
+  return (
+    <>
+      <Region slug="terms-timeline-terms-payments-claims-cancellation-dates-the-api-returned-only" req="WB-2" heading="Terms timeline">
+        {notReturned('Terms', `not returned: ${why}`)}
+      </Region>
+      <Region slug="policyholders-and-property" req="WB-2" heading="Policyholders and property">
         <KeyValueList
           items={[
-            { label: 'Summary, from the GET', missing: 'cancellation is null: this policy has not been cancelled' },
+            { label: 'Policyholders', missing: 'not returned' },
+            { label: 'Property', missing: 'not returned' },
+          ]}
+        />
+      </Region>
+      <Region slug="payments-and-refunds" req="WB-2" heading="Payments and refunds">
+        <KeyValueList
+          items={[
+            { label: 'Payments', missing: 'not returned' },
+            { label: 'Refunds', missing: 'not returned' },
+          ]}
+        />
+      </Region>
+      <Region slug="claims" req="WB-2 WB-5" heading="Claims">
+        {notReturned('Claims', `not returned: this is not an empty list, ${why}`)}
+      </Region>
+      <Region
+        slug="cancellation-summary-from-get-per-term-breakdown-from-the-logged-cancel-response"
+        req="WB-2 WB-4"
+        heading="Cancellation"
+      >
+        <KeyValueList
+          items={[
+            { label: 'Summary, from the GET', missing: 'not returned' },
             { label: 'Per-term breakdown, from the cancel response', missing: 'no cancel response is logged for this policy' },
           ]}
         />
+      </Region>
+      <Region slug="record-level-problem-banner-404-409" req="WB-3" heading="Record-level problem">
+        {problem}
+      </Region>
+    </>
+  );
+}
+
+function headerOf(reference: string, answer: ApiAnswer<Policy> | null): ReactNode {
+  const common = {
+    mode: 'live' as const,
+    eyebrow: `Workbench · Policy · ${reference}`,
+    question: 'What does the API say this policy is, term by term, and what has happened to it?',
+    missingLabel: 'not in this response',
+  };
+  if (answer === null) {
+    return (
+      <PageHeader
+        {...common}
+        title={`Policy ${reference}`}
+        answer="Waiting for the API. No status, term, date or amount is shown until it answers."
+        ids={[{ label: 'Policy', value: reference }]}
+        liveNote={`GET /policies/${reference} is in flight`}
+      />
+    );
+  }
+  if (answer.kind === 'ok') {
+    const policy = answer.value;
+    return (
+      <PageHeader
+        {...common}
+        title={`Policy ${policy.reference}`}
+        answer={`${policy.status}. Term ${policy.currentTermNumber} runs ${policy.startDate} to ${policy.endDate}, with ${plural(policy.payments.length, 'payment', 'payments')}, ${plural(recordsOf(policy.refunds).length, 'refund', 'refunds')} and ${plural(recordsOf(policy.claims).length, 'claim', 'claims')}.`}
+        status={{ value: STATUS_TAGS[policy.status] ?? 'warn', label: policy.status }}
+        ids={[
+          { label: 'Policy', value: policy.reference },
+          { label: 'Type', value: policy.type },
+          { label: `Term ${policy.currentTermNumber}`, value: `${policy.startDate} to ${policy.endDate}` },
+        ]}
+        liveNote={`GET /policies/${policy.reference} answered ${answer.status}`}
+      />
+    );
+  }
+  if (answer.kind === 'problem') {
+    return (
+      <PageHeader
+        {...common}
+        title={`Policy ${reference}`}
+        answer={`The API answered ${answer.status}${answer.problem.title ? `, ${answer.problem.title}` : ''}, so no status, term, date or amount is shown: none was returned.`}
+        ids={[{ label: 'Policy', value: reference }]}
+        liveNote={`GET /policies/${reference} answered ${answer.status}`}
+      />
+    );
+  }
+  return (
+    <PageHeader
+      {...common}
+      title={`Policy ${reference}`}
+      answer="Nothing yet. The API did not answer, so no status, term, date or amount is shown: none was returned."
+      ids={[{ label: 'Policy', value: reference }]}
+      liveNote="no response: nothing to record"
+    />
+  );
+}
+
+export function PolicyView() {
+  const { reference = '' } = useParams();
+  const [attempt, setAttempt] = useState(0);
+  const key = `${reference}#${attempt}`;
+  const [settled, setSettled] = useState<{ key: string; answer: ApiAnswer<Policy> } | null>(null);
+  const answer = settled?.key === key ? settled.answer : null;
+
+  useEffect(() => {
+    let current = true;
+    void getPolicy(browserDeps(), reference).then((got) => {
+      if (current) setSettled({ key, answer: got });
+    });
+    return () => {
+      current = false;
+    };
+  }, [reference, key]);
+
+  const status: KeyValueItem[] = [
+    { label: 'Current term number', missing: 'not returned' },
+    { label: 'Start date', missing: 'not returned' },
+    { label: 'End date', missing: 'not returned' },
+    { label: 'Amount', missing: 'not returned' },
+  ];
+
+  return (
+    <div className="s-wb-page">
+      <section className="s-wb-region" data-region="status-and-current-term" data-req="WB-2">
+        {headerOf(reference, answer)}
+        <div className="s-wb-stack">
+          <h2 className="s-wb-heading">Current term</h2>
+          {answer?.kind === 'ok' ? (
+            <KeyValueList
+              items={[
+                { label: 'Current term number', value: String(answer.value.currentTermNumber), mono: true },
+                { label: 'Start date', value: answer.value.startDate, mono: true },
+                { label: 'End date', value: answer.value.endDate, mono: true },
+                { label: 'Amount', value: answer.value.amount.toFixed(2), mono: true },
+                { label: 'Has claims', value: String(answer.value.hasClaims), mono: true },
+                { label: 'Auto renew', value: String(answer.value.autoRenew), mono: true },
+              ]}
+            />
+          ) : (
+            <KeyValueList
+              items={status.map((item) => ({
+                ...item,
+                missing: answer === null ? 'waiting for the API' : 'not returned',
+              }))}
+            />
+          )}
+        </div>
       </section>
 
-      <section className="s-wb-region" data-region="record-level-problem-banner-404-409" data-req="WB-3">
-        <h2 className="s-wb-heading">Record-level problem</h2>
-        <p className="s-wb-note">
-          <StatusTag status="pass">200</StatusTag> GET /policies/{REFERENCE} answered 200, so there is no problem to show. A 404
-          or a 409 on this policy would appear here as a banner.
-        </p>
-      </section>
+      {answer?.kind === 'ok' ? (
+        <PolicyDetail policy={answer.value} />
+      ) : answer === null ? (
+        <NoPolicy why="the API has not answered yet" problem={<p className="s-wb-note">Waiting for the API to answer.</p>} />
+      ) : (
+        <NoPolicy
+          why={answer.kind === 'problem' ? 'the policy was not found' : 'the API did not answer'}
+          problem={
+            answer.kind === 'problem' ? (
+              <ProblemView problem={answer.problem} />
+            ) : answer.kind === 'unreachable' ? (
+              <ProblemBanner
+                unreachable
+                title="The API did not answer"
+                detail="No request was completed. Nothing was changed by this screen."
+                extensions={[{ name: 'error', value: answer.reason }]}
+                onRetry={() => setAttempt((n) => n + 1)}
+              />
+            ) : null
+          }
+        />
+      )}
 
       <NotBuiltRegion region="actions-quote-and-cancel-record-a-claim-renew" name="actions: quote and cancel, record a claim, renew" />
       <NotBuiltRegion region="requests-that-touched-this-policy" name="requests that touched this policy" />

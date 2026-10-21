@@ -1,14 +1,60 @@
+import { useState } from 'react';
+import type { FormEvent } from 'react';
+import { useNavigate } from 'react-router';
 import { Search } from 'lucide-react';
-import { Button, PageHeader, RecentPolicies, TextInput } from '../../../kit';
+import { Button, Field, PageHeader, ProblemBanner, RecentPolicies, Spinner, TextInput } from '../../../kit';
+import { getPolicy, readRecent } from '../../data/api';
+import type { Problem } from '../../data/api';
+import { browserDeps } from '../browser';
+import { ProblemView } from '../ProblemView';
 import '../workbench.css';
 
-// Stub: the canned content of docs/ui/derived/W1/wb-home/populated.html. The loader and the client replace it.
-const RECENT = [
-  { reference: 'F2-MVFJQA9DQG', href: '#/workbench/policies/F2-MVFJQA9DQG', how: 'sold' },
-  { reference: 'F1-MVFJOFJ8IS', href: '#/workbench/policies/F1-MVFJOFJ8IS', how: 'sold' },
-] as const;
+type Opening =
+  | { kind: 'idle' }
+  | { kind: 'empty' }
+  | { kind: 'busy'; reference: string }
+  | { kind: 'problem'; problem: Problem }
+  | { kind: 'unreachable'; reference: string; reason: string };
+
+function liveNoteOf(opening: Opening): string {
+  switch (opening.kind) {
+    case 'busy':
+      return 'answered by the API; one request is in flight and no answer has come back yet';
+    case 'problem':
+      return `GET /policies answered ${opening.problem.status}`;
+    case 'unreachable':
+      return 'no answer from the API: nothing to record';
+    default:
+      return 'answered by the API when a request is sent; nothing has been requested yet';
+  }
+}
 
 export function WorkbenchHome() {
+  const navigate = useNavigate();
+  const [reference, setReference] = useState('');
+  const [opening, setOpening] = useState<Opening>({ kind: 'idle' });
+  const busy = opening.kind === 'busy';
+  const recent = readRecent(browserDeps().storage);
+
+  async function open(typed: string): Promise<void> {
+    if (busy) return;
+    const wanted = typed.trim();
+    if (wanted === '') {
+      setOpening({ kind: 'empty' });
+      return;
+    }
+    setOpening({ kind: 'busy', reference: wanted });
+    const answer = await getPolicy(browserDeps(), wanted);
+    if (answer.kind === 'ok') void navigate(`/workbench/policies/${encodeURIComponent(answer.value.reference)}`);
+    else if (answer.kind === 'problem') setOpening({ kind: 'problem', problem: answer.problem });
+    else setOpening({ kind: 'unreachable', reference: wanted, reason: answer.reason });
+  }
+
+  function submit(event: FormEvent): void {
+    event.preventDefault();
+    void open(reference);
+  }
+
   return (
     <div className="s-wb-home">
       <section className="s-wb-region s-wb-span" data-region="open-a-policy-by-reference" data-req="WB-2">
@@ -18,18 +64,26 @@ export function WorkbenchHome() {
           eyebrow="Workbench · Home"
           question="Which policy do you want to work on?"
           answer="Open one by its reference, sell a new one, or come back to a recent one."
-          liveNote="answered by the API when a request is sent; nothing has been requested yet"
+          liveNote={liveNoteOf(opening)}
         />
         <h2>Open a policy by reference</h2>
-        <p>Type the policy reference, for example F2-MVFJQA9DQG, then open it.</p>
-        <div className="s-wb-row">
+        <p>
+          {busy
+            ? `Opening ${opening.reference}. The reference and the button are locked until the API answers.`
+            : 'Type the policy reference, then open it.'}
+        </p>
+        <form className="s-wb-row" onSubmit={submit} noValidate>
           <div className="s-wb-field">
-            <TextInput aria-label="Policy reference" />
+            <Field label="Policy reference" id="open-reference" error={opening.kind === 'empty' ? 'Type a policy reference.' : undefined}>
+              {(control) => (
+                <TextInput {...control} mono disabled={busy} value={reference} onChange={(event) => setReference(event.target.value)} />
+              )}
+            </Field>
           </div>
-          <Button variant="primary" icon={<Search aria-hidden="true" />}>
+          <Button type="submit" variant="primary" busy={busy} busyLabel="Opening…" icon={<Search aria-hidden="true" />}>
             Open policy
           </Button>
-        </div>
+        </form>
       </section>
       <section
         className="s-wb-region s-wb-span"
@@ -38,10 +92,27 @@ export function WorkbenchHome() {
         aria-labelledby="s-wb-status-heading"
       >
         <h2 id="s-wb-status-heading">Request status</h2>
-        <p role="status">
-          Idle. No request sent. Opening a reference sends one GET /policies/‹reference›, and the Open policy button shows
-          Opening… and is disabled until the API answers.
-        </p>
+        {opening.kind === 'busy' ? (
+          <p role="status" className="s-wb-actions">
+            <Spinner />
+            <span>In flight: GET /policies/{opening.reference}. Waiting for the API to answer.</span>
+          </p>
+        ) : opening.kind === 'problem' ? (
+          <ProblemView problem={opening.problem} />
+        ) : opening.kind === 'unreachable' ? (
+          <ProblemBanner
+            unreachable
+            title="The API did not answer"
+            detail="No request was completed. Nothing was changed by this screen."
+            extensions={[{ name: 'error', value: opening.reason }]}
+            onRetry={() => void open(opening.reference)}
+          />
+        ) : (
+          <p role="status">
+            Idle. No request sent. Opening a reference sends one GET /policies/‹reference›, and the Open policy button shows
+            Opening… and is disabled until the API answers.
+          </p>
+        )}
       </section>
       <section className="s-wb-region" data-region="sell-a-new-policy-entry" data-req="WB-1" aria-labelledby="s-wb-sell-heading">
         <h2 id="s-wb-sell-heading">Sell a new policy</h2>
@@ -51,7 +122,18 @@ export function WorkbenchHome() {
         </p>
       </section>
       <section className="s-wb-region" data-region="recent-policies-kept-in-this-browser" data-req="WB-9">
-        <RecentPolicies policies={RECENT} />
+        <RecentPolicies
+          storage={recent.state}
+          policies={
+            recent.state === 'available'
+              ? recent.entries.map((entry) => ({
+                  reference: entry.reference,
+                  href: `#/workbench/policies/${encodeURIComponent(entry.reference)}`,
+                  how: entry.how,
+                }))
+              : []
+          }
+        />
       </section>
     </div>
   );
