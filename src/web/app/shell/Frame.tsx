@@ -1,14 +1,13 @@
-import { useEffect, useId, useState } from 'react';
-import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { Outlet, useMatch } from 'react-router';
-import { AppShell, PrimaryNav, TopBar } from '../../kit';
-import type { NavItem, ThemeChoice, TopBarProps } from '../../kit';
+import { AppShell } from '../../kit';
+import type { FooterProps, NavItem, ThemeChoice, TopBarProps } from '../../kit';
 import { loadTrace } from '../data/trace';
 import { NodeHeader } from './NodeHeader';
 import { REPO } from './repo';
 import { ShellProvider } from './ShellContext';
 import type { TraceState } from './ShellContext';
-import './frame.css';
+import './notice.css';
 
 // The built sections are links. The ones the app has not built are drawn as "not built yet", never as a link.
 const NAV: NavItem[] = [
@@ -51,20 +50,6 @@ function useTraceFile(): TraceState {
   return trace;
 }
 
-/** The page without a footer, for the time before a snapshot is known: top bar, navigation, main. */
-function UnreadFrame({ topBar, current, children }: { topBar: TopBarProps; current: string; children: ReactNode }) {
-  const mainId = useId();
-  return (
-    <div className="s-bare">
-      <TopBar {...topBar} />
-      <PrimaryNav current={current} items={NAV} />
-      <main id={mainId} className="s-bare-main" tabIndex={-1}>
-        {children}
-      </main>
-    </div>
-  );
-}
-
 /** The frame every route shares. The route decides the title, the current nav item and the node header. */
 export function Frame() {
   const trace = useTraceFile();
@@ -92,24 +77,22 @@ export function Frame() {
   );
   const topBar: TopBarProps = { appName: 'Docket', homeHref: '#/', theme, onThemeChange: setTheme };
 
-  if (trace.state !== 'ready') {
-    return (
-      <UnreadFrame topBar={topBar} current={current}>
-        {content}
-      </UnreadFrame>
-    );
-  }
-  const { sha, short, utc } = trace.snapshot;
+  // HONEST-1: until a snapshot is read the footer says so; it never shows a stamp.
+  const footer: FooterProps =
+    trace.state === 'ready'
+      ? {
+          compiledAt: {
+            sha: trace.snapshot.short,
+            fullSha: trace.snapshot.sha,
+            commitHref: `${REPO}/commit/${trace.snapshot.sha}`,
+            time: trace.snapshot.utc,
+          },
+          provenanceHref: '#/about',
+          repoHref: REPO,
+        }
+      : { noSnapshot: true, provenanceHref: '#/about', repoHref: REPO };
   return (
-    <AppShell
-      topBar={topBar}
-      nav={{ current, items: NAV }}
-      footer={{
-        compiledAt: { sha: short, fullSha: sha, commitHref: `${REPO}/commit/${sha}`, time: utc },
-        provenanceHref: '#/about',
-        repoHref: REPO,
-      }}
-    >
+    <AppShell topBar={topBar} nav={{ current, items: NAV }} footer={footer}>
       {content}
     </AppShell>
   );
