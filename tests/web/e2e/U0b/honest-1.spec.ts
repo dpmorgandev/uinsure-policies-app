@@ -64,6 +64,49 @@ test.describe('only what the trail holds', () => {
     await expect(page.getByRole('main')).not.toContainText('F3');
   });
 
+  test('HONEST-1 · the activity page shows every column of each line as the trail holds it', async ({ page }) => {
+    const snap = snapshotOf(fixture.compiled);
+    await serveTrace(page, fixture.compiled.publicDir);
+    await page.goto(route.activity(fixtureNode.plan, fixtureNode.node));
+    await expectFooterStamp(page, snap);
+    const table = page.getByRole('main').locator('[data-region="event-table-text-equivalent"] table');
+    const rows = table.locator('tbody tr');
+    await expect(rows).toHaveCount(5);
+    // Every column the event table has, each read below: a column this list lacks is a column nobody checks.
+    const names = ['Line', 'Attempt', 'Agent', 'Tool', 'File or command', 'Commit', 'TDD trailer'];
+    const headers = (await table.locator('thead th').allTextContents()).map((h) => h.trim());
+    expect(headers.length, `the table's columns: ${headers.join(' | ')}`).toBe(names.length);
+    const column = (name: string): number => {
+      const i = headers.findIndex((h) => h.startsWith(name));
+      expect(i, `the table has a "${name}" column`).toBeGreaterThanOrEqual(0);
+      return i;
+    };
+    const full = (id: string): string => fixture.trail.shas[id] ?? id;
+    // complete/trail/docs/trace/build/F1/activity.jsonl lines 1-5: attempt 1, tool Bash, one git commit each (c0-c4);
+    // the TDD trailer is each commit's own, from complete/commits.json (c0 and c4 carry none).
+    const expected = [
+      { attempt: '1', agent: 'main', tool: 'Bash', command: 'git commit -m "plan(build/F1): F1 pending → in_progress"', commit: full('c0'), tdd: 'none' },
+      { attempt: '1', agent: 'tester', tool: 'Bash', command: 'git commit -m "test(SELL-1): red: the acceptance suite"', commit: full('c1'), tdd: 'red' },
+      { attempt: '1', agent: 'builder', tool: 'Bash', command: 'git commit -m "feat(F1): stub the sale route"', commit: full('c2'), tdd: 'stub' },
+      { attempt: '1', agent: 'builder', tool: 'Bash', command: 'git commit -m "feat(SELL-1): green: the sale"', commit: full('c3'), tdd: 'green' },
+      { attempt: '1', agent: 'tester', tool: 'Bash', command: 'git commit -m "docs(F1): QA script"', commit: full('c4'), tdd: 'none' },
+    ];
+    for (const [i, line] of expected.entries()) {
+      const cells = rows.nth(i).locator('th, td');
+      const at = (name: string): string => `row ${i + 1}, ${name}`;
+      await expect(cells.nth(column('Line')), at('Line')).toHaveText(String(i + 1));
+      await expect(cells.nth(column('Attempt')), at('Attempt')).toHaveText(line.attempt);
+      await expect(cells.nth(column('Agent')), at('Agent')).toHaveText(line.agent);
+      await expect(cells.nth(column('Tool')), at('Tool')).toHaveText(line.tool);
+      await expect(cells.nth(column('File or command')), at('File or command')).toHaveText(line.command);
+      // The commit cell is the kit's sha-link: the short SHA as its text, the full SHA as its title.
+      const sha = cells.nth(column('Commit')).getByRole('link');
+      await expect(sha, at('Commit')).toHaveText(line.commit.slice(0, 7));
+      await expect(sha, at('Commit')).toHaveAttribute('title', line.commit);
+      await expect(cells.nth(column('TDD trailer')), at('TDD trailer')).toHaveText(line.tdd);
+    }
+  });
+
   for (const r of builtRoutes) {
     test(`HONEST-1 · the ${r.name} shows no raw placeholder and nothing from outside the fixture trail`, async ({ page }) => {
       const snap = snapshotOf(fixture.compiled);

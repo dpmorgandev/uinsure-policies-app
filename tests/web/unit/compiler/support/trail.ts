@@ -48,11 +48,21 @@ export interface TraceIndex {
   [field: string]: unknown;
 }
 
+/**
+ * One entry of an activity chunk: every field the activity screen reads (docs/ui/derived/U0b/activity/screen.json),
+ * as the log line wrote it. `raw` is the malformed line kept as written. Not `commit.tdd`: no activity line holds
+ * one, and the screen takes the TDD trailer from trace.json's commits.
+ */
 export interface ActivityLine {
-  agent?: string;
-  tool?: string;
-  command?: string | null;
+  line?: number;
+  ts?: string | null;
+  attempt?: number | null;
+  agent?: string | null;
+  tool?: string | null;
   file?: string | null;
+  command?: string | null;
+  commit?: { sha?: string; subject?: string } | null;
+  raw?: string;
 }
 
 export interface Trail {
