@@ -1,0 +1,60 @@
+{
+  "v": 1,
+  "ts": "2026-10-21T21:47:09Z",
+  "plan": "ui",
+  "node": "W1",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "aa69b5a67f1d5004f",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "W1",
+    "attempt": 2,
+    "base_sha": "3431ce31adf895a388c3f74f970c6d35d732895b",
+    "head_sha": "42047fac3656f70a703cb0b97ba9575df441c308",
+    "diff_fingerprint": "a410a3858c2e12e51b4dc27c978f0df131a80153",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.scope",
+      "gate.lint",
+      "gate.typecheck",
+      "gate.test",
+      "gate.build",
+      "gate.e2e",
+      "gate.no-stubs"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "W1 met: the diff has no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function. API fields (problem title and detail, rule ids, policy fields, the fetch error reason) reach the DOM only as React text children or kit props.",
+      "W2 met: every href built from data is an internal hash route (#/workbench/policies/<encodeURIComponent(reference)>, #/rules/<id>). RuleLinks.ts only prefixes '#' to kit hrefs that start with '/rules/', so a javascript: or external URL cannot come through it. The diff adds no external link, so rel=noreferrer does not apply.",
+      "W3 met: index.html, the CSP and the fonts are not in the diff, so they are unchanged. The diff adds no script, link, @import or url() from another origin to src/web. The docs/ui/derived/W1 files are static screen contracts, not shipped code, and they link only the local stylekit.",
+      "W4 met: the only network call is deps.fetch against '/api/policies' and '/api/policies/<encoded ref>', in src/web/app/data/api.ts. Storage is touched only through the 'workbench.recent' slot (WB-9, wrapped in try/catch), with no cookie or sessionStorage use. The vite.config.ts change only adds a path rewrite to the local dev proxy (localhost:DOCKET_API_PORT).",
+      "W5 met: src/web/compiler/** is not in the diff.",
+      "W6 met: grep of the whole diff for absolute drive or user paths, nagro, gmail.com, david.morgan and noreply addresses found nothing. The e2e support reads only process.env.DOCKET_API_PORT and passes ConnectionStrings__Policies to a throwaway local SQLite file. No key or token appears.",
+      "W7 met: no package.json or lockfile change in the diff. gate.audit shows 0 runtime vulnerabilities. The dev audit (5 high) is reported and does not gate. I did not re-check whether the dev-audit highs are only the known stylekit/braces item, because the receipt gives no detail on them.",
+      "W8 met: failures show the kit ProblemBanner or ErrorSummary with the API's title, detail and rule id as returned, plus a client-side fetch error string for 'unreachable'. No stack trace or server internals are rendered.",
+      "API8:2023 (W3, W4) and API10:2023 (W1, W8) are covered by the web-security checks above.",
+      "n/a API1:2023, API2:2023, API5:2023: auth, tenancy and roles are out of scope.",
+      "n/a API3:2023, API4:2023, API6:2023, API7:2023, API9:2023: ui node, no server code. The ui client sends only the SellRequest fields and sets no server-owned property.",
+      "n/a .NET extras (raw SQL, decimal money, NuGet packages, API logging): replaced by W1-W8 for a ui node. The diff has no C# change.",
+      "Hygiene, no finding: src/web/test-results/ is untracked and not in the diff. Keep it out of any later commit, since Playwright output can hold request data.",
+      "Not a finding: the 'unreachable' banner shows the raw fetch or JSON-parse error message. It comes from the browser, not from the server, so it leaks no server internals."
+    ]
+  }
+}
