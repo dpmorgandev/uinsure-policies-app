@@ -298,10 +298,10 @@ nodes:
     rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1]
     cuttable: false
     budget: null
-    status: pending
-    attempt: 0
-    branch: null
-    worktree: null
+    status: in_progress
+    attempt: 1
+    branch: feature/ui/W1
+    worktree: .claude/worktrees/ui-W1
     pr: null
     qa: docs/qa/ui-W1.md
     trace: docs/trace/ui/W1/
