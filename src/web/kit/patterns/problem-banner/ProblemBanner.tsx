@@ -19,6 +19,8 @@ export interface ProblemBannerProps {
   status?: number;
   /** The rule the problem is under, as a chip. */
   ruleId?: string;
+  /** Where the rule chip links (a hash-routed app passes `#/rules/<id>`). Leave out to keep the chip's default `/rules/<id>`. */
+  ruleHref?: string;
   /** Values the API sent as extensions (`cancellationDate`, `instance`), each shown as sent. */
   extensions?: readonly ProblemExtension[];
   /** The API did not answer: no status, a dashed edge and "No response". */
@@ -37,6 +39,7 @@ export function ProblemBanner({
   detail,
   status,
   ruleId,
+  ruleHref,
   extensions,
   unreachable = false,
   headingLevel = 3,
@@ -64,7 +67,7 @@ export function ProblemBanner({
       <div className={styles.tags}>
         {status !== undefined ? <StatusTag status="fail">{String(status)}</StatusTag> : null}
         {unreachable ? <StatusTag status="fail">No response</StatusTag> : null}
-        {ruleId !== undefined ? <RuleChip ruleId={ruleId} /> : null}
+        {ruleId !== undefined ? <RuleChip ruleId={ruleId} href={ruleHref} /> : null}
       </div>
       {detail !== undefined ? <p className={styles.detail}>{detail}</p> : null}
       {hasExtensions ? (
