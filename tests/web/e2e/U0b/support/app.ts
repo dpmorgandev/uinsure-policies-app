@@ -115,9 +115,19 @@ export async function setTheme(page: Page, theme: Theme): Promise<void> {
   await page.emulateMedia({ colorScheme: theme });
 }
 
-/** The value --color-background resolves to on <html>: the token the two themes set differently. */
+/**
+ * The colour --color-background resolves to on <html>, the token the two themes set differently, read by its value
+ * and not its spelling: the canvas serialises any spelling of an opaque colour (#fff, white, rgb(255 255 255)) as
+ * #rrggbb. A value that isn't a colour comes back as it was declared, so it matches no theme.
+ */
 export async function backgroundToken(page: Page): Promise<string> {
-  return page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue('--color-background').trim().toLowerCase());
+  return page.evaluate(() => {
+    const declared = getComputedStyle(document.documentElement).getPropertyValue('--color-background').trim();
+    const context = document.createElement('canvas').getContext('2d');
+    if (context === null || !CSS.supports('color', declared)) return `not a colour: "${declared}"`;
+    context.fillStyle = declared;
+    return String(context.fillStyle);
+  });
 }
 
 export const tokenBackground: Record<Theme, string> = { light: '#ffffff', dark: '#1b1d21' };
