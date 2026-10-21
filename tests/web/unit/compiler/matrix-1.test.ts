@@ -10,7 +10,7 @@
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { replayTrail, run, SLOW, thrown } from './support/trail';
 import type { Run, Trail } from './support/trail';
-import { MATRIX_FILE, ruleOf, rulesOf, RULES, SHAPES, shortOf, TWO_PLANS } from './support/rules';
+import { MATRIX_FILE, ruleOf, rulesOf, RULES, SHAPES, shortOf, TWO_PLANS, UI_MATRIX_FILE } from './support/rules';
 
 let trail: Trail;
 let r: Run;
@@ -145,5 +145,15 @@ describe('both plans, each rule read against its own matrix', () => {
     expect(t.error, thrown(t)).toBeUndefined();
     const rule = ruleOf(t, 'RENEW-1/2');
     expect([rule?.matrix?.red ?? null, rule?.matrix?.green ?? null]).toEqual([shortOf(two, 'c6'), shortOf(two, 'c8')]);
+  });
+
+  test('MATRIX-1 · a ui-requirements.md rule built at ui/U0b is read from ui-requirements-matrix.md: DATA-1 built, 28/28, line 6', () => {
+    expect(t.error, thrown(t)).toBeUndefined();
+    expect(rowOf('DATA-1')).toEqual(['built', 'ui', 'U0b', '28/28', UI_MATRIX_FILE, 6]);
+  });
+
+  test('MATRIX-1 · a ui-requirements.md rule not built yet is read from ui-requirements-matrix.md: NAV-1 not-built at ui/U1, line 7', () => {
+    expect(t.error, thrown(t)).toBeUndefined();
+    expect(rowOf('NAV-1')).toEqual(['not-built', 'ui', 'U1', null, UI_MATRIX_FILE, 7]);
   });
 });
