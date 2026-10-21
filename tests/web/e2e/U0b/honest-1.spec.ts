@@ -13,6 +13,7 @@ import {
   serveTrace,
   snapshotOf,
 } from './support/app';
+import { newest, primaryNav, screenIds, screenPaths, screenUnbuilt } from './support/built';
 import { about, activity, expectRegionsInOrder, overview } from './support/parity';
 import { compileFixture } from './support/trail';
 import type { CompiledTrail } from './support/trail';
@@ -125,30 +126,13 @@ test.describe('the not-built-yet pattern', () => {
   test("HONEST-1 · reachable: every unbuilt screen's route shows the not-built-yet pattern, with no raw placeholder", async ({ page }) => {
     await serveTrace(page, fixture.compiled.publicDir);
     const c1 = fixture.trail.shas['c1'] ?? 'c1';
-    // docs/ui/screens.json: every route but the three this node builds (/, /about, …/activity).
-    const unbuilt = [
-      '/#/rules',
-      '/#/rules/SELL-1',
-      '/#/plans/build',
-      '/#/plans/build/F1',
-      '/#/plans/build/F1/commits',
-      '/#/plans/build/F1/loop',
-      '/#/plans/build/F1/verdicts/A1/reviewer',
-      '/#/plans/build/F1/findings/A1',
-      `/#/commits/${c1}`,
-      '/#/decisions',
-      '/#/harness',
-      '/#/sessions',
-      '/#/stats',
-      '/#/workbench',
-      '/#/workbench/sell',
-      '/#/workbench/policies/ABC-1',
-      '/#/workbench/policies/ABC-1/cancel',
-      '/#/workbench/policies/ABC-1/claims/new',
-      '/#/workbench/policies/ABC-1/renew',
-      '/#/workbench/requests',
-      '/#/no-such-page',
-    ];
+    // docs/ui/screens.json: one route for each screen U0b doesn't build; the unbuilt ones are the screens the newest
+    // derived reference on the branch still lists as not built (support/built.ts).
+    const paths = screenPaths(c1);
+    for (const id of Object.keys(paths)) expect(screenIds, `"${id}" is a screen in docs/ui/screens.json`).toContain(id);
+    for (const id of newest.notBuiltScreens) expect(paths[id], `a route for the unbuilt screen "${id}"`).toBeDefined();
+    expect(newest.builtNodes, `${newest.node}'s derived reference is read, and comes after U0b`).toContain('U0b');
+    const unbuilt = newest.notBuiltScreens.map((id) => paths[id] ?? id);
     for (const path of unbuilt) {
       await page.goto(path);
       await expect(page.getByRole('main'), path).toContainText('not built yet');
@@ -160,7 +144,11 @@ test.describe('the not-built-yet pattern', () => {
     await serveTrace(page, fixture.compiled.publicDir);
     await page.goto(route.overview);
     const nav = page.getByRole('navigation', { name: /^Primary/ });
-    for (const label of ['Requirements matrix', 'Plan', 'Human decisions', 'Workbench']) {
+    // The primary nav's entries whose screen the newest derived reference on the branch lists as not built.
+    expect(newest.builtNodes, `${newest.node}'s derived reference is read, and comes after U0b`).toContain('U0b');
+    expect(primaryNav.map((entry) => entry.screen), 'the primary nav is read from docs/ui/screens.json').toContain('overview');
+    const unbuilt = primaryNav.filter((entry) => screenUnbuilt(entry.screen)).map((entry) => entry.label);
+    for (const label of unbuilt) {
       await expect(nav.locator('[data-kind="nav entry"]', { hasText: label }), label).toContainText('not built yet');
       await expect(nav.getByRole('link', { name: label }), `${label} is not a link`).toHaveCount(0);
     }

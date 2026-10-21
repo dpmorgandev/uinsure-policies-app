@@ -2,10 +2,13 @@
 // (docs/ui/fixture/), so both sides read the same data. Structure only: the tagged regions in order, the
 // catalogued components in each, the shell, the title and the navigation, and tokens in place of literal
 // colours. Screenshots are the regression baselines' job. Parity tests are the only ones that may pass at the stub.
+// A nav entry or region a later node builds (in transit, ./built.ts) is compared by its place only: whether it is
+// built yet is that node's to prove, so these checks hold before and after it lands.
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { route, serveTrace, setTheme, themes, viewports } from './app';
-import { literalColours, readBuilt, readReference, regionNamed, regionOrder } from './reference';
+import { regionSettled } from './built';
+import { literalColours, readBuilt, readReference, regionNamed } from './reference';
 import type { Structure } from './reference';
 import { designFixtureDir } from './trail';
 
@@ -41,20 +44,29 @@ function shellOf(s: Structure, withTitle: boolean): Record<string, unknown> {
   };
 }
 
-function unbuiltComps(s: Structure): [string, string[]][] {
-  return s.regions.filter((r) => !r.built).map((r) => [r.slug, r.comps]);
+/** The regions in page order: [slug, req, built] for a settled region, [slug] alone for one a later node builds. */
+function settledOrder(s: Structure, screen: string): (string | boolean)[][] {
+  return s.regions.map((r) => (regionSettled(screen, r.slug) ? [r.slug, r.req.join(' '), r.built] : [r.slug]));
 }
 
-/** Every region of the reference, in its order, with its data-req; the unbuilt ones as the not-built-yet pattern. */
+/** The components of each region unbuilt at U0b and still unbuilt at the newest reference. */
+function unbuiltComps(s: Structure, screen: string): [string, string[]][] {
+  return s.regions.filter((r) => !r.built && regionSettled(screen, r.slug)).map((r) => [r.slug, r.comps]);
+}
+
+/**
+ * Every region of the reference, in its order, with its data-req; the unbuilt ones as the not-built-yet pattern. A
+ * region a later node builds keeps its place in the order; its data-req and built state are that node's to prove.
+ */
 export async function expectRegionsInOrder(page: Page, s: Screen): Promise<void> {
   const reference = await readReference(page.context(), s.screen, s.state);
   await open(page, s);
   await expect
     .poll(async () => {
       const built = await readBuilt(page, reference);
-      return { order: regionOrder(built), unbuilt: unbuiltComps(built) };
+      return { order: settledOrder(built, s.screen), unbuilt: unbuiltComps(built, s.screen) };
     })
-    .toEqual({ order: regionOrder(reference), unbuilt: unbuiltComps(reference) });
+    .toEqual({ order: settledOrder(reference, s.screen), unbuilt: unbuiltComps(reference, s.screen) });
 }
 
 /** One region of the reference, with its data-req and the catalogued components inside it. */
