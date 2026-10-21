@@ -11,13 +11,14 @@ the same way it reads the real one. The live `docs/trace/` is never a test input
   README.md      what it proves, what it is cut from, and the expected check label
   base/          the repo before the node: docs/requirements.md, docs/plans/active/<plan>.dag.yaml,
                  docs/trace/privacy-denylist.txt
-  commits.json   { date, branch, commits: [{ id, subject, trailers, files }] }, in order
+  commits.json   { date, branch, commits: [{ id, subject, trailers, files, date? }] }, in order
   files/         the content each commit adds, by repo path
   trail/         docs/trace/<plan>/<node>/: loop, activity, verdicts, findings, written last
 ```
 
 - **Replay:** `base/` is committed and becomes `origin/main`. Each commit is made on `branch` with its
-  trailers (`--allow-empty` when it lists no files), all at `date`. Then `trail/` is written, uncommitted,
+  trailers (`--allow-empty` when it lists no files), at its own `date` when it has one, else at the
+  fixture's `date`. Then `trail/` is written, uncommitted,
   as at `/feature`'s trace step, where `render-trace check` runs. `replay(fixture, dir, { trail: false })`
   stops before it.
 - **SHAs:** `{{c3}}` in any file becomes commit `c3`'s SHA, and `{{c3:7}}` its short form. A file only
@@ -42,6 +43,7 @@ the same way it reads the real one. The live `docs/trace/` is never a test input
 | `privacy-hit/` | Two denylisted values in the trail fail the compile, each named by file and line, never by value (DATA-5); the test places them |
 | `bounded/` | The harness comes from `docs/trace/harness.json`, never `.claude/` (DATA-7); the trail's own `<user>` and `<outside-repo>` stay as written (DATA-5) |
 | `awkward-text/` | Markup in a plan title and in commands renders as text and runs nothing (SEC-1); a 400-character unbroken command doesn't widen the page (RESP-1) |
+| `rules/` | A rendered trail across four nodes: a git-only F0a, a clean F1 with a FAIL fixed, an F2 TRAIL INCOMPLETE with green before red, an unstarted F3, and a rule no node owns; the README, matrix and per-commit dates as `render-trace.mjs` writes them (NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3) |
 
 `replay.d.mts` types `replay.mjs` for the TypeScript tests that import it.
 

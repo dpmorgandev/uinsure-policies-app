@@ -1,0 +1,3 @@
+import { test, expect } from '@playwright/test';
+
+test('GET-1 · an unknown reference answers 404', async () => { expect(1).toBe(1); });
