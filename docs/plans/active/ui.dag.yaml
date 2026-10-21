@@ -394,3 +394,40 @@ nodes:
       - {id: t13, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: pending}
       - {id: t14, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: pending}
       - {id: t15, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: U7
+    title: "Tech debt: the non-blocking carries (inv-005)"
+    kind: feature
+    owner: loop
+    depends_on: [U0b]
+    rules: []
+    cuttable: true
+    budget: null
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/ui-U7.md
+    trace: docs/trace/ui/U7/
+    acceptance:
+      - "Every external link (commit SHAs, the footer's repository link) carries rel=noreferrer; the CSP also sets base-uri 'self', form-action 'none' and object-src 'none' (U0b security S1, S2)"
+      - "The compiler refuses a plan or node id outside [A-Za-z0-9._-] or holding '..', and never writes outside src/web/public (U0b security S3)"
+      - "A commit with several Fixes-Finding lines keeps every one, in order, in trace.json, and each is privacy-scanned (inv-005 I5; skipped if U3 has landed it)"
+      - "src/web/public/, src/web/test-results/ and src/web/playwright-report/ are git-ignored, so generated output can't be staged"
+      - "The node's e2e suite and every earlier node's pass at the default Playwright worker count, not only at one worker"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for U7: rel=noreferrer, the CSP directives, ids refused, repeated trailers kept; every node rule", status: pending}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the U7 acceptance tests; go or change", status: pending}
+      - {id: t4, role: tester, step: red, layer: compiler, rules: [], title: "Unit tests for the compiler: ids validated before any write, repeated trailers kept and scanned", status: pending}
+      - {id: t5, role: builder, step: green, layer: compiler, rules: [], title: "Green: id validation and repeated trailers in the compiler", status: pending}
+      - {id: t6, role: builder, step: green, layer: screen, rules: [], title: "rel=noreferrer on external links, the CSP directives, the gitignore lines, the worker-count fix; whole acceptance suite green", status: pending}
+      - {id: t7, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: pending}
+      - {id: t8, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e at the default worker count, axe, every screen built so far against its baseline, rule coverage, diff scope", status: pending}
+      - {id: t9, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t10, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U7.md: steps in the running app, tagged per rule", status: pending}
+      - {id: t11, role: git, step: integrate, layer: null, rules: [], title: "Integrate origin/ui; every check on the integrated HEAD", status: pending}
+      - {id: t12, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; completeness check passes", status: pending}
+      - {id: t13, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
+      - {id: t14, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: check the fixes from the QA script, then sign off", status: pending}
+      - {id: t15, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
