@@ -97,7 +97,7 @@ nodes:
       - "A rule with no node or no tests shows not built yet; an incomplete trail shows its reasons verbatim, never clean"
       - "Every rule chip opens its own rule; the overview draws the search and theme toggle once, and an incomplete node's reasons as rendered text, not raw Markdown (g4-defects.md section 3)"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "Playwright acceptance for U1 on fixture trails, and parity with its derived reference; every node rule", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "Playwright acceptance for U1 on fixture trails, and parity with its derived reference; every node rule", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U1 routes render the derived reference as canned content", status: pending}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U1 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: pending}
       - {id: t4, role: tester, step: red, layer: compiler, rules: [NAV-1, RULE-2, DATA-4], title: "Unit tests for rules, their tests, red-before-green order, the receipt figures and TRAIL INCOMPLETE reasons verbatim", status: pending}
