@@ -1,8 +1,9 @@
 // The live API the workbench's acceptance tests drive: started from this worktree on DOCKET_API_PORT (the port
 // the app's /api proxy is given), with a fresh SQLite file, once per Playwright run. Every worker of the run
 // shares it, through a lock and a state file in the OS temp directory; a detached reaper (reaper.mjs) stops it
-// when the run that started it has ended. An API already answering on the port that no W1 run started is used
-// as it is, and said so: its database may not be fresh.
+// when the run that started it has ended. An API already answering on the port that this run didn't start, and
+// that no earlier W1 run left behind, is a setup fault: the run stops before any test, because its database
+// can't be known to be fresh.
 //
 // Nothing here is a test: a build or start failure is a setup fault, thrown as one, never a red.
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
@@ -27,8 +28,8 @@ const stateFile = join(stateDir, 'state.json');
 interface State {
   /** The Playwright runner the API was started for: every worker's parent. */
   runner: number;
-  /** The `dotnet run` process, or null when the API was already answering and is not this suite's. */
-  pid: number | null;
+  /** The `dotnet run` process this run started. */
+  pid: number;
 }
 
 const sleep = (ms: number): Promise<void> => new Promise((done) => setTimeout(done, ms));
@@ -148,7 +149,7 @@ export async function ensureApi(): Promise<void> {
   await withLock(async () => {
     const state = readState();
     // This run's API: another worker started it. A busy moment is waited out, never answered with a restart.
-    if (state !== null && state.runner === runner && (state.pid === null || alive(state.pid))) {
+    if (state !== null && state.runner === runner && alive(state.pid)) {
       for (let i = 0; i < 120; i += 1) {
         if (await ready()) return;
         await sleep(500);
@@ -156,15 +157,18 @@ export async function ensureApi(): Promise<void> {
       throw new Error(`setup: this run's API at ${apiUrl} stopped answering /health/ready`);
     }
     // An API a previous run left behind: stop it, so this run starts on a fresh database.
-    if (state?.pid != null && alive(state.pid)) {
+    if (state !== null && alive(state.pid)) {
       stopTree(state.pid);
       for (let i = 0; i < 30 && (await ready()); i += 1) await sleep(500);
     }
     rmSync(stateFile, { force: true });
+    // An API this run didn't start, and no earlier W1 run left: its database may hold what another run sold, so
+    // nothing is tested on it. It isn't stopped either: whoever started it may still be using it.
     if (await ready()) {
-      console.warn(`An API this suite did not start answers on ${apiUrl}; the W1 tests use it, and its database may not be fresh.`);
-      writeFileSync(stateFile, JSON.stringify({ runner, pid: null } satisfies State));
-      return;
+      throw new Error(
+        `setup: an API this run didn't start already answers on ${apiUrl}, so its database can't be known to be fresh. ` +
+          `Stop it, or give the run a free DOCKET_API_PORT, and run again.`,
+      );
     }
     const pid = await start(runner);
     writeFileSync(stateFile, JSON.stringify({ runner, pid } satisfies State));
