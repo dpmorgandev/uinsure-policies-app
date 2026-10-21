@@ -1,0 +1,8 @@
+KG3 (layout batch): Footer always renders CompiledAtStamp ("Snapshot compiled from" plus a time),
+even when no trace was read. David ruled that HONEST-1 wins: when trace.json is loading or
+unreadable, the shell has to state no snapshot (no commit link, no <time>, no "Snapshot compiled
+from") while keeping AppShell's skip link, its landmarks (including contentinfo) and the 390
+layout. Add that state to Footer/AppShell. Re-sign the error-state reference
+(docs/ui/screens/overview/error.html shows a stamp) with David.
+
+I adopt: catalog state "no snapshot"; visible text "No snapshot: trace.json hasn't been read."
