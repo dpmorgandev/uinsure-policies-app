@@ -109,6 +109,34 @@ describe('a denylist match fails the compile', () => {
     }
   }, SLOW);
 
+  test('DATA-5 · a value from git, a trailer, is scanned too', () => {
+    // An address the denylist refuses, made from parts, in each trailer trace.json's commits carry: one commit per
+    // trailer, the others clean, so a scan of one trailer name alone does not pass.
+    const address = ['privacy-trailer-person', 'mail-fixture.net'].join('@');
+    const clean: Record<string, string> = { Agent: 'main', Plan: 'build', Node: 'F1', Rule: 'SELL-1', TDD: 'red', 'Fixes-Finding': 'A1/I1' };
+    const planted: Record<string, string> = {};
+    const trail = replayTrail('privacy-hit', (root) => {
+      placeHits(root, 'the qa script', CLEAN_PATH);
+      for (const key of Object.keys(clean)) {
+        const trailers = Object.entries({ ...clean, [key]: address }).map(([k, v]) => `${k}: ${v}`).join('\n');
+        git(root, 'commit', '-q', '--allow-empty', '-m', `docs(F1): a ${key} trailer`, '-m', trailers);
+        planted[key] = git(root, 'rev-parse', 'HEAD').slice(0, 7);
+      }
+    });
+    try {
+      const r = run(trail.root);
+      expect(r.problems?.length ?? 0, thrown(r)).toBeGreaterThan(0);
+      const problems = JSON.stringify(r.problems ?? []);
+      for (const [key, short] of Object.entries(planted)) {
+        expect(problems, `a problem names commit ${short}, whose ${key} trailer holds the address`).toContain(short);
+      }
+      expect(said(r)).not.toContain('privacy-trailer-person');
+      expect(r.written).toEqual([]);
+    } finally {
+      trail.cleanup();
+    }
+  }, SLOW);
+
   test('DATA-5 · the ref the compile names is scanned too', () => {
     // A branch named as an address the denylist refuses, made from parts: git refuses '@' only alone or before '{'.
     const address = ['privacy-ref-person', 'mail-fixture.net'].join('@');
