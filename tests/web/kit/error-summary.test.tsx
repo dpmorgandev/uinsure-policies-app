@@ -59,6 +59,56 @@ describe('ErrorSummary', () => {
     expect(within(alert).getAllByText('whole request')).toHaveLength(2);
   });
 
+  describe('the rule chip link', () => {
+    it('keeps the chip default when the caller sets none', () => {
+      render(<ErrorSummary focusOnMount={false} items={[{ message: 'Too late', ruleId: 'CANCEL-3' }]} />);
+      expect(screen.getByRole('link', { name: 'CANCEL-3' }).getAttribute('href')).toBe('/rules/CANCEL-3');
+    });
+
+    it('an item\'s ruleHref reaches its chip', () => {
+      render(
+        <ErrorSummary
+          focusOnMount={false}
+          items={[{ message: 'Too late', ruleId: 'CANCEL-3', ruleHref: '#/rules/CANCEL-3' }]}
+        />,
+      );
+      expect(screen.getByRole('link', { name: 'CANCEL-3' }).getAttribute('href')).toBe('#/rules/CANCEL-3');
+    });
+
+    it('the ruleHref function builds each chip\'s link from its rule ID', () => {
+      render(
+        <ErrorSummary
+          focusOnMount={false}
+          ruleHref={(id) => `#/rules/${id}`}
+          items={[
+            { message: 'Too late', ruleId: 'CANCEL-3' },
+            { message: 'Not allowed', ruleId: 'CANCEL-7' },
+          ]}
+        />,
+      );
+      expect(screen.getByRole('link', { name: 'CANCEL-3' }).getAttribute('href')).toBe('#/rules/CANCEL-3');
+      expect(screen.getByRole('link', { name: 'CANCEL-7' }).getAttribute('href')).toBe('#/rules/CANCEL-7');
+    });
+
+    it('an item\'s own ruleHref wins over the function', () => {
+      render(
+        <ErrorSummary
+          focusOnMount={false}
+          ruleHref={(id) => `#/rules/${id}`}
+          items={[{ message: 'Too late', ruleId: 'CANCEL-3', ruleHref: '#/elsewhere' }]}
+        />,
+      );
+      expect(screen.getByRole('link', { name: 'CANCEL-3' }).getAttribute('href')).toBe('#/elsewhere');
+    });
+
+    it('follows a changed link when React re-renders the same item', () => {
+      const items = [{ message: 'Too late', ruleId: 'CANCEL-3' }];
+      const { rerender } = render(<ErrorSummary focusOnMount={false} items={items} ruleHref={(id) => `#/rules/${id}`} />);
+      rerender(<ErrorSummary focusOnMount={false} items={items} ruleHref={(id) => `#/plans/p/rules/${id}`} />);
+      expect(screen.getByRole('link', { name: 'CANCEL-3' }).getAttribute('href')).toBe('#/plans/p/rules/CANCEL-3');
+    });
+  });
+
   it('an item with a field has no "whole request" label', () => {
     render(examples[0]!.element);
     expect(screen.queryByText('whole request')).toBeNull();

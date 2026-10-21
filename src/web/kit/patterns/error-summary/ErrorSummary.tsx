@@ -18,6 +18,8 @@ export interface ErrorSummaryItem {
   fieldKey?: string;
   /** The rule it breaks, as a chip. */
   ruleId?: string;
+  /** Where that rule's chip links. Leave out to use the component's `ruleHref`, then the chip's own default. */
+  ruleHref?: string;
   /** Values the API sent beside the problem, such as `today`. Never read out of the message. */
   extensions?: readonly ErrorSummaryExtension[];
 }
@@ -30,6 +32,11 @@ export interface ErrorSummaryProps {
   /** Change it to move focus again for a new set of problems shown by the same instance. */
   focusKey?: string | number;
   headingLevel?: 2 | 3;
+  /**
+   * Where each rule chip links, given the rule's ID (a hash-routed app passes `(id) => '#/rules/' + id`).
+   * An item's own `ruleHref` wins. Leave out to keep the chip's default `/rules/<id>`.
+   */
+  ruleHref?: (ruleId: string) => string;
 }
 
 function focusField(event: MouseEvent<HTMLAnchorElement>, fieldId: string) {
@@ -50,6 +57,7 @@ export function ErrorSummary({
   focusOnMount = true,
   focusKey,
   headingLevel = 2,
+  ruleHref,
 }: ErrorSummaryProps) {
   const titleId = useId();
   const rootRef = useRef<HTMLDivElement>(null);
@@ -86,7 +94,9 @@ export function ErrorSummary({
                   <span className={styles.text}>{item.message}</span>
                 )}
                 {item.fieldKey !== undefined ? <code className={styles.key}>{item.fieldKey}</code> : null}
-                {item.ruleId !== undefined ? <RuleChip ruleId={item.ruleId} /> : null}
+                {item.ruleId !== undefined ? (
+                  <RuleChip ruleId={item.ruleId} href={item.ruleHref ?? ruleHref?.(item.ruleId)} />
+                ) : null}
                 {!placed ? <span className={styles.scope}>whole request</span> : null}
               </div>
               {item.extensions && item.extensions.length > 0 ? (
