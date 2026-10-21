@@ -30,9 +30,6 @@
   ],
   "states": [
     { "name": "populated", "file": "populated.html", "variant": "the ref's own data: nodes[plan=build][id=F3].walkthrough, 77 numbered rungs (#1 to #77), plus commits[plan=build][node=F3] for the full SHAs; one further commit, 37d856a, has order null and is named under the table, not drawn as a rung" },
-    { "name": "loading", "file": "loading.html", "variant": "no figures: the kit's data-table loading state (still spinner and static skeleton bars) and the page-header gap marker; the node's status, attempt, PR and dependency are not yet known, and the completeness banner is left out" },
-    { "name": "error", "file": "error.html", "variant": "no figures: docs/ui/fixture/trace.json could not be read; the kit's data-table error state says Did not load, and the page-header fields are gap markers" },
-    { "name": "empty", "file": "empty.html", "variant": "nodes[plan=build][id=F7]: pending, attempt 0, depends on F6, walkthrough [], trail false; the completeness banner is left out because completeness is null" },
     { "name": "git-only", "file": "git-only.html", "variant": "nodes[plan=build][id=F0a], which predates the trail: done, walkthrough [], completeness OK (git-only, F0a)" }
   ],
   "actions": [
@@ -49,7 +46,6 @@
     { "label": "Commit SHA", "kind": "link", "to": "GitHub commit page at that SHA" },
     { "label": "Rule chip", "kind": "link", "to": "/rules/:ruleId" },
     { "label": "PR number", "kind": "link", "to": "GitHub pull request page" },
-    { "label": "Try again", "kind": "request", "to": "GET docs/ui/fixture/trace.json again" },
     { "label": "Back to the plan", "kind": "link", "to": "/plans/:planId" },
     { "label": "Back to the node", "kind": "link", "to": "/plans/:planId/:nodeId" },
     { "label": "Show UTC time", "kind": "control", "to": "toggles the time zone of the snapshot timestamp; sends no request" },

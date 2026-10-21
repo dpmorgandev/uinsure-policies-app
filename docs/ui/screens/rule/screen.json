@@ -139,8 +139,6 @@
   ],
   "states": [
     { "name": "populated", "file": "populated.html", "variant": "the ref's own data: rules[id=GET-1] in build/F2, three attempts, red at #5, green at #17" },
-    { "name": "loading", "file": "loading.html", "variant": "no figures: every region shows the kit's still spinner and a sentence; the rule ID is not yet known" },
-    { "name": "error", "file": "error.html", "variant": "no figures: docs/ui/fixture/trace.json could not be read; every region says Did not load" },
     { "name": "not-built", "file": "not-built.html", "variant": "the kit's labelled placeholders (‹ruleId›, ‹region›, PLACEHOLDER-1), attached to no real rule or node: every rule in the fixture is built" },
     { "name": "long-content", "file": "long-content.html", "variant": "rules[id=COULD-2] in build/F3: nine commits, the longest trail, no green commit recorded; no layer, gate, QA result or verdict for F3 in the excerpt; the diff is the kit's labelled long-diff placeholder" },
     { "name": "submitting", "file": "submitting.html", "variant": "the populated data with the red diff's load control in flight (BUSY-1)" }

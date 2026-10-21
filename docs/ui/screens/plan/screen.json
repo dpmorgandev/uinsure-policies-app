@@ -65,8 +65,6 @@
   ],
   "states": [
     { "name": "populated", "file": "populated.html", "variant": "the ref's own data (origin/main b394466)" },
-    { "name": "loading", "file": "loading.html", "variant": "no data: every region shows a pending status tag or a gap; no figure, node or date" },
-    { "name": "error", "file": "error.html", "variant": "no data: docs/ui/fixture/trace.json could not be read; every region shows a fail status tag naming the file" },
     { "name": "in-flight", "file": "in-flight.html", "variant": "build/F6 as it stood after its first 20 loop events (F6 is done at this ref), cut from its loop.jsonl; only those events are used, so only F6 is drawn" },
     { "name": "not-built", "file": "not-built.html", "variant": "labelled placeholders attached to no real plan, rule or node: every rule is built at this ref" }
   ],
@@ -74,7 +72,6 @@
     { "label": "Show me the proof: open node F6, which took attempt 4 (populated)", "kind": "link", "to": "/plans/:planId/:nodeId" },
     { "label": "Show me the proof: open F6's loop log (in-flight only)", "kind": "link", "to": "/plans/:planId/:nodeId/loop" },
     { "label": "Show me the proof: open a node (loading and not-built)", "kind": "link", "to": "/plans/:planId/:nodeId" },
-    { "label": "Try again (error only)", "kind": "link", "to": "/plans/:planId" },
     { "label": "Rule chip (every rule chip in the table)", "kind": "link", "to": "/rules/:ruleId" },
     { "label": "Text equivalent: the plan as a table", "kind": "control", "to": "opens or closes the table, no request" },
     { "label": "UTC", "kind": "control", "to": "switches the compiled-at time between BST and UTC, no request" },
