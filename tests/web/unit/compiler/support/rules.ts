@@ -8,6 +8,8 @@ import { fixturesDir } from './trail';
 import type { Run, Trail } from './trail';
 
 export const RULES = 'rules';
+/** tests/web/fixtures/trails/rereview/README.md: verdicts in re-review rounds A<n>.<m> beside A<n> (NAV-1). */
+export const REREVIEW = 'rereview';
 /** tests/web/fixtures/trails/requirements-shapes/README.md: both requirements files' table shapes, and a C# test source. */
 export const SHAPES = 'requirements-shapes';
 export const REQUIREMENTS_FILE = 'docs/requirements.md';

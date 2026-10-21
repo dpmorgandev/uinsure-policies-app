@@ -9,7 +9,7 @@
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { replayTrail, run, SLOW, thrown } from './support/trail';
 import type { Run, Trail } from './support/trail';
-import { DAG_FILE, decisionsOf, F1_LOOP, MATRIX_FILE, nodesOf, plansOf, ruleOf, RULES, verdictsOf } from './support/rules';
+import { DAG_FILE, decisionsOf, F1_LOOP, MATRIX_FILE, nodesOf, plansOf, REREVIEW, ruleOf, RULES, verdictsOf } from './support/rules';
 
 let trail: Trail;
 let r: Run;
@@ -76,6 +76,43 @@ describe('FAILs taken', () => {
       ['build', 'F1', 'A2', 'reviewer', 'PASS', 'docs/trace/build/F1/verdicts/A2-reviewer.json'],
       ['build', 'F1', 'A2', 'security', 'PASS', 'docs/trace/build/F1/verdicts/A2-security.json'],
     ]);
+  });
+});
+
+// U1 D1 finding I1: the orchestrator names a same-attempt re-review A<n>.<m>-<agent>.json. On the `rereview` fixture
+// trail (its README): eight verdict files in rounds A1, A1.2, A2 and A2.2, one FAIL, and it is the A1.2 reviewer's.
+describe('FAILs taken, with re-review rounds', () => {
+  const VERDICTS = 'docs/trace/build/F1/verdicts/';
+  let again: Trail;
+  let rr: Run;
+  beforeAll(() => {
+    again = replayTrail(REREVIEW);
+    rr = run(again.root);
+  }, SLOW);
+  afterAll(() => again?.cleanup());
+
+  test('NAV-1 · FAILs taken: a re-review round A<n>.<m> is a verdict, its round kept verbatim', () => {
+    expect(rr.error, thrown(rr)).toBeUndefined();
+    const shown = verdictsOf(rr)
+      .map((v) => [v.plan, v.node, v.round ?? null, v.agent ?? null, v.verdict ?? null, v.file ?? null])
+      .sort((a, b) => String(a[5]).localeCompare(String(b[5])));
+    expect(shown).toEqual([
+      ['build', 'F1', 'A1', 'reviewer', 'PASS', `${VERDICTS}A1-reviewer.json`],
+      ['build', 'F1', 'A1', 'security', 'PASS', `${VERDICTS}A1-security.json`],
+      ['build', 'F1', 'A1.2', 'reviewer', 'FAIL', `${VERDICTS}A1.2-reviewer.json`],
+      ['build', 'F1', 'A1.2', 'security', 'PASS', `${VERDICTS}A1.2-security.json`],
+      ['build', 'F1', 'A2', 'reviewer', 'PASS', `${VERDICTS}A2-reviewer.json`],
+      ['build', 'F1', 'A2', 'security', 'PASS', `${VERDICTS}A2-security.json`],
+      ['build', 'F1', 'A2.2', 'reviewer', 'PASS', `${VERDICTS}A2.2-reviewer.json`],
+      ['build', 'F1', 'A2.2', 'security', 'PASS', `${VERDICTS}A2.2-security.json`],
+    ]);
+  });
+
+  test('NAV-1 · FAILs taken: no re-review verdict file A<n>.<m>-<agent>.json is filed in problems[]', () => {
+    expect(rr.error, thrown(rr)).toBeUndefined();
+    expect(rr.trace, 'trace.json was written').not.toBeNull();
+    const filed = (rr.trace?.problems ?? []).filter((p) => (p.file ?? '').startsWith(VERDICTS));
+    expect(filed).toEqual([]);
   });
 });
 
