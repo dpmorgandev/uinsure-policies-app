@@ -1,7 +1,7 @@
 {
  "stamp": {
-  "kitTree": "cbb7deac0ee19c84d6b75d76ea0b0176a65c25df",
-  "builtAt": "2026-10-21T23:09:57Z",
+  "kitTree": "0a1416abc511b71d02b7e7569fb0c32d72a95150",
+  "builtAt": "2026-10-21T23:44:43Z",
   "from": "src/web/kit",
   "script": ".claude/scripts/design/build-stylekit.mjs"
  },
