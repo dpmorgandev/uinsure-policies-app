@@ -169,8 +169,11 @@
   --c: var(--color-error);
 }
 
+/* The figure keeps the primary text colour: error-coloured text on the key-rung tint measured 4.18:1 in the light theme.
+   The stop is carried by the error border (heavier than a done rung's), the tint on a key rung, and the words in the tag. */
 .stopped .marker {
-  color: var(--color-error);
+  color: var(--color-text-primary);
+  border-width: 3px;
 }
 
 /* The label column */

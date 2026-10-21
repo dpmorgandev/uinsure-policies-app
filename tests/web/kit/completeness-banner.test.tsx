@@ -41,6 +41,20 @@ describe('CompletenessBanner', () => {
     expect(screen.queryByRole('alert')).toBeNull();
   });
 
+  it('OK with the nodes listed ("OK: F0b, F1, …") classifies as ok and is shown as given', () => {
+    render(<CompletenessBanner value="OK: F0b, F1, F2" />);
+    const region = screen.getByRole('region', { name: 'Trail completeness' });
+    expect(region.getAttribute('data-completeness')).toBe('ok');
+    expect(screen.getByText('OK: F0b, F1, F2')).toBeTruthy();
+    expect(screen.queryByText(/not one of the three values/)).toBeNull();
+  });
+
+  it('a value that merely begins with the letters OK is not ok', () => {
+    render(<CompletenessBanner value="OKAY" />);
+    const region = screen.getByRole('region', { name: 'Trail completeness' });
+    expect(region.getAttribute('data-completeness')).toBe('unrecognised');
+  });
+
   it('git-only: the value as given, and why there is no loop, by design', () => {
     render(<CompletenessBanner value="OK (git-only, F0a)" />);
     const region = screen.getByRole('region', { name: 'Trail completeness' });

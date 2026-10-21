@@ -1,0 +1,5 @@
+On a rule page whose red/green order is violated (GET-1 in the U1 rules fixture), the out-of-order rungs
+fail axe colour contrast in the light theme: .stopped .marker sets color var(--color-error) and
+.emphasis .marker tints its background with 14% of the same colour, giving 4.18:1 against the 4.5:1
+minimum. A stopped rung's marker must keep 4.5:1 or better in both themes and still read as emphasised
+when the rung is a key rung.
