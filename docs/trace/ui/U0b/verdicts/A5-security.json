@@ -1,0 +1,95 @@
+{
+  "v": 1,
+  "ts": "2026-10-21T02:23:15Z",
+  "plan": "ui",
+  "node": "U0b",
+  "attempt": 5,
+  "agent": "security",
+  "agent_id": "a68ce3c0933f67918",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U0b",
+    "attempt": 5,
+    "base_sha": "02dfd6a8defc27cbf26c84909346c8d251b61a4a",
+    "head_sha": "07de69246bb6fe1505401152bdbbec5c56d8c606",
+    "diff_fingerprint": "05e0b4fe8d4cd3940b7cc73cf362a678a617f88e",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.finding-red",
+      "gate.fix",
+      "gate.typecheck",
+      "gate.lint",
+      "gate.lint-css",
+      "gate.test",
+      "gate.build",
+      "gate.e2e",
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.coverage",
+      "gate.scope",
+      "gate.no-stubs"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "W2",
+        "severity": "P2",
+        "file": "src/web/kit/primitives/sha-link/ShaLink.tsx",
+        "line": 61,
+        "what": "External GitHub anchors (ShaLink githubHref, Footer repoHref) still carry no rel=\"noreferrer\". Carried over from A4/S1.",
+        "why": "W2: external links carry rel=noreferrer. Hygiene only. The href is the fixed REPO constant plus /commit/ plus the sha, there is no target=_blank, and a javascript: scheme can't get in.",
+        "route_to": "builder"
+      },
+      {
+        "id": "S2",
+        "rule_id": "W3",
+        "severity": "P2",
+        "file": "src/web/index.html",
+        "line": 6,
+        "what": "The CSP keeps default-src 'self', but style-src allows 'unsafe-inline' and base-uri, form-action and object-src are not set. Carried over from A4/S3.",
+        "why": "W3 hardening only. No third-party origin is loaded, and script and fonts are self-hosted. Adding base-uri 'self', form-action 'none' and object-src 'none' is cheap.",
+        "route_to": "builder"
+      },
+      {
+        "id": "S3",
+        "rule_id": "W5",
+        "severity": "P2",
+        "file": "src/web/compiler/index.ts",
+        "line": 152,
+        "what": "The activity chunk path is built from a DAG's plan_id and node id, which are not format-validated. A '..' segment would write outside src/web/public.",
+        "why": "W5 and DATA-6: the compiler should write only trace.json and its chunks. The input is the repo's own reviewed docs and git, not external data, so this is hardening. Restrict ids to [A-Za-z0-9._-] and refuse '..'.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Previous round A4 S2 (trailer values go into trace.json unscanned) is fixed at head. src/web/compiler/index.ts:119 now runs isHit over the commit subject and every trailer value. A hit fails the compile naming only the commit's short SHA, never the matched text. The new test is DATA-5 A4/I3 and the fix gate (gate.fix) is green.",
+      "The A4/I1 and A4/I6 fix is that the compiler keeps the node attempt, and events, verdicts and findings stay empty (U1 and U3 own them). Status is null, not a default. Loop.jsonl and verdict files are only read through the denylist scan. That adds no output and so no leak surface.",
+      "W1: grep for dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( and new Function over src/web found only a comment in MarkdownText.tsx. Activity raw, command and file render as React text nodes. Met.",
+      "W2: the Activity commit link is REPO plus /commit/ plus the record's sha, so it can only change the path on github.com. The REPO constant is fixed. MarkdownText anchors carry rel=\"noopener noreferrer\". Internal links use '#/' or '#id'. The external-link gap is S1 (P2).",
+      "W3: default-src 'self' is kept. No remote script, font, image or style origin was added. See S2 (P2) for the hardening.",
+      "W4: the only network reads are trace.json and one activity chunk, via a fetch injected into loadTrace and loadActivity. loadActivity refuses any chunk path other than trace/<plan>/<node>/activity.json for a node present in trace.json. A grep over src/web found no localStorage, sessionStorage or document.cookie. The vite /api proxy is dev and preview only and unused in U0b.",
+      "W5: git runs through execFileSync with no shell. resolveRef refuses a ref starting with '-'. Every git call is read-only (rev-parse, ls-tree under docs, cat-file, log). The grep found no .claude path read, no http and no fetch in compiler/. The only .claude match is a comment. process.env appears only in vite.config.ts and playwright.config.ts for dev ports, with no secrets. Plan, requirements, harness, activity, loop, verdict and README text all go through read(), which scans every line. A plan path that hits the denylist is not named in the output. The compiler writes only under src/web/public. See S3 (P2).",
+      "W6: grep of the packet diff and src/web for local absolute paths, personal emails and keys found no hit. The only ghp_ hit is a documentation line about a runtime-generated fixture token. The github.com/dpmorgandev REPO constant is the public repo owner.",
+      "W7: gate.audit (runtime) reports 0 vulnerabilities. gate.audit-dev reports 5 high, attributed in the receipt to the known dev-only braces item (GHSA-vfj7-8cjw-p6xm) via stylelint. I couldn't re-run npm audit and rely on the receipt's attribution. This attempt's diff relative to A4 adds no package changes.",
+      "W8: loader failures show a plain-text reason (HTTP status, missing file, parse message) in DataNotice and the DataTable error state. No stack trace or server internals are shown.",
+      "API8:2023 maps to W3 and W4 and is met. API10:2023 maps to W1 and W8 and is met.",
+      "n/a (ui node, no server code): API1:2023, API2:2023, API3:2023, API4:2023, API5:2023, API6:2023, API7:2023 and API9:2023. API1, API2 and API5 are also out of scope by design. The .NET extras (SQL, money, packages, logging) are n/a because the diff touches no C#.",
+      "Gates read at head 57c98ee, which is the last code commit before 07de692. 07de692 is trace-only. These were all green: typecheck, lint, lint-css, test 77/77, build, e2e 65/65, audit, coverage, scope and no-stubs. The finding-red to fix pair is consistent: red at 870adfb, then fix 57c98ee at exit 0."
+    ]
+  }
+}
