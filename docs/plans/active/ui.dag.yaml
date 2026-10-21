@@ -415,6 +415,7 @@ nodes:
       - "A commit with several Fixes-Finding lines keeps every one, in order, in trace.json, and each is privacy-scanned (inv-005 I5; skipped if U3 has landed it)"
       - "src/web/public/, src/web/test-results/ and src/web/playwright-report/ are git-ignored, so generated output can't be staged"
       - "The node's e2e suite and every earlier node's pass at the default Playwright worker count, not only at one worker"
+      - "The theme toggle's choice survives a reload; with no choice made, the theme follows the system (U0b carry-over, David 2026-10-21)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for U7: rel=noreferrer, the CSP directives, ids refused, repeated trailers kept; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
