@@ -1,6 +1,6 @@
 {
- "kitTree": "ce6da366fae25d4bc2bbc13a5966fc69d0acb603",
- "builtAt": "2026-10-20T23:23:27Z",
+ "kitTree": "63b908d184add53dfbcd1bc55e1d1856b4a01c15",
+ "builtAt": "2026-10-21T00:05:56Z",
  "from": "src/web/kit",
  "script": ".claude/scripts/design/build-stylekit.mjs"
 }
