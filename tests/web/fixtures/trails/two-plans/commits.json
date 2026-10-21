@@ -1,0 +1,90 @@
+{
+ "date": "2026-10-16T08:00:00Z",
+ "branch": "feature/ui/U1",
+ "commits": [
+  {
+   "id": "c0",
+   "date": "2026-10-16T09:00:00Z",
+   "subject": "plan(build/F1): F1 pending → in_progress",
+   "trailers": { "Agent": "main", "Plan": "build", "Node": "F1" },
+   "files": []
+  },
+  {
+   "id": "c1",
+   "date": "2026-10-16T12:00:00Z",
+   "subject": "test(SELL-1): red: a duplicate reference answers 409",
+   "trailers": { "Agent": "tester", "Plan": "build", "Node": "F1", "Rule": "SELL-1", "TDD": "red" },
+   "files": []
+  },
+  {
+   "id": "c2",
+   "date": "2026-10-17T12:00:00Z",
+   "subject": "feat(SELL-1): green: the sale",
+   "trailers": { "Agent": "builder", "Plan": "build", "Node": "F1", "Rule": "SELL-1", "TDD": "green" },
+   "files": []
+  },
+  {
+   "id": "c3",
+   "date": "2026-10-17T12:20:00Z",
+   "subject": "refactor(SELL-1): name the reference check",
+   "trailers": { "Agent": "builder", "Plan": "build", "Node": "F1", "Rule": "SELL-1", "TDD": "refactor" },
+   "files": []
+  },
+  {
+   "id": "c4",
+   "date": "2026-10-18T09:00:00Z",
+   "subject": "docs(F1): QA script",
+   "trailers": { "Agent": "tester", "Plan": "build", "Node": "F1", "Rule": "SELL-1" },
+   "files": []
+  },
+  {
+   "id": "c5",
+   "date": "2026-10-18T18:50:55Z",
+   "subject": "Merge pull request #10 from dpmorgandev/feature/build/F1",
+   "trailers": {},
+   "files": []
+  },
+  {
+   "id": "c6",
+   "date": "2026-10-19T10:00:00Z",
+   "subject": "test(RENEW-1/2): red: a renewal inside the window answers 201",
+   "trailers": { "Agent": "tester", "Plan": "build", "Node": "F4", "Rule": "RENEW-1/2", "TDD": "red" },
+   "files": []
+  },
+  {
+   "id": "c7",
+   "date": "2026-10-19T11:00:00Z",
+   "subject": "test(CANCEL-5): red: cancelling a renewed policy refunds the future term in full",
+   "trailers": { "Agent": "tester", "Plan": "build", "Node": "F4", "Rule": "CANCEL-5", "TDD": "red" },
+   "files": []
+  },
+  {
+   "id": "c8",
+   "date": "2026-10-19T12:00:00Z",
+   "subject": "feat(RENEW-1/2): green: renew a policy",
+   "trailers": { "Agent": "builder", "Plan": "build", "Node": "F4", "Rule": "RENEW-1/2, CANCEL-5", "TDD": "green" },
+   "files": []
+  },
+  {
+   "id": "c9",
+   "date": "2026-10-20T12:00:00Z",
+   "subject": "test(DATA-1): red: one compiled data file",
+   "trailers": { "Agent": "web-tester", "Plan": "ui", "Node": "U0b", "Rule": "DATA-1", "TDD": "red" },
+   "files": []
+  },
+  {
+   "id": "c10",
+   "date": "2026-10-20T13:00:00Z",
+   "subject": "feat(DATA-1): green: the trail compiler",
+   "trailers": { "Agent": "web-builder", "Plan": "ui", "Node": "U0b", "Rule": "DATA-1", "TDD": "green" },
+   "files": []
+  },
+  {
+   "id": "c11",
+   "date": "2026-10-21T12:00:00Z",
+   "subject": "test(NAV-1): red: the overview answers the question first",
+   "trailers": { "Agent": "web-tester", "Plan": "ui", "Node": "U1", "Rule": "NAV-1", "TDD": "red" },
+   "files": ["tests/web/e2e/U1/nav-1.spec.ts.fixture"]
+  }
+ ]
+}

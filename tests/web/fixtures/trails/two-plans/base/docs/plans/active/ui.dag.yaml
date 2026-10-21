@@ -1,0 +1,27 @@
+plan_id: ui
+kind: build
+title: Fixture UI build
+status: approved
+created: 2026-10-20
+approved_by: david
+approved_on: 2026-10-20
+parent: null
+nodes:
+  - id: U0b
+    title: Trail compiler and app shell
+    kind: feature
+    owner: loop
+    depends_on: []
+    rules: [DATA-1]
+    status: done
+    attempt: 1
+    pr: null
+  - id: U1
+    title: Overview, requirements matrix and rule page
+    kind: feature
+    owner: loop
+    depends_on: [U0b]
+    rules: [NAV-1]
+    status: in_progress
+    attempt: 2
+    pr: null

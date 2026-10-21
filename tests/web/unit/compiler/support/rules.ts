@@ -12,9 +12,15 @@ export const RULES = 'rules';
 export const REREVIEW = 'rereview';
 /** tests/web/fixtures/trails/requirements-shapes/README.md: both requirements files' table shapes, and a C# test source. */
 export const SHAPES = 'requirements-shapes';
+/**
+ * tests/web/fixtures/trails/two-plans/README.md: both plans' requirements files and both matrices, a RENEW-1/2 row,
+ * `undefined` refactor cells, F1's signoff(<sha>) and merged(<sha>) events, and a template-literal test title (U1 D2).
+ */
+export const TWO_PLANS = 'two-plans';
 export const REQUIREMENTS_FILE = 'docs/requirements.md';
 export const UI_REQUIREMENTS_FILE = 'docs/ui-requirements.md';
 export const MATRIX_FILE = 'docs/trace/requirements-matrix.md';
+export const UI_MATRIX_FILE = 'docs/trace/ui-requirements-matrix.md';
 export const DAG_FILE = 'docs/plans/active/build.dag.yaml';
 export const F1_LOOP = 'docs/trace/build/F1/loop.jsonl';
 export const F2_README = 'docs/trace/build/F2/README.md';
@@ -47,6 +53,8 @@ export interface MatrixOut {
 export interface TestOut {
   name?: string | null;
   file?: string | null;
+  /** True for a template-literal title with `${…}`: one source line standing for the tests it generates (D2/I6). */
+  parameterised?: boolean | null;
 }
 
 export interface RuleOut {
@@ -58,6 +66,10 @@ export interface RuleOut {
   source?: { file?: string | null; line?: number | null } | null;
   tests?: TestOut[];
   status?: string | null;
+  /** The commits the matrix row names in each column (DATA-1's rules[*].red, green, refactor). */
+  red?: string[];
+  green?: string[];
+  refactor?: string[];
   matrix?: MatrixOut | null;
 }
 
@@ -102,6 +114,8 @@ export interface DecisionOut {
   kind?: string;
   plan?: string | null;
   node?: string | null;
+  /** The commit the event names: signoff(<sha>), merged(<sha>) (the design fixture's decisions[*].sha). */
+  sha?: string | null;
   when?: string | null;
   evidence?: { file?: string | null; line?: number | null } | null;
 }

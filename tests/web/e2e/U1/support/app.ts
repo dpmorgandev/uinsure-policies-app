@@ -41,6 +41,18 @@ export function compileRules(): CompiledTrail {
   return compileFixture(FIXTURE);
 }
 
+/**
+ * The `two-plans` fixture (tests/web/fixtures/trails/two-plans/README.md, U1 D2): both plans' requirements files and
+ * matrices, a RENEW-1/2 row, `undefined` refactor cells, build/F1's signoff(<sha>) and merged(<sha>), and a
+ * template-literal NAV-1 title.
+ */
+export const TWO_PLANS = 'two-plans';
+
+/** Compiles the `two-plans` fixture once for a describe block. */
+export function compileTwoPlans(): CompiledTrail {
+  return compileFixture(TWO_PLANS);
+}
+
 /** A fixture commit's full SHA, by its id in rules/commits.json. Fails, as an assertion, on an unknown id. */
 export function shaOf(fixture: CompiledTrail, id: string): string {
   const sha = fixture.trail.shas[id];

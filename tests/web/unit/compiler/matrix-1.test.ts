@@ -10,7 +10,7 @@
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { replayTrail, run, SLOW, thrown } from './support/trail';
 import type { Run, Trail } from './support/trail';
-import { ruleOf, rulesOf, RULES, SHAPES } from './support/rules';
+import { MATRIX_FILE, ruleOf, rulesOf, RULES, SHAPES, shortOf, TWO_PLANS } from './support/rules';
 
 let trail: Trail;
 let r: Run;
@@ -113,5 +113,37 @@ describe("the ui-requirements.md shape: '| ID | Priority | Requirement | Draft i
       ['NAV-1', 'Overview answers the question first', 'MUST', 'Navigation and overview'],
       ['NAV-4', 'Search', 'SHOULD', 'Navigation and overview'],
     ]);
+  });
+});
+
+// U1 D2: the `two-plans` fixture trail (its README): docs/requirements.md (SELL-1, CANCEL-5, RENEW-1/2) with
+// docs/trace/requirements-matrix.md, and docs/ui-requirements.md (DATA-1, NAV-1) with
+// docs/trace/ui-requirements-matrix.md, each matrix row cut from the real file.
+describe('both plans, each rule read against its own matrix', () => {
+  let two: Trail;
+  let t: Run;
+  beforeAll(() => {
+    two = replayTrail(TWO_PLANS);
+    t = run(two.root);
+  }, SLOW);
+  afterAll(() => two?.cleanup());
+
+  /** A rule's status and the matrix fields a finding names, or null when the rule is missing. */
+  const rowOf = (id: string): unknown[] | null => {
+    const rule = ruleOf(t, id);
+    if (rule === undefined) return null;
+    const m = rule.matrix ?? null;
+    return [rule.status ?? null, m?.plan ?? null, m?.node ?? null, m?.tests?.raw ?? null, m?.source?.file ?? null, m?.source?.line ?? null];
+  };
+
+  test("MATRIX-1 · RENEW-1/2's matrix row is read: built at build/F4 with 30/30, from requirements-matrix.md line 8", () => {
+    expect(t.error, thrown(t)).toBeUndefined();
+    expect(rowOf('RENEW-1/2')).toEqual(['built', 'build', 'F4', '30/30', MATRIX_FILE, 8]);
+  });
+
+  test("MATRIX-1 · RENEW-1/2's red and green are its row's commits, c6 and c8", () => {
+    expect(t.error, thrown(t)).toBeUndefined();
+    const rule = ruleOf(t, 'RENEW-1/2');
+    expect([rule?.matrix?.red ?? null, rule?.matrix?.green ?? null]).toEqual([shortOf(two, 'c6'), shortOf(two, 'c8')]);
   });
 });

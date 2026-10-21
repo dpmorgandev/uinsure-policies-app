@@ -46,6 +46,7 @@ the same way it reads the real one. The live `docs/trace/` is never a test input
 | `rules/` | A rendered trail across four nodes: a git-only F0a, a clean F1 with a FAIL fixed, an F2 TRAIL INCOMPLETE with green before red, an unstarted F3, and a rule no node owns; the README, matrix and per-commit dates as `render-trace.mjs` writes them (NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3) |
 | `rereview/` | Same-attempt re-reviews named `A<n>.<m>-<agent>.json` (A1.2 with a reviewer FAIL, A2.2 a PASS pair) beside `A1` and `A2`: eight verdicts, one FAIL, each round kept verbatim (NAV-1) |
 | `requirements-shapes/` | The rule tables of `requirements.md` and `ui-requirements.md` as each writes them (a heading's priority tag or a Priority column, `RENEW-1/2`, a dash note row, a heading with no tag), and a C# test source traited per rule (MATRIX-1, RULE-1, NAV-3) |
+| `two-plans/` | Both plans' rules, each read against its own matrix (`requirements-matrix.md`, `ui-requirements-matrix.md`): a `RENEW-1/2` row, `undefined` refactor cells, a `signoff(<sha>)` and a `merged(<sha>)` event, and a template-literal test title in a loop, each cut from the real file (MATRIX-1, NAV-1, RULE-1, NAV-3) |
 
 `replay.d.mts` types `replay.mjs` for the TypeScript tests that import it.
 
