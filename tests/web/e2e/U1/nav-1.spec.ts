@@ -4,7 +4,8 @@
 // On the `rules` fixture trail (its README lists every figure below); parity on the design fixture against
 // docs/ui/derived/U1/overview/.
 import { expect, test } from '@playwright/test';
-import { REPO, auditEverywhere, compileRules, openOnFixture, region, route } from './support/app';
+import type { Page } from '@playwright/test';
+import { REPO, auditEverywhere, compileRules, compileTwoPlans, openOnFixture, region, route } from './support/app';
 import type { CompiledTrail } from './support/app';
 import { expectRegionComponents, expectRegionsInOrder, expectShell, expectTokensOnly, overview } from './support/parity';
 
@@ -88,6 +89,48 @@ test.describe('the global controls', () => {
     await expect(page.getByRole('radiogroup', { name: 'Theme' }), 'one theme toggle on the page').toHaveCount(1);
     await expect(page.getByRole('banner').getByRole('search'), 'the search is the top bar one').toHaveCount(1);
     await expect(page.getByRole('banner').getByRole('radiogroup', { name: 'Theme' }), 'the toggle is the top bar one').toHaveCount(1);
+  });
+});
+
+// U1 D2/I3, David's ruling of 2026-10-21: the overview's figures count only the rules of the plan it answers for, the
+// build plan, whose rules are docs/requirements.md's. On the `two-plans` fixture (its README): requirements.md holds
+// SELL-1, CANCEL-5 and RENEW-1/2, each built in docs/trace/requirements-matrix.md (3 rows); ui-requirements.md holds
+// DATA-1 and NAV-1, in docs/trace/ui-requirements-matrix.md, and both are in trace.json's rules.
+test.describe("both plans' rules in trace.json: the overview answers for the build plan", () => {
+  let two: CompiledTrail;
+  test.beforeAll(() => {
+    two = compileTwoPlans();
+  });
+  test.afterAll(() => {
+    two?.trail.cleanup();
+  });
+
+  const figure = (page: Page, i: number) => region(page, FIGURES).locator('figure').nth(i);
+
+  test("NAV-1 · the rules-built figure counts requirements.md's 3 rules, from the 3 rows of the build plan's matrix, not the ui plan's", async ({ page }) => {
+    await openOnFixture(page, two, route.overview);
+    await expect(figure(page, 0).locator('figcaption'), 'figure 1 is rules built').toContainText(/rules built/i);
+    await expect(figure(page, 0).locator('p').first()).toHaveText(/^[0-3] of 3$/);
+    await expect(figure(page, 0).locator('figcaption')).toContainText(/\b3 rows\b/);
+    await expect(figure(page, 0).locator('figcaption a')).toHaveText('docs/trace/requirements-matrix.md');
+  });
+
+  test("NAV-1 · the tests-passing figure counts requirements.md's 3 rules, not the ui plan's", async ({ page }) => {
+    await openOnFixture(page, two, route.overview);
+    await expect(figure(page, 1).locator('figcaption'), 'figure 2 is tests passing').toContainText(/test/i);
+    await expect(figure(page, 1).locator('p').first()).toHaveText(/^[0-3] of 3$/);
+  });
+
+  test("NAV-1 · the headline counts requirements.md's 3 rules when it says how many list a red commit", async ({ page }) => {
+    await openOnFixture(page, two, route.overview);
+    const headline = region(page, HEADLINE);
+    await expect(headline).toContainText(/\b[0-3] of 3 rules list a red commit/);
+    await expect(headline).not.toContainText(/of 5 rules/);
+  });
+
+  test("NAV-1 · rules built reads 3 of 3: SELL-1, CANCEL-5 and RENEW-1/2, each built in the build plan's matrix", async ({ page }) => {
+    await openOnFixture(page, two, route.overview);
+    await expect(figure(page, 0).locator('p').first()).toHaveText('3 of 3');
   });
 });
 
