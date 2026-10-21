@@ -2,7 +2,7 @@
 // that links to RULE-1 for that rule. Each problem is the live API's own answer to what the test sent (send
 // anyway on, so the form's checks don't stop it first), and every expected title, detail and rule is read from
 // that answer. Parity on the recorded 422 (021) and 404 (053), against docs/ui/derived/W1/.
-import { expect, test } from './support/api';
+import { expect, live, test } from './support/api';
 import { expectRegionComponents, expectRegionsInOrder, policyStates, sellStates } from './support/parity';
 import {
   PAST_START,
@@ -157,7 +157,7 @@ test.describe('404', () => {
     const problem = read.body as Problem;
     await page.goto(route.policy('W1-NO-SUCH-1'));
     const banner = page.getByRole('main').getByRole('alert').filter({ hasText: problem.title ?? '' });
-    await expect(banner, "the API's title").toBeVisible();
+    await expect(banner, "the API's title").toBeVisible(live);
     await expect(banner, 'its status').toContainText(String(problem.status));
     await expect(banner, "the API's detail").toContainText(problem.detail ?? '');
     const chip = banner.getByRole('link', { name: problem.ruleId ?? '', exact: true });
@@ -170,7 +170,7 @@ test.describe('404', () => {
     const read = await readThroughApi('W1-NO-SUCH-2');
     expect(read.status, 'setup: the API has no such policy').toBe(404);
     await page.goto(route.policy('W1-NO-SUCH-2'));
-    await expect(page.getByRole('main').getByRole('alert').filter({ hasText: (read.body as Problem).title ?? '' })).toBeVisible();
+    await expect(page.getByRole('main').getByRole('alert').filter({ hasText: (read.body as Problem).title ?? '' })).toBeVisible(live);
     expect(await datesShown(page), 'no date: none was returned').toEqual([]);
     await expect(page.getByRole('main'), 'no status: none was returned').not.toContainText(/\b(Pending|Active|Cancelled|Expired)\b/);
   });

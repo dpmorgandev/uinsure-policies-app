@@ -1,7 +1,7 @@
 // WB-1 · Sell form. Every field of the sell request, 1–3 policyholders, the reference normalisation preview
 // (SELL-1). The sales run on the live API (support/api.ts), each test with references of its own; every value a
 // test expects back is the API's answer. Parity on the recorded SELL-1 exchange, against docs/ui/derived/W1/wb-sell/.
-import { expect, test } from './support/api';
+import { expect, live, test } from './support/api';
 import { expectRegionComponents, expectRegionsInOrder, expectShell, expectTokensOnly, sellStates } from './support/parity';
 import {
   ADA,
@@ -77,7 +77,7 @@ test.describe('the answer', () => {
     await expect(page).toHaveURL(new RegExp(`#/workbench/policies/${stored.reference}$`));
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(`Policy ${stored.reference}`);
     const term = region(page, 'status-and-current-term');
-    await expect(valueOf(term, 'Start date'), "the current term's start, as the API returned it").toHaveText(stored.startDate);
+    await expect(valueOf(term, 'Start date'), "the current term's start, as the API returned it").toHaveText(stored.startDate, live);
     await expect(valueOf(term, 'End date'), "the current term's end, as the API returned it").toHaveText(stored.endDate);
   });
 });
@@ -127,7 +127,7 @@ test.describe('policyholders, 1 to 3', () => {
     await page.goto(route.policy(stored.reference));
     const holders = region(page, 'policyholders-and-property');
     for (const h of stored.policyholders) {
-      await expect(holders, `${h.firstName} ${h.lastName}`).toContainText(h.firstName);
+      await expect(holders, `${h.firstName} ${h.lastName}`).toContainText(h.firstName, live);
       await expect(holders).toContainText(h.lastName);
       await expect(holders).toContainText(h.dateOfBirth);
     }

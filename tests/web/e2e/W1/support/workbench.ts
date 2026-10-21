@@ -3,7 +3,7 @@
 // what the API answered, read from the exchange the page saw or from the API directly, never a figure written here.
 import { expect } from '@playwright/test';
 import type { Locator, Page, Request, Route } from '@playwright/test';
-import { apiUrl } from './api';
+import { apiUrl, live } from './api';
 
 /** The workbench's routes (hash routing), from docs/ui/screens/<id>/screen.json. */
 export const route = {
@@ -364,11 +364,16 @@ export function watchApi(page: Page): Exchange[] {
 export const sent = (seen: Exchange[], method: string, path: string): Exchange[] =>
   seen.filter((e) => e.method === method && e.path === path);
 
-/** The `n`th request of this method and path, once answered. Fails, as an assertion, when the page never sends it. */
+/**
+ * The `n`th request of this method and path, once answered. Fails, as an assertion, when the page never sends it.
+ * Both waits are on a live round trip, a worker's first one included, so each has the live API's timeout.
+ */
 export async function answered(seen: Exchange[], method: string, path: string, n = 0): Promise<Exchange> {
-  await expect.poll(() => sent(seen, method, path).length, `the page sends ${method} ${path}`).toBeGreaterThan(n);
+  await expect
+    .poll(() => sent(seen, method, path).length, { message: `the page sends ${method} ${path}`, ...live })
+    .toBeGreaterThan(n);
   const exchange = sent(seen, method, path)[n] as Exchange;
-  await expect.poll(() => exchange.done, `${method} ${path} is answered`).toBe(true);
+  await expect.poll(() => exchange.done, { message: `${method} ${path} is answered`, ...live }).toBe(true);
   return exchange;
 }
 

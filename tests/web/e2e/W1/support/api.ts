@@ -19,6 +19,16 @@ export const apiPort = Number(process.env.DOCKET_API_PORT ?? 5080);
 /** The API itself, for a test's own setup and expected values. The app reaches it as /api/… through its proxy. */
 export const apiUrl = `http://localhost:${apiPort}`;
 
+/**
+ * How long a wait on the live API's answer may last. A worker's first request can meet a cold API and proxy, and
+ * take longer than expect's 5 s default; the API answers, only later. The wait is longer; what it waits for isn't.
+ */
+export const LIVE_API_TIMEOUT = 20_000;
+/** A wait on the live API's answer, as a web-first assertion's or expect.poll's options. */
+export const live = { timeout: LIVE_API_TIMEOUT } as const;
+/** A test on the live API: room for its waits on it, each up to LIVE_API_TIMEOUT, inside the test's own timeout. */
+const LIVE_TEST_TIMEOUT = 90_000;
+
 const project = join(repoRoot, 'src', 'Uinsure.Policies.Api');
 const reaper = join(repoRoot, 'tests', 'web', 'e2e', 'W1', 'support', 'reaper.mjs');
 const stateDir = join(tmpdir(), `docket-w1-api-${apiPort}`);
@@ -175,15 +185,24 @@ export async function ensureApi(): Promise<void> {
   });
 }
 
-/** `test` with the live API: a test that names `api` runs with the API answering at that URL. */
-export const test = base.extend<object, { api: string }>({
-  api: [
+/**
+ * `test` with the live API: a test that names `api` runs with the API answering at that URL, started once per
+ * worker (`liveApi`), and with a timeout that has room for its waits on it. Every W1 test that fails keeps its
+ * trace (test-results/), so a stall on the way to the API can be located: which request, which hop, when.
+ */
+export const test = base.extend<{ api: string }, { liveApi: string }>({
+  trace: ['retain-on-failure', { scope: 'worker' }],
+  liveApi: [
     async ({}, use) => {
       await ensureApi();
       await use(apiUrl);
     },
     { scope: 'worker', timeout: 600_000 },
   ],
+  api: async ({ liveApi }, use, testInfo) => {
+    testInfo.setTimeout(Math.max(testInfo.timeout, LIVE_TEST_TIMEOUT));
+    await use(liveApi);
+  },
 });
 
 export { expect } from '@playwright/test';

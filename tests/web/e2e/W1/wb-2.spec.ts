@@ -2,7 +2,7 @@
 // shaded or computed), holders, property, payments, refunds, claims. Each test sells its own policy straight
 // through the live API (setup), then reads what the view shows against the API's own GET of it. Parity on the
 // recorded GET-1 exchanges, against docs/ui/derived/W1/wb-policy/ and wb-home/.
-import { expect, test } from './support/api';
+import { expect, live, test } from './support/api';
 import { expectRegionComponents, expectRegionsInOrder, expectShell, expectTokensOnly, homeStates, policyStates } from './support/parity';
 import {
   ADA,
@@ -42,7 +42,7 @@ test.describe('open by reference', () => {
     void api;
     const policy = await soldPolicy('W1-HOME-1');
     await openFromHome(page, policy.reference);
-    await expect(page).toHaveURL(new RegExp(`#/workbench/policies/${policy.reference}$`));
+    await expect(page).toHaveURL(new RegExp(`#/workbench/policies/${policy.reference}$`), live);
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(`Policy ${policy.reference}`);
     await expect(region(page, 'status-and-current-term')).toContainText(policy.status);
   });
@@ -55,7 +55,7 @@ test.describe('the policy', () => {
     await page.goto(route.policy(policy.reference));
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(`Policy ${policy.reference}`);
     const term = region(page, 'status-and-current-term');
-    await expect(term, 'the status, in words').toContainText(policy.status);
+    await expect(term, 'the status, in words').toContainText(policy.status, live);
     await expect(valueOf(term, 'Current term number')).toHaveText(String(policy.currentTermNumber));
     await expect(valueOf(term, 'Start date')).toHaveText(policy.startDate);
     await expect(valueOf(term, 'End date')).toHaveText(policy.endDate);
@@ -69,7 +69,7 @@ test.describe('the policy', () => {
     const policy = await soldPolicy('W1-TIME-1');
     await page.goto(route.policy(policy.reference));
     const timeline = region(page, 'terms-timeline-terms-payments-claims-cancellation-dates-the-api-returned-only');
-    await expect(timeline, 'the timeline names the policy it dates').toContainText(policy.reference);
+    await expect(timeline, 'the timeline names the policy it dates').toContainText(policy.reference, live);
     for (const t of policy.terms) {
       await expect(timeline.locator(`time[datetime="${t.startDate}"]`).first(), `term ${t.termNumber} starts`).toHaveText(t.startDate);
       await expect(timeline.locator(`time[datetime="${t.endDate}"]`).first(), `term ${t.termNumber} ends`).toHaveText(t.endDate);
@@ -82,7 +82,7 @@ test.describe('the policy', () => {
     const policy = await soldPolicy('W1-DATES-1');
     await page.goto(route.policy(policy.reference));
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(`Policy ${policy.reference}`);
-    await expect(region(page, 'status-and-current-term')).toContainText(policy.endDate);
+    await expect(region(page, 'status-and-current-term')).toContainText(policy.endDate, live);
     const returned = datesIn(policy);
     const invented = (await datesShown(page)).filter((d) => !returned.has(d));
     expect(invented, 'every date on the view is one the API returned').toEqual([]);
@@ -94,7 +94,7 @@ test.describe('the policy', () => {
     await page.goto(route.policy(policy.reference));
     const people = region(page, 'policyholders-and-property');
     const rows = people.getByRole('table').first().locator('tbody tr');
-    await expect(rows, 'one row per policyholder').toHaveCount(policy.policyholders.length);
+    await expect(rows, 'one row per policyholder').toHaveCount(policy.policyholders.length, live);
     for (const [i, h] of policy.policyholders.entries()) {
       await expect(rows.nth(i), `policyholder ${i + 1}, in the API's order`).toContainText(h.firstName);
       await expect(rows.nth(i)).toContainText(h.lastName);
@@ -112,7 +112,7 @@ test.describe('the policy', () => {
     await page.goto(route.policy(policy.reference));
     const money = region(page, 'payments-and-refunds');
     const payments = money.getByRole('table').first().locator('tbody tr');
-    await expect(payments, 'one row per payment').toHaveCount(policy.payments.length);
+    await expect(payments, 'one row per payment').toHaveCount(policy.payments.length, live);
     for (const [i, p] of policy.payments.entries()) {
       await expect(payments.nth(i)).toContainText(p.reference);
       await expect(payments.nth(i)).toContainText(p.type);
@@ -128,7 +128,7 @@ test.describe('the policy', () => {
     expect(policy.cancellation, 'setup: no cancellation').toBeNull();
     await page.goto(route.policy(policy.reference));
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(`Policy ${policy.reference}`);
-    await expect(region(page, 'payments-and-refunds'), 'refunds: none returned').toContainText(/no refunds/i);
+    await expect(region(page, 'payments-and-refunds'), 'refunds: none returned').toContainText(/no refunds/i, live);
     await expect(region(page, 'claims'), 'claims: none returned').toContainText(/no claims/i);
     await expect(
       region(page, 'cancellation-summary-from-get-per-term-breakdown-from-the-logged-cancel-response'),

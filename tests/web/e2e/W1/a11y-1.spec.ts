@@ -2,7 +2,7 @@
 // view), light and dark, at 1440 and 390. Each audit runs on the page showing the live API's own answer to what
 // the test did, never on canned content: it first waits for a value only that answer holds. The theme follows
 // the system setting and the width the window, so each state is audited in all four without being rebuilt.
-import { expect, test } from './support/api';
+import { expect, live, test } from './support/api';
 import type { Page } from '@playwright/test';
 import { axeViolations, backgroundToken, setTheme, themes, tokenBackground, viewports } from '../U0b/support/app';
 import type { Theme } from '../U0b/support/app';
@@ -104,7 +104,7 @@ test('A11Y-1 · the policy view has no axe violation, light and dark, at 1440 an
   const stored = await sellThroughApi(requestOf(sellForm('W1-AXE-6')));
   await page.goto(route.policy(stored.reference));
   await expect(page.getByRole('heading', { level: 1 })).toHaveText(`Policy ${stored.reference}`);
-  await expect(page.getByRole('main')).toContainText(stored.endDate);
+  await expect(page.getByRole('main')).toContainText(stored.endDate, live);
   await auditEverywhere(page);
 });
 
@@ -113,6 +113,6 @@ test('A11Y-1 · the policy view, answered 404, has no axe violation, light and d
   const read = await readThroughApi('W1-AXE-NONE');
   expect(read.status, 'setup: the API has no such policy').toBe(404);
   await page.goto(route.policy('W1-AXE-NONE'));
-  await expect(page.getByRole('main')).toContainText((read.body as Problem).detail ?? 'a detail');
+  await expect(page.getByRole('main')).toContainText((read.body as Problem).detail ?? 'a detail', live);
   await auditEverywhere(page);
 });

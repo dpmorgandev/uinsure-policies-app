@@ -1,7 +1,7 @@
 // WB-9 · Recent policies. The references this browser has sold or opened, kept in local storage; no list
 // endpoint (David, 2026-10-19). Each test starts in a fresh browser context, so its list holds only what it did,
 // on the live API. Parity on two recorded sales, against docs/ui/derived/W1/wb-home/.
-import { expect, test } from './support/api';
+import { expect, live, test } from './support/api';
 import { expectRegionComponents, expectShell, expectTokensOnly, homeStates } from './support/parity';
 import {
   PAST_START,
@@ -32,7 +32,7 @@ async function soldHere(page: Page, reference: string): Promise<Policy> {
 /** Opens `reference` from the home and waits for its view. */
 async function openedHere(page: Page, reference: string): Promise<void> {
   await openFromHome(page, reference);
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText(`Policy ${reference}`);
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText(`Policy ${reference}`, live);
 }
 
 const items = (page: Page) => recentList(page).getByRole('listitem');
