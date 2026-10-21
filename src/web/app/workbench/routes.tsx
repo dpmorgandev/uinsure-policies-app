@@ -1,9 +1,6 @@
 import type { ReactElement } from 'react';
-import { QuoteCancel } from './cancel/QuoteCancel';
-import { RecordClaim } from './claim/RecordClaim';
 import { WorkbenchHome } from './home/WorkbenchHome';
 import { PolicyView } from './policy/PolicyView';
-import { Renew } from './renew/Renew';
 import { SellPolicy } from './sell/SellPolicy';
 
 export interface WorkbenchRoute {
@@ -14,12 +11,9 @@ export interface WorkbenchRoute {
   element: ReactElement;
 }
 
-/** W1's routes, registered by the router root. Each route is one screen in docs/ui/screens/. */
+/** W1's routes, registered by the router root. Cancel, renew and record-a-claim are W2's and W3's: until then they fall to the not-built page. */
 export const workbenchRoutes: WorkbenchRoute[] = [
   { path: 'workbench', title: 'Workbench', element: <WorkbenchHome /> },
   { path: 'workbench/sell', title: 'Sell a policy', element: <SellPolicy /> },
   { path: 'workbench/policies/:reference', title: 'Policy', element: <PolicyView /> },
-  { path: 'workbench/policies/:reference/cancel', title: 'Quote and cancel', element: <QuoteCancel /> },
-  { path: 'workbench/policies/:reference/renew', title: 'Renew', element: <Renew /> },
-  { path: 'workbench/policies/:reference/claims/new', title: 'Record a claim', element: <RecordClaim /> },
 ];

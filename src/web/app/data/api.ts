@@ -52,6 +52,25 @@ export interface Payment {
   amount: number;
 }
 
+export interface Refund {
+  reference: string;
+  type: string;
+  amount: number;
+  paymentReference: string;
+}
+
+export interface Claim {
+  reference: string;
+  claimDate: string;
+  description: string;
+}
+
+export interface Cancellation {
+  cancellationDate: string;
+  ruleApplied: string;
+  totalRefund: number;
+}
+
 export interface Policy {
   reference: string;
   type: PolicyType;
@@ -66,9 +85,9 @@ export interface Policy {
   property: Property;
   terms: Term[];
   payments: Payment[];
-  refunds: unknown[];
-  claims: unknown[];
-  cancellation: unknown;
+  refunds: Refund[];
+  claims: Claim[];
+  cancellation: Cancellation | null;
 }
 
 export interface SellFormProperty {
@@ -249,13 +268,13 @@ function reasonOf(error: unknown): string {
 
 async function ask(deps: ApiDeps, url: string, init?: RequestInit): Promise<ApiAnswer<Policy>> {
   let response: Response;
-  let body: unknown;
   try {
     response = await deps.fetch(url, init);
-    body = await response.json();
   } catch (error) {
     return { kind: 'unreachable', reason: reasonOf(error) };
   }
+  // WB-3: an answer came. A body that is not JSON (a proxy's page) leaves no body, and the status stays.
+  const body: unknown = await response.json().catch(() => undefined);
   if (response.ok) return { kind: 'ok', status: response.status, value: body as Policy };
   return { kind: 'problem', status: response.status, problem: readProblem(response.status, body) };
 }

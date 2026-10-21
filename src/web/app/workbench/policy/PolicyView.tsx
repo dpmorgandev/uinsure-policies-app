@@ -4,7 +4,7 @@ import { useParams } from 'react-router';
 import { DataTable, KeyValueList, PageHeader, ProblemBanner, StatusTag, TermTimeline } from '../../../kit';
 import type { DataTableColumn, KeyValueItem, Status, TermTimelineProps } from '../../../kit';
 import { getPolicy } from '../../data/api';
-import type { ApiAnswer, Policy } from '../../data/api';
+import type { ApiAnswer, Policy, Problem } from '../../data/api';
 import { NotBuiltRegion } from '../../shell/Rung';
 import { browserDeps } from '../browser';
 import { ProblemView } from '../ProblemView';
@@ -13,25 +13,12 @@ import '../workbench.css';
 // How the API's status word is drawn. The word shown is always the API's own.
 const STATUS_TAGS: Record<string, Status> = { Pending: 'pending', Active: 'pass', Expired: 'warn', Cancelled: 'fail' };
 
-type JsonRecord = Record<string, unknown>;
 type TimelineClaim = NonNullable<TermTimelineProps['claims']>[number];
 type TimelineCancellation = NonNullable<TermTimelineProps['cancellation']>;
 
 interface Row {
   id: string;
   cells: (string | null)[];
-}
-
-const isRecord = (value: unknown): value is JsonRecord => typeof value === 'object' && value !== null && !Array.isArray(value);
-
-/** A value of the API's answer as text, a money amount to two places; null when the answer holds none. */
-function textOf(value: unknown): string | null {
-  if (typeof value === 'number') return value.toFixed(2);
-  return typeof value === 'string' ? value : null;
-}
-
-function recordsOf(list: unknown[]): JsonRecord[] {
-  return list.filter(isRecord);
 }
 
 function columns(headers: string[], mono: number[] = [], numeric: number[] = []): DataTableColumn<Row>[] {
@@ -78,19 +65,18 @@ interface PolicyDetailProps {
 
 function PolicyDetail({ policy }: PolicyDetailProps) {
   const reference = policy.reference;
-  const claims = recordsOf(policy.claims);
-  const refunds = recordsOf(policy.refunds);
-  const cancellation = isRecord(policy.cancellation) ? policy.cancellation : null;
+  const { claims, refunds, cancellation } = policy;
 
-  const timelineClaims: TimelineClaim[] = claims.flatMap((claim) => {
-    const claimDate = textOf(claim['claimDate']);
-    return claimDate === null ? [] : [{ reference: textOf(claim['reference']) ?? '', claimDate, description: textOf(claim['description']) }];
-  });
-  const cancelledOn = cancellation ? textOf(cancellation['cancellationDate']) : null;
-  const timelineCancellation: TimelineCancellation | null =
-    cancellation && cancelledOn !== null
-      ? { cancellationDate: cancelledOn, ruleApplied: textOf(cancellation['ruleApplied']), totalRefund: textOf(cancellation['totalRefund']) }
-      : null;
+  const timelineClaims: TimelineClaim[] = claims.map((claim) => ({
+    reference: claim.reference,
+    claimDate: claim.claimDate,
+    description: claim.description,
+  }));
+  const timelineCancellation: TimelineCancellation | null = cancellation && {
+    cancellationDate: cancellation.cancellationDate,
+    ruleApplied: cancellation.ruleApplied,
+    totalRefund: cancellation.totalRefund.toFixed(2),
+  };
 
   return (
     <>
@@ -157,15 +143,12 @@ function PolicyDetail({ policy }: PolicyDetailProps) {
           <DataTable
             caption={`Refunds on ${reference}: ${plural(refunds.length, 'refund', 'refunds')} returned.`}
             columns={REFUND_COLUMNS}
-            rows={numbered(
-              refunds.map((r) => [textOf(r['reference']), textOf(r['type']), textOf(r['amount']), textOf(r['paymentReference'])]),
-            )}
+            rows={numbered(refunds.map((r) => [r.reference, r.type, r.amount.toFixed(2), r.paymentReference]))}
             sort={sorted}
             empty={{
               context: 'empty',
               title: `The API returned no refunds for ${reference}.`,
-              why: 'refunds is an empty list.',
-              to: { label: 'Quote a cancellation', href: `#/workbench/policies/${encodeURIComponent(reference)}/cancel` },
+              why: 'refunds is an empty list. Quoting a cancellation is not built yet.',
             }}
           />
         </div>
@@ -175,13 +158,12 @@ function PolicyDetail({ policy }: PolicyDetailProps) {
         <DataTable
           caption={`Claims on ${reference}: ${plural(claims.length, 'claim', 'claims')} returned (hasClaims is ${String(policy.hasClaims)}).`}
           columns={CLAIM_COLUMNS}
-          rows={numbered(claims.map((c) => [textOf(c['reference']), textOf(c['claimDate']), textOf(c['description'])]))}
+          rows={numbered(claims.map((c) => [c.reference, c.claimDate, c.description]))}
           sort={sorted}
           empty={{
             context: 'empty',
             title: `The API returned no claims for ${reference}.`,
-            why: 'claims is an empty list. A recorded claim would appear here as one numbered row.',
-            to: { label: 'Record a claim', href: `#/workbench/policies/${encodeURIComponent(reference)}/claims/new` },
+            why: 'claims is an empty list. A recorded claim would appear here as one numbered row. Recording a claim is not built yet.',
           }}
         />
       </Region>
@@ -195,9 +177,9 @@ function PolicyDetail({ policy }: PolicyDetailProps) {
           items={
             cancellation
               ? [
-                  { label: 'Cancellation date', value: textOf(cancellation['cancellationDate']), mono: true },
-                  { label: 'Rule applied', value: textOf(cancellation['ruleApplied']), mono: true },
-                  { label: 'Total refund', value: textOf(cancellation['totalRefund']), mono: true },
+                  { label: 'Cancellation date', value: cancellation.cancellationDate, mono: true },
+                  { label: 'Rule applied', value: cancellation.ruleApplied, mono: true },
+                  { label: 'Total refund', value: cancellation.totalRefund.toFixed(2), mono: true },
                   { label: 'Per-term breakdown, from the cancel response', missing: 'no cancel response is logged for this policy' },
                 ]
               : [
@@ -263,6 +245,11 @@ function NoPolicy({ why, problem }: { why: string; problem: ReactNode }) {
   );
 }
 
+/** Why a policy did not come back, in the API's own status and title; no reason is invented. */
+function problemWhy(status: number, problem: Problem): string {
+  return `the API answered ${status}${problem.title ? `, ${problem.title}` : ''}`;
+}
+
 function headerOf(reference: string, answer: ApiAnswer<Policy> | null): ReactNode {
   const common = {
     mode: 'live' as const,
@@ -287,7 +274,7 @@ function headerOf(reference: string, answer: ApiAnswer<Policy> | null): ReactNod
       <PageHeader
         {...common}
         title={`Policy ${policy.reference}`}
-        answer={`${policy.status}. Term ${policy.currentTermNumber} runs ${policy.startDate} to ${policy.endDate}, with ${plural(policy.payments.length, 'payment', 'payments')}, ${plural(recordsOf(policy.refunds).length, 'refund', 'refunds')} and ${plural(recordsOf(policy.claims).length, 'claim', 'claims')}.`}
+        answer={`${policy.status}. Term ${policy.currentTermNumber} runs ${policy.startDate} to ${policy.endDate}, with ${plural(policy.payments.length, 'payment', 'payments')}, ${plural(policy.refunds.length, 'refund', 'refunds')} and ${plural(policy.claims.length, 'claim', 'claims')}.`}
         status={{ value: STATUS_TAGS[policy.status] ?? 'warn', label: policy.status }}
         ids={[
           { label: 'Policy', value: policy.reference },
@@ -378,7 +365,7 @@ export function PolicyView() {
         <NoPolicy why="the API has not answered yet" problem={<p className="s-wb-note">Waiting for the API to answer.</p>} />
       ) : (
         <NoPolicy
-          why={answer.kind === 'problem' ? 'the policy was not found' : 'the API did not answer'}
+          why={answer.kind === 'problem' ? problemWhy(answer.status, answer.problem) : 'the API did not answer'}
           problem={
             answer.kind === 'problem' ? (
               <ProblemView problem={answer.problem} />
