@@ -1,0 +1,36 @@
+{
+  "pages": [
+    "docs/ui/screens/overview/error.html",
+    "docs/ui/screens/overview/loading.html",
+    "docs/ui/screens/matrix/error.html",
+    "docs/ui/screens/matrix/loading.html",
+    "docs/ui/screens/rule/error.html",
+    "docs/ui/screens/rule/loading.html",
+    "docs/ui/screens/plan/error.html",
+    "docs/ui/screens/plan/loading.html",
+    "docs/ui/screens/node/empty.html",
+    "docs/ui/screens/node/error.html",
+    "docs/ui/screens/node/loading.html",
+    "docs/ui/screens/walkthrough/empty.html",
+    "docs/ui/screens/walkthrough/error.html",
+    "docs/ui/screens/walkthrough/loading.html",
+    "docs/ui/screens/loop/empty.html",
+    "docs/ui/screens/loop/error.html",
+    "docs/ui/screens/loop/loading.html",
+    "docs/ui/screens/activity/empty.html",
+    "docs/ui/screens/activity/error.html",
+    "docs/ui/screens/activity/loading.html",
+    "docs/ui/screens/decisions/empty.html",
+    "docs/ui/screens/decisions/error.html",
+    "docs/ui/screens/decisions/loading.html",
+    "docs/ui/screens/wb-home/empty.html",
+    "docs/ui/screens/wb-cancel/empty.html"
+  ],
+  "actions": [
+    { "screen": "overview", "label": "Try again (error only)" },
+    { "screen": "matrix", "label": "Try again (error state)" },
+    { "screen": "plan", "label": "Try again (error only)" },
+    { "screen": "walkthrough", "label": "Try again" }
+  ],
+  "david": "option 1, all 18, leave api-error alone / A, and include the empty pages / remove both wb empties / merged and proceed with recomemndations (remove actions 1-4, keep 5 and 6, their stale label text recorded in A13 for a later re-sign)"
+}

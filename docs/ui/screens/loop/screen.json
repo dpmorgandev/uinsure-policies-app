@@ -48,9 +48,6 @@
   ],
   "states": [
     { "name": "populated", "file": "populated.html", "variant": "the ref's own data: events[plan=build][node=F3], log lines 1 to 66, two attempts; gate.stub ok false at log line 4 (attempt 1) and ok true at log line 8 (attempt 2)" },
-    { "name": "loading", "file": "loading.html", "variant": "no figures: each region shows a pending status tag and a sentence; no event is known yet" },
-    { "name": "error", "file": "error.html", "variant": "no figures: docs/ui/fixture/trace.json could not be read; each region says Did not load" },
-    { "name": "empty", "file": "empty.html", "variant": "nodes[plan=build][id=F7], pending at this ref: attempt 0, no loop events yet" },
     { "name": "in-flight", "file": "in-flight.html", "variant": "events[plan=build][node=F6], the first 20 loop events, cut from a real node while attempt 3 was open; not the ref's state. The open rung uses the nearest kit state (an attempt-ladder rung with a pending status tag); the kit has no in-flight ladder state" },
     { "name": "git-only", "file": "git-only.html", "variant": "nodes[plan=build][id=F0a], which predates the trail and has no loop.jsonl" },
     { "name": "long-content", "file": "long-content.html", "variant": "events[plan=build][node=F1], the node with the most loop events: log lines 1 to 84, long detail and command strings, two attempts; no gate came back ok false, attempt 1 ended on reviewer and security verdict FAILs" }
