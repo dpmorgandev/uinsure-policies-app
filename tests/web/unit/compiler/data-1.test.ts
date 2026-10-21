@@ -100,12 +100,12 @@ describe('the lazy chunks', () => {
 
   test("DATA-1 · the activity chunk holds the node's activity, one entry per line, in order", () => {
     expect(r.error, thrown(r)).toBeUndefined();
-    expect(activity(r, 'build', 'F1')?.map((l) => [l.agent, l.tool, l.file, l.command])).toEqual([
-      ['main', 'Bash', null, 'git commit -m "plan(build/F1): F1 pending → in_progress"'],
-      ['tester', 'Bash', null, 'git commit -m "test(SELL-1): red: the acceptance suite"'],
-      ['builder', 'Bash', null, 'git commit -m "feat(F1): stub the sale route"'],
-      ['builder', 'Bash', null, 'git commit -m "feat(SELL-1): green: the sale"'],
-      ['tester', 'Bash', null, 'git commit -m "docs(F1): QA script"'],
+    expect(activity(r, 'build', 'F1')?.map((l) => [l.line, l.attempt, l.agent, l.tool, l.file, l.command])).toEqual([
+      [1, 1, 'main', 'Bash', null, 'git commit -m "plan(build/F1): F1 pending → in_progress"'],
+      [2, 1, 'tester', 'Bash', null, 'git commit -m "test(SELL-1): red: the acceptance suite"'],
+      [3, 1, 'builder', 'Bash', null, 'git commit -m "feat(F1): stub the sale route"'],
+      [4, 1, 'builder', 'Bash', null, 'git commit -m "feat(SELL-1): green: the sale"'],
+      [5, 1, 'tester', 'Bash', null, 'git commit -m "docs(F1): QA script"'],
     ]);
   });
 });
