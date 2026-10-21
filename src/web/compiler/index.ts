@@ -86,7 +86,7 @@ function verdictOf(file: string, text: string, plan: string, node: string): Json
   }
   const outer = typeof record === 'object' && record !== null ? (record as Json) : null;
   const inner = typeof outer?.['verdict'] === 'object' && outer['verdict'] !== null ? (outer['verdict'] as Json) : outer;
-  const name = /\/(A\d+)-([^/]+)\.json$/.exec(file);
+  const name = /\/(A\d+(?:\.\d+)?)-([^/]+)\.json$/.exec(file);
   const verdict = str(inner?.['verdict']);
   if (inner === null || name === null || verdict === null) return null;
   return {
