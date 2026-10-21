@@ -61,6 +61,10 @@ export const REC = {
   lowerCase: '048-get-1-lower-case-reference-finds-the-policy-200.json',
   /** GET-1, an unknown reference: 0 GET 404. */
   unknown: '053-get-1-unknown-reference-404.json',
+  /** CANCEL-2, cancelled before its start: 2 GET 200 F3-MVFJR27M9J, one Card refund and a CANCEL-1a cancellation. */
+  cancelled: '063-cancel-2-refund-goes-to-the-card-payment-it-reverses-201.json',
+  /** COULD-2, a claim then a cancellation: 3 GET 200 F3-MVFJRF5K95, one claim, no refund, a COULD-2 cancellation. */
+  claimedThenCancelled: '071-could-2-claim-then-cancel-refunds-nothing-201.json',
 } as const;
 
 export interface SentRequest {

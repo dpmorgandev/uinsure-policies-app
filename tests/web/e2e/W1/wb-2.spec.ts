@@ -7,7 +7,10 @@ import { expectRegionComponents, expectRegionsInOrder, expectShell, expectTokens
 import {
   ADA,
   EDSGER,
+  apiToday,
   askApi,
+  cancelThroughApi,
+  claimThroughApi,
   datesIn,
   datesShown,
   field,
@@ -136,6 +139,109 @@ test.describe('the policy', () => {
       region(page, 'cancellation-summary-from-get-per-term-breakdown-from-the-logged-cancel-response'),
       'cancellation: null',
     ).toContainText(/not been cancelled/i);
+  });
+});
+
+/** The policy view's terms timeline. */
+const TIMELINE = 'terms-timeline-terms-payments-claims-cancellation-dates-the-api-returned-only';
+const CANCELLATION = 'cancellation-summary-from-get-per-term-breakdown-from-the-logged-cancel-response';
+
+/**
+ * Sells `reference` to start in 30 days and cancels it through its cancellation endpoint today, before its start
+ * (CANCEL-1a), so the API refunds the payment in full. Returns the policy as the API's GET then answers it.
+ */
+async function cancelledPolicy(reference: string): Promise<Policy> {
+  await sellThroughApi(requestOf(sellForm(reference, { policyholders: [ADA, EDSGER] })));
+  await cancelThroughApi(reference);
+  const read = await readThroughApi(reference);
+  expect(read.status, `setup: the API reads ${reference} back`).toBe(200);
+  const policy = read.body as Policy;
+  expect(policy.cancellation, 'setup: the API reports a cancellation').not.toBeNull();
+  expect(policy.cancellation?.totalRefund ?? 0, 'setup: the API refunds more than 0').toBeGreaterThan(0);
+  expect(policy.refunds.length, 'setup: the API lists a refund').toBeGreaterThan(0);
+  return policy;
+}
+
+/**
+ * Sells `reference` to start on the API's today and records a claim on it that day (COULD-2: a claim falls inside
+ * the term and on or before today). Returns the policy as the API's GET then answers it.
+ */
+async function claimedPolicy(reference: string, probeReference: string): Promise<Policy> {
+  const today = await apiToday(probeReference);
+  await sellThroughApi(requestOf(sellForm(reference, { startDate: today })));
+  await claimThroughApi(reference, { claimDate: today, description: 'Escape of water from the boiler' });
+  const read = await readThroughApi(reference);
+  expect(read.status, `setup: the API reads ${reference} back`).toBe(200);
+  const policy = read.body as Policy;
+  expect(policy.claims.length, 'setup: the API lists a claim').toBeGreaterThan(0);
+  return policy;
+}
+
+// inv-006 I3: the refund, claim and cancellation sections and rungs, populated, read against the API's own GET.
+test.describe('a policy with refunds, claims and a cancellation', () => {
+  test("WB-2 · a cancelled policy's refunds are listed one row each, with the API's reference, type, amount and payment reference", async ({ page, api }) => {
+    void api;
+    const policy = await cancelledPolicy('W1-REFUND-1');
+    await page.goto(route.policy(policy.reference));
+    const refunds = region(page, 'payments-and-refunds').getByRole('table', { name: /^Refunds on / }).locator('tbody tr');
+    await expect(refunds, 'one row per refund').toHaveCount(policy.refunds.length, live);
+    for (const [i, r] of policy.refunds.entries()) {
+      await expect(refunds.nth(i), `refund ${i + 1}, in the API's order`).toContainText(r.reference);
+      await expect(refunds.nth(i)).toContainText(r.type);
+      await expect(refunds.nth(i)).toContainText(r.amount.toFixed(2));
+      await expect(refunds.nth(i)).toContainText(r.paymentReference);
+    }
+  });
+
+  test("WB-2 · a cancelled policy's cancellation summary shows the API's cancellationDate, ruleApplied and totalRefund", async ({ page, api }) => {
+    void api;
+    const policy = await cancelledPolicy('W1-CANCEL-1');
+    const cancellation = policy.cancellation as NonNullable<Policy['cancellation']>;
+    await page.goto(route.policy(policy.reference));
+    const summary = region(page, CANCELLATION);
+    await expect(valueOf(summary, 'Cancellation date')).toHaveText(cancellation.cancellationDate, live);
+    await expect(valueOf(summary, 'Rule applied')).toHaveText(cancellation.ruleApplied);
+    await expect(valueOf(summary, 'Total refund')).toContainText(cancellation.totalRefund.toFixed(2));
+  });
+
+  test("WB-2 · a cancelled policy's timeline has a rung dated at the API's cancellationDate", async ({ page, api }) => {
+    void api;
+    const policy = await cancelledPolicy('W1-CANRUNG-1');
+    const date = (policy.cancellation as NonNullable<Policy['cancellation']>).cancellationDate;
+    await page.goto(route.policy(policy.reference));
+    const timeline = region(page, TIMELINE);
+    const rung = timeline
+      .getByRole('listitem')
+      .filter({ hasText: 'Cancelled' })
+      .filter({ has: page.locator(`time[datetime="${date}"]`) });
+    await expect(rung, 'one cancellation rung, dated as the API dated it').toHaveCount(1, live);
+    await expect(rung.locator(`time[datetime="${date}"]`)).toHaveText(date);
+  });
+
+  test("WB-2 · a policy's claims are listed one row each, with the API's reference, claimDate and description", async ({ page, api }) => {
+    void api;
+    const policy = await claimedPolicy('W1-CLAIM-1', 'W1-CLAIM-1-T');
+    await page.goto(route.policy(policy.reference));
+    const claims = region(page, 'claims').getByRole('table').locator('tbody tr');
+    await expect(claims, 'one row per claim').toHaveCount(policy.claims.length, live);
+    for (const [i, c] of policy.claims.entries()) {
+      await expect(claims.nth(i), `claim ${i + 1}, in the API's order`).toContainText(c.reference);
+      await expect(claims.nth(i)).toContainText(c.claimDate);
+      await expect(claims.nth(i)).toContainText(c.description ?? '');
+    }
+  });
+
+  test("WB-2 · a policy's timeline has a rung dated at each of the API's claimDates", async ({ page, api }) => {
+    void api;
+    const policy = await claimedPolicy('W1-CLMRUNG-1', 'W1-CLMRUNG-1-T');
+    await page.goto(route.policy(policy.reference));
+    const timeline = region(page, TIMELINE);
+    const claimRungs = timeline.getByRole('listitem').filter({ hasText: 'Claim recorded' });
+    await expect(claimRungs, 'one rung per claim').toHaveCount(policy.claims.length, live);
+    for (const c of policy.claims) {
+      const rung = claimRungs.filter({ hasText: c.reference });
+      await expect(rung.locator(`time[datetime="${c.claimDate}"]`), `claim ${c.reference}'s rung`).toHaveText(c.claimDate);
+    }
   });
 });
 

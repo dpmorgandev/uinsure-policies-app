@@ -61,6 +61,28 @@ export interface Payment {
   amount: number;
 }
 
+/** One refund, as a policy's GET (and a cancellation's 201) lists it. */
+export interface Refund {
+  reference: string;
+  type: string;
+  amount: number;
+  paymentReference: string;
+}
+
+/** One claim, as a policy's GET lists it. */
+export interface Claim {
+  reference: string;
+  claimDate: string;
+  description: string | null;
+}
+
+/** A policy's cancellation summary, as its GET returns it. */
+export interface Cancellation {
+  cancellationDate: string;
+  ruleApplied: string;
+  totalRefund: number;
+}
+
 /** A policy as GET /policies/:reference (and a 201 from POST /policies) returns it. */
 export interface Policy {
   reference: string;
@@ -76,9 +98,9 @@ export interface Policy {
   property: Property;
   terms: Term[];
   payments: Payment[];
-  refunds: unknown[];
-  claims: unknown[];
-  cancellation: unknown;
+  refunds: Refund[];
+  claims: Claim[];
+  cancellation: Cancellation | null;
 }
 
 /** An RFC 9457 problem as the API writes it. */
@@ -445,6 +467,46 @@ export async function readThroughApi(reference: string): Promise<{ status: numbe
   const answer = await call(`${apiUrl}/policies/${encodeURIComponent(reference)}`);
   const text = await answer.text();
   return { status: answer.status, body: JSON.parse(text) as unknown };
+}
+
+/** POST of a JSON body to an API path, straight to the API: a test's setup. Fails unless the API answers 201. */
+async function postThroughApi(path: string, body: unknown, what: string): Promise<unknown> {
+  const answer = await call(`${apiUrl}${path}`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const text = await answer.text();
+  expect(answer.status, `setup: the API ${what}\n${text}`).toBe(201);
+  return JSON.parse(text) as unknown;
+}
+
+/** The cancellation's 201 (CANCEL-1..3): the summary, the per-term breakdown and the refunds it made. */
+export interface CancelAnswer {
+  reference: string;
+  cancellationDate: string;
+  ruleApplied: string;
+  totalRefund: number;
+  refunds: Refund[];
+}
+
+/** Cancels a policy straight through the API (`{}` cancels it today, CANCEL-3): a test's setup. */
+export async function cancelThroughApi(reference: string, body: { cancellationDate?: string } = {}): Promise<CancelAnswer> {
+  return (await postThroughApi(`/policies/${encodeURIComponent(reference)}/cancellation`, body, `cancels ${reference}`)) as CancelAnswer;
+}
+
+/** Records a claim straight through the API (COULD-2): a test's setup. */
+export async function claimThroughApi(reference: string, body: { claimDate: string; description?: string }): Promise<Claim> {
+  return (await postThroughApi(`/policies/${encodeURIComponent(reference)}/claims`, body, `records a claim on ${reference}`)) as Claim;
+}
+
+/**
+ * The API's today, as the API dates it (its UK calendar, not this machine's): what a cancellation sent with no date
+ * is dated (CANCEL-3), read from a probe policy sold and cancelled for the purpose. A test's setup, never asserted.
+ */
+export async function apiToday(probeReference: string): Promise<string> {
+  await sellThroughApi(requestOf(sellForm(probeReference)));
+  return (await cancelThroughApi(probeReference)).cancellationDate;
 }
 
 /** One answer of the API, as it came: its status, content type and body text. */
