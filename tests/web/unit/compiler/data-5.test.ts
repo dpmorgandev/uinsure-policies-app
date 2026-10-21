@@ -1,8 +1,10 @@
 // @vitest-environment node
 // DATA-5 · Privacy. The compiler runs the denylist it reads from docs/trace/privacy-denylist.txt (the exact copy
-// render-trace emits; every fixture's base carries one) over every value it emits. A hit fails the compile: the
-// thrown CompileFailure lists every hit by file and line, never the matched text, and nothing is written. The
-// list's format: '#' comment, blank ignored, '!' an allow pattern, any other line a deny pattern, matched
+// render-trace emits; every fixture's base carries one). What these tests prove it covers: the trail files it reads,
+// each commit's subject, each commit's trailer values, and the ref it compiles. A hit fails the compile: the thrown
+// CompileFailure lists every hit by its file and line (a trail file) or its commit (a value from git), never the
+// matched text, and nothing is written. A ref that names no commit fails without repeating the ref. The list's
+// format: '#' comment, blank ignored, '!' an allow pattern, any other line a deny pattern, matched
 // case-insensitively. The trail's own redactions (<user>, <outside-repo>) are kept as written. On the
 // `privacy-hit` fixture (its two placeholders sit on activity.jsonl line 2 and loop.jsonl line 3), `complete`
 // and `bounded`.
@@ -101,6 +103,35 @@ describe('a denylist match fails the compile', () => {
       const r = run(trail.root);
       expect(r.problems?.length ?? 0, thrown(r)).toBeGreaterThan(0);
       expect(said(r)).not.toContain('privacy-subject-person');
+      expect(r.written).toEqual([]);
+    } finally {
+      trail.cleanup();
+    }
+  }, SLOW);
+
+  test('DATA-5 · the ref the compile names is scanned too', () => {
+    // A branch named as an address the denylist refuses, made from parts: git refuses '@' only alone or before '{'.
+    const address = ['privacy-ref-person', 'mail-fixture.net'].join('@');
+    const trail = replayTrail('complete');
+    try {
+      git(trail.root, 'branch', address);
+      const r = run(trail.root, { ref: address });
+      expect(r.problems?.length ?? 0, thrown(r)).toBeGreaterThan(0);
+      expect(said(r)).not.toContain('privacy-ref-person');
+      expect(r.written).toEqual([]);
+    } finally {
+      trail.cleanup();
+    }
+  }, SLOW);
+
+  test('DATA-5 · a ref that names no commit is not repeated in the failure', () => {
+    // The denylist is read from the ref's own tree, so a ref that names nothing can't be scanned: it must not be said.
+    const address = ['privacy-noref-person', 'mail-fixture.net'].join('@');
+    const trail = replayTrail('complete');
+    try {
+      const r = run(trail.root, { ref: address });
+      expect(r.problems?.length ?? 0, thrown(r)).toBeGreaterThan(0);
+      expect(said(r)).not.toContain('privacy-noref-person');
       expect(r.written).toEqual([]);
     } finally {
       trail.cleanup();
