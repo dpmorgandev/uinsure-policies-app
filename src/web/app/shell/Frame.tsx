@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Outlet, useMatch } from 'react-router';
+import { Outlet, matchPath, useLocation, useMatch } from 'react-router';
 import { AppShell } from '../../kit';
 import type { FooterProps, NavItem, ThemeChoice, TopBarProps } from '../../kit';
 import { loadTrace } from '../data/trace';
+import { workbenchRoutes } from '../workbench/routes';
 import { NodeHeader } from './NodeHeader';
 import { REPO } from './repo';
 import { ShellProvider } from './ShellContext';
@@ -16,7 +17,7 @@ const NAV: NavItem[] = [
   { key: 'plan', label: 'Plan', notBuilt: true, scope: 'explorer' },
   { key: 'decisions', label: 'Human decisions', notBuilt: true, scope: 'explorer' },
   { key: 'about', label: 'How to read this', href: '#/about', scope: 'explorer' },
-  { key: 'workbench', label: 'Workbench', notBuilt: true, scope: 'workbench' },
+  { key: 'workbench', label: 'Workbench', href: '#/workbench', scope: 'workbench' },
 ];
 
 const DARK = '(prefers-color-scheme: dark)';
@@ -59,6 +60,8 @@ export function Frame() {
   const about = useMatch('/about');
   const activity = useMatch('/plans/:planId/:nodeId/activity');
   const overview = useMatch('/');
+  const { pathname } = useLocation();
+  const workbench = workbenchRoutes.find((r) => matchPath({ path: `/${r.path}`, end: true }, pathname) !== null);
   const matrix = useMatch('/rules');
   const rule = useMatch('/rules/:ruleId');
   const nodePage = useMatch('/plans/:planId/:nodeId');
@@ -72,9 +75,10 @@ export function Frame() {
     [matrix !== null, 'Requirements matrix'],
     [about !== null, 'How to read this'],
     [overview !== null, 'Overview'],
+    [workbench !== undefined, workbench?.title ?? ''],
   ];
   const title = titles.find(([matched]) => matched)?.[1] ?? 'Not built yet';
-  const current = about ? 'about' : overview ? 'overview' : matrix || rule ? 'matrix' : '';
+  const current = about ? 'about' : overview ? 'overview' : matrix || rule ? 'matrix' : workbench ? 'workbench' : '';
 
   useEffect(() => {
     document.title = `${title} · Docket`;
