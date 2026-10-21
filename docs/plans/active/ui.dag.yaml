@@ -311,7 +311,7 @@ nodes:
       - "A running request shows busy; recent policies in this browser are listed on the workbench home"
       - "A submitting form shows its request in flight; a field error never sits beside a valid value; the home's reference input has a label; a policy link opens that policy (g4-defects.md section 3)"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1], title: "Playwright acceptance for W1 on fixture trails, and parity with its derived reference; every node rule", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1], title: "Playwright acceptance for W1 on fixture trails, and parity with its derived reference; every node rule", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The W1 routes render the derived reference as canned content", status: pending}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the W1 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: pending}
       - {id: t4, role: tester, step: red, layer: client, rules: [WB-1, WB-2, WB-3, WB-6, WB-9], title: "Unit tests for the API client: sell, retrieve, problem details, send anyway, recent policies", status: pending}
