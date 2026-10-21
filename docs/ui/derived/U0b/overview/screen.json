@@ -167,16 +167,6 @@
       "variant": "the ref's own data (origin/main b394466)"
     },
     {
-      "name": "loading",
-      "file": "loading.html",
-      "variant": "no data: every data region shows a pending status tag and a gap; no figure"
-    },
-    {
-      "name": "error",
-      "file": "error.html",
-      "variant": "no data: docs/ui/fixture/trace.json could not be read; every data region shows a fail status tag naming the file"
-    },
-    {
       "name": "in-flight",
       "file": "in-flight.html",
       "variant": "build/F6 as it stood after its first 20 loop events (F6 is done at this ref), cut from its loop.jsonl; only those events are used"
@@ -232,11 +222,6 @@
       "label": "Copy command",
       "kind": "control",
       "to": "clipboard, no request"
-    },
-    {
-      "label": "Try again (error only)",
-      "kind": "control",
-      "to": "reloads docs/ui/fixture/trace.json"
     },
     {
       "label": "Search",
