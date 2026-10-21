@@ -179,6 +179,16 @@ describe('RungSpine', () => {
     expect(screen.getByRole('listitem', { name: 'Write the failing test' }).hasAttribute('aria-busy')).toBe(false);
   });
 
+  it('a stopped key rung is marked as stopped and keeps its ordinal and emphasis', () => {
+    const items: RungSpineItem[] = [
+      { id: 'red', marker: '#17', label: 'Make it pass', tone: 'red', state: 'stopped', emphasis: true },
+    ];
+    render(<RungSpine label="Stopped" items={items} />);
+    const rung = screen.getByRole('listitem', { name: 'Make it pass' });
+    expect(rung.getAttribute('data-state')).toBe('stopped');
+    expect(rung.querySelector('[data-marker]')?.textContent).toBe('Rung #17');
+  });
+
   it('waiting rungs say so in words, not only in style', () => {
     render(byState('a rung in progress (BUSY-1)'));
     const rung = screen.getByRole('listitem', { name: 'Check they agree' });
