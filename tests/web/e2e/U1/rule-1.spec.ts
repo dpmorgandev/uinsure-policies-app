@@ -4,10 +4,14 @@
 import { expect, test } from '@playwright/test';
 import {
   QA,
+  REPO,
   RULE_TEXT,
+  SIGNATURE,
   TESTS,
   auditEverywhere,
+  commitHref,
   compileRules,
+  compileTwoPlans,
   openOnFixture,
   openRule,
   region,
@@ -15,6 +19,7 @@ import {
   rungCommits,
   rungOf,
   shaOf,
+  short,
 } from './support/app';
 import type { CompiledTrail } from './support/app';
 import { expectRegionComponents, expectRegionsInOrder, expectShell, expectTokensOnly, rule, ruleLong } from './support/parity';
@@ -112,6 +117,42 @@ test.describe('its QA step and sign-off', () => {
     await expect(qa).not.toContainText('docs/qa/build-F');
     await expect(qa).not.toContainText('David');
     await expect(qa).not.toContainText('Accept');
+  });
+});
+
+// U1 D2/I4 and I6, on the `two-plans` fixture (its README): build/F1's loop.jsonl records signoff(<c4>) and then
+// merged(<c5>), "David merged PR #10"; SELL-1's matrix row names PR #10 and David's sign-off. The ui plan's NAV-1 has
+// three tests in tests/web/e2e/U1/nav-1.spec.ts, one of them a template-literal title in a loop (David's ruling of
+// 2026-10-21: listed with each interpolation as a placeholder, and marked as parameterised).
+test.describe('on a trail with a merge, a sign-off SHA and a parameterised title', () => {
+  let two: CompiledTrail;
+  test.beforeAll(() => {
+    two = compileTwoPlans();
+  });
+  test.afterAll(() => {
+    two?.trail.cleanup();
+  });
+
+  test("RULE-1 · SELL-1's PR rung reads Merged when the loop records merged(<sha>) for its node, never Open", async ({ page }) => {
+    await openRule(page, two, 'SELL-1');
+    // The kit's rung marker reads "Rung PR" (its "Rung " for screen readers only).
+    const pr = region(page, SIGNATURE)
+      .locator('li[data-kind="rung"]')
+      .filter({ has: page.locator('[data-marker]', { hasText: /^(Rung )?PR$/ }) });
+    await expect(pr, 'one PR rung').toHaveCount(1);
+    await expect(pr).toContainText('PR #10');
+    await expect(pr).toContainText('Merged');
+    await expect(pr).not.toContainText('Open');
+  });
+
+  test("RULE-1 · SELL-1's QA region names the commit signed off, c4 from signoff(<sha>), linked to it on GitHub", async ({ page }) => {
+    await openRule(page, two, 'SELL-1');
+    const c4 = shaOf(two, 'c4');
+    const qa = region(page, QA);
+    await expect(qa).not.toContainText('none recorded');
+    const link = qa.getByRole('link', { name: short(c4) });
+    await expect(link).toHaveCount(1);
+    await expect(link).toHaveAttribute('href', commitHref(REPO, c4));
   });
 });
 

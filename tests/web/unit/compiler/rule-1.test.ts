@@ -11,7 +11,7 @@
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { replayTrail, run, SLOW, thrown } from './support/trail';
 import type { Run, Trail } from './support/trail';
-import { ruleOf, RULES, SHAPES } from './support/rules';
+import { decisionsOf, ruleOf, RULES, SHAPES, shaOf, TWO_PLANS } from './support/rules';
 import type { TestOut } from './support/rules';
 
 let trail: Trail;
@@ -120,5 +120,36 @@ describe('its tests, by name', () => {
       ['RENEW-1/2', []],
       ['COULD-1', []],
     ]);
+  });
+});
+
+// U1 D2: the `two-plans` fixture trail (its README). build/F1's loop.jsonl records signoff(<c4>) at line 4 and
+// merged(<c5>) at line 5, as the real build/F1 loop does at lines 82 and 84. tests/web/e2e/U1/nav-1.spec.ts holds
+// three NAV-1 titles, cut from the real one: a plain title, a template literal in a loop that interpolates three values,
+// and a backtick title that interpolates nothing.
+describe('both plans: the sign-off and merge, and a parameterised title', () => {
+  const F1_LOOP = 'docs/trace/build/F1/loop.jsonl';
+  let two: Trail;
+  let t: Run;
+  beforeAll(() => {
+    two = replayTrail(TWO_PLANS);
+    t = run(two.root);
+  }, SLOW);
+  afterAll(() => two?.cleanup());
+
+  /** build/F1's decisions of one kind, each as [kind, sha, evidence file, evidence line]. */
+  const decisions = (kind: string): unknown[][] =>
+    decisionsOf(t)
+      .filter((d) => d.plan === 'build' && d.node === 'F1' && d.kind === kind)
+      .map((d) => [d.kind, d.sha ?? null, d.evidence?.file ?? null, d.evidence?.line ?? null]);
+
+  test("RULE-1 · a signoff(<sha>) event is a sign-off decision carrying its SHA: build/F1's names c4, at loop.jsonl line 4", () => {
+    expect(t.error, thrown(t)).toBeUndefined();
+    expect(decisions('signoff')).toEqual([['signoff', shaOf(two, 'c4'), F1_LOOP, 4]]);
+  });
+
+  test("RULE-1 · a merged(<sha>) event is a merge decision carrying its SHA: build/F1's PR #10 merged at c5, loop.jsonl line 5", () => {
+    expect(t.error, thrown(t)).toBeUndefined();
+    expect(decisions('merge')).toEqual([['merge', shaOf(two, 'c5'), F1_LOOP, 5]]);
   });
 });
