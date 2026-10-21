@@ -7,7 +7,7 @@
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { route, serveTrace, setTheme, themes, viewports } from './app';
-import { regionSettled } from './built';
+import { primaryNav, regionSettled, screenSettled } from './built';
 import { literalColours, readBuilt, readReference, regionNamed } from './reference';
 import type { Structure } from './reference';
 import { designFixtureDir } from './trail';
@@ -32,13 +32,20 @@ async function open(page: Page, s: Screen): Promise<void> {
   await page.goto(s.path);
 }
 
-/** The shell as parity compares it. The title only where the reference's frame names the node shown. */
+/** The primary nav's labels whose screen a later node builds: whether each is a link yet is that node's to prove. */
+const navInTransit = new Set(primaryNav.filter((entry) => !screenSettled(entry.screen)).map((entry) => entry.label));
+const settledNav = (labels: string[]): string[] => labels.filter((label) => !navInTransit.has(label));
+
+/**
+ * The shell as parity compares it. The title only where the reference's frame names the node shown. The nav's links
+ * and not-built entries are every entry but those in transit, each still on its own side.
+ */
 function shellOf(s: Structure, withTitle: boolean): Record<string, unknown> {
   return {
     ...(withTitle ? { title: s.title } : {}),
     shell: s.shell,
-    navLinks: s.navLinks,
-    navNotBuilt: s.navNotBuilt,
+    navLinks: settledNav(s.navLinks),
+    navNotBuilt: settledNav(s.navNotBuilt),
     navCurrent: s.navCurrent,
     tabCurrent: s.tabCurrent,
   };
