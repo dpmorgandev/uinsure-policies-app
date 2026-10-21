@@ -8,7 +8,7 @@ afterEach(cleanup);
 
 describe('footer examples', () => {
   it('has exactly the catalogued states', () => {
-    expect(examples.map((e) => e.state)).toEqual(['pop']);
+    expect(examples.map((e) => e.state)).toEqual(['pop', 'no snapshot']);
   });
 
   it.each(examples)('renders the example: $state', ({ element }) => {
@@ -47,6 +47,42 @@ describe('Footer', () => {
     );
     expect(screen.getByText('snapshot SHA: not in the excerpt')).toBeTruthy();
     expect(container.querySelector('time')).not.toBeNull();
+  });
+
+  it('states no snapshot in words, with no commit link, no time and no stamp wording', () => {
+    const { container } = render(
+      <Footer noSnapshot provenanceHref={props.provenanceHref} repoHref={props.repoHref} />,
+    );
+    expect(container.querySelector('footer')).not.toBeNull();
+    expect(screen.getByText("No snapshot: trace.json hasn't been read.")).toBeTruthy();
+    expect(container.querySelector('time')).toBeNull();
+    expect(screen.queryByText(/Snapshot compiled from/)).toBeNull();
+    expect(screen.queryByRole('button', { name: /UTC|local/i })).toBeNull();
+    expect(container.querySelector('a[href*="/commit/"]')).toBeNull();
+    expect(screen.getByRole('link', { name: 'Sources and provenance' }).getAttribute('href')).toBe('/about');
+    expect(screen.getByRole('link', { name: 'Repository on GitHub' })).toBeTruthy();
+  });
+
+  it('wins over a stamp it is also given, and falls back to no snapshot when none is given', () => {
+    const { container, rerender } = render(<Footer {...props} noSnapshot />);
+    expect(container.querySelector('time')).toBeNull();
+    expect(screen.queryByText(/Snapshot compiled from/)).toBeNull();
+    rerender(<Footer provenanceHref={props.provenanceHref} repoHref={props.repoHref} />);
+    expect(screen.getByText("No snapshot: trace.json hasn't been read.")).toBeTruthy();
+    expect(container.querySelector('time')).toBeNull();
+  });
+
+  it('accepts its own words for the no-snapshot line', () => {
+    render(<Footer noSnapshot noSnapshotLabel="No snapshot (placeholder)" provenanceHref="/about" repoHref="/repo" />);
+    expect(screen.getByText('No snapshot (placeholder)')).toBeTruthy();
+  });
+
+  it('can be reached from the keyboard with no snapshot: the two links only', async () => {
+    render(<Footer noSnapshot provenanceHref="/about" repoHref="/repo" />);
+    await userEvent.tab();
+    expect(document.activeElement).toBe(screen.getByRole('link', { name: 'Sources and provenance' }));
+    await userEvent.tab();
+    expect(document.activeElement).toBe(screen.getByRole('link', { name: 'Repository on GitHub' }));
   });
 
   it('can be reached from the keyboard, link to link', async () => {

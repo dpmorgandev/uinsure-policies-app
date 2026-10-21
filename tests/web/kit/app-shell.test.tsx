@@ -67,6 +67,30 @@ describe('AppShell', () => {
     expect(within(foot).getByText('Snapshot compiled from')).toBeTruthy();
   });
 
+  it('states no snapshot when no trace was read, and keeps the skip link, the landmarks and the links', async () => {
+    const { container } = render(
+      <AppShell
+        topBar={{ appName: 'Docket' }}
+        nav={{ current: 'overview', items: catalogNav }}
+        footer={{ noSnapshot: true, provenanceHref: '/about', repoHref: 'https://github.com/example/repo' }}
+        skipLabel="Skip"
+      >
+        <p>Screen</p>
+      </AppShell>,
+    );
+    const foot = container.querySelector('footer')!;
+    expect(within(foot).getByText("No snapshot: trace.json hasn't been read.")).toBeTruthy();
+    expect(container.querySelector('time')).toBeNull();
+    expect(screen.queryByText(/Snapshot compiled from/)).toBeNull();
+    expect(container.querySelector('a[href*="/commit/"]')).toBeNull();
+    expect(container.querySelector('header')).not.toBeNull();
+    expect(screen.getByRole('navigation', { name: 'Primary' })).toBeTruthy();
+    expect(screen.getByRole('main')).toBeTruthy();
+    expect(within(foot).getByRole('link', { name: 'Sources and provenance' })).toBeTruthy();
+    await userEvent.tab();
+    expect(document.activeElement).toBe(screen.getByRole('link', { name: 'Skip' }));
+  });
+
   it('marks the current section in the navigation', () => {
     render(
       <AppShell topBar={{ appName: 'Docket' }} nav={{ current: 'decisions', items: catalogNav }} footer={footer}>

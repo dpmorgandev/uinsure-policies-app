@@ -24,4 +24,17 @@ export const examples: { state: string; element: JSX.Element }[] = [
       </div>
     ),
   },
+  {
+    state: 'no snapshot',
+    element: (
+      <div style={column}>
+        <Footer
+          noSnapshot
+          provenanceHref="/about"
+          repoHref="https://github.com/dpmorgandev/uinsure-policies-api"
+        />
+        <p style={note}>Shown while trace.json is loading or unreadable: no SHA, no time, no commit link.</p>
+      </div>
+    ),
+  },
 ];

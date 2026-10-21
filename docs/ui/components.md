@@ -74,7 +74,7 @@ collapsed · **dis** sources disagree · **red** redacted · **nb** not built ye
 | app-shell | Page frame: top bar, navigation, main, footer; layout per the chosen style | 1440, 1280, 390 | global | RESP-1 |
 | top-bar | App name, search, theme toggle | pop | global | — |
 | primary-nav | Overview, requirements, plans, decisions, about (a rail in Style 1, a top bar in Styles 0 and 2) | each active item | global | `styles.md` |
-| footer | Compiled-at SHA and time, provenance link, repo link | pop | global | DATA-3 |
+| footer | Compiled-at SHA and time, provenance link, repo link | pop, no snapshot | global | DATA-3 |
 | compiled-at-stamp | The snapshot's SHA and UTC time, on every screen | pop | global | DATA-3 |
 | inspector-drawer | A docked, resizable bottom drawer on workbench screens: the latest request and response, live as each is sent | closed, open, one request, problem | global (W) | B6 Workbench pane, WB-7 |
 
