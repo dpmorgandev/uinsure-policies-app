@@ -40,6 +40,13 @@ const POLICY_TYPES = [
 // SELL-4: the API takes 1 to 3 policyholders. With send anyway on, one more can be added so its refusal shows (WB-6).
 const SELL_4_LIMIT = 3;
 
+const PROPERTY_LINES = [
+  { key: 'addressLine1', label: 'Address line 1' },
+  { key: 'addressLine2', label: 'Address line 2' },
+  { key: 'addressLine3', label: 'Address line 3' },
+  { key: 'postcode', label: 'Postcode' },
+] as const;
+
 const PLAIN_CONTROLS = new Set(['reference', 'startDate', 'amount', 'paymentMethod']);
 const HOLDER_FIELD = /^policyholders\[(\d+)\]\.(firstName|lastName|dateOfBirth)$/;
 const PROPERTY_FIELD = /^property\.(addressLine[123]|postcode)$/;
@@ -369,18 +376,11 @@ export function SellPolicy() {
 
       <div className="s-wb-form-region" data-region="property" data-req="WB-1">
         <FormSection number={3} title="Describe the property" description="Address lines 1 to 3 and a postcode.">
-          <Field id="addressLine1" label="Address line 1" error={errorsOn('property.addressLine1')}>
-            {(control) => <TextInput {...control} mono value={values.property.addressLine1} onChange={(e) => setProperty('addressLine1', e.target.value)} />}
-          </Field>
-          <Field id="addressLine2" label="Address line 2" error={errorsOn('property.addressLine2')}>
-            {(control) => <TextInput {...control} mono value={values.property.addressLine2} onChange={(e) => setProperty('addressLine2', e.target.value)} />}
-          </Field>
-          <Field id="addressLine3" label="Address line 3" error={errorsOn('property.addressLine3')}>
-            {(control) => <TextInput {...control} mono value={values.property.addressLine3} onChange={(e) => setProperty('addressLine3', e.target.value)} />}
-          </Field>
-          <Field id="postcode" label="Postcode" error={errorsOn('property.postcode')}>
-            {(control) => <TextInput {...control} mono value={values.property.postcode} onChange={(e) => setProperty('postcode', e.target.value)} />}
-          </Field>
+          {PROPERTY_LINES.map(({ key, label }) => (
+            <Field key={key} id={key} label={label} error={errorsOn(`property.${key}`)}>
+              {(control) => <TextInput {...control} mono value={values.property[key]} onChange={(e) => setProperty(key, e.target.value)} />}
+            </Field>
+          ))}
         </FormSection>
       </div>
 
