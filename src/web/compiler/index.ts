@@ -11,6 +11,7 @@ import { isTestSource, parseTests } from './test-sources.ts';
 import { isHit, parseDenylist, scan } from './privacy.ts';
 import { parseDag, parseRequirements } from './plans.ts';
 import { parseCompleteness, parseMatrix, parseWalkthrough } from './trace-files.ts';
+import type { MatrixRow } from './trace-files.ts';
 
 export interface CompileOptions {
   root: string;
@@ -31,8 +32,11 @@ export interface CompileFailure extends Error {
 const SCHEMA_VERSION = '1.0.0';
 const DENYLIST = 'docs/trace/privacy-denylist.txt';
 const HARNESS = 'docs/trace/harness.json';
-const MATRIX = 'docs/trace/requirements-matrix.md';
-const REQUIREMENTS = ['docs/requirements.md', 'docs/ui-requirements.md'];
+// Each plan's requirements file is read against its own matrix, as render-trace pairs them.
+const PLAN_FILES = [
+  { requirements: 'docs/requirements.md', matrix: 'docs/trace/requirements-matrix.md' },
+  { requirements: 'docs/ui-requirements.md', matrix: 'docs/trace/ui-requirements-matrix.md' },
+];
 
 type Json = Record<string, unknown>;
 
@@ -135,7 +139,9 @@ export function compile(options: CompileOptions): void {
   const dags = [...paths]
     .filter((path) => /^docs\/plans\/(active|archive)\/[^/]+\.dag\.yaml$/.test(path))
     .map((path) => ({ path, dag: parseDag(read(path) ?? '') }));
-  const rows = REQUIREMENTS.flatMap((path) => parseRequirements(read(path) ?? '').map((row) => ({ ...row, file: path })));
+  const rows = PLAN_FILES.flatMap(({ requirements, matrix }) =>
+    parseRequirements(read(requirements) ?? '').map((row) => ({ ...row, file: requirements, matrix })),
+  );
 
   // Test names are emitted, so each is scanned; the source files are not (a hit names the file and line, never the text).
   const testNames = listPaths(root, sha, 'tests').filter(isTestSource).flatMap((path) => parseTests(path, readBlob(root, sha, path)));
@@ -198,10 +204,11 @@ export function compile(options: CompileOptions): void {
       const loopPath = `${dir}/loop.jsonl`;
       const loopText = read(loopPath);
       for (const { line, record } of loopText === null ? [] : readLines(loopPath, loopText, problems)) {
-        const kind = /^(pause1|pause2|signoff)(\(|$)/.exec(str(record?.['event']) ?? '')?.[1];
-        if (record !== null && kind !== undefined) {
+        // signoff(<sha>) and merged(<sha>) name the commit signed off and the merge commit.
+        const event = /^(pause1|pause2|signoff|merged)(?:\(([^)]*)\))?$/.exec(str(record?.['event']) ?? '');
+        if (record !== null && event !== null) {
           decisions.push({
-            kind, who: null, what: str(record['detail']), when: str(record['ts']),
+            kind: event[1] === 'merged' ? 'merge' : event[1], sha: event[2] ?? null, who: null, what: str(record['detail']), when: str(record['ts']),
             plan: dag.id, node: node.id, evidence: { file: loopPath, line },
           });
         }
@@ -225,13 +232,17 @@ export function compile(options: CompileOptions): void {
     }
   }
 
-  const matrixText = read(MATRIX);
-  const matrix = matrixText === null ? new Map() : parseMatrix(MATRIX, matrixText);
+  const matrices = new Map(
+    PLAN_FILES.map(({ matrix }) => {
+      const text = read(matrix);
+      return [matrix, text === null ? new Map<string, MatrixRow>() : parseMatrix(matrix, text, problems)] as const;
+    }),
+  );
   const seen = new Set<string>();
   const rules = rows
     .filter((row) => !seen.has(row.id) && seen.add(row.id))
     .map((row) => {
-      const cells = matrix.get(row.id) ?? null;
+      const cells = matrices.get(row.matrix)?.get(row.id) ?? null;
       const commitsOf = (short: string | null): string[] => (short === null ? [] : [short]);
       return {
         id: row.id, title: row.title, priority: row.priority, feature: row.feature,
@@ -240,7 +251,7 @@ export function compile(options: CompileOptions): void {
         status: cells === null ? null : cells.tests === null ? 'not-built' : 'built',
         red: commitsOf(cells?.red ?? null), green: commitsOf(cells?.green ?? null), refactor: commitsOf(cells?.refactor ?? null),
         qaStep: cells?.qaStep ?? null, signoff: cells?.signoff ?? null, matrix: cells,
-        tests: testNames.filter((t) => t.rule === row.id).map(({ name, file }) => ({ name, file })),
+        tests: testNames.filter((t) => t.rule === row.id).map(({ name, file, parameterised }) => ({ name, file, parameterised })),
       };
     });
   const placed = commits.map((commit) => ({

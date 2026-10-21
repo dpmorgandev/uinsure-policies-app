@@ -20,12 +20,26 @@ const cell = (value: string | undefined): string | null => {
   return text === '' || text === '—' ? null : text;
 };
 
+interface MatrixProblem {
+  file: string | null;
+  line: number | null;
+  reason: string;
+}
+
+/** A commit cell is a short SHA or nothing; an earlier render-trace wrote `undefined`, which names no commit (NAV-3). */
+const commitCell = (value: string | undefined, file: string, line: number, problems: MatrixProblem[]): string | null => {
+  const text = cell(value);
+  if (text === null || /^[0-9a-f]{7,40}$/.test(text)) return text;
+  problems.push({ file, line, reason: 'the matrix cell is not a commit SHA' });
+  return null;
+};
+
 /** The matrix rows by rule ID; `not built yet` is no count, and `?` is a count with no pass figure. */
-export function parseMatrix(file: string, source: string): Map<string, MatrixRow> {
+export function parseMatrix(file: string, source: string, problems: MatrixProblem[]): Map<string, MatrixRow> {
   const rows = new Map<string, MatrixRow>();
   source.split(/\r?\n/).forEach((text, index) => {
     const cells = text.split('|').slice(1, -1).map((c) => c.trim());
-    if (!/^[A-Z][A-Z0-9]*-\d+[a-z]?$/.test(cells[0] ?? '')) return;
+    if (!/^[A-Z][A-Z0-9]*-\d+[a-z]?(\/\d+)?$/.test(cells[0] ?? '')) return;
     const count = /^(\d+|\?)\/(\d+)$/.exec(cells[2] ?? '');
     const [plan, node] = (cells[1] ?? '').split('/');
     rows.set(cells[0] ?? '', {
@@ -33,7 +47,9 @@ export function parseMatrix(file: string, source: string): Map<string, MatrixRow
       plan: node === undefined ? null : (plan ?? null),
       node: node ?? null,
       tests: count ? { pass: count[1] === '?' ? null : Number(count[1]), total: Number(count[2]), raw: count[0] } : null,
-      red: cell(cells[3]), green: cell(cells[4]), refactor: cell(cells[5]),
+      red: commitCell(cells[3], file, index + 1, problems),
+      green: commitCell(cells[4], file, index + 1, problems),
+      refactor: commitCell(cells[5], file, index + 1, problems),
       qaStep: cell(cells[6]), signoff: cell(cells[7]), pr: cell(cells[8]),
       source: { file, line: index + 1 },
     });

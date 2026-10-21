@@ -4,6 +4,8 @@
 export interface TestName {
   rule: string;
   name: string;
+  /** True for a template-literal title with `${…}`: one source line standing for the tests it generates. */
+  parameterised: boolean;
   file: string;
   line: number;
 }
@@ -25,12 +27,17 @@ export function parseTests(file: string, source: string): TestName[] {
       if (trait) traits.push(trait[1] ?? '');
       const method = METHOD.exec(text);
       if (method) {
-        for (const rule of new Set(traits)) found.push({ rule, name: method[1] ?? '', file, line });
+        for (const rule of new Set(traits)) found.push({ rule, name: method[1] ?? '', parameterised: false, file, line });
         traits = [];
       }
     } else {
       const title = WEB_TITLE.exec(text);
-      if (title) found.push({ rule: title[2] ?? '', name: title[3] ?? '', file, line });
+      if (title) {
+        // An interpolation is shown as its expression in braces, never as `${…}` source.
+        const written = title[3] ?? '';
+        const name = written.replace(/\$\{([^}]*)\}/g, '{$1}');
+        found.push({ rule: title[2] ?? '', name, parameterised: name !== written, file, line });
+      }
     }
   });
   return found;
