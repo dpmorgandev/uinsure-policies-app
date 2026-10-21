@@ -298,7 +298,7 @@ nodes:
     rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1]
     cuttable: false
     budget: null
-    status: paused_acceptance
+    status: in_progress
     attempt: 1
     branch: feature/ui/W1
     worktree: .claude/worktrees/ui-W1
@@ -313,7 +313,7 @@ nodes:
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1], title: "Playwright acceptance for W1 on fixture trails, and parity with its derived reference; every node rule", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The W1 routes render the derived reference as canned content", status: done}
-      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the W1 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: pending}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the W1 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: done}
       - {id: t4, role: tester, step: red, layer: client, rules: [WB-1, WB-2, WB-3, WB-6, WB-9], title: "Unit tests for the API client: sell, retrieve, problem details, send anyway, recent policies", status: pending}
       - {id: t5, role: builder, step: green, layer: client, rules: [WB-1, WB-2, WB-3, WB-6, WB-9], title: "Green: the API client: sell, retrieve, problem details, send anyway, recent policies", status: pending}
       - {id: t6, role: builder, step: green, layer: screen, rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1], title: "The workbench home, sell and policy screens; whole acceptance suite green", status: pending}
