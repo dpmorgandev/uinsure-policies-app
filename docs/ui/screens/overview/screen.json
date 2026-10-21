@@ -116,8 +116,6 @@
   ],
   "states": [
     { "name": "populated", "file": "populated.html", "variant": "the ref's own data (origin/main b394466)" },
-    { "name": "loading", "file": "loading.html", "variant": "no data: every data region shows a pending status tag and a gap; no figure" },
-    { "name": "error", "file": "error.html", "variant": "no data: docs/ui/fixture/trace.json could not be read; every data region shows a fail status tag naming the file" },
     { "name": "in-flight", "file": "in-flight.html", "variant": "build/F6 as it stood after its first 20 loop events (F6 is done at this ref), cut from its loop.jsonl; only those events are used" },
     { "name": "not-built", "file": "not-built.html", "variant": "labelled placeholders attached to no real rule or node: every rule is built at this ref" }
   ],
@@ -131,7 +129,6 @@
     { "label": "Sources and provenance", "kind": "link", "to": "/about" },
     { "label": "Open evidence on GitHub (receipt sources, decision evidence, commits, PR)", "kind": "link", "to": "https://github.com/dpmorgandev/uinsure-policies-api" },
     { "label": "Copy command", "kind": "control", "to": "clipboard, no request" },
-    { "label": "Try again (error only)", "kind": "control", "to": "reloads docs/ui/fixture/trace.json" },
     { "label": "Search", "kind": "control", "to": "/rules, /plans/:planId/:nodeId or /commits/:sha by what is typed" },
     { "label": "Theme", "kind": "control", "to": "sets the theme, no request" }
   ]

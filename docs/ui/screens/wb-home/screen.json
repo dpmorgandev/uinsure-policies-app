@@ -38,7 +38,6 @@
   ],
   "states": [
     { "name": "populated", "file": "populated.html", "variant": "recorded fixtures 003-sell-1-new-reference-201 and 045-get-1-sold-policy-reads-back-in-full-200: the references F1-MVFJOFJ8IS and F2-MVFJQA9DQG" },
-    { "name": "empty", "file": "empty.html", "variant": "no data: recent-policies' empty state, no policy sold or opened in this browser" },
     { "name": "api-unreachable", "file": "api-unreachable.html", "variant": "no data: the API at http://localhost:5080 does not answer; reference F1-MVFJOFJ8IS from fixture 003 is the typed value" },
     { "name": "submitting", "file": "submitting.html", "variant": "populated values with one request in flight (BUSY-1): reference F1-MVFJOFJ8IS from fixture 003" }
   ],

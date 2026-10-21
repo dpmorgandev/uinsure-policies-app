@@ -65,8 +65,7 @@
     { "name": "populated", "file": "populated.html", "variant": "069-could-1-quote-changes-nothing-200.json (recorded 2026-10-19T17:47:23Z): policy F3-MVFJRBS7C7 quoted for 2026-12-02; the cancel is ready, not sent" },
     { "name": "submitting", "file": "submitting.html", "variant": "the populated page's values, with the cancel request in flight (BUSY-1)" },
     { "name": "api-error", "file": "api-error.html", "variant": "076-cancel-4-cancel-twice-409.json (recorded 2026-10-19T17:47:37Z): policy F3-MVFJRN08DV, cancel on 2026-11-28 refused 409 under CANCEL-4" },
-    { "name": "api-unreachable", "file": "api-unreachable.html", "variant": "no data: the API at localhost:5080 does not answer; problem-banner unreachable" },
-    { "name": "empty", "file": "empty.html", "variant": "the populated page's policy only (F3-MVFJRBS7C7); no quote asked for yet" }
+    { "name": "api-unreachable", "file": "api-unreachable.html", "variant": "no data: the API at localhost:5080 does not answer; problem-banner unreachable" }
   ],
   "actions": [
     { "label": "Quote this date", "kind": "request", "to": "GET /policies/:reference/cancellation-quote?cancellationDate=:date" },
