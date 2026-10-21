@@ -1,0 +1,89 @@
+{
+  "v": 1,
+  "ts": "2026-10-21T01:37:06Z",
+  "plan": "ui",
+  "node": "U0b",
+  "attempt": 4,
+  "agent": "security",
+  "agent_id": "a35bb183a44d8877d",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U0b",
+    "attempt": 4,
+    "base_sha": "02dfd6a8defc27cbf26c84909346c8d251b61a4a",
+    "head_sha": "690ad1598bbcb6a3934e7b45e5d6d339e6b5d1e5",
+    "diff_fingerprint": "106357ffb35f4f4771fcafcabbbd214730087fd8",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.typecheck",
+      "gate.lint",
+      "gate.test",
+      "gate.build",
+      "gate.e2e",
+      "gate.scope",
+      "gate.no-stubs",
+      "gate.fix",
+      "gate.finding-red"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "W2",
+        "severity": "P2",
+        "file": "src/web/kit/primitives/sha-link/ShaLink.tsx",
+        "line": 61,
+        "what": "External GitHub anchors (ShaLink githubHref, and Footer repoHref) carry no rel=\"noreferrer\"; U0b's Activity table and footer now render them.",
+        "why": "W2 says external links carry rel=noreferrer. Hygiene only: the target is the fixed REPO origin, there is no target=_blank, and the href is REPO plus a path, so no javascript: scheme can get in. Same gap at ShaLink.tsx:47 and Footer.tsx:53.",
+        "route_to": "builder"
+      },
+      {
+        "id": "S2",
+        "rule_id": "W5",
+        "severity": "P2",
+        "file": "src/web/compiler/index.ts",
+        "line": 112,
+        "what": "The privacy scan covers each commit subject, but the trailer values (Agent, Plan, Node, Rule, TDD, Fixes-Finding) go into trace.json unscanned.",
+        "why": "W5 and DATA-5: the compile must fail on a denylist hit anywhere in its output. Trailers are structured and low risk, but free text there would ship unchecked. Other emitted text is scanned through read().",
+        "route_to": "builder"
+      },
+      {
+        "id": "S3",
+        "rule_id": "W3",
+        "severity": "P2",
+        "file": "src/web/index.html",
+        "line": 6,
+        "what": "The CSP keeps default-src 'self', but style-src allows 'unsafe-inline' and there is no base-uri, form-action or object-src, which default-src does not cover.",
+        "why": "W3 hardening. Nothing violates the rule: no third-party origin, and script and fonts are self-hosted. Adding base-uri 'self', form-action 'none' and object-src 'none' is cheap. Drop unsafe-inline if no inline style is needed.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "n/a (ui node, no server code): API1:2023, API2:2023, API3:2023, API4:2023, API5:2023, API6:2023, API7:2023 and API9:2023. The auth and tenancy items are also out of scope by design. The .NET extras (SQL, money, logging) are n/a because the diff touches no C#.",
+      "API8:2023 maps to W3 and W4. The only fetches are trace.json and the one activity chunk. The chunk path must equal trace/<plan>/<node>/activity.json for a node present in trace.json. There is no cookie, storage or other network use. The vite proxy to /api is dev and preview only and unused in U0b.",
+      "API10:2023 maps to W1 and W8. The grep for dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( and new Function found no hit in app/, compiler/ or the kit code. The only matches are comments in MarkdownText.tsx. MarkdownText builds React elements and its safeHref refuses non-http, https, mailto and non-relative schemes. Activity text (raw, command, file) renders as text nodes.",
+      "W1/W2: Activity commit links are built as REPO plus /commit/ plus the record's sha. The sha from the activity chunk is not format-validated, so it can only change the path on github.com. The snapshot sha is validated as 40 hex. NodeHeader and nav hrefs start with '#/', so they are internal hash routes only. No href is passed through from data.",
+      "W5: git is called through execFileSync with no shell. A ref starting with '-' is refused, rev-parse resolves to a full SHA, and every other call is read-only (ls-tree under docs, cat-file, log). The grep found no .claude path, http, fetch or process.env in src/web/compiler apart from one comment. The compiler writes only under src/web/public.",
+      "W6: no local absolute path, personal email, key or token in src/web/app, compiler, kit or public, nor in the packet diff. The github.com/dpmorgandev REPO constant is the repo owner already named in docs/requirements.md. The ghp_ hit in the diff is a documentation line about a runtime-generated fixture token.",
+      "W7: every added dependency is pinned to an exact version and is on react-web's approved list: react-router, @playwright/test 1.62.0, @axe-core/playwright, eslint, typescript-eslint, eslint-plugin-react-hooks and @types/node 22.x. All 116 added lockfile entries resolve to registry.npmjs.org. gate.audit (runtime) found 0 vulnerabilities. gate.audit-dev reports 5 high, attributed in the receipt to the known braces item via stylelint. I could not re-run npm audit myself, so I rely on the receipt's attribution. The typescript pin moved from 7.0.2 to 6.0.3; the package is approved.",
+      "W8: DataNotice and the DataTable error state show the loader's own plain-text reason, such as a missing file, an HTTP status or a client-side parse message. No server internals or stack traces are shown. The app has no React error boundary. A render throw would leave a blank root in a production build, not a leak, so I record it as an observation and not a finding.",
+      "Gate receipts read: runtime audit 0 vulnerabilities, typecheck, lint, test 71/71 and e2e 64/64 all green at a5c521a. The diff after that receipt is the plan status commit 690ad15 only (docs/plans, outside the fingerprint). The A3/I1 fix (0d24fc1) removed the hard-coded data-theme from index.html, which has no security impact."
+    ]
+  }
+}
