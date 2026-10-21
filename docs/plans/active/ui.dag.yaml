@@ -105,8 +105,8 @@ nodes:
       - {id: t6, role: tester, step: red, layer: compiler, rules: [MATRIX-1, RULE-1, NAV-3], title: "Unit tests for the compiler: rule title, feature, priority and interpretation from requirements.md, its source line, tests by name, commit parents", status: done}
       - {id: t7, role: builder, step: green, layer: compiler, rules: [MATRIX-1, RULE-1, NAV-3], title: "Green: rule title, feature, priority and interpretation from requirements.md, its source line, tests by name, commit parents", status: done}
       - {id: t8, role: builder, step: green, layer: screen, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "The overview, matrix and rule screens; whole acceptance suite green", status: done}
-      - {id: t9, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: pending}
-      - {id: t10, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: pending}
+      - {id: t9, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: done}
+      - {id: t10, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: done}
       - {id: t11, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
       - {id: t12, role: tester, step: qa, layer: null, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "QA script docs/qa/ui-U1.md: steps in the running app, tagged per rule", status: pending}
       - {id: t13, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: pending}
