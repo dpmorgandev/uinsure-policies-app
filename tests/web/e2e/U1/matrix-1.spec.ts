@@ -8,6 +8,7 @@ import {
   CHIP,
   auditEverywhere,
   compileRules,
+  compileTwoPlans,
   matrixRuleIds,
   openOnFixture,
   readMatrix,
@@ -194,6 +195,28 @@ test.describe('rule chips', () => {
     await entry.click();
     await expect(page).toHaveURL(/#\/rules$/);
     await expect(region(page, 'matrix-table')).toBeVisible();
+  });
+});
+
+// U1 D2/I3, David's ruling of 2026-10-21: the matrix lists the build plan's rules (docs/requirements.md's) by default.
+// A Plan filter to show the ui plan's rules is not tested: the signed-off filters region is "filters (status,
+// feature)" (docs/ui/screens/matrix/screen.json), so a third filter is a change to that screen, not a fit inside it.
+// On the `two-plans` fixture (its README): requirements.md holds SELL-1, CANCEL-5 and RENEW-1/2; ui-requirements.md
+// holds DATA-1 and NAV-1; trace.json's rules hold all five.
+test.describe("both plans' rules in trace.json: the matrix lists the build plan's", () => {
+  let two: CompiledTrail;
+  test.beforeAll(() => {
+    two = compileTwoPlans();
+  });
+  test.afterAll(() => {
+    two?.trail.cleanup();
+  });
+
+  test("MATRIX-1 · by default the matrix lists requirements.md's rules only, SELL-1, CANCEL-5 and RENEW-1/2, and says 3 of 3", async ({ page }) => {
+    await openOnFixture(page, two, route.matrix);
+    await expect(region(page, 'matrix-table').locator('tbody tr').first(), 'the matrix draws its rows').toBeVisible();
+    await expect.poll(() => matrixRuleIds(page)).toEqual(['SELL-1', 'CANCEL-5', 'RENEW-1/2']);
+    await expect(filters(page).getByRole('status')).toContainText(/Showing 3 of 3 rules/);
   });
 });
 
