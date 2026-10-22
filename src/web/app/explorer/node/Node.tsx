@@ -61,7 +61,7 @@ export function Node() {
           <Ladder trace={trace.trace} plan={planId} node={nodeId} mode="aggregated" />
         ) : (
           <p className="s-text">
-            <StatusTag status="not-built">No loop log</StatusTag> {planId}/{nodeId} has no loop.jsonl, so there is no attempt to draw.
+            <StatusTag status="not-built">No loop log</StatusTag> {planId}/{nodeId} has no loop log, so there is no attempt to draw.
           </p>
         )}
         <VerifyCommand command={`git log --oneline --grep='(${planId}/${nodeId})'`} intro="Run this in a clone. It lists the commits whose message names this node." />
