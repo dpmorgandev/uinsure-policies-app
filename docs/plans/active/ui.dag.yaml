@@ -358,7 +358,7 @@ nodes:
       - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: skipped}
       - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity, the regression, rule coverage, diff scope", status: done}
       - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
-      - {id: t8, role: tester, step: qa, layer: null, rules: [WB-4], after: [t6], title: "QA script docs/qa/ui-W2.md, beside review", status: pending}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [WB-4], after: [t6], title: "QA script docs/qa/ui-W2.md, beside review", status: done}
       - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: pending}
       - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: pending}
       - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
@@ -444,6 +444,7 @@ nodes:
       - "After a 201 cancel the cancel screen re-reads the policy, so its header status is the one the API holds now (W2 A1 R2, WB-4)"
       - "The cancel screen builds its rule links with the shared ruleLinks helper, encoded, not a local copy (W2 A1 R3, WB-3)"
       - "The WB-4 unit test that compares two recorded answers is replaced by one that can fail for a code fault (W2 A1 R4, WB-4)"
+      - "A test moved from another node after a stale-test finding is committed as a test(...) move, not TDD: red, and the trace reads it as such (W2 A2 R2, WB-3)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for U7: rel=noreferrer, the CSP directives, ids refused, repeated trailers kept; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
