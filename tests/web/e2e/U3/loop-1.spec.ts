@@ -68,6 +68,9 @@ async function openTimeline(page: Page): Promise<Locator> {
   return timeline;
 }
 
+/** One kit CodeBlock: its <code> element, of which a block has exactly one (root > pre > code all carry kit-code-block__ classes). */
+const CODE_BLOCK = '[class~="kit-code-block__code"]';
+
 /** The nearest block around a gate row that holds a command: the row's own event, with its command beside it. */
 function eventBlock(row: Locator): Locator {
   return row.locator('xpath=ancestor::*[.//*[contains(@class, "kit-code-block__")]][1]');
@@ -103,7 +106,7 @@ test.describe("each event's command, exit code, expectation, ok, head and detail
   test('LOOP-1 · the FAIL at line 4 shows the command it ran, beside its own row', async ({ page }) => {
     const row = gateRow(await openTimeline(page), FAIL.name);
     const block = eventBlock(row);
-    await expect(block.locator('[class*="kit-code-block__"]').filter({ hasText: FAIL.cmd }), "line 4's command").toHaveCount(1);
+    await expect(block.locator(CODE_BLOCK).filter({ hasText: FAIL.cmd }), "line 4's command").toHaveCount(1);
     await expect(block.locator('[data-kind="gate"], [data-kind="state"]'), 'the command sits with this event alone').toHaveCount(1);
   });
 
@@ -120,7 +123,7 @@ test.describe("each event's command, exit code, expectation, ok, head and detail
     await expect(fact(row, 'Expected')).toHaveText('pass, >=1 test per rule');
     await expect(fact(row, 'ok')).toHaveText('true');
     await expect(row).toContainText('SELL-1 1/1 and SELL-2 3/3 pass');
-    await expect(eventBlock(row).locator('[class*="kit-code-block__"]').filter({ hasText: 'npm run e2e -- --grep "SELL-" --repeat-each 2' })).toHaveCount(1);
+    await expect(eventBlock(row).locator(CODE_BLOCK).filter({ hasText: 'npm run e2e -- --grep "SELL-" --repeat-each 2' })).toHaveCount(1);
   });
 
   test("LOOP-1 · the state change at line 17 shows the log's detail line, the investigation's hand-back", async ({ page }) => {
