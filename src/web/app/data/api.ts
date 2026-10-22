@@ -327,3 +327,45 @@ function remember(storage: RecentStore | null, reference: string, how: RecentEnt
     // storage full or refused: the list just doesn't grow.
   }
 }
+
+export interface CancellationTerm {
+  termNumber: number;
+  ruleApplied: string;
+  daysInTerm: number;
+  daysUsed: number;
+  unusedDays: number;
+  refundAmount: number;
+}
+
+export interface QuotedRefund {
+  type: string;
+  amount: number;
+  paymentReference: string;
+}
+
+export interface CancellationQuote {
+  reference: string;
+  cancellationDate: string;
+  ruleApplied: string;
+  totalRefund: number;
+  terms: CancellationTerm[];
+  refunds: QuotedRefund[];
+  quotedOn: string;
+}
+
+export interface CancellationResult {
+  reference: string;
+  cancellationDate: string;
+  ruleApplied: string;
+  totalRefund: number;
+  terms: CancellationTerm[];
+  refunds: Refund[];
+}
+
+export async function quoteCancellation(deps: ApiDeps, reference: string, cancellationDate: string): Promise<ApiAnswer<CancellationQuote>> {
+  throw new Error('not implemented');
+}
+
+export async function cancelPolicy(deps: ApiDeps, reference: string, cancellationDate: string): Promise<ApiAnswer<CancellationResult>> {
+  throw new Error('not implemented');
+}
