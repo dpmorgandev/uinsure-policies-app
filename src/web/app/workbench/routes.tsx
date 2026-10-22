@@ -1,4 +1,5 @@
 import type { ReactElement } from 'react';
+import { CancelPolicy } from './cancel/CancelPolicy';
 import { WorkbenchHome } from './home/WorkbenchHome';
 import { PolicyView } from './policy/PolicyView';
 import { SellPolicy } from './sell/SellPolicy';
@@ -16,4 +17,5 @@ export const workbenchRoutes: WorkbenchRoute[] = [
   { path: 'workbench', title: 'Workbench', element: <WorkbenchHome /> },
   { path: 'workbench/sell', title: 'Sell a policy', element: <SellPolicy /> },
   { path: 'workbench/policies/:reference', title: 'Policy', element: <PolicyView /> },
+  { path: 'workbench/policies/:reference/cancel', title: 'Quote and cancel', element: <CancelPolicy /> },
 ];
