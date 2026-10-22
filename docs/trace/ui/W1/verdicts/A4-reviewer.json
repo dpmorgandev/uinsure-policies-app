@@ -1,0 +1,69 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T03:08:52Z",
+  "plan": "ui",
+  "node": "W1",
+  "attempt": 4,
+  "agent": "reviewer",
+  "agent_id": "acbfd638444b58ee8",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "W1",
+    "attempt": 4,
+    "base_sha": "fa18658f714d3f424da3819c53fea510bfb6fc74",
+    "head_sha": "d91946ccdd6f3fbf808b04bb63dfe016e08077b2",
+    "diff_fingerprint": "97895b39ceb1d609e9ffd70af0f563d3e2a8fcb9",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.e2e@2026-10-22T02:02:18Z (A3.2 R1 check at f2e5cec: U0b 65/65, U1 120/126)",
+      "setup@2026-10-22T02:25:49Z (attempt-4 rulings: R1 derived as for U0b; gates also run U0b and U1)",
+      "findings(docs/trace/ui/W1/findings/A3.2.md)@2026-10-22T02:37:27Z (I1, I2 fixed; I3 by gate ruling; I4 re-done at qa)",
+      "gate.green@2026-10-22T03:04:56Z (U1 126/126 at 85154dd, was 120/126)",
+      "gate.typecheck@2026-10-22T03:04:56Z",
+      "gate.lint@2026-10-22T03:04:56Z",
+      "gate.lint-css@2026-10-22T03:04:56Z",
+      "gate.test@2026-10-22T03:04:56Z (215/215)",
+      "gate.build@2026-10-22T03:04:56Z",
+      "gate.e2e@2026-10-22T03:04:57Z (W1 109/109, U0b 65/65, U1 126/126)",
+      "gate.e2e-regression@2026-10-22T03:04:57Z (no baselines yet, nothing run)",
+      "gate.audit@2026-10-22T03:04:57Z (runtime 0, on the re-run)",
+      "gate.trace-check@2026-10-22T03:04:57Z",
+      "gate.scope@2026-10-22T03:04:57Z (122 files, 0 outside, none under kit)",
+      "gate.no-stubs@2026-10-22T03:04:58Z (none)"
+    ],
+    "rules_covered": [
+      "WB-1",
+      "WB-2",
+      "WB-3",
+      "WB-6",
+      "WB-9",
+      "BUSY-1"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "WB-9",
+        "severity": "P2",
+        "file": "tests/web/e2e/U0b/support/built.ts",
+        "line": 92,
+        "what": "After 85154dd nothing imports the `screenSettled` and `own` exports in built.ts. U0b parity now imports only regionSettled and settledNav, and U1 and W1 go through builtAt().",
+        "why": "This is dead code from the code-quality slop list. The only importers of built.ts are U0b/support/parity.ts (regionSettled, settledNav), U0b/honest-1.spec.ts (newest, primaryNav, screenIds, screenPaths, screenUnbuilt), U0b/a11y-1.spec.ts (newest, screenIds, screenPaths), and U1's and W1's parity (builtAt). `screenSettled` lost its last importer when U0b parity's local navInTransit moved into builtAt. It's test support only and nothing behaves differently, so it doesn't block.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "A3.2/I1 is met. U1's shellOf (tests/web/e2e/U1/support/parity.ts) now applies builtAt('U1').settledNav to both the built and the reference navLinks and navNotBuilt. An entry whose screen's built state differs between docs/ui/derived/U1/derived.json and the newest reference (Workbench, wb-home, whose screens.json name is 'Workbench') is dropped on both sides. Every entry U1 settled stays on its own side and is still compared exactly with toEqual. title, shell, navCurrent and tabCurrent are unchanged. I don't read this as weakening an assertion after its red commit: it is the in-transit pattern U0b already used under David's 2026-10-21 'derived' ruling, and David extended it to U1 at loop.jsonl:85. The proof is gate.green 03:04:56Z, U1 120/126 -> 126/126.",
+      "A3.2/I2 is met. W1's shellOf (tests/web/e2e/W1/support/parity.ts:210-221) uses builtAt('W1').settledNav. At head W1's derived.json is the newest on the branch, so the filter changes nothing for W1's suite (W1 109/109). The orchestrator applied it under the same ruling (loop.jsonl:86).",
+      "The built.ts refactor keeps U0b's behaviour. builtAt(node) holds the same own, newest and screenSettled logic as before. newestFrom keeps the same reduce with the node's own reference as the seed and ties going to the later id. primaryNav moved above the top-level builtAt('U0b') call, which avoids a temporal-dead-zone error at module load. U0b is 65/65 at 03:04:57Z.",
+      "A3.2/I3 (the e2e gate ran only the node's suite) is handled for this node by the ruling: gate.e2e 03:04:57Z runs W1, U0b and U1 at 85154dd. The permanent ui.md change is a harness change outside this node.",
+      "A3.2/R2 / I4 (QA script docs/qa/ui-W1.md: the pre-rebase SHA 8ed2ccf, and step 38 expecting the not-built page where U1's Rule page now answers) is still open at head. The orchestrator deferred it at loop.jsonl:86 to be redone at the QA step after both verdicts. It was P2, and I don't raise it again. The QA step must fix it before pause 2.",
+      "TDD order is unchanged since A3.2. The W1 reds 417b459..0288a65 come before the stub 01da4d1, which comes before the greens 86fc3eb, cb0090b, 4cf257e and 743bf9f. The unit reds fb98eb4..10e4fce come before the green 86fc3eb, and the regression red 168bc3b comes before the refactor efba17d. 85154dd is a web-tester test-support fix tagged green with Fixes-Finding A3.2/I1 and I2. Its fixed tests failed before it (02:02:18Z) and pass after it (03:04:56Z). d91946c is trace only.",
+      "No W1 behaviour code (api.ts, the workbench screens, Frame.tsx, App.tsx) changed after f2e5cec, so A3.2's rule-by-rule acceptance still holds: W1 109/109 and unit 215/215 at 85154dd. A11Y-1 isn't in this prompt's rule list, but its W1 specs are part of the 109/109 and are still met.",
+      "Leftovers: gate.no-stubs found none, and my grep of src/web/app found no 'not implemented', no dangerouslySetInnerHTML or innerHTML, and no Math.random. browser.ts:19 (UK today through Intl with Europe/London) and api.ts:164-167 (addDays for WB-6's own SELL-2 window check) are the client-side checks WB-6 asks for, and A2 and A3 already reviewed them.",
+      "A3's P2s R1-R4 are still carried into W2 by David's ruling (loop.jsonl:63). I don't raise them again."
+    ]
+  }
+}
