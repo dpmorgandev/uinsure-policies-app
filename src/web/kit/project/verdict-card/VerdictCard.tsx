@@ -11,7 +11,8 @@ import styles from './VerdictCard.module.css';
 export interface VerdictFinding {
   /** The reviewer's own number for it: "R1". */
   id: string;
-  severity: 'P1' | 'P2';
+  /** P0 is the most severe (the rule or acceptance is broken) and is drawn as P1 is, with the fail tone. */
+  severity: 'P0' | 'P1' | 'P2';
   summary: ReactNode;
   /** Who the finding is routed to: "tester" or "builder". Leave out when the verdict records none. */
   route?: string | null;
@@ -161,7 +162,7 @@ export function VerdictCard({
                   <span className={styles.findingId}>{finding.id}</span>
                   <div className={styles.findingBody}>
                     <p className={styles.findingHead}>
-                      <StatusTag status={finding.severity === 'P1' ? 'fail' : 'warn'}>{finding.severity}</StatusTag>
+                      <StatusTag status={finding.severity === 'P2' ? 'warn' : 'fail'}>{finding.severity}</StatusTag>
                       <span className={styles.route}>
                         {finding.route ? `Route: ${finding.route}` : 'Route: not recorded'}
                       </span>

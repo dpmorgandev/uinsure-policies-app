@@ -82,4 +82,33 @@ export const examples: { state: string; element: JSX.Element }[] = [
       </div>
     ),
   },
+  {
+    // From the F0b loop's own verdict event (docs/ui/fixture/trace.json): reviewer FAIL at head 6a615c8, detail
+    // "P0 R1 app fails at start-up (no appsettings; Database:Provider null) - confirmed by orchestrator; P2 R2-R9".
+    // The event gives no text for R2-R9, so only R1 is listed and the summary says where the rest are.
+    state: 'a P0 finding',
+    element: (
+      <div style={frame}>
+        <VerdictCard
+          agent="reviewer"
+          round="A1"
+          node="F0b"
+          verdict="FAIL"
+          head={{
+            sha: '6a615c8',
+            fullSha: '6a615c8cd9c342a18030802209cc596e3c3b829f',
+            githubHref: `${GITHUB}6a615c8cd9c342a18030802209cc596e3c3b829f`,
+          }}
+          summary="Also P2 R2-R9; the verdict event records no text for them."
+          findings={[
+            {
+              id: 'R1',
+              severity: 'P0',
+              summary: 'App fails at start-up (no appsettings; Database:Provider null) - confirmed by orchestrator.',
+            },
+          ]}
+        />
+      </div>
+    ),
+  },
 ];
