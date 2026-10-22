@@ -160,7 +160,7 @@ nodes:
     rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2]
     cuttable: false
     budget: null
-    status: escalated
+    status: in_progress
     attempt: 5
     branch: feature/ui/U3
     worktree: .claude/worktrees/ui-U3
