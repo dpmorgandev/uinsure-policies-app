@@ -146,6 +146,45 @@ test.describe('quote first', () => {
   });
 });
 
+// W2 A1/I1: moved from W1's 'screens W1 does not build', now that W2 builds the cancel screen. The screen reads its
+// own policy on open (GET /api/policies/<ref>) and shows that policy's term dates, so only the values the API didn't
+// return for it are refused: before Quote is pressed, no recorded reference, no other policy's, no answer, no problem.
+test.describe('before a quote', () => {
+  /** A reference, payment, refund or claim reference in the recorded design fixture's shape (F4-MVFJSC6LXX, PAY-…). */
+  const RECORDED_REFERENCE = /\b(F\d-[A-Z0-9]{10}|(PAY|REF)-[0-9a-f]{32}|CLM-[A-Z0-9-]+)\b/;
+  /** The Problems region, as docs/ui/screens/wb-cancel/ draws it, and the rules it lists as able to refuse a date. */
+  const PROBLEMS = 'problems-cancel-3-cancel-4-cancel-7';
+  const STANDING_RULES = ['CANCEL-3', 'CANCEL-4', 'CANCEL-7'] as const;
+
+  test("WB-3 · the cancel route, before Quote is pressed, shows no canned value and no other policy's reference", async ({ page, api }) => {
+    void api;
+    const other = await soldPolicy('W2-HONEST-OTHER', '733.19');
+    const stored = await soldPolicy('W2-HONEST-1');
+    const seen = watchApi(page);
+    await openCancel(page, stored.reference);
+    const main = page.getByRole('main');
+    await expect(main, "the route's own policy, as the API returned it").toContainText(stored.reference, live);
+    await expect(main, "its own term's start").toContainText(stored.terms[0]?.startDate ?? 'a start date');
+    const text = await main.innerText();
+    expect(text, 'no recorded-fixture reference').not.toMatch(RECORDED_REFERENCE);
+    expect(text, "no other policy's reference").not.toContain(other.reference);
+    expect(text, 'no answer to a request that was never sent').not.toMatch(/\banswered \d{3}\b/);
+    await expect(main.getByRole('alert'), 'no problem: none was returned').toHaveCount(0);
+    // The screen's Problems region lists, as drawn, the rules that can refuse a date here: those chips are its standing
+    // guide, under "No problem", not a rule the API named. Any other rule chip would be one the API never returned.
+    const problems = region(page, PROBLEMS);
+    await expect(problems, 'the Problems region says there is no problem').toContainText('No problem');
+    const standing = await problems.locator('a[href*="/rules/"]').allInnerTexts();
+    expect(standing.map((t) => t.trim()), "only the screen's standing list of the rules that can refuse a date").toEqual([...STANDING_RULES]);
+    await expect(
+      main.locator(`a[href*="/rules/"]:not([data-region="${PROBLEMS}"] a)`),
+      'no other rule chip: the API named no rule',
+    ).toHaveCount(0);
+    const cancelling = seen.filter((e) => e.path.startsWith(`/api/policies/${stored.reference}/cancellation`));
+    expect(cancelling.map((e) => `${e.method} ${e.path}`), 'no cancellation-quote or cancellation request was sent').toEqual([]);
+  });
+});
+
 test.describe('cancel with the quoted date', () => {
   test('WB-4 · Cancel on the quoted date asks to confirm first, and Go back sends nothing', async ({ page, api }) => {
     void api;
