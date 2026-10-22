@@ -450,6 +450,7 @@ nodes:
       - "A severity outside P0-P2 is shown as recorded on the verdict card too, never mapped to P2 (severityOf, loopData.ts:35), so the card and the findings region agree (U3 A3 R2, LOOP-3)"
       - "The trace tells merge repairs from finding fixes: U3's ad2105d and f5f98c8 are fix(...) commits that repair the U2 merge and carry no Fixes-Finding (U3 A3 R4, LOOP-2)"
       - "The commit-msg hook refuses a fix(...) commit with no Fixes-Finding trailer; merge repairs use a non-fix type (U3 A3 I5, LOOP-2; harness)"
+      - "splitRootCause treats a single-quoted span as a quotation, so a marker after a sentence end inside it ('Done. Cause: x') stays words; U3's own D1/I1 finding page shows its text unsplit (U3 A5 R1, LOOP-4)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for U7: rel=noreferrer, the CSP directives, ids refused, repeated trailers kept; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
