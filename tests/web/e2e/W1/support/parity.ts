@@ -7,6 +7,11 @@
 //
 // wb-policy's long-content state is a fake-clock test (CancelRenewedPolicyTests), not an exchange the API can be
 // asked for, so no flow reaches it; its regions are the populated state's.
+//
+// A region a later node builds (in transit against W1's own derived.json, ../../U0b/support/built.ts) is compared by
+// its place only, as in U1's parity (../../U1/support/parity.ts): its data-req, built state and components are that
+// node's to prove (W3's wb-policy parity, ../../W3/parity.spec.ts). Every region W1 settled is still compared exactly,
+// and a region no derived.json names counts as settled, so a region the page invents still fails.
 import { expect } from '@playwright/test';
 import type { Page, Route } from '@playwright/test';
 import { serveTrace, setTheme, themes, viewports } from '../../U0b/support/app';
@@ -14,7 +19,7 @@ import { builtAt } from '../../U0b/support/built';
 import { literalColours } from '../../U0b/support/reference';
 import { REC, answerWith, exchangeAt } from './recorded';
 import type { RecordedExchange } from './recorded';
-import { designFixtureDir, readBuilt, readReference, regionNamed, regionOrder, unbuiltComps } from './reference';
+import { designFixtureDir, readBuilt, readReference, regionNamed } from './reference';
 import type { Structure } from './reference';
 import { fillSell, formOf, hold, openButton, route, sellButton, typeOnHome, unreachable } from './workbench';
 import type { SellRequest } from './workbench';
@@ -176,16 +181,31 @@ async function prepare(page: Page, s: Screen): Promise<void> {
   await s.open(page);
 }
 
-/** Every region of the reference, in its order, with its data-req; the unbuilt ones as the not-built-yet pattern. */
+const { regionSettled, settledNav } = builtAt('W1');
+
+/** The regions in page order: [slug, req, built] for a settled region, [slug] alone for one a later node builds. */
+function settledOrder(s: Structure, screen: string): (string | boolean)[][] {
+  return s.regions.map((r) => (regionSettled(screen, r.slug) ? [r.slug, r.req.join(' '), r.built] : [r.slug]));
+}
+
+/** The components of each region unbuilt at W1 and still unbuilt at the newest reference. */
+function settledUnbuilt(s: Structure, screen: string): [string, string[]][] {
+  return s.regions.filter((r) => !r.built && regionSettled(screen, r.slug)).map((r) => [r.slug, r.comps]);
+}
+
+/**
+ * Every region of the reference, in its order, with its data-req; the unbuilt ones as the not-built-yet pattern. A
+ * region a later node builds keeps its place in the order; its data-req and built state are that node's to prove.
+ */
 export async function expectRegionsInOrder(page: Page, s: Screen): Promise<void> {
   const reference = await readReference(page.context(), s.screen, s.state);
   await prepare(page, s);
   await expect
     .poll(async () => {
       const built = await readBuilt(page, reference);
-      return { order: regionOrder(built), unbuilt: unbuiltComps(built) };
+      return { order: settledOrder(built, s.screen), unbuilt: settledUnbuilt(built, s.screen) };
     })
-    .toEqual({ order: regionOrder(reference), unbuilt: unbuiltComps(reference) });
+    .toEqual({ order: settledOrder(reference, s.screen), unbuilt: settledUnbuilt(reference, s.screen) });
 }
 
 /** One region of the reference, with its data-req and the catalogued components inside it. */
@@ -202,12 +222,11 @@ export async function expectRegionComponents(page: Page, s: Screen, slug: string
     .toEqual({ req: wanted?.req, comps: wanted?.comps });
 }
 
-/**
+/*
  * A nav entry a later node builds (in transit against W1's own derived.json, ../../U0b/support/built.ts) is left out
  * of the shell comparison: whether it is a link yet is that node's to prove. Every entry W1 settled is still
  * compared exactly.
  */
-const { settledNav } = builtAt('W1');
 
 /** The shell as parity compares it: the nav's links and not-built entries are every entry but those in transit. */
 function shellOf(s: Structure): Record<string, unknown> {
