@@ -139,7 +139,7 @@ nodes:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [DAG-1, NODE-1, TDD-1, RULE-3, DATA-8], title: "Playwright acceptance for U2 on fixture trails, and parity with its derived reference; every node rule", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U2 routes render the derived reference as canned content", status: done}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U2 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: done}
-      - {id: t4, role: tester, step: red, layer: regression, rules: [], title: "U1's parity settles each region at builtAt, as U0b's does, so U1's suite holds once U2 builds the node and rule pages' regions (U2 t1 tester note)", status: pending}
+      - {id: t4, role: tester, step: red, layer: regression, rules: [], title: "U1's parity settles each region at builtAt, as U0b's does, so U1's suite holds once U2 builds the node and rule pages' regions (U2 t1 tester note)", status: done}
       - {id: t5, role: tester, step: red, layer: compiler, rules: [DAG-1, TDD-1, RULE-3, DATA-8], title: "Unit tests for plans, nodes, commits with TDD trailers and diffs, and in-flight tolerance", status: pending}
       - {id: t6, role: builder, step: green, layer: compiler, rules: [DAG-1, TDD-1, RULE-3, DATA-8], title: "Green: plans, nodes, commits with TDD trailers and diffs, and in-flight tolerance", status: pending}
       - {id: t7, role: builder, step: green, layer: screen, rules: [DAG-1, NODE-1, TDD-1, RULE-3, DATA-8], title: "The plan, node, walkthrough and commit screens; whole acceptance suite green", status: pending}
