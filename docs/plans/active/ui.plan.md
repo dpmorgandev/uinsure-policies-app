@@ -85,6 +85,8 @@ David, 2026-10-22, before the 2026-10-23 demo: U7 is built as a demo slice ("pro
 - A context snapshot's path and slug are denylist-scanned before they reach trace.json (U5 A1 S1, CTX-1)
 - A test shows that a denylist hit in a docs/context snapshot fails the compile with no trace.json written (U5 A1 S2, CTX-1)
 - Each sessions entry opens its own snapshot at /sessions/:file: the reference tags it NAV-2, so U4 or U7 builds it (U5 A1 reviewer note, CTX-1)
+- Every external link the kit draws (ShaLink's link to GitHub, the footer's repository and snapshot links) carries rel=noreferrer (U0b security S1; split from U7, 2026-10-22: the page-wide referrer policy shipped in U7 instead)
+- Harness: the in-node kit gap (ui.md, A5) runs /kit-gap with --node <node>, but screens-fill.mjs renders a kit prompt only for a KG<n> node, so a build node can't dispatch kit-builder (found in U7, 2026-10-22)
 
 ## Attempt log
 (none)

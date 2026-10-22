@@ -415,7 +415,7 @@ nodes:
     qa: docs/qa/ui-U7.md
     trace: docs/trace/ui/U7/
     acceptance:
-      - "Every external link (commit SHAs, the footer's repository link) carries rel=noreferrer; the CSP also sets base-uri 'self', form-action 'none' and object-src 'none' (U0b security S1, S2)"
+      - "The page's referrer policy is no-referrer, so no link out sends a referrer; the CSP also sets base-uri 'self', form-action 'none' and object-src 'none' (U0b security S1, S2; per-link rel=noreferrer carried past the demo)"
       - "The activity regression spec photographs its populated state as a bounded shot, not a full page of about 1130 records (390x144310 px, about 5 MB, and a 5000ms screenshot timeout at 1440), and the trace step writes the activity screen's baselines, which W1 left out (W1 t17, David 2026-10-22)"
       - "The activity regression baselines at 1440 (populated, light and dark) are written: the full-page capture no longer times out at the 5000ms default (U2 trace, 2026-10-22; non-blocking, tech debt)"
       - "The cancel screen states the HTTP status it received, never a literal 200 or 201 (W2 A1 R1, HONEST-1)"
