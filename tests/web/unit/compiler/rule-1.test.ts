@@ -33,6 +33,7 @@ const SELL_SPEC = 'tests/web/e2e/F1/sell.spec.ts';
 const SELL_WINDOW_SPEC = 'tests/web/e2e/F1/sell-window.spec.ts';
 const GET_SPEC = 'tests/web/e2e/F2/get.spec.ts';
 const RETRIEVE_CS = 'tests/Fixture.Api.Tests/RetrieveTests.cs';
+const RENEW_CS = 'tests/Fixture.Domain.Tests/RenewWindowTests.cs';
 
 /** By code point, never by locale: the order a test expects doesn't move with the machine's collation. */
 const byCodePoint = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
@@ -111,15 +112,35 @@ describe('its tests, by name', () => {
   test('RULE-1 · a C# test is named by its method, under each rule it is traited with; a method with no Rule trait is under none', () => {
     expect(s.error, thrown(s)).toBeUndefined();
     // requirements-shapes/README.md: the theory carries SELL-1 and GET-1; The_client_is_created is plumbing.
+    // RENEW-1/2's three are traited with its parts (U1 D3/I2, David's ruling "Collect the parts"; this row read [] while
+    // the fixture had no RENEW trait, which pinned the gap rather than deciding it).
     expect(['SELL-1', 'GET-1', 'RENEW-1/2', 'COULD-1'].map((id) => [id, testsOf(s, id)])).toEqual([
       ['SELL-1', [['A_reference_sold_in_lower_case_is_retrieved_in_upper_case', RETRIEVE_CS]]],
       ['GET-1', [
         ['A_reference_sold_in_lower_case_is_retrieved_in_upper_case', RETRIEVE_CS],
         ['Retrieve_of_an_unknown_reference_answers_404', RETRIEVE_CS],
       ]],
-      ['RENEW-1/2', []],
+      ['RENEW-1/2', [
+        ['Renew_reads_the_clock_once', RENEW_CS],
+        ['Renewal_31_days_before_the_end_is_rejected_giving_the_window', RENEW_CS],
+        ['Renewal_on_the_end_date_is_accepted', RENEW_CS],
+      ]],
       ['COULD-1', []],
     ]);
+  });
+
+  // U1 D3/I2. requirements.md writes one row, RENEW-1/2; the C# tests trait its parts, RENEW-1 and RENEW-2, as the API's
+  // own coverage gate (RuleCoverage.Expand) reads the slash cell. requirements-shapes/README.md: one method traited
+  // RENEW-1, one RENEW-2, and Renew_reads_the_clock_once traited with both.
+  test("RULE-1 · a slash rule lists the tests traited with each of its parts: RENEW-1/2 has its RENEW-1, its RENEW-2 and the one traited with both, once, and no part is a rule", () => {
+    expect(s.error, thrown(s)).toBeUndefined();
+    const names = (ruleOf(s, 'RENEW-1/2')?.tests ?? []).map((t) => t.name ?? '(no name)');
+    expect([...names].sort(byCodePoint), 'each test once, by its method').toEqual([
+      'Renew_reads_the_clock_once',
+      'Renewal_31_days_before_the_end_is_rejected_giving_the_window',
+      'Renewal_on_the_end_date_is_accepted',
+    ]);
+    expect([ruleOf(s, 'RENEW-1') ?? null, ruleOf(s, 'RENEW-2') ?? null], 'a part is not a requirement row').toEqual([null, null]);
   });
 });
 

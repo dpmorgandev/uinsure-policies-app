@@ -46,5 +46,21 @@ holds three methods: `Retrieve_of_an_unknown_reference_answers_404` traited GET-
 `The_client_is_created`, plumbing with no trait. So GET-1 has two tests by name, SELL-1 one, and the
 plumbing method belongs to no rule.
 
+## RENEW-1/2's tests, by its parts (`base/tests/Fixture.Domain.Tests/RenewWindowTests.cs`)
+
+Added in U1 round D3 (finding I2, David's ruling "Collect the parts"). The real C# tests trait a slash rule's
+parts, never the slash ID: `RENEW-1` and `RENEW-2`, as `RuleCoverage` expands the `RENEW-1/2` cell. The file sits
+in `base/`, already in the repo before c0, so neither commit nor any SHA here moves. Three methods, cut from
+`tests/Uinsure.Policies.Domain.Tests/RenewWindowTests.cs` lines 26-27 and 65-66 and
+`tests/Uinsure.Policies.Services.Tests/PolicyServiceRenewWindowTests.cs` lines 88-91:
+
+| Method | Traits |
+|---|---|
+| `Renewal_31_days_before_the_end_is_rejected_giving_the_window` | `RENEW-1` |
+| `Renewal_on_the_end_date_is_accepted` | `RENEW-2` |
+| `Renew_reads_the_clock_once` | `RENEW-1` and `RENEW-2` |
+
+So RENEW-1/2 has three tests by name, each once, and no rule `RENEW-1` or `RENEW-2` exists: neither is a row.
+
 **Expected, and how it was checked:** the lines above were counted by hand in the two files and checked with
 `grep -n`. The README does not claim a `render-trace check` label: this fixture has no trail.

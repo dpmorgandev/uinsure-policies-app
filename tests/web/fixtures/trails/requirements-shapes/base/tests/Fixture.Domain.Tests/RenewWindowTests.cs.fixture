@@ -1,0 +1,26 @@
+// Cut from tests/Uinsure.Policies.Domain.Tests/RenewWindowTests.cs and Services.Tests/PolicyServiceRenewWindowTests.cs:
+// RENEW-1/2's tests are traited with its parts, RENEW-1 and RENEW-2, never the slash ID; one method carries both.
+namespace Fixture.Domain.Tests;
+
+public class RenewWindowTests
+{
+    [Fact]
+    [Trait("Rule", "RENEW-1")]
+    public void Renewal_31_days_before_the_end_is_rejected_giving_the_window()
+    {
+    }
+
+    [Fact]
+    [Trait("Rule", "RENEW-2")]
+    public void Renewal_on_the_end_date_is_accepted()
+    {
+    }
+
+    [Fact]
+    [Trait("Rule", "RENEW-1")]
+    [Trait("Rule", "RENEW-2")]
+    public async Task Renew_reads_the_clock_once()
+    {
+        await Task.CompletedTask;
+    }
+}
