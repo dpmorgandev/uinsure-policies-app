@@ -1,0 +1,84 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T19:18:16Z",
+  "plan": "ui",
+  "node": "U3",
+  "attempt": 5,
+  "agent": "reviewer",
+  "agent_id": "a0bc2b4dc462706b8",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U3",
+    "attempt": 5,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "80b91e4ed3c9e4d5c98975e72981b94312facf37",
+    "diff_fingerprint": "1e74ff7c69171e13fd17e733ea9bf79c259e3325",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "loop.jsonl:84 gate.e2e-regression (attempt 4, ruled set at 5fa2f55)",
+      "loop.jsonl:89 steer(D1,pause2)",
+      "loop.jsonl:92 gate.red at 55e5364",
+      "loop.jsonl:93 gate.typecheck at 3b25c3c",
+      "loop.jsonl:94 gate.lint at 3b25c3c",
+      "loop.jsonl:95 gate.lint-css at 3b25c3c",
+      "loop.jsonl:96 gate.test at 3b25c3c",
+      "loop.jsonl:97 gate.build at 3b25c3c",
+      "loop.jsonl:98 gate.e2e at 3b25c3c",
+      "loop.jsonl:99 gate.e2e-regression at 3b25c3c",
+      "loop.jsonl:100 gate.audit at 3b25c3c",
+      "loop.jsonl:102 gate.coverage at 3b25c3c",
+      "loop.jsonl:103 gate.scope at 3b25c3c",
+      "loop.jsonl:104 gate.no-stubs at 3b25c3c"
+    ],
+    "rules_covered": [
+      "LOOP-1",
+      "LOOP-2",
+      "LOOP-3",
+      "DATA-2"
+    ],
+    "rules_missing": [
+      "LOOP-4"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "LOOP-4",
+        "severity": "P1",
+        "file": "src/web/compiler/plans.ts",
+        "line": 236,
+        "what": "opensASentence ignores single quotes, so U3's own D1/I1 root_cause splits at 'Done. Cause: x': ~1,800 chars of preamble become Symptom, the tail becomes Cause, Fix direction is null.",
+        "why": "LOOP-4 shows symptom, cause and fix direction as the investigator recorded them. A4/I1's fix direction says a marker is a split point only where it 'is not inside a quotation', and 'Done. Cause: x' is inside one. The case is not hypothetical. findings/D1.md:14 is on the trail at head_sha, and every finding's root_cause goes through splitRootCause (compiler/index.ts:278-284). D1's root_cause has no capitalised marker at a sentence start, and before 'Done. Cause: x' it has no double quote, backtick or curly quote. So the filter at plans.ts:245-247 keeps exactly that one quoted marker, and the finding page mislabels the whole text. The investigator flagged this shape in A4/I1 and D1/I1 ('Not covered'). No test in loop-4.test.ts:305-346 covers it. The new tests and the fix are sound for the double-quoted and mid-sentence shapes they name. Route: a red test on D1/I1's real text, then the compiler. Per steer D1 (loop.jsonl:89), this FAIL makes R1 a U7 line.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "LOOP-4",
+        "severity": "P2",
+        "file": "docs/trace/ui/U3/packet/gates.jsonl",
+        "line": 8,
+        "what": "gate.e2e-regression at 3b25c3c is ok:false, its detail holds only NO_COLOR warnings, and no receipt compares the failures with the set ruled intended at 5fa2f55.",
+        "why": "The attempt-4 run (loop.jsonl:84) ran all specs and recorded 'same set as ruled at 5fa2f55'. The attempt-5 run (:99) ran only tests/web/e2e/regression and recorded no failing list. Nothing shows the failures are only the ruled ones. The orchestrator needs to re-run and compare before landing.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R3",
+        "rule_id": "LOOP-2",
+        "severity": "P2",
+        "file": "docs/trace/ui/U3/packet/gates.jsonl",
+        "line": 11,
+        "what": "gate.coverage at 3b25c3c is ok:false (TRAIL INCOMPLETE: no A4.md or D1.md, no activity for 55e5364, A4/I1 unresolved). No re-run receipt exists at head 80b91e4.",
+        "why": "80b91e4 adds findings/A4.md and findings/D1.md and backfills the 55e5364 activity (loop.jsonl:105-106), which should clear each listed cause. But this packet has no gate.coverage receipt at head_sha that shows OK. The LOOP-2 ladder for A4 (FAIL → findings → red → Fixes-Finding) resolves only if that check passes.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "TDD order for A4/I1 holds. Red 55e5364 (Fixes-Finding A4/I1) precedes fix 3b25c3c (TDD: green, Fixes-Finding A4/I1). gate.red failed as expected (loop.jsonl:92), and gate.test shows 304 passed at 3b25c3c (:96).",
+      "The new oracle expectEveryWordAsWritten (loop-4.test.ts:297) strips nothing and compares against the literal recorded text. That closes the A3-route gap, where MARKER_NAME/wordsOf stripped marker names anywhere.",
+      "No 'not implemented' remains in src/web (loop.jsonl:104). Scope: 164 files, all in scope (:103).",
+      "LOOP-1, LOOP-2, LOOP-3 and DATA-2 are judged as met on the earlier rounds' evidence plus these gates. Inside the 15-minute box this round re-examined only the D1 route (plans.ts:231-260 and loop-4.test.ts:285-347). R2 and R3 are receipt gaps, not code defects. route_to is the nearest enum value.",
+      "A4/I2 (S1, rel=noreferrer) is a U7 line already and is not re-raised."
+    ]
+  }
+}

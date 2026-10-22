@@ -1,0 +1,58 @@
+{
+  "v": 1,
+  "ts": "2026-10-18T13:50:01Z",
+  "plan": "build",
+  "node": "F1",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": null,
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "build",
+    "node_id": "F1",
+    "attempt": 2,
+    "base_sha": "{{c0}}",
+    "head_sha": "{{c6}}",
+    "diff_fingerprint": "7c2e9a41d06b38f5e1a4c9d27b80f63e5a1d4c98",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "gate.red@{{c1}} (attempt 1)",
+      "gate.stub@{{c2}} (attempt 1, ok:false)",
+      "gate.finding-red@{{c4}}",
+      "gate.stub@{{c5}}",
+      "gate.green@{{c6}}"
+    ],
+    "rules_covered": [
+      "SELL-1"
+    ],
+    "rules_missing": [
+      "SELL-2"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "SELL-2",
+        "severity": "P0",
+        "file": "src/sell.txt",
+        "line": 1,
+        "what": "A reference that differs from a sold one only in case is sold again, 201, so the reference is not unique.",
+        "why": "SELL-2 says the reference is unique, and the agreed interpretation compares it as stored; no test sells a case-only pair, so the suite cannot see it.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "SELL-2",
+        "severity": "P2",
+        "file": "tests/web/e2e/F1/sell.spec.ts",
+        "line": 4,
+        "what": "The 409 test checks the status only; the problem body's rule is never read.",
+        "why": "The contract's 409 names the broken rule, and a canned body without it would pass this test.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "A2 reviewer FAIL"
+    ]
+  }
+}

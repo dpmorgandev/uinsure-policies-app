@@ -1,9 +1,11 @@
 import { useParams } from 'react-router';
-import { MarkdownText, NotBuiltYet, VerifyCommand } from '../../../kit';
+import { MarkdownText, NotBuiltYet, StatusTag, VerifyCommand } from '../../../kit';
 import type { TraceNode } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
-import { NotBuiltRegion, Rung } from '../../shell/Rung';
+import { NotBuiltRegion, Region, Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
+import { Ladder } from '../Ladder';
+import { eventsOf } from '../loopData';
 import { NodeRules, NodeTasks } from './NodeRules';
 import '../explorer.css';
 
@@ -54,7 +56,16 @@ export function Node() {
       </Rung>
       <NodeRules trace={trace.trace} node={node} />
       <NodeTasks node={node} source={trace.trace.plans.find((plan) => plan.id === planId)?.source} />
-      <NotBuiltRegion region="attempts" name="attempts" />
+      <Region region="attempts" req="LOOP-2" label="Attempts">
+        {eventsOf(trace.trace, planId, nodeId).length > 0 ? (
+          <Ladder trace={trace.trace} plan={planId} node={nodeId} mode="aggregated" />
+        ) : (
+          <p className="s-text">
+            <StatusTag status="not-built">No loop log</StatusTag> {planId}/{nodeId} has no loop log, so there is no attempt to draw.
+          </p>
+        )}
+        <VerifyCommand command={`git log --oneline --grep='(${planId}/${nodeId})'`} intro="Run this in a clone. It lists the commits whose message names this node." />
+      </Region>
       <NotBuiltRegion region="who-touched-what" name="who touched what" />
     </>
   );
