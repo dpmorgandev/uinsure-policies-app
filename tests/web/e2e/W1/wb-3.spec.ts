@@ -176,15 +176,15 @@ test.describe('404', () => {
   });
 });
 
-// inv-006 I1: W1 doesn't build the cancel, renew and claim screens (W2 and W3 do), so their routes fall to the
-// not-built page. Opened on a policy the live API sold, before any request, they show no value the API didn't
-// return for it: no recorded reference, date or amount, no answer to a request that was never sent, no problem.
+// inv-006 I1: W1 doesn't build the renew and claim screens (W3 does), so their routes fall to the not-built page.
+// Opened on a policy the live API sold, before any request, they show no value the API didn't return for it: no
+// recorded reference, date or amount, no answer to a request that was never sent, no problem. W2 builds the cancel
+// screen; its pre-quote honesty check lives in tests/web/e2e/W2/wb-4.spec.ts (W2 A1/I1).
 test.describe('screens W1 does not build', () => {
   /** A reference, payment, refund or claim reference in the recorded design fixture's shape (F4-MVFJSC6LXX, PAY-…). */
   const RECORDED_REFERENCE = /\b(F\d-[A-Z0-9]{10}|(PAY|REF)-[0-9a-f]{32}|CLM-[A-Z0-9-]+)\b/;
 
   for (const [name, path, reference] of [
-    ['quote and cancel', route.cancel, 'W1-UNBUILT-CXL'],
     ['renew', route.renew, 'W1-UNBUILT-RNW'],
     ['record a claim', route.claim, 'W1-UNBUILT-CLM'],
   ] as const) {

@@ -266,7 +266,7 @@ function reasonOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-async function ask(deps: ApiDeps, url: string, init?: RequestInit): Promise<ApiAnswer<Policy>> {
+async function ask<T = Policy>(deps: ApiDeps, url: string, init?: RequestInit): Promise<ApiAnswer<T>> {
   let response: Response;
   try {
     response = await deps.fetch(url, init);
@@ -275,7 +275,7 @@ async function ask(deps: ApiDeps, url: string, init?: RequestInit): Promise<ApiA
   }
   // WB-3: an answer came. A body that is not JSON (a proxy's page) leaves no body, and the status stays.
   const body: unknown = await response.json().catch(() => undefined);
-  if (response.ok) return { kind: 'ok', status: response.status, value: body as Policy };
+  if (response.ok) return { kind: 'ok', status: response.status, value: body as T };
   return { kind: 'problem', status: response.status, problem: readProblem(response.status, body) };
 }
 
@@ -326,4 +326,53 @@ function remember(storage: RecentStore | null, reference: string, how: RecentEnt
   } catch {
     // storage full or refused: the list just doesn't grow.
   }
+}
+
+export interface CancellationTerm {
+  termNumber: number;
+  ruleApplied: string;
+  daysInTerm: number;
+  daysUsed: number;
+  unusedDays: number;
+  refundAmount: number;
+}
+
+export interface QuotedRefund {
+  type: string;
+  amount: number;
+  paymentReference: string;
+}
+
+export interface CancellationQuote {
+  reference: string;
+  cancellationDate: string;
+  ruleApplied: string;
+  totalRefund: number;
+  terms: CancellationTerm[];
+  refunds: QuotedRefund[];
+  quotedOn: string;
+}
+
+export interface CancellationResult {
+  reference: string;
+  cancellationDate: string;
+  ruleApplied: string;
+  totalRefund: number;
+  terms: CancellationTerm[];
+  refunds: Refund[];
+}
+
+export async function quoteCancellation(deps: ApiDeps, reference: string, cancellationDate: string): Promise<ApiAnswer<CancellationQuote>> {
+  return ask<CancellationQuote>(
+    deps,
+    `/api/policies/${encodeURIComponent(reference)}/cancellation-quote?cancellationDate=${encodeURIComponent(cancellationDate)}`,
+  );
+}
+
+export async function cancelPolicy(deps: ApiDeps, reference: string, cancellationDate: string): Promise<ApiAnswer<CancellationResult>> {
+  return ask<CancellationResult>(deps, `/api/policies/${encodeURIComponent(reference)}/cancellation`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ cancellationDate }),
+  });
 }
