@@ -1,0 +1,70 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T20:07:48Z",
+  "plan": "ui",
+  "node": "W2",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a87e65373a6b0cfa6",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "W2",
+    "attempt": 2,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "f8c22684b379861fa55efb23c0881dfc0e41aa46",
+    "diff_fingerprint": "468317d6320e6c825071c97910bee5ffe218aa0e",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.qa@f576e09",
+      "gate.typecheck@f576e09",
+      "gate.lint@f576e09",
+      "gate.lint-css@f576e09",
+      "gate.test@f576e09",
+      "gate.build@f576e09",
+      "gate.e2e@f576e09",
+      "gate.e2e-regression@f576e09 (20:01:10, exit 1)",
+      "gate.e2e-regression@f576e09 (20:06:19, known set)",
+      "gate.audit@f576e09",
+      "gate.audit-dev@f576e09",
+      "gate.coverage@f576e09",
+      "gate.scope@f576e09",
+      "gate.no-stubs@f576e09",
+      "gate.e2e-all@f576e09"
+    ],
+    "rules_covered": [
+      "WB-4"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "WB-4",
+        "severity": "P2",
+        "file": "docs/qa/ui-W2.md",
+        "line": 160,
+        "what": "QA step 36 and note 7 tell David to expect W1's cancel WB-3 case to fail. At head that case is gone (46e3e11), so the step describes code at 5297396, not the SHA under test.",
+        "why": "web-testing QA script: each row gives the expected result in the running app at the commit under test. f576e09 was committed after the A1/I1 fix but still predicts its failure. Step 31's grep 'WB-4 · ' also leaves out the new 'WB-3 · ' cancel honesty test (gate.e2e: 27 W2 tests, not the 26 in note 6). Misleading at pause 2, but no acceptance is affected.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "WB-3",
+        "severity": "P2",
+        "file": "tests/web/e2e/W2/wb-4.spec.ts",
+        "line": 159,
+        "what": "46e3e11 carries 'TDD: red', but the moved test was never red: it describes behaviour W2 already built (42b57b7) and passed when added.",
+        "why": "tdd-outside-in / web-testing: red means it fails for the right reason. This is a relocation from a stale-test finding (A1/I1), not a red step, so the trailer misstates its role in the trail. Its Fixes-Finding trailer is correct.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "Only tests changed since attempt 1, so src/web is the same as what both verdicts passed at 5297396. no-stubs gate: none.",
+      "A1/I1 fix judged sound. The W1 'screens W1 does not build' loop (tests/web/e2e/W1/wb-3.spec.ts:187-190) now keeps renew and claim, and every assertion for them is unchanged. Only the cancel tuple was removed, and the comment now points to W2.",
+      "Moved check (wb-4.spec.ts:159-185). It asserts the route's own reference and term start as the API returned them. It refuses a recorded-fixture reference, another live policy's reference (W2-HONEST-OTHER), any 'answered NNN', any alert, and any rule chip outside the drawn Problems region, whose standing chips are pinned to exactly CANCEL-3, CANCEL-4 and CANCEL-7. It also refuses any cancellation-quote or cancellation request.",
+      "The relaxations against the W1 case are justified by scope. 'Not built yet', 'no request' and 'no date' would contradict a built screen that GETs its policy and shows term dates. The date field starts empty (CancelPolicy.tsx:67), so no canned date can slip past the dropped 'no date' assertion. This is an intended test edit after red, logged by the investigator for David at pause 2. It doesn't weaken WB-3.",
+      "gate.e2e-all at f576e09: 516 passed. The 2 failures are the activity 1440 light/dark baselines, already U7 lines, and are not re-raised. The first gate.e2e-regression (exit 1, ok:false) was re-run as a known set with the same 2 failures."
+    ]
+  }
+}

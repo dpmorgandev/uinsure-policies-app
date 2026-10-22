@@ -1,0 +1,61 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T20:07:30Z",
+  "plan": "ui",
+  "node": "W2",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a55e7f397c175155f",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "W2",
+    "attempt": 2,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "f8c22684b379861fa55efb23c0881dfc0e41aa46",
+    "diff_fingerprint": "468317d6320e6c825071c97910bee5ffe218aa0e",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.build",
+      "gate.lint",
+      "gate.typecheck",
+      "gate.test",
+      "gate.e2e",
+      "gate.e2e-all",
+      "gate.e2e-regression",
+      "gate.scope"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Attempt 2 changes only tests since the attempt-1 PASS at 5297396 (46e3e11: wb-3.spec.ts, the W2 e2e specs and support, the regression spec). The src/web diff is unchanged: api.ts, CancelPolicy.tsx, routes.tsx. I re-read all three.",
+      "W1 met: no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function in src/web/app/workbench/cancel or in the changed source. API fields render as React text.",
+      "W2 met: the only href built is '#/rules/'+ruleId, an internal hash route. There is no javascript: URL and no external link. The policy reference is encodeURIComponent-encoded in the API paths.",
+      "W3 met: the diff changes no index.html and adds no script, font, image or style from another origin.",
+      "W4 met: the new calls go only to /api/policies/{ref}/cancellation-quote and /cancellation, through the injected deps.fetch. The cancel screen touches no cookies and no storage, and has no process.env.",
+      "W5 n/a: the diff does not touch src/web/compiler.",
+      "W6 met: grep found no local absolute path, personal email, key or token in src/web/app/workbench/cancel, tests/web/e2e/W2 or tests/web/e2e/regression/wb-cancel.spec.ts. The derived HTML and trace files carry only the repository's own github.com URLs.",
+      "W7 met: package.json and the lockfile are not in the diff. gate.audit (runtime, high) found 0 vulnerabilities. gate.audit-dev reports 5 high, the known dev-only braces GHSA-vfj7-8cjw-p6xm via stylelint, which is not a finding.",
+      "W8 met: API errors render through ProblemView, and an unreachable API shows the kit ProblemBanner with the fetch error reason. No stack is shown and nothing comes from server internals.",
+      "API8:2023 covered by W3 and W4. API10:2023 covered by W1 and W8.",
+      "API1, API2, API3, API4, API5, API6, API7 and API9 are n/a: ui node, no server code.",
+      "gate.e2e-regression and gate.e2e-all fail only on the known activity-populated 1440 light and dark pair (U7 line). That is a visual matter, not a security one.",
+      "The .NET extras are replaced by W1 to W8 for a ui node."
+    ]
+  }
+}
