@@ -4,6 +4,8 @@ import type { TraceNode } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
 import { NotBuiltRegion, Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
+import { NodeRules, NodeTasks } from './NodeRules';
+import '../explorer.css';
 
 /** What the node's completeness says, in a sentence. The value itself is the banner above, verbatim (DATA-4). */
 function summaryOf(node: TraceNode): string {
@@ -35,8 +37,8 @@ export function Node() {
           />
         ) : null}
       </Rung>
-      <NotBuiltRegion region="rules" name="rules" />
-      <NotBuiltRegion region="tasks" name="tasks" />
+      <NodeRules />
+      <NodeTasks />
       <NotBuiltRegion region="attempts" name="attempts" />
       <NotBuiltRegion region="who-touched-what" name="who touched what" />
     </>

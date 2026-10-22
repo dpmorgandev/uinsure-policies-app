@@ -6,6 +6,7 @@ import { DataNotice } from '../../shell/DataNotice';
 import { commitUrl } from '../../shell/repo';
 import { NotBuiltRegion, Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
+import { CannedDiff } from '../canned';
 import '../explorer.css';
 
 /** A rule trailer names a rule the matrix has, or one it does not: the chip says which. */
@@ -31,7 +32,10 @@ export function Commit() {
     <>
       <NotBuiltRegion region="commit-header-and-trailers" name="commit header and trailers" />
       <NotBuiltRegion region="trailer-agent-vs-hook-agent" name="trailer agent vs hook agent" />
-      <NotBuiltRegion region="diff-lazy" name="diff" />
+      <Rung region="diff-lazy" req="RULE-3" ordinal="Step 3" heading="Diff">
+        <CannedDiff rung="#42" sha="3a092b0" tdd="green" layer="domain" agent="builder" />
+        <KeyValueList items={[{ label: 'Files changed', value: 'src/Uinsure.Policies.Domain/Common/Money.cs', mono: true }]} />
+      </Rung>
       <Rung region="links-out" req="NAV-3" ordinal="Step 4" heading="Links out">
         <KeyValueList
           items={[

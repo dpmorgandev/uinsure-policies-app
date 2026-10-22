@@ -3,6 +3,7 @@ import { About } from '../explorer/about/About';
 import { Activity } from '../explorer/activity/Activity';
 import { Overview } from '../explorer/overview/Overview';
 import { u1Routes } from '../explorer/u1Routes';
+import { u2Routes } from '../explorer/u2Routes';
 import { workbenchRoutes } from '../workbench/routes';
 import { Frame } from './Frame';
 import { NotBuiltPage } from './NotBuiltPage';
@@ -17,6 +18,7 @@ export function App() {
           <Route path="about" element={<About />} />
           <Route path="plans/:planId/:nodeId/activity" element={<Activity />} />
           {u1Routes}
+          {u2Routes}
           {workbenchRoutes.map((route) => (
             <Route key={route.path} path={route.path} element={route.element} />
           ))}

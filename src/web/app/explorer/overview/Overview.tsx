@@ -12,6 +12,7 @@ import type { Snapshot, Trace, TraceNode } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
 import { NotBuiltRegion, Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
+import { CannedPlanGraph } from '../canned';
 import { buildRules, rulesSummary } from '../ruleFacts';
 import { buildPlan, checkedRule, headlineAnswer, nodesOf, receiptFigures } from './figures';
 import '../explorer.css';
@@ -158,7 +159,9 @@ export function Overview() {
       >
         <Figures trace={trace} snapshot={snapshot} />
       </Rung>
-      <NotBuiltRegion region="build-plan-at-a-glance" name="build plan at a glance" />
+      <Rung region="build-plan-at-a-glance" req="DAG-1" ordinal="Step 3" heading="See the plan at a glance">
+        <CannedPlanGraph />
+      </Rung>
       <NotBuiltRegion region="latest-human-decisions" name="latest human decisions" />
       <Rung region="compiled-at-stamp" req="DATA-3" ordinal="Step 5" heading="Check the snapshot">
         <p className="s-text">

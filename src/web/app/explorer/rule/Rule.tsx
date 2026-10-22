@@ -20,6 +20,7 @@ import { blobUrl, commitUrl, pullUrl } from '../../shell/repo';
 import { NotBuiltRegion, Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
 import { commitOfShort, fullShaOf, ruleCommits, ruleStatusTag, testsText } from '../ruleFacts';
+import { CannedDiff } from '../canned';
 import '../explorer.css';
 
 const STEP_LABEL: Record<EvidenceStep, string> = {
@@ -202,9 +203,14 @@ function RulePage({ trace, snapshot, rule }: { trace: Trace; snapshot: Snapshot;
           Commit signed off: <ShaLink sha={signoffSha?.slice(0, 7)} fullSha={signoffSha ?? undefined} githubHref={signoffSha ? commitUrl(signoffSha) : undefined} missingLabel="none recorded" />
         </p>
       </Rung>
-      <NotBuiltRegion region="red-and-green-diffs-lazy" name="red and green diffs" />
+      <Rung region="red-and-green-diffs-lazy" req="RULE-3" ordinal="Step 5" heading="Red and green diffs, loaded when asked">
+        <CannedDiff rung="#5" sha="94a7473" tdd="red" layer="tests" agent="tester" />
+        <CannedDiff rung="#17" sha="92ede9e" tdd="green" layer="api" agent="builder" />
+      </Rung>
       <NotBuiltRegion region="verify-it-yourself" name="verify it yourself" />
-      <NotBuiltRegion region="load-diff-busy-while-the-diff-chunk-loads" name="load diff" />
+      <Rung region="load-diff-busy-while-the-diff-chunk-loads" req="BUSY-1" ordinal="Step 6" heading="Loading a diff">
+        <p className="s-text">Idle. No diff chunk is loading. Each load button above asks for one commit's diff and, while it waits, shows a spinner and is disabled.</p>
+      </Rung>
       <Rung
         region="links-out-commit-shas-pr-numbers-and-file-line-references-to-github-at-that-sha"
         req="NAV-3"
