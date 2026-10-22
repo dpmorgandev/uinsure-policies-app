@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DagGraph } from '../../../src/web/kit/project/dag-graph/DagGraph';
-import type { DagNode } from '../../../src/web/kit/project/dag-table/DagTable';
+import type { DagNode } from '../../../src/web/kit/project/dag-table';
 import { examples } from '../../../src/web/kit/project/dag-graph/dag-graph.examples';
 
 afterEach(cleanup);
@@ -48,6 +48,17 @@ describe('DagGraph', () => {
     expect(within(table).getAllByRole('rowheader').length).toBe(4);
     const toggle = within(figure).getByRole('button', { name: /Text equivalent/ });
     expect(toggle.getAttribute('aria-expanded')).toBe('true');
+  });
+
+  it('sends a caller-set link to the rule chips in its text equivalent, and keeps the default when it sets none', () => {
+    const { rerender } = render(<DagGraph nodes={fork} />);
+    const table = () => within(screen.getByRole('figure')).getByRole('table');
+    expect(within(table()).getByRole('link', { name: 'GET-1' }).getAttribute('href')).toBe('/rules/GET-1');
+    rerender(<DagGraph nodes={fork} ruleHref={(id) => `#/rules/${id}`} />);
+    expect(within(table()).getByRole('link', { name: 'GET-1' }).getAttribute('href')).toBe('#/rules/GET-1');
+    expect(within(table()).getByRole('link', { name: /CANCEL-1a/ }).getAttribute('href')).toBe('#/rules/CANCEL-1a');
+    rerender(<DagGraph nodes={fork} ruleHref={() => undefined} />);
+    expect(within(table()).getByRole('link', { name: 'GET-1' }).getAttribute('href')).toBe('/rules/GET-1');
   });
 
   it('can start with the table closed, and opens it from the keyboard', async () => {

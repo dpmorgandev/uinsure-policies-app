@@ -18,6 +18,11 @@ export interface DagGraphProps {
   caption?: ReactNode;
   /** Start with the text-equivalent table open. On by default, because it is the accessible form. */
   tableOpen?: boolean;
+  /**
+   * Where each rule chip in the text equivalent links, given the rule ID: the same prop, with the same signature, as
+   * the dag-table takes. Return `undefined` (or leave the prop out) to keep the chip's own default, `/rules/<ruleId>`.
+   */
+  ruleHref?: (ruleId: string) => string | undefined;
 }
 
 interface Placed {
@@ -70,7 +75,7 @@ function place(nodes: readonly DagNode[]): { placed: Placed[]; layers: number; c
 const TOP = 1 / 8;
 const BOTTOM = 7 / 8;
 
-export function DagGraph({ nodes, focalId, live = false, liveNote, caption, tableOpen = true }: DagGraphProps) {
+export function DagGraph({ nodes, focalId, live = false, liveNote, caption, tableOpen = true, ruleHref }: DagGraphProps) {
   const captionId = useId();
   const { placed, layers, columns } = place(nodes);
   const at = new Map(placed.map((p) => [p.node.id, p] as const));
@@ -171,7 +176,7 @@ export function DagGraph({ nodes, focalId, live = false, liveNote, caption, tabl
       </div>
       <div className={styles.equivalent}>
         <Disclosure summary="Text equivalent: the plan as a table" defaultOpen={tableOpen}>
-          <DagTable nodes={nodes} />
+          <DagTable nodes={nodes} ruleHref={ruleHref} />
         </Disclosure>
       </div>
     </figure>
