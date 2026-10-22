@@ -374,7 +374,7 @@ nodes:
     rules: [WB-5, WB-7]
     cuttable: false
     budget: null
-    status: investigating
+    status: in_progress
     attempt: 3
     branch: feature/ui/W3
     worktree: .claude/worktrees/ui-W3
