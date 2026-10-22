@@ -421,6 +421,8 @@ nodes:
       - "The overview and node page decide 'no trail' from the compiler's nodes[*].trail flag, which TraceNode declares, not from completeness being null (U1 review A2 R1, DATA-4)"
       - "TraceRule.status is typed string | null, as the compiler emits it (U1 review A2 R2, MATRIX-1)"
       - "The matrix links a PR cell out only when it matches #<n>, as the rule page does, from one shared parser (U1 review A2 R3, NAV-3)"
+      - "A commit trailed 'Rule: none' shows its no-Rule state on its page, with no #/rules/none link, pinned by a screen test (U1 review A2.2 R2, NAV-3)"
+      - "compiler/index.ts commitsOf keeps its original spacing; the D3 green reformatted it (U1 review A2.2 R1, RULE-1)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for U7: rel=noreferrer, the CSP directives, ids refused, repeated trailers kept; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
