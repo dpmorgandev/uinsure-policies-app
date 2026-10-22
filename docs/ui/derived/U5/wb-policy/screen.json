@@ -140,7 +140,7 @@
         "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[role=request].responseBody.reference (carried into each destination)",
         "buttons disabled on api-error and api-unreachable: no policy to act on"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "requests that touched this policy",
