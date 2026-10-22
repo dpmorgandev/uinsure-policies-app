@@ -248,6 +248,7 @@ export function SellPolicy() {
         {outcome.kind === 'caught' ? (
           <ErrorSummary
             focusKey={attempt}
+            ruleHref={(ruleId) => '#/rules/' + ruleId}
             items={outcome.errors.map((error) => ({
               message: error.message,
               fieldId: controlId(error.field),
@@ -385,7 +386,12 @@ export function SellPolicy() {
       </div>
 
       <div className="s-wb-aside" data-region="send-it-anyway-client-checks-off" data-req="WB-6">
-        <SendAnywayToggle checked={sendAnyway} onChange={setSendAnyway} response={answeredWith} />
+        <SendAnywayToggle
+          checked={sendAnyway}
+          onChange={setSendAnyway}
+          response={answeredWith}
+          ruleHref={(ruleId) => '#/rules/' + ruleId}
+        />
       </div>
 
       <div className="s-wb-form-region" data-region="submit-busy-while-the-sell-request-runs-spinner-disabled" data-req="BUSY-1">

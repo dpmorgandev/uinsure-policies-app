@@ -1,6 +1,8 @@
 import { ErrorSummary, ProblemBanner } from '../../kit';
 import type { Problem } from '../data/api';
 
+const ruleHref = (ruleId: string): string => '#/rules/' + ruleId;
+
 interface ProblemViewProps {
   problem: Problem;
   /** The id of the control a form field name belongs to, or undefined when the page has none. */
@@ -19,6 +21,7 @@ export function ProblemView({ problem, controlId, focusKey, headingLevel = 3 }: 
     return (
       <ErrorSummary
         focusKey={focusKey}
+        ruleHref={ruleHref}
         items={problem.items.map((item) => ({
           message: item.message,
           fieldId: item.field !== null ? controlId?.(item.field) : undefined,
@@ -35,6 +38,7 @@ export function ProblemView({ problem, controlId, focusKey, headingLevel = 3 }: 
       title={problem.title ?? `The API answered ${problem.status}`}
       detail={problem.detail ?? undefined}
       ruleId={problem.ruleId ?? undefined}
+      ruleHref={problem.ruleId !== null ? ruleHref(problem.ruleId) : undefined}
     />
   );
 }

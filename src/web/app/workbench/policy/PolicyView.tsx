@@ -83,6 +83,7 @@ function PolicyDetail({ policy }: PolicyDetailProps) {
       <Region slug="terms-timeline-terms-payments-claims-cancellation-dates-the-api-returned-only" req="WB-2" heading="Terms timeline">
         <TermTimeline
           policyReference={reference}
+          ruleHref={(ruleId) => '#/rules/' + ruleId}
           claims={timelineClaims}
           cancellation={timelineCancellation}
           terms={policy.terms.map((term) => {
