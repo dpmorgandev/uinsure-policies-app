@@ -248,7 +248,7 @@ nodes:
       - "The stats page and the guided tour render from the trail"
       - "Each stats figure has one value from the trail (F6 A2's reviewer FAIL has one time), and each sessions entry opens its own file (g4-defects.md section 3)"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], title: "Playwright acceptance for U5 on fixture trails, regression specs, parity with its derived reference, and unit tests (compiler: context snapshots, the harness file, delivery stats); every node rule … and unit tests", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], title: "Playwright acceptance for U5 on fixture trails, regression specs, parity with its derived reference, and unit tests (compiler: context snapshots, the harness file, delivery stats); every node rule … and unit tests", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U5 routes render the derived reference as canned content", status: skipped}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U5 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: skipped}
       - {id: t4, role: builder, step: green, layer: screen, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], title: "Compiler (context snapshots, the harness file, delivery stats), then the sessions, harness and stats screens and the tour; whole acceptance suite green … all layers", status: pending}
