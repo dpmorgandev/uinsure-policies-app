@@ -1,0 +1,93 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T17:25:15Z",
+  "plan": "ui",
+  "node": "U3",
+  "attempt": 3,
+  "agent": "reviewer",
+  "agent_id": "a9c29be54ef15022f",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U3",
+    "attempt": 3,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "ca3f1a3a30c5bd1ea51e5b4e02159146b988652c",
+    "diff_fingerprint": "3c604de728da85ba8590fd64bddceec6c145f78f",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "loop.jsonl:3 gate.red@b8ee2c6",
+      "loop.jsonl:8 gate.stub@e3bdb71",
+      "loop.jsonl:11 gate.red@b135aa8",
+      "loop.jsonl:14 gate.green@91618e9",
+      "loop.jsonl:15 gate.green@83165fd",
+      "loop.jsonl:37 gate.red@2bd3d3f (A2 finding-red, 5 fail)",
+      "loop.jsonl:38 gate.green@807a977 (A2/I2)",
+      "loop.jsonl:39 gate.green@d5e42b1 (A2/I1)",
+      "loop.jsonl:40-51 gates@bbab277 (e2e-regression ok:false)",
+      "loop.jsonl:52-63 gates@6f29830 (e2e and e2e-regression ok:false)",
+      "loop.jsonl:64 gate.e2e@5fa2f55 (488 passed)",
+      "loop.jsonl:65 gate.e2e-regression@5fa2f55 (exit 1, ruled intended)"
+    ],
+    "rules_covered": [
+      "LOOP-1",
+      "LOOP-2",
+      "LOOP-3",
+      "DATA-2"
+    ],
+    "rules_missing": [
+      "LOOP-4"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "LOOP-4",
+        "severity": "P1",
+        "file": "src/web/compiler/plans.ts",
+        "line": 232,
+        "what": "splitRootCause keeps only the text after the first Symptom, Cause or Fix direction marker. It drops any preamble and any repeated marker's segment, yet the page labels the rest recorded.",
+        "why": "LOOP-4 shows each finding's symptom, cause and fix direction, and DATA-2 'recorded' means the agent's judgement stored verbatim. When any marker is present, text[0..marks[0].index] is never kept, and `if (name in found) return` (:238) also drops the segment after a repeated marker. Real trails lose text today. U3's own A2 I1 to I5 open with 'Layer: the kit ... It is recorded as api because the schema's layer enum has no ui layer', so the finding page shows 'layer api' without the investigator's correction. build/F1 A1 loses 'Source Rn.', build/F1 D1 loses 'New, from the ... ruling.', and F0b A1 loses 'Layer note: ...'. Separately, 'Cause (kit):' doesn't match, so the cause text sits under Symptom while Cause shows the no-marker gap. The fixture root_causes all start with 'Symptom:', so no test can see this. The finding page has no in-app raw text to fall back on. This is the same triage case as A2/I2: real trails show it, so it blocks. Route: a red test first, on a fixture round whose root_cause has a preamble and a repeated marker, then the compiler fix.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "LOOP-3",
+        "severity": "P2",
+        "file": "src/web/app/explorer/loopData.ts",
+        "line": 35,
+        "what": "severityOf turns a missing or unknown severity into P2 on the verdict card. The page's findings region shows the same value as recorded, in the fail tone, so the two disagree.",
+        "why": "The A2/I1 fix direction (findings/A2.md) says a severity outside P0 to P2 'should show as recorded, never be mapped to another level', and the function's own comment admits the fallback. Verdict.tsx:585 tones anything but P2 as fail and shows the text as written, so one page gives two answers. The verdict schema allows only P0, P1 and P2, so no hook-checked file reaches this. It doesn't block.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "DATA-2",
+        "severity": "P2",
+        "file": "docs/plans/active/ui.dag.yaml",
+        "line": 420,
+        "what": "The accepted U7 carries are missing from ui.dag.yaml: A2/I3 (an ok-less gate drawn Waived), A2/I4 (a null testable drawn Untestable), the pause-1 DATA-2 labels on loop events, and t6's kit notes.",
+        "why": "The defects behind these deferrals are still in the code at HEAD: Ladder.tsx:19 maps ok null to waived, and Finding.tsx:89 passes testable null as false. Loop events and ladder verdicts carry no ProvenanceLabel, although DATA-2 says the label is shown 'wherever the item appears'. Two kit workarounds also sit in the screen: a trailing space in the FindingCard id at Finding.tsx:83, and the '(then …)' subject in fixOf. Each was made non-blocking only on the promise of a U7 line (loop.jsonl:10, :15 and :36, inv-007 recommendation 3, all 'added when U3 integrates after U2'). 6f29830 integrated U2, and U7's acceptance list (ui.dag.yaml:420-444) holds none of them. The lines must exist before merge, or the deferrals are lost. This is a plan edit, recorded against the code that carries the defect.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "LOOP-2",
+        "severity": "P2",
+        "file": "docs/trace/ui/U3/packet/trailers.txt",
+        "line": 375,
+        "what": "ad2105d and f5f98c8 are fix(...) commits with no Fixes-Finding trailer. They repair the U2 merge, not a finding.",
+        "why": "requirements-trace says a fix(…) commit carries Fixes-Finding. Both are merge repairs proven by the failing e2e at 6f29830 (loop.jsonl:57), not finding fixes. They should use a non-fix type, or name what they fix, so the LOOP-2 ladder and the trace stay truthful about which commits fix findings.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "A2 route closed. I1: KG10 landed in the kit (VerdictCard.tsx:15 accepts 'P0' | 'P1' | 'P2'), and Verdict.tsx and Ladder.tsx now pass severity through severityOf. P0 is fail-toned in the card and in the findings region, and loop-3.spec's three P0 tests went red at 2bd3d3f (loop.jsonl:37) and green at d5e42b1 (:39). I2: Loop.tsx sourceSentence derives the clause from each event's source, and the DATA-2 tests went red at 2bd3d3f and green at 807a977 (:38).",
+      "TDD order holds. Red e2e came first (26107b1 to d27794e), then the stub edc078a (gate.stub at e3bdb71 had no illegal pass), the unit red tests d50b58b to b135aa8, then green 91618e9 to cc591e9, then the finding reds 686b318 and 2bd3d3f before the fixes 807a977 and d5e42b1. activity.jsonl shows no web-builder Edit or Write under tests/. No new assertion change since A2 beyond additions.",
+      "Gate evidence at HEAD is partial. typecheck, lint, lint-css, unit, build, no-stubs and coverage were last recorded at 6f29830, before ad2105d (Plan.tsx) and f5f98c8 (Node.tsx). Only the e2e and regression gates are recorded at 5fa2f55. The builder ran typecheck, lint and unit itself (activity:670), but that is producer evidence. The orchestrator should re-run the full gate set on the final HEAD.",
+      "gate.e2e-regression at 5fa2f55 is exit 1 with ok:true, under a delegated ruling (loop.jsonl:65). The finding, loop and verdict screens have no baseline yet, and the about, node and plan diffs are U3's own regions. David approves the new baselines at pause 2.",
+      "Loop.tsx sourceSentence says 'Every event is recorded as orchestrator', while the compiler labels loop events provenance 'generated'. That reuses DATA-2's 'recorded' word for the source field. It's worth rewording ('source: orchestrator') when R3's DATA-2 line is built.",
+      "head_sha is ca3f1a3, the packet commit, as the stop hook requires. The prompt named 28a63c8, the commit before it; the diff fingerprint excludes docs/trace, so it is unchanged."
+    ]
+  }
+}

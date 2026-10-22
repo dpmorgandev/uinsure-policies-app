@@ -1,0 +1,33 @@
+{
+  "v": 1,
+  "ts": "2026-10-18T15:10:01Z",
+  "plan": "build",
+  "node": "F1",
+  "attempt": 3,
+  "agent": "reviewer",
+  "agent_id": null,
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "build",
+    "node_id": "F1",
+    "attempt": 3,
+    "base_sha": "{{c0}}",
+    "head_sha": "{{c9}}",
+    "diff_fingerprint": "e05b7d3c9a1f28e64b0c7d19a3f5e82c46b1d07a",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.finding-red@{{c8}}",
+      "gate.green@{{c9}}"
+    ],
+    "rules_covered": [
+      "SELL-1",
+      "SELL-2"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "A3 reviewer PASS"
+    ]
+  }
+}

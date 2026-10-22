@@ -1,0 +1,72 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T13:13:39Z",
+  "plan": "ui",
+  "node": "U3",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a3ae271791763f002",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U3",
+    "attempt": 2,
+    "base_sha": "3c7b146d8f5697a517e565d54ee25ad741d7724e",
+    "head_sha": "8d31cbcf43a36fe0525e97e25680bf6ab26da5bd",
+    "diff_fingerprint": "9415dacf86aead16a6ad6f380ace8f0d11791a8a",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.typecheck",
+      "gate.lint",
+      "gate.test",
+      "gate.build",
+      "gate.e2e",
+      "gate.e2e-regression",
+      "gate.coverage",
+      "gate.scope",
+      "gate.no-stubs",
+      "gate.green"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "src/web/kit/primitives/sha-link/ShaLink.tsx",
+        "line": 61,
+        "what": "The kit's external GitHub anchors have no rel=\"noreferrer\". U3 renders many of them through ShaLink (githubHref) and FileLineLink (blobUrl).",
+        "why": "W2 says external links carry rel=\"noreferrer\". MarkdownText sets it; ShaLink (lines 49-61) and FileLineLink do not. The kit file is outside this diff, but the new U3 pages are the biggest users. The leak is limited to the page URL going to github.com, with no target=_blank.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "n/a (ui node, no server code): API1, API2, API3, API4, API5, API6, API7, and the .NET extras (SQL, money, packages, logging). The diff touches only src/web, tests/web and docs.",
+      "W1 met: grep of src/web/app and src/web/compiler finds no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function. Trail, verdict, finding and plan text renders through JSX text nodes, JsonViewer, or the kit's MarkdownText, which filters hrefs with safeHref.",
+      "W2 met for the diff's own links: external hrefs come from commitUrl and blobUrl in shell/repo.ts, which has a fixed https://github.com/<repo> prefix. SHAs are regex-limited in GateRef, and the 40-hex 'at' comes from a regex. All other hrefs are internal '#/...' hash routes, with rule ids passed through encodeURIComponent. There is no javascript: or pass-through URL. The only gap is S1. blobUrl does not encode the data-supplied file path. It cannot change host or scheme, so I did not raise it.",
+      "W3 met: index.html is not in the diff and still has default-src 'self'. The derived screen HTML under docs/ui/derived/U3 has no script, iframe, @import or external stylesheet, only the relative kit.css, github.com/dpmorgandev links and the w3.org SVG namespace string.",
+      "W4 met: the U3 code adds no fetch, XHR, cookie or storage use. The only fetch and localStorage uses (workbench/browser.ts, data/api.ts) are existing workbench code.",
+      "W5 met: the new compiler code (eventOf, roundOf, the findings loop, the inv-plan loop, and splitFrontmatter, sectionOf, splitRootCause in plans.ts) reads only through the 'read' wrapper, which runs scan() against the privacy denylist and pushes hits to 'fatal'. This covers loop.jsonl, verdict files, findings/*.md and inv plans. There is no .claude, network or process.env access. splitRootCause only accepts the three fixed marker names, so there is no prototype-key risk.",
+      "W6 met: grep of the diff and the touched trees finds no local absolute path, personal email, key or token in src/web app and compiler, tests/web U3, regression and unit tests, the retry-ladder fixtures, or docs/ui/derived/U3. The fixture privacy-denylist.txt holds patterns only. Verdict raw text and loop raw lines now enter trace.json, and the denylist scan on read covers them.",
+      "W7: no package.json or lockfile change in the diff. gate.audit (runtime) shows 0 vulnerabilities. gate.audit-dev reports 5 high, annotated as the known braces item via stylelint. I could not run npm audit, and the receipt does not list the 5 advisories, so I could not confirm all 5 belong to that chain. This is a dev-only item and does not gate.",
+      "W8 met: no error-boundary or error-path change. The new pages show fixed text ('No detail recorded in the log.', NotBuiltYet) or recorded values, with no stack or internals.",
+      "API8:2023 (W3, W4) and API10:2023 (W1, W8) met as above.",
+      "For the reviewer, not a security matter: gate.e2e-regression recorded ok:false (its detail holds only NO_COLOR warnings) and gate.coverage recorded ok:false (TRAIL INCOMPLETE for commit a3f301a, no activity record for Agent main). The working tree also has an untracked src/web/test-results/ directory (Playwright snapshots). It is not in this diff and must stay uncommitted."
+    ]
+  }
+}

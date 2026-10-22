@@ -66,12 +66,17 @@ export function Frame() {
   const rule = useMatch('/rules/:ruleId');
   const nodePage = useMatch('/plans/:planId/:nodeId');
   const walkthrough = useMatch('/plans/:planId/:nodeId/commits');
+  const loop = useMatch('/plans/:planId/:nodeId/loop');
+  const verdict = useMatch('/plans/:planId/:nodeId/verdicts/:round/:agent');
+  const finding = useMatch('/plans/:planId/:nodeId/findings/:round');
   const planPage = useMatch('/plans/:planId');
   const commit = useMatch('/commits/:sha');
-  const { planId, nodeId } = (activity ?? walkthrough ?? nodePage)?.params ?? {};
+  const { planId, nodeId } = (activity ?? walkthrough ?? nodePage ?? loop)?.params ?? {};
 
   const titles: [boolean, string][] = [
-    [activity !== null || walkthrough !== null || nodePage !== null, `Node ${planId}/${nodeId}`],
+    [activity !== null || walkthrough !== null || nodePage !== null || loop !== null, `Node ${planId}/${nodeId}`],
+    [verdict !== null, 'Verdict'],
+    [finding !== null, 'Finding'],
     [planPage !== null, 'Plan'],
     [commit !== null, `Commit ${(commit?.params.sha ?? '').slice(0, 7)}`],
     [rule !== null, 'Rule'],
@@ -81,7 +86,17 @@ export function Frame() {
     [workbench !== undefined, workbench?.title ?? ''],
   ];
   const title = titles.find(([matched]) => matched)?.[1] ?? 'Not built yet';
-  const current = about ? 'about' : overview ? 'overview' : planPage || nodePage || walkthrough || activity || commit ? 'plan' : matrix || rule ? 'matrix' : workbench ? 'workbench' : '';
+  const current = about
+    ? 'about'
+    : overview
+      ? 'overview'
+      : planPage || nodePage || walkthrough || activity || commit || loop || verdict || finding
+        ? 'plan'
+        : matrix || rule
+          ? 'matrix'
+          : workbench
+            ? 'workbench'
+            : '';
 
   useEffect(() => {
     document.title = `${title} · Docket`;
@@ -91,7 +106,9 @@ export function Frame() {
   const node = trace.state === 'ready' ? trace.trace.nodes.find((n) => n.plan === planId && n.id === nodeId) : undefined;
   const content = (
     <ShellProvider value={{ trace, theme, setTheme }}>
-      {node !== undefined && trace.state === 'ready' ? <NodeHeader node={node} compiledAt={trace.snapshot.utc} current={activity ? 'activity' : walkthrough ? 'walkthrough' : 'node'} /> : null}
+      {node !== undefined && trace.state === 'ready' ? (
+        <NodeHeader node={node} compiledAt={trace.snapshot.utc} current={activity ? 'activity' : walkthrough ? 'walkthrough' : loop ? 'loop' : 'node'} />
+      ) : null}
       <Outlet />
     </ShellProvider>
   );

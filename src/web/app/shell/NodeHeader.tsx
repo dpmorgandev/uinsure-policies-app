@@ -17,7 +17,7 @@ function statusOf(status: string | null): { value: Status; label: string } | nul
 }
 
 /** The node's header and tabs, from the node's own entry in trace.json. */
-export function NodeHeader({ node, compiledAt, current }: { node: TraceNode; compiledAt: string; current: 'node' | 'walkthrough' | 'activity' }) {
+export function NodeHeader({ node, compiledAt, current }: { node: TraceNode; compiledAt: string; current: 'node' | 'walkthrough' | 'loop' | 'activity' }) {
   const base = `#/plans/${node.plan}/${node.id}`;
   const gitOnly = node.completeness?.includes('git-only') ?? false;
   const owner = agentOf(node.owner);

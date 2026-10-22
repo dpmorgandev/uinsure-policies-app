@@ -1,0 +1,73 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T18:08:43Z",
+  "plan": "ui",
+  "node": "U3",
+  "attempt": 4,
+  "agent": "security",
+  "agent_id": "ad96fd6ad8af48712",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U3",
+    "attempt": 4,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "61c63e995aa8593fab58bbd7acdd44c9be81192a",
+    "diff_fingerprint": "4dd13ff69b2478ad055d8911dc251cb6b932c3e4",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.lint",
+      "gate.test",
+      "gate.build",
+      "gate.e2e",
+      "gate.scope",
+      "gate.no-stubs"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "W2",
+        "severity": "P2",
+        "file": "src/web/kit/primitives/sha-link/ShaLink.tsx",
+        "line": 61,
+        "what": "External GitHub links from ShaLink and FileLineLink carry no rel=\"noreferrer\"; U3 adds many uses of both.",
+        "why": "W2 says external links carry rel=\"noreferrer\". These kit primitives predate U3 and are not in this diff. The links open in the same tab with no target=_blank, so the practical exposure is only the Referer header. Hygiene, not blocking.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "API1:2023 n/a: no auth or tenancy, ui node with no server code.",
+      "API2:2023 n/a: auth is out of scope.",
+      "API3:2023 n/a: ui node, no server code.",
+      "API4:2023 n/a: ui node, no server code.",
+      "API5:2023 n/a: no roles, ui node with no server code.",
+      "API6:2023 n/a: ui node, no server code.",
+      "API7:2023 n/a: ui node, no server code. The diff adds no outbound fetch.",
+      "API9:2023 n/a: ui node, no server code.",
+      "API8:2023 met through W3 and W4. The diff does not touch index.html or the CSP. Nothing under src/web/app/explorer calls fetch, XMLHttpRequest, localStorage, sessionStorage, cookies or process.env, and no URL to another origin is loaded.",
+      "API10:2023 met through W1 and W8. All trace text (verdict, finding, loop detail, plan Question and Hypothesis) renders as React text nodes or through the kit's MarkdownText. MarkdownText does not use dangerouslySetInnerHTML and refuses javascript:, data:, vbscript: and file: schemes. No unsafe HTML sinks (dangerouslySetInnerHTML, innerHTML, eval, new Function) are in the diff or in src/web.",
+      "W2: every href in the diff is an internal hash route (ruleHref uses encodeURIComponent) or is built by commitUrl/blobUrl from the fixed REPO constant plus a SHA or path from trace.json. No href is passed through from free text.",
+      "W5: the compiler diff reads only through the read() helper, which runs the privacy denylist scan on every file, including the loop.jsonl, verdict and findings files whose raw text now goes into trace.json. It has no .claude, fetch( or secret-bearing process.env reference, and it adds no network access. The new regexes (splitRootCause, splitFrontmatter, roundOf) have no nested quantifiers, and they run over the repo's own docs at build time.",
+      "W6: grep of src/web, tests/web/e2e/U3 and the two new fixture trails (retry-ladder, p0-reconciled) found no local absolute path, personal email, token or key. The only hits are denylist pattern lines.",
+      "W7: no package.json, lockfile or .npmrc change in the diff. gate.audit (runtime, --omit=dev, high) is clean, with 0 vulnerabilities. gate.audit-dev reports 5 high findings, which the receipt labels as the known dev-only braces GHSA-vfj7-8cjw-p6xm chain via stylelint. I could not confirm from the receipt that all 5 belong to that chain. This is unchanged by the diff, which touches no dependency, and dev tooling does not ship in dist/.",
+      "W8: the new pages show the kit's not-built or data-notice state when a verdict, finding or trace is absent. No stack trace or exception message is rendered.",
+      "The first gate.e2e-regression event is ok:false. A later event records the same set as intentionally ruled and ok:true. It has no security bearing."
+    ]
+  }
+}

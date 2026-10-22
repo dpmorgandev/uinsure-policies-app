@@ -81,15 +81,35 @@ describe('the compiler writes one versioned trace.json', () => {
     expect(r.trace?.commits?.find((c) => c.sha === sha('c1'))?.rule).toEqual(['SELL-1', 'SELL-2']);
   });
 
-  test('DATA-1 · events stay empty and rule status stays null until a node drives them', () => {
-    // The lists exist (the index test above). U3 owns the loop events, so the events list holds nothing yet, though
-    // the complete trail has a nine-line loop.jsonl: a parser that runs anyway shows here. U1 owns the verdicts
-    // (NAV-1's FAILs-taken figure, in nav-1.test.ts), so they are not asserted here. U1 also owns rule status and
-    // its red, green and refactor commits, read from the requirements matrix; the complete trail has no matrix file,
-    // so status stays null and the commit lists empty, though green commit c3 names SELL-1 and SELL-2. A status the
-    // compile doesn't derive is null, never a default such as not-built.
+  test("DATA-1 · events hold the complete trail's nine loop lines, and rule status stays null with no matrix to drive it", () => {
+    // The lists exist (the index test above). U3 drives the loop events (LOOP-1, in loop-1.test.ts), so the events
+    // list holds the complete trail's loop.jsonl, one event per line, in log order, and nothing else: no event is made
+    // up, and none is dropped. A field the line doesn't hold is null. U1 owns the verdicts (NAV-1's FAILs-taken
+    // figure, in nav-1.test.ts), so they are not asserted here. U1 also owns rule status and its red, green and
+    // refactor commits, read from the requirements matrix; the complete trail has no matrix file, so status stays
+    // null and the commit lists empty, though green commit c3 names SELL-1 and SELL-2. A status the compile doesn't
+    // derive is null, never a default such as not-built.
     expect(r.error, thrown(r)).toBeUndefined();
-    expect(r.trace?.events, 'events').toEqual([]);
+    const sha = (id: string): string => trail.shas[id] ?? `(no ${id})`;
+    // [line, attempt, event, kind, gate, cmd, exit, expect, ok, head, detail], as complete/trail/.../F1/loop.jsonl writes each line.
+    const lines = [
+      [1, 1, 'setup', 'setup', null, null, null, null, null, sha('c0'), null],
+      [2, 1, 'state(in_progress)', 'state', null, null, null, null, null, sha('c0'), null],
+      [3, 1, 'gate.red', 'gate', 'red', 'fixture gate.red', 1, 'fail', true, sha('c1'), null],
+      [4, 1, 'gate.stub', 'gate', 'stub', 'fixture gate.stub', 0, '0', true, sha('c2'), null],
+      [5, 1, 'pause1', 'pause1', null, null, null, null, null, sha('c2'), null],
+      [6, 1, 'gate.green', 'gate', 'green', 'fixture gate.green', 0, '0', true, sha('c3'), null],
+      [7, 1, 'verdict(reviewer,PASS,A1)', 'verdict', null, null, null, null, null, sha('c3'), null],
+      [8, 1, 'verdict(security,PASS,A1)', 'verdict', null, null, null, null, null, sha('c3'), null],
+      [9, 1, 'gate.integrate', 'gate', 'integrate', 'fixture gate.integrate', 0, '0', true, sha('c4'), null],
+    ];
+    const events = (r.trace?.events ?? []) as Record<string, unknown>[];
+    const field = (e: Record<string, unknown>, key: string): unknown => (key in e ? e[key] : '(absent)');
+    expect(events.map((e) => [field(e, 'plan'), field(e, 'node')]), 'every event is build/F1').toEqual(lines.map(() => ['build', 'F1']));
+    expect(
+      events.map((e) => ['line', 'attempt', 'event', 'kind', 'gate', 'cmd', 'exit', 'expect', 'ok', 'head', 'detail'].map((key) => field(e, key))),
+      'events',
+    ).toEqual(lines);
     expect(r.trace?.rules?.map((rule) => [rule.id, rule.status, rule.red, rule.green, rule.refactor])).toEqual([
       ['SELL-1', null, [], [], []],
       ['SELL-2', null, [], [], []],
