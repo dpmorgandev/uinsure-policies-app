@@ -84,7 +84,7 @@
         "events[plan=build][node=F6][line<=20].event (in-flight variant)",
         "events[plan=build][node=F6][line<=20].detail (in-flight variant)"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "latest human decisions",

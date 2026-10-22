@@ -49,7 +49,7 @@
         "verdicts[node=F3][agent=reviewer].rulesMissing",
         "verdicts[node=F3][agent=reviewer].verdict"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "tasks",
@@ -68,7 +68,7 @@
         "nodes[plan=build][id=F0a].owner",
         "events[plan=build][node=F6][kind=state].detail"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "attempts",

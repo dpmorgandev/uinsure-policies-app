@@ -4,6 +4,7 @@
     "U0a",
     "U0b",
     "U1",
+    "U2",
     "U3",
     "W1"
   ],
@@ -29,12 +30,12 @@
     },
     "commit": {
       "built": [
+        "diff-lazy",
         "links-out"
       ],
       "notBuilt": [
         "commit-header-and-trailers",
-        "trailer-agent-vs-hook-agent",
-        "diff-lazy"
+        "trailer-agent-vs-hook-agent"
       ]
     },
     "finding": {
@@ -62,11 +63,11 @@
     "node": {
       "built": [
         "completeness-banner",
+        "rules",
+        "tasks",
         "attempts"
       ],
       "notBuilt": [
-        "rules",
-        "tasks",
         "who-touched-what"
       ]
     },
@@ -74,23 +75,22 @@
       "built": [
         "headline-answer",
         "receipt-figures-rules-built-total-tests-passing-nodes-done-attempts-and-fails-human-decisions",
+        "build-plan-at-a-glance",
         "compiled-at-stamp",
         "top-bar-search-and-theme-toggle-global-tagged-here-once",
         "trail-completeness-trail-incomplete-reasons-verbatim-not-built-yet-and-f0a-as-git-only"
       ],
       "notBuilt": [
-        "build-plan-at-a-glance",
         "latest-human-decisions"
       ]
     },
     "plan": {
       "built": [
+        "plan-header-status-approval-requirements-rev",
+        "node-graph-and-its-table",
         "investigation-body-inv-plans-only"
       ],
-      "notBuilt": [
-        "plan-header-status-approval-requirements-rev",
-        "node-graph-and-its-table"
-      ]
+      "notBuilt": []
     },
     "rule": {
       "built": [
@@ -98,11 +98,11 @@
         "signature-red-before-green-evidence-custody-chain-tdd-ticks-chronology-per-style",
         "tests-count-and-scope",
         "qa-step-and-sign-off",
+        "red-and-green-diffs-lazy",
         "load-diff-busy-while-the-diff-chunk-loads",
         "links-out-commit-shas-pr-numbers-and-file-line-references-to-github-at-that-sha"
       ],
       "notBuilt": [
-        "red-and-green-diffs-lazy",
         "verify-it-yourself"
       ]
     },
@@ -111,6 +111,12 @@
         "verdict-summary",
         "findings",
         "raw-json"
+      ],
+      "notBuilt": []
+    },
+    "walkthrough": {
+      "built": [
+        "commit-sequence"
       ],
       "notBuilt": []
     },
@@ -191,7 +197,6 @@
     "not-found",
     "sessions",
     "stats",
-    "walkthrough",
     "wb-requests"
   ],
   "unmappedIds": [],

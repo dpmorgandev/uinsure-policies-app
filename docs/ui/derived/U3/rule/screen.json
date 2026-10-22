@@ -145,7 +145,7 @@
         "commits[plan=build][node=F2][rule=GET-1].agent",
         "nodes[plan=build][id=F2].chunks.diffs"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "verify it yourself",

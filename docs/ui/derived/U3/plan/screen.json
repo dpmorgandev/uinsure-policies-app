@@ -32,7 +32,7 @@
         "events[plan=build][node=F6][line=20].ts (in-flight variant)",
         "events[plan=build][node=F6][line=20].ok (in-flight variant)"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "node graph and its table",
@@ -60,7 +60,7 @@
         "events[plan=build][node=F6][line<=20].ok (in-flight variant)",
         "events[plan=build][node=F6][line<=20].detail (in-flight variant)"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "investigation body (inv-* plans only)",
