@@ -442,6 +442,14 @@ nodes:
       - "Vitest characterisation tests pin the compiler's node pr, acceptance and tasks (a title with a quoted comma included), parsePatch and loadDiffs (U2 review A2 R4, NODE-1)"
       - "trace.json carries no field nothing reads (nodes[*].qa, TraceTask.step), or a screen reads it (U2 review A2 R5, NODE-1)"
       - "The activity regression baselines at 1440 (populated, light and dark) are written: the full-page capture no longer times out at the 5000ms default (U2 trace, 2026-10-22; non-blocking, tech debt)"
+      - "A gate line with no ok is drawn 'ok not recorded', never Waived: a gate-row kit state (one /kit-gap, in-node per A5), then Ladder.tsx maps ok null to it (U3 inv-007 I3, LOOP-1)"
+      - "A finding with no testable is drawn 'testable not recorded', never Untestable: a finding-card kit state, then Finding.tsx maps null to it (U3 inv-007 I4, LOOP-4)"
+      - "FindingCard's severity accepts P0 in the fail tone, as VerdictCard does since KG10 (KG10 left it: one catalog state per node, LOOP-4)"
+      - "Loop events and ladder verdicts carry their DATA-2 provenance label wherever they appear; the loop's source sentence reads 'source: orchestrator', not 'recorded' (U3 pause-1 ruling and A3 reviewer note, DATA-2)"
+      - "The kit workarounds in U3's screens are removed: FindingCard's id needs no trailing space (Finding.tsx:83), and FindingCard.fixedBy takes several commits, so fixOf drops its '(then …)' subject (U3 t6 kit notes, LOOP-4)"
+      - "A severity outside P0-P2 is shown as recorded on the verdict card too, never mapped to P2 (severityOf, loopData.ts:35), so the card and the findings region agree (U3 A3 R2, LOOP-3)"
+      - "The trace tells merge repairs from finding fixes: U3's ad2105d and f5f98c8 are fix(...) commits that repair the U2 merge and carry no Fixes-Finding (U3 A3 R4, LOOP-2)"
+      - "The commit-msg hook refuses a fix(...) commit with no Fixes-Finding trailer; merge repairs use a non-fix type (U3 A3 I5, LOOP-2; harness)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for U7: rel=noreferrer, the CSP directives, ids refused, repeated trailers kept; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
