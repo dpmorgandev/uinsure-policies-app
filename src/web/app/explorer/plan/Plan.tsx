@@ -1,13 +1,21 @@
 import { useParams } from 'react-router';
-import { NotBuiltYet, PageHeader } from '../../../kit';
+import { KeyValueList, MarkdownText, NotBuiltYet, PageHeader } from '../../../kit';
 import type { Status } from '../../../kit';
 import type { TracePlan } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
 import { blobUrl } from '../../shell/repo';
-import { NotBuiltRegion, Rung } from '../../shell/Rung';
+import { Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
 import '../explorer.css';
 import { PlanGraph } from './PlanGraph';
+
+const NOT_AN_INVESTIGATION = 'none: not an investigation plan';
+const NOT_COMPILED = 'not read from the plan file';
+
+/** An inv-* plan as the compiler reads it: its Question and Hypothesis sections, as the plan file writes them. */
+type InvestigationPlan = TracePlan & { question?: string | null; hypothesis?: string | null };
+
+const markdown = (text: string | null | undefined) => (text === undefined || text === null ? null : <MarkdownText source={text} />);
 
 /** The plan file's own status word; one the page does not know is shown as written, as a warning. An investigation has none. */
 function statusOf(plan: TracePlan): { value: Status; label: string } | null {
@@ -26,7 +34,7 @@ export function Plan() {
   const { trace: loaded } = useShell();
   if (loaded.state !== 'ready') return <DataNotice trace={loaded} />;
   const { trace, snapshot } = loaded;
-  const plan = trace.plans.find((candidate) => candidate.id === planId);
+  const plan = trace.plans.find((candidate) => candidate.id === planId) as InvestigationPlan | undefined;
   if (plan === undefined) {
     return <NotBuiltYet kind="region" name={`plan ${planId}`} back={{ href: '#/', label: 'Back to the overview' }} />;
   }
@@ -56,7 +64,33 @@ export function Plan() {
       <Rung region="node-graph-and-its-table" req="DAG-1" ordinal="Step 2" heading="Follow the plan">
         <PlanGraph trace={trace} plan={plan} />
       </Rung>
-      <NotBuiltRegion region="investigation-body-inv-plans-only" name="investigation body" />
+      <Rung region="investigation-body-inv-plans-only" req="LOOP-2" ordinal="Step 3" heading="Read the investigation">
+        {plan.kind === 'inv' ? (
+          <KeyValueList
+            items={[
+              { label: 'Question', value: markdown(plan.question), missing: 'no Question section in the plan file' },
+              { label: 'Hypothesis', value: markdown(plan.hypothesis), missing: 'no Hypothesis section in the plan file' },
+              { label: 'Findings', missing: NOT_COMPILED },
+              { label: 'Recommendations', missing: NOT_COMPILED },
+            ]}
+          />
+        ) : (
+          <>
+            <p className="s-text">
+              This plan is not an investigation, so this body is empty. An inv-* plan shows its question, hypothesis, findings and recommendations in
+              these rows.
+            </p>
+            <KeyValueList
+              items={[
+                { label: 'Question', missing: NOT_AN_INVESTIGATION },
+                { label: 'Hypothesis', missing: NOT_AN_INVESTIGATION },
+                { label: 'Findings', missing: NOT_AN_INVESTIGATION },
+                { label: 'Recommendations', missing: NOT_AN_INVESTIGATION },
+              ]}
+            />
+          </>
+        )}
+      </Rung>
     </>
   );
 }
