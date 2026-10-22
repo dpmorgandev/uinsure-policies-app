@@ -2,10 +2,11 @@
 // a screen's "Show requests" drawer hold each exchange the page sent to /api/…, its method, path, status, request
 // body and response body as they went over the wire. On the live API; every expected value is the exchange the
 // page itself saw.
-import type { Page } from '@playwright/test';
+import type { Locator, Page } from '@playwright/test';
 import { expect, live, test } from '../W1/support/api';
 import { answered, apiToday, field, requestOf, route, sellForm, sellThroughApi, watchApi } from '../W1/support/workbench';
 import type { Exchange } from '../W1/support/workbench';
+import { requestsStates } from './support/states';
 
 const unique = (tag: string): string => ('W3' + tag + Date.now().toString(36).toUpperCase()).slice(0, 20);
 const requestsRoute = '/#/workbench/requests';
@@ -25,27 +26,32 @@ async function recordClaim(page: Page): Promise<Exchange> {
   const seen = watchApi(page);
   await page.goto(route.claim(reference));
   await field(page, 'Claim date').fill(today);
-  await field(page, 'Description').fill('Storm damage to the roof tiles');
+  await field(page, 'Claim description').fill('Storm damage to the roof tiles');
   await page.getByRole('main').getByRole('button', { name: 'Record this claim' }).click();
   return answered(seen, 'POST', `/api/policies/${reference}/claims`);
 }
 
 const apiPath = (e: Exchange): string => e.path.replace(/^\/api/, '');
 
+/** The log's table row for this exchange: the kit's RequestLog draws one <tr> per exchange. */
+const logRow = (page: Page, e: Exchange): Locator =>
+  page.getByRole('main').getByRole('row').filter({ hasText: apiPath(e) }).filter({ hasText: e.method }).first();
+
 test('WB-7 · the request log lists the claim the page sent, with its method, path and status', async ({ page, api }) => {
   void api;
   const claim = await recordClaim(page);
   await page.goto(requestsRoute);
-  const entry = page.getByRole('main').getByRole('listitem').filter({ hasText: apiPath(claim) }).filter({ hasText: 'POST' });
-  await expect(entry.first()).toBeVisible(live);
-  await expect(entry.first()).toContainText(String(claim.status));
+  const entry = logRow(page, claim);
+  await expect(entry).toBeVisible(live);
+  await expect(entry).toContainText('POST');
+  await expect(entry).toContainText(String(claim.status));
 });
 
 test('WB-7 · the request log shows the exact request body and response body of the claim', async ({ page, api }) => {
   void api;
   const claim = await recordClaim(page);
   await page.goto(requestsRoute);
-  await page.getByRole('main').getByRole('listitem').filter({ hasText: apiPath(claim) }).filter({ hasText: 'POST' }).first().click();
+  await logRow(page, claim).getByRole('button', { name: /^Open request #\d+, POST / }).click(live);
   const main = page.getByRole('main');
   for (const value of leaves(claim.requestBody)) await expect(main, `the request's ${value}`).toContainText(value, live);
   for (const value of leaves(claim.responseBody)) await expect(main, `the response's ${value}`).toContainText(value, live);
@@ -61,6 +67,7 @@ test("WB-7 · the claim page's Show requests drawer holds the claim exchange", a
 });
 
 test('WB-7 · reachable: the request log route answers with its filter', async ({ page }) => {
-  await page.goto(requestsRoute);
+  // The log is the page's own and empty until the page sends something: one recorded policy read puts an exchange in it.
+  await requestsStates.populated.open(page);
   await expect(page.getByRole('main').getByLabel('Filter requests')).toBeVisible();
 });
