@@ -22,7 +22,7 @@
         "trace.json sessions[].nextAction",
         "fixture stamp ref, sha, utc"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "one snapshot, open at its own URL (/sessions/:file)",
