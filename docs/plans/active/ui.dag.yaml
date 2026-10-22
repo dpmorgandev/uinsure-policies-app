@@ -451,6 +451,8 @@ nodes:
       - "The trace tells merge repairs from finding fixes: U3's ad2105d and f5f98c8 are fix(...) commits that repair the U2 merge and carry no Fixes-Finding (U3 A3 R4, LOOP-2)"
       - "The commit-msg hook refuses a fix(...) commit with no Fixes-Finding trailer; merge repairs use a non-fix type (U3 A3 I5, LOOP-2; harness)"
       - "splitRootCause treats a single-quoted span as a quotation, so a marker after a sentence end inside it ('Done. Cause: x') stays words; U3's own D1/I1 finding page shows its text unsplit (U3 A5 R1, LOOP-4)"
+      - "A marker after a sentence end that closes a single quote (\"…'y.' Fix direction:\") is a split point again, as it was at ca3f1a3; the ten build F1 D2 and F6 A2 cards split correctly, pinned by a unit test (U3 QA step 46, a regression since 3b25c3c; David 2026-10-22: land, U7)"
+      - "Each gate receipt's ok agrees with its exit and expect; a run that passes only on re-run records each re-run as its own receipt, and U3's LOOP-4 round-A1 region test holds under load at --workers=2 (U3 A5.2 R1, LOOP-4)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for U7: rel=noreferrer, the CSP directives, ids refused, repeated trailers kept; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
