@@ -9,7 +9,7 @@ import { pathToFileURL } from 'node:url';
 import { listDocs, listPaths, readBlob, readCommits, resolveRef } from './git.ts';
 import { isTestSource, parseTests } from './test-sources.ts';
 import { isHit, parseDenylist, scan } from './privacy.ts';
-import { parseDag, parseRequirements } from './plans.ts';
+import { parseDag, parseRequirements, partsOf } from './plans.ts';
 import { parseCompleteness, parseMatrix, parseWalkthrough } from './trace-files.ts';
 import type { MatrixRow } from './trace-files.ts';
 
@@ -69,9 +69,9 @@ const num = (value: unknown): number | null => (typeof value === 'number' ? valu
 const list = (value: unknown): string[] => (Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : []);
 
 /** `A1/I1` is round 1, finding I1; a form not in this shape keeps its id and has no round. */
-function fixesFinding(trailer: string | undefined): { round: number | null; id: string }[] {
-  return (trailer ?? '')
-    .split(',')
+function fixesFinding(trailers: string[]): { round: number | null; id: string }[] {
+  return trailers
+    .flatMap((trailer) => trailer.split(','))
     .map((item) => item.trim())
     .filter(Boolean)
     .map((item) => {
@@ -149,12 +149,21 @@ export function compile(options: CompileOptions): void {
     if (isHit(denylist.list, test.name)) fatal.push({ file: test.file, line: test.line, reason: 'matches the privacy denylist' });
   }
 
+  const slashOfPart = new Map(rows.flatMap((row) => (row.id.includes('/') ? partsOf(row.id).map((part) => [part, row.id] as const) : [])));
   const commits = readCommits(root, sha).map((commit) => {
-    // Subject and every trailer value: a hit names the commit, never the text.
-    if ([commit.subject, ...Object.values(commit.trailers)].some((value) => isHit(denylist.list, value))) {
+    // Subject and every line of every trailer: a hit names the commit, never the text.
+    if ([commit.subject, ...Object.values(commit.trailers).flat()].some((value) => isHit(denylist.list, value))) {
       fatal.push({ file: `commit ${commit.sha.slice(0, 7)}`, line: null, reason: 'matches the privacy denylist' });
     }
-    const { Agent, Plan, Node, Rule, TDD } = commit.trailers;
+    // Agent, Plan, Node and TDD are single-valued: a repeat keeps its first line.
+    const [Agent, Plan, Node, TDD] = ['Agent', 'Plan', 'Node', 'TDD'].map((key) => commit.trailers[key]?.[0]);
+    // `Rule: none` is the harness's sentinel for no rule. A part on a commit is its slash rule's (RENEW-1 is RENEW-1/2's).
+    const rule = (commit.trailers['Rule'] ?? [])
+      .flatMap((value) => value.split(','))
+      .map((id) => id.trim())
+      .filter((id) => id !== '' && id !== 'none')
+      .map((id) => slashOfPart.get(id) ?? id)
+      .filter((id, at, all) => all.indexOf(id) === at);
     return {
       sha: commit.sha,
       short: commit.sha.slice(0, 7),
@@ -162,9 +171,9 @@ export function compile(options: CompileOptions): void {
       plan: Plan ?? null,
       node: Node ?? null,
       agent: Agent ?? null,
-      rule: (Rule ?? '').split(',').map((id) => id.trim()).filter(Boolean),
+      rule,
       tdd: TDD ?? null,
-      fixesFinding: fixesFinding(commit.trailers['Fixes-Finding']),
+      fixesFinding: fixesFinding(commit.trailers['Fixes-Finding'] ?? []),
       date: commit.date,
       parents: commit.parents,
     };
@@ -243,7 +252,8 @@ export function compile(options: CompileOptions): void {
     .filter((row) => !seen.has(row.id) && seen.add(row.id))
     .map((row) => {
       const cells = matrices.get(row.matrix)?.get(row.id) ?? null;
-      const commitsOf = (short: string | null): string[] => (short === null ? [] : [short]);
+      const ids = [row.id, ...partsOf(row.id)];
+      const commitsOf =(short: string | null): string[] => (short === null ? [] : [short]);
       return {
         id: row.id, title: row.title, priority: row.priority, feature: row.feature,
         interpretation: row.interpretation, source: { file: row.file, line: row.line },
@@ -251,7 +261,11 @@ export function compile(options: CompileOptions): void {
         status: cells === null ? null : cells.tests === null ? 'not-built' : 'built',
         red: commitsOf(cells?.red ?? null), green: commitsOf(cells?.green ?? null), refactor: commitsOf(cells?.refactor ?? null),
         qaStep: cells?.qaStep ?? null, signoff: cells?.signoff ?? null, matrix: cells,
-        tests: testNames.filter((t) => t.rule === row.id).map(({ name, file, parameterised }) => ({ name, file, parameterised })),
+        // A slash rule also takes the tests traited with its parts (RULE-1); a test traited with both parts is listed once.
+        tests: testNames
+          .filter((t) => ids.includes(t.rule))
+          .filter((t, at, own) => own.findIndex((o) => o.file === t.file && o.line === t.line) === at)
+          .map(({ name, file, parameterised }) => ({ name, file, parameterised })),
       };
     });
   const placed = commits.map((commit) => ({

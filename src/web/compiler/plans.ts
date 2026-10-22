@@ -105,3 +105,10 @@ export function parseRequirements(source: string): Requirement[] {
   });
   return found;
 }
+
+/** A slash rule's parts, as the API's RuleCoverage expands it: `RENEW-1/2` is `RENEW-1` and `RENEW-2`. */
+export function partsOf(id: string): string[] {
+  const slash = id.indexOf('/');
+  if (slash < 0) return [id];
+  return [id.slice(0, slash), id.slice(0, id.lastIndexOf('-', slash) + 1) + id.slice(slash + 1)];
+}
