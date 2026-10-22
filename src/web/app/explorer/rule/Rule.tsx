@@ -20,7 +20,8 @@ import { blobUrl, commitUrl, pullUrl } from '../../shell/repo';
 import { NotBuiltRegion, Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
 import { commitOfShort, fullShaOf, ruleCommits, ruleStatusTag, testsText } from '../ruleFacts';
-import { CannedDiff } from '../canned';
+import { CommitDiff } from '../diff/CommitDiff';
+import { useDiffs } from '../diff/useDiffs';
 import '../explorer.css';
 
 const STEP_LABEL: Record<EvidenceStep, string> = {
@@ -94,6 +95,14 @@ function RulePage({ trace, snapshot, rule }: { trace: Trace; snapshot: Snapshot;
   const merged = trace.decisions.some((d) => d.kind === 'merge' && d.plan === matrix?.plan && d.node === matrix?.node);
   const qaPath = matrix?.qaStep?.split('#')[0];
   const signoffSha = trace.decisions.find((d) => d.kind === 'signoff' && d.plan === matrix?.plan && d.node === matrix?.node)?.sha;
+  // RULE-3: the matrix's red and green commits, each asking for its own diff.
+  const diffs = useDiffs(trace);
+  const diffCommits = [matrix?.red, matrix?.green].flatMap((short) => {
+    const found = short ? commitOfShort(trace, short) : undefined;
+    return found === undefined ? [] : [found];
+  });
+  const busy = diffCommits.filter((commit) => diffs.stateOf(commit.sha).status === 'loading');
+  const busyChunks = [...new Set(busy.map((commit) => `trace/${commit.plan}/${commit.node}/diffs.json`))].join(' and ');
   const recorded = [
     { word: 'Red', short: matrix?.red },
     { word: 'Green', short: matrix?.green },
@@ -204,12 +213,23 @@ function RulePage({ trace, snapshot, rule }: { trace: Trace; snapshot: Snapshot;
         </p>
       </Rung>
       <Rung region="red-and-green-diffs-lazy" req="RULE-3" ordinal="Step 5" heading="Red and green diffs, loaded when asked">
-        <CannedDiff rung="#5" sha="94a7473" tdd="red" layer="tests" agent="tester" />
-        <CannedDiff rung="#17" sha="92ede9e" tdd="green" layer="api" agent="builder" />
+        {diffCommits.length === 0 ? (
+          <p className="s-text">The requirements matrix lists no red or green commit for this rule, so there is no diff to ask for.</p>
+        ) : (
+          <div className="s-group">
+            {diffCommits.map((commit) => (
+              <CommitDiff key={commit.sha} commit={commit} state={diffs.stateOf(commit.sha)} onLoad={diffs.load} />
+            ))}
+          </div>
+        )}
       </Rung>
       <NotBuiltRegion region="verify-it-yourself" name="verify it yourself" />
       <Rung region="load-diff-busy-while-the-diff-chunk-loads" req="BUSY-1" ordinal="Step 6" heading="Loading a diff">
-        <p className="s-text">Idle. No diff chunk is loading. Each load button above asks for one commit's diff and, while it waits, shows a spinner and is disabled.</p>
+        <p className="s-text">
+          {busy.length === 0
+            ? "Idle. No diff chunk is loading. Each load button above asks for one commit's diff and, while it waits, shows a spinner and is disabled."
+            : `Busy. ${busy.map((commit) => commit.short).join(' and ')} ${busy.length === 1 ? 'is' : 'are'} loading from ${busyChunks}; ${busy.length === 1 ? 'its button is' : 'their buttons are'} disabled until the chunk answers.`}
+        </p>
       </Rung>
       <Rung
         region="links-out-commit-shas-pr-numbers-and-file-line-references-to-github-at-that-sha"
