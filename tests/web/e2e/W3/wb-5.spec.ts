@@ -5,7 +5,7 @@
 // answers; here the window's refusal (RENEW-1/2) and the cheque refusal (COULD-3) are driven live.
 import type { Locator, Page } from '@playwright/test';
 import { expect, live, test } from '../W1/support/api';
-import { answered, apiToday, field, hashOf, region, requestOf, route, sellForm, sellThroughApi, watchApi } from '../W1/support/workbench';
+import { answered, apiToday, field, hashOf, hold, region, requestOf, route, sellForm, sellThroughApi, watchApi } from '../W1/support/workbench';
 
 const unique = (tag: string): string => ('W3' + tag + Date.now().toString(36).toUpperCase()).slice(0, 20);
 
@@ -103,6 +103,30 @@ test.describe('a renewal', () => {
     await renewButton(page).click();
     const renewal = await answered(seen, 'POST', `/api/policies/${reference}/renewals`);
     expect(renewal.requestBody).toEqual({ amount: 544.1 });
+  });
+
+  test('WB-5 · an amount typed before the policy read answers is kept, and the renewal sends it, not the term default', async ({ page, api }) => {
+    void api;
+    const reference = unique('H');
+    const policy = await sellThroughApi(requestOf(sellForm(reference, { autoRenew: false, amount: '527.18' })));
+    expect(policy.amount.toFixed(2), 'setup: the default differs from what the person types').not.toBe('472.30');
+    const readPath = `/api/policies/${reference}`;
+    const read = await hold(page, 'GET', readPath);
+    const seen = watchApi(page);
+    await page.goto(route.renew(reference));
+    await expect.poll(() => read.count(), { message: 'the page asks for the policy', ...live }).toBeGreaterThan(0);
+    const amount = field(page, 'Renewal amount');
+    // A screen may instead hold the field until the read answers; then the person types once it has.
+    const typedEarly = await amount.isEditable();
+    if (typedEarly) await amount.fill('472.30');
+    read.release();
+    await answered(seen, 'GET', readPath);
+    await expect(renewButton(page), 'the read has landed on the screen').toBeEnabled(live);
+    if (!typedEarly) await amount.fill('472.30');
+    await expect(amount).toHaveValue('472.30');
+    await renewButton(page).click();
+    const renewal = await answered(seen, 'POST', `/api/policies/${reference}/renewals`);
+    expect(renewal.requestBody).toEqual({ amount: 472.3 });
   });
 
   test('WB-5 · cheque on an auto-renewing policy is refused, and the page shows the COULD-3 violation as a rule chip', async ({ page, api }) => {
