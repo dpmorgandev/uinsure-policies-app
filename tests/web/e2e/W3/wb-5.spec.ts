@@ -114,6 +114,26 @@ test('WB-5 · the policy view no longer calls claim or renew not built, and link
   await expect(main.locator(`a[href="${route.renew(reference).slice(1)}"]`).first(), 'a link to renew this policy').toBeVisible();
 });
 
+// Integrate follow-up (t9): W2 built the cancel screen, so the policy view no longer calls quote-and-cancel or quoting
+// not built, and its actions region links to the cancel route for its own policy, as the re-derived wb-policy
+// reference (docs/ui/derived/W3/wb-policy/populated.html) draws it: "Quote and cancel" to wb-cancel. Same recorded read.
+test('WB-5 · the policy view no longer calls cancel or quoting not built, and its actions link to cancel for its policy', async ({ page }) => {
+  const read = exchangeAt('045-get-1-sold-policy-reads-back-in-full-200.json', 1);
+  const reference = (read.responseBody as Policy).reference;
+  await answerWith(page, read);
+  await page.goto(route.policy(reference));
+  const main = page.getByRole('main');
+  await expect(main, 'setup: the read has landed').toContainText(`The API returned no claims for ${reference}.`, live);
+  const sentences = (await main.innerText()).split(/(?<=[.:])\s+|\n+/);
+  const notBuilt = sentences.filter((s) => /not built yet/i.test(s) && /\b(cancel\w*|quot\w*)\b/i.test(s));
+  expect(notBuilt, 'no cancel or quoting text says not built yet').toEqual([]);
+  const actions = region(page, 'actions-quote-and-cancel-record-a-claim-renew');
+  await expect(actions, 'the actions region says nothing is not built yet').not.toContainText(/not built yet/i);
+  const cancel = actions.locator(`a[href="${route.cancel(reference).slice(1)}"]`);
+  await expect(cancel.first(), 'the actions region links to quote and cancel this policy').toBeVisible();
+  await expect(cancel.first()).toHaveText('Quote and cancel');
+});
+
 test.describe('a renewal', () => {
   test('WB-5 · the renew form shows the current term amount and payment method as its defaults', async ({ page, api }) => {
     void api;
