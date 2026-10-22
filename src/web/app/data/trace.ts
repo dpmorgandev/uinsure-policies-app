@@ -75,6 +75,8 @@ export interface TraceNode {
   completenessReasons: string[];
   rules: string[];
   readme: string | null;
+  /** The node's QA script path, when the plan file names one. */
+  qa?: string | null;
   chunks: TraceChunks;
 }
 
@@ -302,8 +304,26 @@ export interface TraceEntity {
   file?: string;
 }
 
+const SHORT_SHA = 7;
+const seg = encodeURIComponent;
+
+/** NAV-2: the hash route of an entity, the routes of the screens' screen.json. */
 export function entityUrl(entity: TraceEntity): string {
-  throw new Error('not implemented');
+  const nodePath = `#/plans/${seg(entity.plan ?? '')}/${seg(entity.node ?? '')}`;
+  switch (entity.kind) {
+    case 'rule':
+      return `#/rules/${seg(entity.id ?? '')}`;
+    case 'node':
+      return nodePath;
+    case 'commit':
+      return `#/commits/${seg((entity.sha ?? '').slice(0, SHORT_SHA))}`;
+    case 'verdict':
+      return `${nodePath}/verdicts/${seg(entity.round ?? '')}/${seg(entity.agent ?? '')}`;
+    case 'finding':
+      return `${nodePath}/findings/${seg(entity.round ?? '')}`;
+    case 'session':
+      return `#/sessions/${seg((entity.file ?? '').replace(/^.*\//, '').replace(/\.md$/, ''))}`;
+  }
 }
 
 export interface SearchEntry {
@@ -311,16 +331,42 @@ export interface SearchEntry {
   label: string;
   detail: string | null;
   href: string;
+  /** A commit's full SHA, so a longer prefix than the label still finds it. */
+  sha?: string;
 }
 
+/** NAV-4: every rule ID, node, commit and file path the trace names, each once. */
 export function searchIndex(trace: Trace): SearchEntry[] {
-  throw new Error('not implemented');
+  const entries: SearchEntry[] = [
+    ...trace.rules.map((rule): SearchEntry => ({ kind: 'rule', label: rule.id, detail: rule.title, href: entityUrl({ kind: 'rule', id: rule.id }) })),
+    ...trace.nodes.map((node): SearchEntry => ({ kind: 'node', label: `${node.plan}/${node.id}`, detail: node.title, href: entityUrl({ kind: 'node', plan: node.plan, node: node.id }) })),
+    ...trace.commits.map((commit): SearchEntry => ({ kind: 'sha', label: commit.short, detail: commit.subject, href: entityUrl({ kind: 'commit', sha: commit.sha }), sha: commit.sha })),
+  ];
+  const findingFiles = (trace.findings as { files?: string[] }[]).flatMap((finding) => finding.files ?? []);
+  const paths = [
+    ...trace.rules.map((rule) => rule.source?.file),
+    ...trace.nodes.map((node) => node.qa),
+    ...trace.verdicts.map((verdict) => verdict.file),
+    ...findingFiles,
+  ];
+  for (const path of new Set(paths)) {
+    if (typeof path === 'string' && path !== '') entries.push({ kind: 'path', label: path, detail: null, href: `#/files/${seg(path)}` });
+  }
+  return entries;
 }
 
+/** A SHA matches by prefix (four hex characters or more); everything else by part of its label, in any case. */
 export function searchTrace(index: SearchEntry[], query: string): SearchEntry[] {
-  throw new Error('not implemented');
+  const typed = query.trim().toLowerCase();
+  if (typed === '') return [];
+  const isShaPrefix = /^[0-9a-f]{4,40}$/.test(typed);
+  return index.filter((entry) =>
+    entry.kind === 'sha' ? isShaPrefix && (entry.sha ?? entry.label).startsWith(typed) : entry.label.toLowerCase().includes(typed),
+  );
 }
 
+/** PERF-1: records the first screen as interactive and returns the time since navigation started. */
 export function markInteractive(perf: Pick<Performance, 'mark' | 'now'>): number {
-  throw new Error('not implemented');
+  perf.mark('docket:interactive');
+  return perf.now();
 }
