@@ -198,9 +198,13 @@ test.describe('reachable', () => {
 
 test.describe('axe', () => {
   test("LOOP-1 · F1's loop page on the fixture has no axe violation, light and dark, at 1440 and 390", async ({ page }) => {
-    await openOnFixture(page, fixture, LOOP);
+    await openTimeline(page);
     await auditEverywhere(page, LOOP, async (p) => {
-      await expect(gateRow(region(p, TIMELINE), FAIL.name)).toBeVisible();
+      // Line 4's name alone is shared with the design fixture's F3 (also 1·4 gate.stub, failed), so canned content
+      // could match it: wait for the detail only the fixture's line 4 holds before axe runs on each load.
+      await expect(gateRow(region(p, TIMELINE), FAIL.name), "the timeline draws the fixture's line 4").toContainText(
+        'the stub throws on a reference it has answered',
+      );
     });
   });
 });
