@@ -1,0 +1,61 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T00:19:29Z",
+  "plan": "ui",
+  "node": "W1",
+  "attempt": 3,
+  "agent": "security",
+  "agent_id": "a91d9d3c408565f9e",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "W1",
+    "attempt": 3,
+    "base_sha": "4883f7915db3b6ea5d4fb8f988a4a845902e07e5",
+    "head_sha": "79eda373df1fb53fdcafcd590f11dd8b55d240f0",
+    "diff_fingerprint": "129517e25a31e422bddd14a9a33345ea7d53e506",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.scope",
+      "gate.lint",
+      "gate.typecheck",
+      "gate.test",
+      "gate.build",
+      "gate.e2e",
+      "gate.green",
+      "gate.no-stubs"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "W1 met: no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function in src/web/app. The only grep hit in src/web is a comment in the unchanged kit file MarkdownText.tsx. Problem title and detail, rule ids, policy fields and the fetch error reason reach the DOM as React text children or kit props.",
+      "W2 met: every href built from data is an internal hash route. Examples are '#/workbench/policies/' + encodeURIComponent(reference) in WorkbenchHome.tsx:131 and SellPolicy.tsx:272, and '#/rules/' + ruleId in ProblemView.tsx:4, SellPolicy.tsx:251 and PolicyView.tsx:86. Each starts with '#', so a javascript: or external URL cannot come through. The diff adds no external link, so rel=noreferrer does not apply. The A2/I2 change moved the rule link from RuleLinks.ts into the screens as a plain hash prefix and did not weaken this.",
+      "W3 met: index.html and its CSP (default-src 'self'; style-src 'self' 'unsafe-inline') are not in the diff and are unchanged. The diff adds no script, font, image or style from another origin. The 'unsafe-inline' for style-src predates this node.",
+      "W4 met: the only network calls are deps.fetch to '/api/policies' and '/api/policies/<encodeURIComponent(ref)>' (api.ts:283,293), plus the explorer's static trace.json reads in trace.ts, which are not in the diff. Storage is touched only through the 'workbench.recent' slot, which WB-9 names, inside try/catch. Entries are validated by isEntry on read. No cookie or sessionStorage use. The vite.config.ts change adds only a /api rewrite for the dev and preview proxy, to localhost.",
+      "W5 met: src/web/compiler/** is not in the diff.",
+      "W6 met: grep of src/web (excluding node_modules) for drive or user paths, personal emails and token patterns found only the author's public name in unchanged kit example strings. The e2e support uses os.tmpdir() and process.env.DOCKET_API_PORT, and passes only a throwaway local SQLite path with no credentials as ConnectionStrings__Policies.",
+      "W7 met for the diff: no package.json or lockfile change. gate.audit shows 0 runtime vulnerabilities. The dev audit reports 5 high, not gated. The receipt does not itemise them, so I could not confirm they are all the known stylelint, micromatch and braces item. They predate this diff, which changes no dependencies. Worth itemising at the next audit receipt.",
+      "W8 met: failures render through the kit's ProblemBanner or ErrorSummary with the API's title, detail and rule id as returned. The 'unreachable' state adds the browser's own fetch or JSON-parse error string, so no server internals appear. A non-JSON answer (a proxy page) leaves only the status; its body is never rendered.",
+      "API8:2023 is covered by W3 and W4. API10:2023 is covered by W1 and W8: the client reads API answers defensively with isRecord and text guards, and renders them as text only.",
+      "n/a API1:2023, API2:2023, API5:2023: auth, tenancy and roles are out of scope.",
+      "n/a API3:2023, API4:2023, API6:2023, API7:2023, API9:2023: ui node, no server code. The client sends only the SellRequest fields and sets no server-owned property such as HasClaims, Version, refund references or Cancellation.",
+      "n/a .NET extras (raw SQL, decimal money, NuGet packages, API logging): replaced by W1 to W8 for a ui node. The diff has no C# change.",
+      "Hygiene, no finding: src/web/test-results/ is untracked and not in the diff. Keep it out of any commit, since Playwright output can hold request data.",
+      "Hygiene, P2-level and not raised: the rule id from API data is concatenated unencoded into '#/rules/' + ruleId. It stays inside the hash fragment, so it is not exploitable."
+    ]
+  }
+}
