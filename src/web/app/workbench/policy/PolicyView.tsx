@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link, useParams } from 'react-router';
-import { DataTable, KeyValueList, NotBuiltYet, PageHeader, ProblemBanner, RequestLog, StatusTag, TermTimeline } from '../../../kit';
+import { DataTable, KeyValueList,PageHeader, ProblemBanner, RequestLog, StatusTag, TermTimeline } from '../../../kit';
 import type { DataTableColumn, KeyValueItem, RequestLogEntry, Status, TermTimelineProps } from '../../../kit';
 import { getPolicy } from '../../data/api';
 import type { ApiAnswer, Policy, Problem } from '../../data/api';
@@ -45,6 +45,11 @@ const sorted = { columnId: 'n', direction: 'ascending' } as const;
 
 const plural = (count: number, one: string, many: string): string => `${count} ${count === 1 ? one : many}`;
 
+/** The cancel screen for one policy (W2). */
+function cancelRoute(reference: string): string {
+  return `/workbench/policies/${encodeURIComponent(reference)}/cancel`;
+}
+
 function Region({ slug, req, heading, children }: { slug: string; req: string; heading: string; children: ReactNode }) {
   return (
     <section className="s-wb-region" data-region={slug} data-req={req}>
@@ -65,6 +70,7 @@ interface PolicyDetailProps {
 
 function PolicyDetail({ policy }: PolicyDetailProps) {
   const reference = policy.reference;
+  const cancelPath = cancelRoute(reference);
   const { claims, refunds, cancellation } = policy;
 
   const timelineClaims: TimelineClaim[] = claims.map((claim) => ({
@@ -149,7 +155,8 @@ function PolicyDetail({ policy }: PolicyDetailProps) {
             empty={{
               context: 'empty',
               title: `The API returned no refunds for ${reference}.`,
-              why: 'refunds is an empty list. Quoting a cancellation is not built yet.',
+              why: 'refunds is an empty list.',
+              to: { label: 'Quote a cancellation', href: `#${cancelPath}` },
             }}
           />
         </div>
@@ -310,6 +317,7 @@ function headerOf(reference: string, answer: ApiAnswer<Policy> | null): ReactNod
 
 export function PolicyView() {
   const { reference = '' } = useParams();
+  const cancelPath = cancelRoute(reference);
   const [attempt, setAttempt] = useState(0);
   const key = `${reference}#${attempt}`;
   const [settled, setSettled] = useState<{ key: string; answer: ApiAnswer<Policy> } | null>(null);
@@ -398,13 +406,15 @@ export function PolicyView() {
         <h2 className="s-wb-heading">Actions</h2>
         <ul className="s-wb-list">
           <li>
+            <Link to={cancelPath}>Quote and cancel</Link>
+          </li>
+          <li>
             <Link to={`/workbench/policies/${encodeURIComponent(reference)}/claims/new`}>Record a claim</Link>
           </li>
           <li>
             <Link to={`/workbench/policies/${encodeURIComponent(reference)}/renew`}>Renew</Link>
           </li>
         </ul>
-        <NotBuiltYet kind="region" name="quote and cancel" />
       </section>
 
       <section className="s-wb-region" data-region="requests-that-touched-this-policy" data-req="WB-7">
