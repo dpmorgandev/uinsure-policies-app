@@ -1,6 +1,9 @@
 import type { ReactElement } from 'react';
+import { RecordClaim } from './claim/RecordClaim';
 import { WorkbenchHome } from './home/WorkbenchHome';
 import { PolicyView } from './policy/PolicyView';
+import { RenewPolicy } from './renew/RenewPolicy';
+import { RequestLogPage } from './requests/RequestLogPage';
 import { SellPolicy } from './sell/SellPolicy';
 
 export interface WorkbenchRoute {
@@ -11,9 +14,12 @@ export interface WorkbenchRoute {
   element: ReactElement;
 }
 
-/** W1's routes, registered by the router root. Cancel, renew and record-a-claim are W2's and W3's: until then they fall to the not-built page. */
+/** The workbench's routes, registered by the router root. Cancel is W2's: until then it falls to the not-built page. */
 export const workbenchRoutes: WorkbenchRoute[] = [
   { path: 'workbench', title: 'Workbench', element: <WorkbenchHome /> },
   { path: 'workbench/sell', title: 'Sell a policy', element: <SellPolicy /> },
   { path: 'workbench/policies/:reference', title: 'Policy', element: <PolicyView /> },
+  { path: 'workbench/policies/:reference/claims/new', title: 'Record a claim', element: <RecordClaim /> },
+  { path: 'workbench/policies/:reference/renew', title: 'Renew', element: <RenewPolicy /> },
+  { path: 'workbench/requests', title: 'Requests', element: <RequestLogPage /> },
 ];
