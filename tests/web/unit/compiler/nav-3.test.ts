@@ -9,7 +9,20 @@
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { git, replayTrail, run, SLOW, thrown } from './support/trail';
 import type { Run, Trail } from './support/trail';
-import { commitOf, commitsOf, MATRIX_FILE, REQUIREMENTS_FILE, ruleOf, RULES, SHAPES, shortOf, TWO_PLANS, UI_REQUIREMENTS_FILE } from './support/rules';
+import {
+  commitOf,
+  commitsOf,
+  MATRIX_FILE,
+  REAL_TRAILERS,
+  REQUIREMENTS_FILE,
+  ruleOf,
+  RULES,
+  SHAPES,
+  shaOf,
+  shortOf,
+  TWO_PLANS,
+  UI_REQUIREMENTS_FILE,
+} from './support/rules';
 
 let trail: Trail;
 let r: Run;
@@ -127,5 +140,30 @@ describe('a matrix commit cell that is not a SHA', () => {
     const lines = (t.trace?.problems ?? []).filter((p) => p.file === MATRIX_FILE).map((p) => p.line ?? null);
     expect(lines, 'CANCEL-5, line 7').toContain(7);
     expect(lines, 'SELL-1, line 6, holds a SHA').not.toContain(6);
+  });
+});
+
+// U1 D3/I4, on the `real-trailers` fixture (its README): `Rule: none` is the harness's sentinel for a commit that proves
+// no rule (the real build/F1 trail has many, e.g. its fix(none) commit). c4 is trailed `Rule: none`; c0 has no Rule
+// line at all. Neither names a rule, so the commit page builds no rule link from either (no #/rules/none).
+describe("the 'Rule: none' sentinel", () => {
+  let real: Trail;
+  let t: Run;
+  beforeAll(() => {
+    real = replayTrail(REAL_TRAILERS);
+    t = run(real.root);
+  }, SLOW);
+  afterAll(() => real?.cleanup());
+
+  test("NAV-3 · a commit trailed 'Rule: none' names no rule: c4's rule list is empty, as c0's with no Rule line is, never ['none']", () => {
+    const lines = git(real.root, 'log', '-1', '--format=%B', shaOf(real, 'c4'))
+      .split(/\r?\n/)
+      .filter((line) => line.startsWith('Rule: '));
+    expect(lines, "the fixture's c4 body holds the sentinel").toEqual(['Rule: none']);
+    expect(t.error, thrown(t)).toBeUndefined();
+    expect(['c0', 'c4'].map((id) => [id, commitOf(t, real, id)?.rule ?? null])).toEqual([
+      ['c0', []],
+      ['c4', []],
+    ]);
   });
 });
