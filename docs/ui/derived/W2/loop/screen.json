@@ -1,0 +1,189 @@
+{
+  "screen": "loop",
+  "route": "/plans/:planId/:nodeId/loop",
+  "regions": [
+    {
+      "name": "attempt ladder",
+      "req": [
+        "LOOP-2"
+      ],
+      "components": [
+        "attempt-ladder",
+        "gate-row",
+        "status-tag",
+        "disclosure",
+        "code-block"
+      ],
+      "fields": [
+        "events[plan=build][node=:nodeId].line",
+        "events[plan=build][node=:nodeId].attempt",
+        "events[plan=build][node=:nodeId].event",
+        "events[plan=build][node=:nodeId].kind",
+        "events[plan=build][node=:nodeId].gate",
+        "events[plan=build][node=:nodeId].exit",
+        "events[plan=build][node=:nodeId].expect",
+        "events[plan=build][node=:nodeId].ok",
+        "events[plan=build][node=:nodeId].head",
+        "events[plan=build][node=:nodeId].detail",
+        "events[plan=build][node=:nodeId].source",
+        "nodes[plan=build][id=:nodeId].status",
+        "nodes[plan=build][id=:nodeId].attempt",
+        "nodes[plan=build][id=:nodeId].trail",
+        "nodes[plan=build][id=:nodeId].completeness",
+        "nodes[plan=build][id=:nodeId].completenessReasons"
+      ],
+      "built": true
+    },
+    {
+      "name": "gate timeline",
+      "req": [
+        "LOOP-1"
+      ],
+      "components": [
+        "gate-row",
+        "status-tag",
+        "code-block"
+      ],
+      "fields": [
+        "events[plan=build][node=:nodeId][kind=gate].line",
+        "events[plan=build][node=:nodeId][kind=gate].attempt",
+        "events[plan=build][node=:nodeId][kind=gate].gate",
+        "events[plan=build][node=:nodeId][kind=gate].cmd",
+        "events[plan=build][node=:nodeId][kind=gate].exit",
+        "events[plan=build][node=:nodeId][kind=gate].expect",
+        "events[plan=build][node=:nodeId][kind=gate].ok",
+        "events[plan=build][node=:nodeId][kind=gate].head",
+        "events[plan=build][node=:nodeId][kind=gate].detail",
+        "events[plan=build][node=:nodeId][kind=state].line",
+        "events[plan=build][node=:nodeId][kind=state].event",
+        "events[plan=build][node=:nodeId][kind=state].attempt",
+        "events[plan=build][node=:nodeId][kind=state].detail"
+      ],
+      "built": true
+    }
+  ],
+  "states": [
+    {
+      "name": "populated",
+      "file": "populated.html",
+      "variant": "the ref's own data: events[plan=build][node=F3], log lines 1 to 66, two attempts; gate.stub ok false at log line 4 (attempt 1) and ok true at log line 8 (attempt 2)"
+    },
+    {
+      "name": "in-flight",
+      "file": "in-flight.html",
+      "variant": "events[plan=build][node=F6], the first 20 loop events, cut from a real node while attempt 3 was open; not the ref's state. The open rung uses the nearest kit state (an attempt-ladder rung with a pending status tag); the kit has no in-flight ladder state"
+    },
+    {
+      "name": "git-only",
+      "file": "git-only.html",
+      "variant": "nodes[plan=build][id=F0a], which predates the trail and has no loop.jsonl"
+    },
+    {
+      "name": "long-content",
+      "file": "long-content.html",
+      "variant": "events[plan=build][node=F1], the node with the most loop events: log lines 1 to 84, long detail and command strings, two attempts; no gate came back ok false, attempt 1 ended on reviewer and security verdict FAILs"
+    }
+  ],
+  "actions": [
+    {
+      "label": "Read the FAIL in the gate timeline",
+      "kind": "link",
+      "to": "#gate-line-4 on this page (populated), #gate-line-3 (in-flight), #gate-line-44 (long-content, the fix gate)"
+    },
+    {
+      "label": "Jump to a gate or state event from the attempt ladder",
+      "kind": "link",
+      "to": "#gate-line-<log line> on this page"
+    },
+    {
+      "label": "Rejoin the spine at the next attempt",
+      "kind": "link",
+      "to": "#loop-attempt-<n> on this page"
+    },
+    {
+      "label": "Copy command",
+      "kind": "control",
+      "to": "copies the gate's command to the clipboard; sends no request"
+    },
+    {
+      "label": "Steps of attempt N",
+      "kind": "control",
+      "to": "opens or closes the steps of one attempt; sends no request"
+    },
+    {
+      "label": "Show UTC time",
+      "kind": "control",
+      "to": "toggles the time zone of the snapshot timestamp; sends no request"
+    },
+    {
+      "label": "Commit SHA",
+      "kind": "link",
+      "to": "GitHub commit page at that SHA"
+    },
+    {
+      "label": "PR number",
+      "kind": "link",
+      "to": "GitHub pull request page"
+    },
+    {
+      "label": "Go back to the plan",
+      "kind": "link",
+      "to": "/plans/:planId"
+    },
+    {
+      "label": "Open the node page",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId"
+    },
+    {
+      "label": "Overview",
+      "kind": "link",
+      "to": "/"
+    },
+    {
+      "label": "Requirements matrix",
+      "kind": "link",
+      "to": "/rules"
+    },
+    {
+      "label": "Plan",
+      "kind": "link",
+      "to": "/plans/:planId"
+    },
+    {
+      "label": "Human decisions",
+      "kind": "link",
+      "to": "/decisions"
+    },
+    {
+      "label": "How to read this",
+      "kind": "link",
+      "to": "/about"
+    },
+    {
+      "label": "Workbench",
+      "kind": "link",
+      "to": "/workbench"
+    },
+    {
+      "label": "Walkthrough",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId/commits"
+    },
+    {
+      "label": "Loop",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId/loop"
+    },
+    {
+      "label": "Activity",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId/activity"
+    },
+    {
+      "label": "Search",
+      "kind": "request",
+      "to": "the find form in the top bar; searches rule IDs, nodes, SHAs and paths"
+    }
+  ]
+}

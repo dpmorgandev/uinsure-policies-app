@@ -1,0 +1,134 @@
+{
+  "screen": "about",
+  "route": "/about",
+  "regions": [
+    {
+      "name": "provenance labels",
+      "req": [
+        "DATA-2"
+      ],
+      "components": [
+        "page-header",
+        "provenance-label"
+      ],
+      "fields": [
+        "stamp.sha",
+        "stamp.utc",
+        "problems[*]",
+        "provenance kinds: generated, recorded, written (kit labels)"
+      ],
+      "built": true
+    },
+    {
+      "name": "glossary and status legend",
+      "req": [
+        "A11Y-1"
+      ],
+      "components": [
+        "status-tag",
+        "markdown-text"
+      ],
+      "fields": [
+        "status kinds: pass, fail, warn, pending, not-built (kit status-tag)",
+        "glossary terms (written copy, no fixture field)"
+      ],
+      "built": true
+    },
+    {
+      "name": "re-verify with git",
+      "req": [
+        "VERIFY-1"
+      ],
+      "components": [
+        "verify-command"
+      ],
+      "fields": [
+        "stamp.sha",
+        "kit specimen SHAs 94a7473 and 92ede9e (not in this page's data)"
+      ],
+      "built": false
+    },
+    {
+      "name": "guided tour entry: one rule end to end (COULD)",
+      "req": [
+        "NAV-5"
+      ],
+      "components": [],
+      "fields": [
+        "routes: overview, matrix, rule, walkthrough, commit"
+      ],
+      "built": false
+    },
+    {
+      "name": "compiled-at stamp: the commit SHA and UTC time trace.json was compiled from",
+      "req": [
+        "DATA-3"
+      ],
+      "components": [
+        "markdown-text",
+        "status-tag"
+      ],
+      "fields": [
+        "stamp.ref",
+        "stamp.sha",
+        "stamp.uiRef",
+        "stamp.uiSha",
+        "stamp.utc",
+        "plans[*].id",
+        "plans[*].title",
+        "plans[*].status",
+        "plans[*].approvedBy",
+        "plans[*].approvedOn",
+        "plans[*].frontmatter.parent",
+        "plans[*].frontmatter.created",
+        "problems[*].file",
+        "problems[*].reason"
+      ],
+      "built": true
+    }
+  ],
+  "states": [
+    {
+      "name": "populated",
+      "file": "populated.html",
+      "variant": "the fixture's own stamp (origin/main b394466, 2026-10-19T17:45:08Z), 5 plans and 2 problems"
+    }
+  ],
+  "actions": [
+    {
+      "label": "Start the tour: open the requirements matrix",
+      "kind": "link",
+      "to": "/rules"
+    },
+    {
+      "label": "Open the overview",
+      "kind": "link",
+      "to": "/"
+    },
+    {
+      "label": "Open a rule",
+      "kind": "link",
+      "to": "/rules/:ruleId"
+    },
+    {
+      "label": "Open the walkthrough",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId/commits"
+    },
+    {
+      "label": "Open a commit",
+      "kind": "link",
+      "to": "/commits/:sha"
+    },
+    {
+      "label": "Copy a git command",
+      "kind": "control",
+      "to": "copies to the clipboard, no request"
+    },
+    {
+      "label": "Show the time in UTC",
+      "kind": "control",
+      "to": "toggle on the page, no request"
+    }
+  ]
+}

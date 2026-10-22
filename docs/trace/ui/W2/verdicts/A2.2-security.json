@@ -1,0 +1,61 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T21:42:26Z",
+  "plan": "ui",
+  "node": "W2",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a8852b418408bd3d0",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "W2",
+    "attempt": 2,
+    "base_sha": "48186c128034f1e5918559eac37370a723431fd0",
+    "head_sha": "5d79c667235a42f24cc5c1e2156a908693f7d414",
+    "diff_fingerprint": "d758c30d48790cbd473a399c65c1b23c45a5f74b",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit (603cbca): npm --prefix src/web audit --omit=dev --audit-level=high, found 0 vulnerabilities",
+      "gate.audit (f576e09): found 0 vulnerabilities",
+      "gate.audit-dev (f576e09): 5 high, known dev-only braces GHSA-vfj7-8cjw-p6xm via stylelint, no unlisted item",
+      "gate.scope (603cbca): 117 files, none outside scope, no kit files",
+      "gate.typecheck (603cbca)",
+      "gate.lint (603cbca)",
+      "gate.build (603cbca)",
+      "gate.test (603cbca)",
+      "gate.e2e (603cbca): 653 passed, 2 failed (activity 1440, the U7 set)",
+      "gate.integrate (603cbca)"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Judged at HEAD 5d79c66. The source changes since the base are src/web/app/data/api.ts, src/web/app/workbench/cancel/CancelPolicy.tsx and src/web/app/workbench/routes.tsx, plus tests, docs/ui/derived and trace files. Commits after 603cbca touch trace and docs only, and the 603cbca gates are the receipts.",
+      "W1 met: grep over src/web found no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function. The only hit is a comment in kit/patterns/markdown-text/MarkdownText.tsx:7 saying it is not used. CancelPolicy.tsx renders API values (ruleApplied, dates, amounts, reference) as React text nodes.",
+      "W2 met: the only hrefs on the screen are built internal hash routes ('#/rules/' + id from REFUSALS constants, ProblemView and RefundWorkedSum's ruleHref(line.ruleApplied)). Even an API-supplied rule id lands after '#/rules/', so it cannot form a javascript: or external URL. No external link was added, so the rel=noreferrer check has nothing to apply to.",
+      "W3 met: src/web/index.html keeps default-src 'self'. style-src 'self' 'unsafe-inline' is not in this diff. The diff adds no script, font, image or style from another origin, and the cancel screen has no http(s):// or @import. The docs/ui/derived HTML are static references that are not shipped, and they link only the relative stylekit/kit.css.",
+      "W4 met: quoteCancellation and cancelPolicy fetch only relative '/api/policies/{reference}/cancellation-quote?cancellationDate=...' and '/api/policies/{reference}/cancellation'. The reference and date go through encodeURIComponent, so the path and query can't be injected. The POST body is JSON { cancellationDate } only. CancelPolicy.tsx has no direct fetch(), localStorage, sessionStorage or cookie access. The recent-policies list is the existing WB-9 code in api.ts and is untouched.",
+      "W5: n/a for the diff. It touches nothing under src/web/compiler.",
+      "W6 met: no local absolute path, personal email, key or token in src/web/app/workbench/cancel, api.ts, the e2e or unit tests, or docs/ui/derived. The activity.jsonl entries carry a redaction token in place of the user name. 'http://x' in tests/web/e2e/W2/support/cancel.ts is only a URL-parsing base.",
+      "W7 met: no package.json or lockfile change in the diff. The runtime audit is clean in both gate events (0 vulnerabilities). The dev audit reports only the known stylelint -> micromatch -> braces item.",
+      "W8 met: failures render through ProblemView (the API's problem details as returned, with a fallback title 'The API answered {status}') or a ProblemBanner with unreachable and the browser's fetch error message. No stack trace or server internals are shown. A non-JSON body leaves no body and keeps the status, in the existing ask().",
+      "API8:2023 met via W3 and W4: the CSP is kept, the client calls only /api/ through the proxy, and no cookie or storage reads were added.",
+      "API10:2023 met via W1 and W8: the API's answers (CancellationQuote, CancellationResult and problems) render as text and the error path leaks nothing. Casting the body as T is a type-level assertion only, and values still render as text.",
+      "n/a (ui node, no server code): API1:2023, API2:2023, API3:2023, API4:2023, API5:2023, API6:2023, API7:2023, API9:2023. Auth is out of scope as well for API1, API2 and API5. The .NET extras (SQL, money, packages, logging) are replaced by W1-W8 for a ui node.",
+      "gate.e2e-regression exit 1 at f576e09 is superseded by the 603cbca all-specs run. The only 2 failures are the activity 1440 light and dark screens, which are the known U7 line and not a security matter."
+    ]
+  }
+}

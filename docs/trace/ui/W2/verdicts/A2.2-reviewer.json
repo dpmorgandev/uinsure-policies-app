@@ -1,0 +1,51 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T21:42:51Z",
+  "plan": "ui",
+  "node": "W2",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a6697729e35c45780",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "W2",
+    "attempt": 2,
+    "base_sha": "48186c128034f1e5918559eac37370a723431fd0",
+    "head_sha": "5d79c667235a42f24cc5c1e2156a908693f7d414",
+    "diff_fingerprint": "d758c30d48790cbd473a399c65c1b23c45a5f74b",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.typecheck@603cbca",
+      "gate.lint@603cbca",
+      "gate.lint-css@603cbca",
+      "gate.test@603cbca",
+      "gate.build@603cbca",
+      "gate.audit@603cbca",
+      "gate.no-stubs@603cbca",
+      "gate.scope@603cbca",
+      "gate.coverage@603cbca",
+      "gate.e2e@603cbca (all specs, 653 passed, 2 failed: activity 1440, U7)",
+      "gate.integrate@603cbca",
+      "gate.e2e@f576e09",
+      "gate.e2e-all@f576e09",
+      "gate.postman@6c2aace"
+    ],
+    "rules_covered": [
+      "WB-4"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Re-review after integrate. In base...head, src/web (app/data/api.ts, workbench/cancel/CancelPolicy.tsx, workbench/routes.tsx) and tests/web (e2e/W2/wb-4.spec.ts, e2e/W2/support/cancel.ts, e2e/W1/wb-3.spec.ts, regression/wb-cancel.spec.ts, unit/client/wb-4.test.ts) match what A1 and A2 judged. The merge eff1abf brought in no W2 code or test change. Commits after f8c2268 touch only docs/qa, docs/plans, docs/trace and docs/ui/derived.",
+      "Re-derive 603cbca checked. docs/ui/derived/W2/derived.json now lists builtNodes U0a, U0b, U1, U2, U3, W1, W2. Its screen sets are U3's (about provenance-labels, commit diff-lazy, node rules/tasks/attempts, plan, loop, finding, verdict, walkthrough, rule red-and-green-diffs-lazy) plus W2's five wb-cancel regions and wb-policy's actions region. The inspector stays notBuilt. The W1 entries for wb-claim and wb-renew (WB-3 and BUSY-1 regions) are carried over unchanged. U0b/support/built.ts picks the newest derived reference by builtNodes count. Before the re-derive, W2 (6 nodes, later id) won the tie with U3 (6 nodes), which explains the earlier nodes' parity failures. After it, W2 is a true superset. No test file was edited to make them pass.",
+      "ui.dag.yaml conflict resolution checked. U3's U7 lines (inv-007 I3 and I4, the KG10 FindingCard line) are kept as context, and W2's five U7 lines from A1 R1-R4 and A2 R2 plus the revised .s-wb-list line are present. This is the union, as stated.",
+      "A2 R1 is fixed at d92bb81. docs/qa/ui-W2.md names f8c2268, explains that 46e3e11 is a test-only move, step 31 greps 'WB-[34] · ' (27 tests), and step 36 expects W1's loop to cover renew and claim only.",
+      "Receipt inconsistency, not code: gate.integrate@603cbca records passed 969 and failed 0, but its own detail and gate.e2e@603cbca give e2e 653/655 with 2 failing (activity 1440, U7). The ok:true rests on the known set, not on zero failures. The orchestrator may want the counts recorded as they are.",
+      "The QA script's commit under test is f8c2268, which is before the integrate. David's pause-2 sign-off came before the U3 merge. W2's code is unchanged, and the W2 suite is green at 603cbca, so this doesn't block. Any re-run at pause 2 would be at 5d79c66.",
+      "The plan marks W2 done (427ca73 hitl → done) while this t7 re-review is still running after the integrate. This is plan state, outside W2's code. Noted for the orchestrator.",
+      "A1 R1-R5 and A2 R2 (P2) are still open as U7 acceptance lines and are not raised again. TDD order is unchanged: the WB-4 red commits 5f62012 and 18f8539 come before green 42b57b7, the stub step was skipped by plan (t2 and t3 skipped), and there is no gate.stub receipt."
+    ]
+  }
+}
