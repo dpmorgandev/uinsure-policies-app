@@ -228,13 +228,23 @@ export interface RootCause {
   fixDirection: string | null;
 }
 
+/** A marker counts only at the start of the text or after a sentence end or newline, and not when quoted: a quoted marker is words. */
+function opensASentence(text: string, at: number): boolean {
+  const before = text.slice(0, at);
+  if (!/(^|[.!?]\s+|\n\s*)$/.test(before)) return false;
+  const count = (quote: string): number => before.split(quote).length - 1;
+  return count('"') % 2 === 0 && count('`') % 2 === 0 && count('“') === count('”');
+}
+
 /**
  * A root_cause split at its "Symptom:", "Cause:" and "Fix direction:" markers (LOOP-4). Every character lands in a field:
  * a sentence before the first marker opens the symptom, a repeated marker's text joins its field in order, and a marker's
  * parenthesised qualifier ("Cause (kit):") stays in the field text. Text with no marker is kept whole as the cause.
  */
 export function splitRootCause(text: string): RootCause {
-  const marks = [...text.matchAll(/(Symptom|Cause|Fix direction)(\s*\([^)]*\))?:/g)];
+  const marks = [...text.matchAll(/(Symptom|Cause|Fix direction)(\s*\([^)]*\))?:/g)].filter((mark) =>
+    opensASentence(text, mark.index ?? 0),
+  );
   if (marks.length === 0) return { symptom: null, cause: text, fixDirection: null };
   const found: Record<string, string[]> = {};
   const preamble = text.slice(0, marks[0]?.index ?? 0).trim();
