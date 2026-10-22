@@ -323,8 +323,8 @@ nodes:
       - {id: t10, role: tester, step: qa, layer: null, rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1], title: "QA script docs/qa/ui-W1.md: steps in the running app, tagged per rule", status: done}
       - {id: t11, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: done}
       - {id: t12, role: tester, step: red, layer: regression, rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1], title: "Regression specs for wb-home, wb-sell and wb-policy, and the backfill of U0a's and U0b's screens (ui.md, a node past red)", status: done}
-      - {id: t13, role: builder, step: refactor, layer: null, rules: [], title: "snapshotPathTemplate into docs/ui/baselines/ in playwright.config.ts", status: pending}
-      - {id: t14, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: pending}
+      - {id: t13, role: builder, step: refactor, layer: null, rules: [], title: "snapshotPathTemplate into docs/ui/baselines/ in playwright.config.ts", status: done}
+      - {id: t14, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: done}
       - {id: t15, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
       - {id: t16, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: pending}
       - {id: t17, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; write the baselines; chore(trace) commit; screenshot review page; completeness check passes", status: pending}
