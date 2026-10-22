@@ -424,7 +424,7 @@ nodes:
       - "The tour's Rule, Walkthrough and Commit stop targets are pinned by tests (U5 A1 R2, NAV-5)"
       - "plans/:planId is registered once: u2Routes and u3Routes both register it, so one shadows the other (U5 A1.2 reviewer note, DAG-1)"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for the U7 demo slice (rel=noreferrer and the CSP directives, the cancel status and re-read, the tour following one rule, one plans/:planId route, the bounded activity shot) … and unit tests", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for the U7 demo slice (rel=noreferrer and the CSP directives, the cancel status and re-read, the tour following one rule, one plans/:planId route, the bounded activity shot) … and unit tests", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: skipped}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the U7 acceptance tests; go or change", status: skipped}
       - {id: t4, role: builder, step: green, layer: screen, rules: [], title: "The demo slice: external links, CSP, cancel status and re-read, the tour, one plans route, the activity shot; whole acceptance suite green … all layers", status: pending}
