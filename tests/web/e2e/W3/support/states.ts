@@ -6,10 +6,11 @@
 // wb-requests' `long-content` (ten cancel fixtures run through the app). wb-requests' `populated` is reached with the
 // exchanges one policy read leaves in the log, not the reference's ten: parity compares structure, not rows.
 import { expect } from '@playwright/test';
-import type { Page } from '@playwright/test';
+import type { Page, Route } from '@playwright/test';
 import { serveTrace, setTheme, themes, viewports } from '../../U0b/support/app';
 import { literalColours } from '../../U0b/support/reference';
 import { answerWith, exchangeAt } from '../../W1/support/recorded';
+import type { RecordedExchange } from '../../W1/support/recorded';
 import { designFixtureDir, readBuilt, readReference, regionNamed, regionOrder, unbuiltComps } from '../../W1/support/reference';
 import { route, unreachable } from '../../W1/support/workbench';
 
@@ -26,6 +27,12 @@ const RENEW_WINDOW = '092-renew-1-2-renew-on-the-day-of-sale-422.json';
 const RENEW_THREE = '094-renew-1-2-auto-renew-off-card-and-amount-0-today-422.json';
 const READ_BACK = '045-get-1-sold-policy-reads-back-in-full-200.json';
 
+// 070 records no cancellation quote, so wb-claim's populated flow answers its two quote GETs with the nearest
+// recorded quotes, each the API's real answer for another policy, kept as recorded: before the claim, 069's
+// (CANCEL-1c, a refund); after it, 072's (COULD-2, 0.00 on a policy with a claim). Parity compares structure.
+const QUOTE_BEFORE = exchangeAt('069-could-1-quote-changes-nothing-200.json', 2);
+const QUOTE_AFTER = exchangeAt('072-could-2-quote-for-a-policy-with-a-claim-quotes-nothing-200.json', 2);
+
 const refOf = (path: string): string => path.split('/')[2] ?? '';
 
 /** Clicks a button by name and gives the answer a moment to land (it may never come, at the stub). */
@@ -39,16 +46,38 @@ async function fill(page: Page, label: string, value: string): Promise<void> {
   await page.getByRole('main').getByLabel(label, { exact: true }).fill(value, { timeout: 5000 }).catch(() => undefined);
 }
 
-async function claimFlow(page: Page, file: string): Promise<void> {
+/**
+ * The page's GET requests to `path` (/api/…, any query) are answered with these recorded answers, one each, in
+ * order; any further one falls through.
+ */
+async function answerInTurn(page: Page, path: string, answers: RecordedExchange[]): Promise<void> {
+  let next = 0;
+  await page.route(
+    (url) => url.pathname === path,
+    (handled: Route) => {
+      const answer = answers[next];
+      if (handled.request().method() !== 'GET' || answer === undefined) return handled.fallback();
+      next += 1;
+      return handled.fulfill({
+        status: answer.status,
+        contentType: answer.responseHeaders['content-type'] ?? 'application/json',
+        body: JSON.stringify(answer.responseBody),
+      });
+    },
+  );
+}
+
+async function claimFlow(page: Page, file: string, quotes: RecordedExchange[] = []): Promise<void> {
   const read = exchangeAt(file, 2);
   const post = exchangeAt(file, 1);
   await answerWith(page, read);
   await answerWith(page, post);
+  if (quotes.length > 0) await answerInTurn(page, `/api${read.path}/cancellation-quote`, quotes);
   await page.goto(route.claim(refOf(read.path)));
   const body = post.requestBody as { claimDate: string; description?: string };
   await fill(page, 'Claim date', body.claimDate);
-  // 'Description': the reference draws the text-area without a <label> in its markup; this is the screen's region name.
-  if (body.description !== undefined) await fill(page, 'Description', body.description);
+  // The reference names the text-area by its aria-label, 'Claim description' (docs/ui/derived/W3/wb-claim/populated.html).
+  if (body.description !== undefined) await fill(page, 'Claim description', body.description);
   await press(page, 'Record this claim', `/api${post.path}`);
 }
 
@@ -67,7 +96,7 @@ async function renewFlow(page: Page, file: string): Promise<void> {
 }
 
 export const claimStates: Record<'populated' | 'error' | 'unreachable', W3Screen> = {
-  populated: { label: 'record a claim', screen: 'wb-claim', state: 'populated', open: (page) => claimFlow(page, CLAIM) },
+  populated: { label: 'record a claim', screen: 'wb-claim', state: 'populated', open: (page) => claimFlow(page, CLAIM, [QUOTE_BEFORE, QUOTE_AFTER]) },
   error: { label: 'record a claim, refused 422', screen: 'wb-claim', state: 'api-error', open: (page) => claimFlow(page, CLAIM_REFUSED) },
   unreachable: {
     label: 'record a claim, the API not answering',

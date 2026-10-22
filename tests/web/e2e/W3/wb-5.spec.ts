@@ -28,7 +28,7 @@ test.describe('a claim', () => {
     const seen = watchApi(page);
     await page.goto(route.claim(reference));
     await field(page, 'Claim date').fill(today);
-    await field(page, 'Description').fill('Burst pipe under the kitchen sink');
+    await field(page, 'Claim description').fill('Burst pipe under the kitchen sink');
     await recordButton(page).click();
     const claim = await answered(seen, 'POST', `/api/policies/${reference}/claims`);
     expect(claim.requestBody).toEqual({ claimDate: today, description: 'Burst pipe under the kitchen sink' });
