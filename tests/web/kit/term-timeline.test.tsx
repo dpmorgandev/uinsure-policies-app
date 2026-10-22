@@ -114,6 +114,41 @@ describe('TermTimeline', () => {
     expect(screen.getByText('445.11')).toBeTruthy();
   });
 
+  it('keeps the rule chip default link when the caller sets none', () => {
+    render(<TermTimeline terms={[term1]} cancellation={{ cancellationDate: '2027-01-27', ruleApplied: 'CANCEL-1c' }} />);
+    expect(screen.getByRole('link', { name: 'CANCEL-1c' }).getAttribute('href')).toBe('/rules/CANCEL-1c');
+  });
+
+  it('passes a caller-set link through to the cancellation rule chip', () => {
+    const { rerender } = render(
+      <TermTimeline
+        terms={[term1]}
+        cancellation={{ cancellationDate: '2027-01-27', ruleApplied: 'CANCEL-1c' }}
+        ruleHref={(ruleId) => `#/rules/${ruleId}`}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'CANCEL-1c' }).getAttribute('href')).toBe('#/rules/CANCEL-1c');
+    rerender(
+      <TermTimeline
+        terms={[term1]}
+        cancellation={{ cancellationDate: '2027-01-27', ruleApplied: 'CANCEL-1c' }}
+        ruleHref={(ruleId) => `/other/${ruleId}`}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'CANCEL-1c' }).getAttribute('href')).toBe('/other/CANCEL-1c');
+  });
+
+  it('keeps the default when the caller returns no link for the rule', () => {
+    render(
+      <TermTimeline
+        terms={[term1]}
+        cancellation={{ cancellationDate: '2027-01-27', ruleApplied: 'CANCEL-1c' }}
+        ruleHref={() => undefined}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'CANCEL-1c' }).getAttribute('href')).toBe('/rules/CANCEL-1c');
+  });
+
   it('draws no gap when cover ends on the cancellation date', () => {
     const { container } = render(
       <TermTimeline

@@ -92,6 +92,36 @@ describe('VerdictCard', () => {
     expect(screen.getByText('Rules missing').nextElementSibling?.textContent).toBe('none');
   });
 
+  it('sends a caller-set link to the rule chips, covered and missing, and keeps the default when it sets none', () => {
+    const { rerender } = render(
+      <VerdictCard agent="reviewer" round="A1" verdict="PASS" rulesCovered={['GET-1']} rulesMissing={['SELL-7']} />,
+    );
+    expect(screen.getByRole('link', { name: 'GET-1' }).getAttribute('href')).toBe('/rules/GET-1');
+    rerender(
+      <VerdictCard
+        agent="reviewer"
+        round="A1"
+        verdict="PASS"
+        rulesCovered={['GET-1']}
+        rulesMissing={['SELL-7']}
+        ruleHref={(id) => `#/rules/${id}`}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'GET-1' }).getAttribute('href')).toBe('#/rules/GET-1');
+    expect(screen.getByRole('link', { name: 'SELL-7' }).getAttribute('href')).toBe('#/rules/SELL-7');
+    rerender(
+      <VerdictCard
+        agent="reviewer"
+        round="A1"
+        verdict="PASS"
+        rulesCovered={['GET-1']}
+        rulesMissing={['SELL-7']}
+        ruleHref={() => undefined}
+      />,
+    );
+    expect(screen.getByRole('link', { name: 'SELL-7' }).getAttribute('href')).toBe('/rules/SELL-7');
+  });
+
   it('lost: no verdict word, no findings, and the reconciliation in words', () => {
     render(byState('lost (F0b A1, reconciled)'));
     const card = screen.getByRole('article', { name: /reviewer verdict A1/ });
