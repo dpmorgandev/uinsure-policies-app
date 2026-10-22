@@ -5,17 +5,18 @@
     "U0b",
     "U1",
     "U2",
+    "U3",
     "W1",
     "W2"
   ],
   "screens": {
     "about": {
       "built": [
+        "provenance-labels",
         "glossary-and-status-legend",
         "compiled-at-stamp-the-commit-sha-and-utc-time-trace-json-was-compiled-from"
       ],
       "notBuilt": [
-        "provenance-labels",
         "re-verify-with-git",
         "guided-tour-entry-one-rule-end-to-end-could"
       ]
@@ -38,6 +39,20 @@
         "trailer-agent-vs-hook-agent"
       ]
     },
+    "finding": {
+      "built": [
+        "findings",
+        "fixed-by"
+      ],
+      "notBuilt": []
+    },
+    "loop": {
+      "built": [
+        "attempt-ladder",
+        "gate-timeline"
+      ],
+      "notBuilt": []
+    },
     "matrix": {
       "built": [
         "filters-status-feature",
@@ -50,10 +65,10 @@
       "built": [
         "completeness-banner",
         "rules",
-        "tasks"
+        "tasks",
+        "attempts"
       ],
       "notBuilt": [
-        "attempts",
         "who-touched-what"
       ]
     },
@@ -73,11 +88,10 @@
     "plan": {
       "built": [
         "plan-header-status-approval-requirements-rev",
-        "node-graph-and-its-table"
-      ],
-      "notBuilt": [
+        "node-graph-and-its-table",
         "investigation-body-inv-plans-only"
-      ]
+      ],
+      "notBuilt": []
     },
     "rule": {
       "built": [
@@ -92,6 +106,14 @@
       "notBuilt": [
         "verify-it-yourself"
       ]
+    },
+    "verdict": {
+      "built": [
+        "verdict-summary",
+        "findings",
+        "raw-json"
+      ],
+      "notBuilt": []
     },
     "walkthrough": {
       "built": [
@@ -172,13 +194,10 @@
   },
   "notBuiltScreens": [
     "decisions",
-    "finding",
     "harness",
-    "loop",
     "not-found",
     "sessions",
     "stats",
-    "verdict",
     "wb-requests"
   ],
   "unmappedIds": [],
