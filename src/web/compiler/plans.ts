@@ -228,16 +228,23 @@ export interface RootCause {
   fixDirection: string | null;
 }
 
-/** A root_cause split at its "Symptom:", "Cause:" and "Fix direction:" markers; text with no marker is kept whole as the cause. */
+/**
+ * A root_cause split at its "Symptom:", "Cause:" and "Fix direction:" markers (LOOP-4). Every character lands in a field:
+ * a sentence before the first marker opens the symptom, a repeated marker's text joins its field in order, and a marker's
+ * parenthesised qualifier ("Cause (kit):") stays in the field text. Text with no marker is kept whole as the cause.
+ */
 export function splitRootCause(text: string): RootCause {
-  const marks = [...text.matchAll(/(Symptom|Cause|Fix direction):/g)];
+  const marks = [...text.matchAll(/(Symptom|Cause|Fix direction)(\s*\([^)]*\))?:/g)];
   if (marks.length === 0) return { symptom: null, cause: text, fixDirection: null };
-  const found: Record<string, string> = {};
+  const found: Record<string, string[]> = {};
+  const preamble = text.slice(0, marks[0]?.index ?? 0).trim();
+  if (preamble !== '') found['Symptom'] = [preamble];
   marks.forEach((mark, at) => {
-    const name = mark[1] ?? '';
-    if (name in found) return;
     const from = (mark.index ?? 0) + mark[0].length;
-    found[name] = text.slice(from, marks[at + 1]?.index ?? text.length).trim();
+    const body = text.slice(from, marks[at + 1]?.index ?? text.length).trim();
+    const qualifier = (mark[2] ?? '').trim();
+    (found[mark[1] ?? ''] ??= []).push(qualifier === '' ? body : `${qualifier} ${body}`);
   });
-  return { symptom: found['Symptom'] ?? null, cause: found['Cause'] ?? null, fixDirection: found['Fix direction'] ?? null };
+  const field = (name: string): string | null => found[name]?.join(' ') ?? null;
+  return { symptom: field('Symptom'), cause: field('Cause'), fixDirection: field('Fix direction') };
 }
