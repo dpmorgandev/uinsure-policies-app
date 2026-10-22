@@ -266,7 +266,7 @@ function reasonOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-async function ask<T>(deps: ApiDeps, url: string, init?: RequestInit): Promise<ApiAnswer<T>> {
+async function ask<T = Policy>(deps: ApiDeps, url: string, init?: RequestInit): Promise<ApiAnswer<T>> {
   let response: Response;
   try {
     response = await deps.fetch(url, init);
@@ -341,7 +341,7 @@ export interface RecordedClaim {
   hasClaims: boolean;
 }
 
-export interface QuoteTerm {
+export interface CancellationTerm {
   termNumber: number;
   ruleApplied: string;
   daysInTerm: number;
@@ -350,14 +350,44 @@ export interface QuoteTerm {
   refundAmount: number;
 }
 
+export interface QuotedRefund {
+  type: string;
+  amount: number;
+  paymentReference: string;
+}
+
 export interface CancellationQuote {
   reference: string;
   cancellationDate: string;
   ruleApplied: string;
   totalRefund: number;
-  terms: QuoteTerm[];
-  refunds: Refund[];
+  terms: CancellationTerm[];
+  refunds: QuotedRefund[];
   quotedOn: string;
+}
+
+export interface CancellationResult {
+  reference: string;
+  cancellationDate: string;
+  ruleApplied: string;
+  totalRefund: number;
+  terms: CancellationTerm[];
+  refunds: Refund[];
+}
+
+export async function quoteCancellation(deps: ApiDeps, reference: string, cancellationDate: string): Promise<ApiAnswer<CancellationQuote>> {
+  return ask<CancellationQuote>(
+    deps,
+    `/api/policies/${encodeURIComponent(reference)}/cancellation-quote?cancellationDate=${encodeURIComponent(cancellationDate)}`,
+  );
+}
+
+export async function cancelPolicy(deps: ApiDeps, reference: string, cancellationDate: string): Promise<ApiAnswer<CancellationResult>> {
+  return ask<CancellationResult>(deps, `/api/policies/${encodeURIComponent(reference)}/cancellation`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ cancellationDate }),
+  });
 }
 
 export interface RenewalRequest {
@@ -385,11 +415,6 @@ function postJson(body: unknown): RequestInit {
 
 export function recordClaim(deps: ApiDeps, reference: string, body: ClaimRequest): Promise<ApiAnswer<RecordedClaim>> {
   return ask<RecordedClaim>(deps, `/api/policies/${encodeURIComponent(reference)}/claims`, postJson(body));
-}
-
-export function quoteCancellation(deps: ApiDeps, reference: string, cancellationDate: string): Promise<ApiAnswer<CancellationQuote>> {
-  const query = `cancellationDate=${encodeURIComponent(cancellationDate)}`;
-  return ask<CancellationQuote>(deps, `/api/policies/${encodeURIComponent(reference)}/cancellation-quote?${query}`);
 }
 
 export function renewPolicy(deps: ApiDeps, reference: string, body: RenewalRequest): Promise<ApiAnswer<Policy>> {

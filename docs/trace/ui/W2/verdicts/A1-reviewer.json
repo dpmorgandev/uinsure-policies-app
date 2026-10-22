@@ -1,0 +1,98 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T19:40:58Z",
+  "plan": "ui",
+  "node": "W2",
+  "attempt": 1,
+  "agent": "reviewer",
+  "agent_id": "a9460f8fe34745774",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "W2",
+    "attempt": 1,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "529739668c7762c563a1db39a20817edab6f87eb",
+    "diff_fingerprint": "d1e4bdec49bf1f25ac11c6c5fbcaf7c794da4342",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.red@3e0460a",
+      "gate.green@42b57b7",
+      "gate.typecheck@42b57b7",
+      "gate.lint@42b57b7",
+      "gate.lint-css@42b57b7",
+      "gate.test@42b57b7",
+      "gate.build@42b57b7",
+      "gate.e2e@42b57b7",
+      "gate.e2e-regression@42b57b7 (19:36:18, ok:false; re-run 19:38:16, known set)",
+      "gate.audit@42b57b7",
+      "gate.coverage@42b57b7",
+      "gate.scope@42b57b7",
+      "gate.no-stubs@42b57b7"
+    ],
+    "rules_covered": [
+      "WB-4"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "HONEST-1",
+        "severity": "P2",
+        "file": "src/web/app/workbench/cancel/CancelPolicy.tsx",
+        "line": 58,
+        "what": "answerOf hard-codes 'The API answered 201' instead of the status received; the receipts also fall back to literal 200 (line 161) and 201 (line 190)",
+        "why": "HONEST-1: no number the data doesn't hold. react-web: every value comes from the API's answer. The status is in cancelling.status, but the header writes its own. The fallbacks can't be reached, but they are invented values.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "WB-4",
+        "severity": "P2",
+        "file": "src/web/app/workbench/cancel/CancelPolicy.tsx",
+        "line": 225,
+        "what": "Header 'Policy status' comes from one GET on mount, so after a 201 cancel on the same screen it still shows the pre-cancel status (e.g. Active)",
+        "why": "WB-4 shows a successful cancel; HONEST-1: a status shown must be the one the API holds now. A re-read after the 201, or labelling the status as of load, would keep it honest.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "WB-3",
+        "severity": "P2",
+        "file": "src/web/app/workbench/cancel/CancelPolicy.tsx",
+        "line": 25,
+        "what": "Local ruleHref = '#/rules/' + ruleId, unencoded, a new copy beside src/web/app/shell/ruleLinks.ts",
+        "why": "Same issue as U7's 'one shared helper builds every workbench rule link' (W1 review A3 R3). This adds another instance for that line to cover, rather than a new blocker. Rule of three: this is a third or later copy.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "WB-4",
+        "severity": "P2",
+        "file": "tests/web/unit/client/wb-4.test.ts",
+        "line": 104,
+        "what": "The 'quote and cancellation agree (068)' unit test feeds two recorded answers through a pass-through client and compares them: it proves the fixture, not the code",
+        "why": "Anti-oracle: the client doesn't decide agreement, so this test can't fail for a code fault. The live e2e comparison tests do prove WB-4's 'agree', so coverage isn't lost.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R5",
+        "rule_id": "WB-2",
+        "severity": "P2",
+        "file": "src/web/app/workbench/cancel/CancelPolicy.tsx",
+        "line": 285,
+        "what": "The refusals list now uses .s-wb-list, which U7 plans to delete as unused (W1 review A3 R4)",
+        "why": "U7's acceptance line no longer holds after W2. If it runs as written, it removes a style W2's screen uses. The U7 line needs revising, not the code.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "TDD order: the WB-4 red commits 5f62012 and 18f8539 (and the regression spec 3e0460a) come before green 42b57b7. There's no TDD: stub commit. ui.dag.yaml W2 t2 (stub) and t3 (pause 1) are marked skipped in the plan, so this is a plan decision and there's no gate.stub receipt to cross-check.",
+      "Integrity: activity.jsonl shows no web-builder Write/Edit under tests/web. gate.red records all 12 unit and 26 e2e failing at assertions, and gate.green 26/26 + 12/12.",
+      "Stub-proof: e2e success tests sell their own policy through the API (amount 612.47 and their own references) and assert against the API's live answer. The differ test changes totalRefund in flight, so the screen has to compare the values rather than assume they match.",
+      "Not checked here: the comparison covers cancellationDate, ruleApplied, totalRefund, quotedOn and refunds[0].reference only, not per-term figures or every refund. This matches the signed-off screen's regions as far as I read them.",
+      "Regression gate: 2 failures, both the activity 1440 populated capture timeout, already on U7's acceptance list. The wb-cancel baseline is new."
+    ]
+  }
+}

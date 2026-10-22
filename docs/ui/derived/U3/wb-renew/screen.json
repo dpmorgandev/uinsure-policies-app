@@ -1,0 +1,129 @@
+{
+  "screen": "wb-renew",
+  "route": "/workbench/policies/:reference/renew",
+  "regions": [
+    {
+      "name": "renewal amount and payment method (default shown from the current term; omitted when auto-renew is off)",
+      "req": [
+        "WB-5"
+      ],
+      "components": [
+        "page-header",
+        "field",
+        "money-input",
+        "select"
+      ],
+      "fields": [
+        "092-renew-1-2-renew-on-the-day-of-sale-422.json exchanges[role=request,path=/policies/F4-MVFJSC6LXX].responseBody.{reference,status,autoRenew,amount,terms[0].{startDate,endDate}}",
+        "092-renew-1-2-renew-on-the-day-of-sale-422.json exchanges[path=/policies/F4-MVFJSC6LXX/renewals].requestBody.amount",
+        "092-renew-1-2-renew-on-the-day-of-sale-422.json exchanges[role=request].responseBody.payments[0].type (the default payment method, from the current term)",
+        "092-renew-1-2-renew-on-the-day-of-sale-422.json {item,provenance,recordedAt}",
+        "094-renew-1-2-auto-renew-off-card-and-amount-0-today-422.json exchanges[role=request,path=/policies/F4-MVFJSFG0NG].responseBody.{reference,status,autoRenew,terms[0].{startDate,endDate,amount}} (api-error page; no payment method control because autoRenew is false)",
+        "094-renew-1-2-auto-renew-off-card-and-amount-0-today-422.json exchanges[path=/policies/F4-MVFJSFG0NG/renewals].requestBody.{amount,paymentMethod}",
+        "094-renew-1-2-auto-renew-off-card-and-amount-0-today-422.json {item,provenance,recordedAt}",
+        "the API not answering (api-unreachable): no field"
+      ],
+      "built": false
+    },
+    {
+      "name": "problems (RENEW-1/2 with its window, RENEW-3b, RENEW-5, RENEW-6, COULD-3; several at once listed, not placed)",
+      "req": [
+        "WB-3"
+      ],
+      "components": [
+        "problem-banner",
+        "error-summary",
+        "rule-chip"
+      ],
+      "fields": [
+        "092-renew-1-2-renew-on-the-day-of-sale-422.json exchanges[path=/policies/F4-MVFJSC6LXX/renewals].responseBody.{title,status,detail,ruleId,windowStart,windowEnd,type,instance}",
+        "094-renew-1-2-auto-renew-off-card-and-amount-0-today-422.json exchanges[path=/policies/F4-MVFJSFG0NG/renewals].responseBody.{title,status,detail,type,instance,violations[].{ruleId,detail}}",
+        "RENEW-6 and COULD-3: no recording in the data excerpt; shown as a gap in a note on the api-error page",
+        "the API not answering (api-unreachable): no field"
+      ],
+      "built": true
+    },
+    {
+      "name": "the new term, last on the timeline",
+      "req": [
+        "WB-5",
+        "WB-2"
+      ],
+      "components": [
+        "term-timeline"
+      ],
+      "fields": [
+        "092-renew-1-2-renew-on-the-day-of-sale-422.json exchanges[role=request,path=/policies/F4-MVFJSC6LXX].responseBody.{reference,terms[0].{termNumber,startDate,endDate,amount,paymentReference},payments[0].{type,amount}}",
+        "094-renew-1-2-auto-renew-off-card-and-amount-0-today-422.json exchanges[role=request,path=/policies/F4-MVFJSFG0NG].responseBody.{reference,terms[0].{termNumber,startDate,endDate,amount,paymentReference},payments[0].{type,amount}}",
+        "fake-clock/Renewal_30_days_before_the_end_is_accepted.txt (labelled fake-clock test, not live): sold 418.07 Card, clock 2027-09-28, renewal 446.83, expected terms 418.07 Card then 446.83 Card; term dates are not in the excerpt",
+        "a successful renewal's new term (dates, amount): no recording in the data excerpt, drawn as a gap rung"
+      ],
+      "built": true
+    },
+    {
+      "name": "renew, busy while the request runs",
+      "req": [
+        "BUSY-1"
+      ],
+      "components": [
+        "button",
+        "spinner"
+      ],
+      "fields": [
+        "092-renew-1-2-renew-on-the-day-of-sale-422.json exchanges[path=/policies/F4-MVFJSC6LXX/renewals].{method,path,requestBody.amount}",
+        "094-renew-1-2-auto-renew-off-card-and-amount-0-today-422.json exchanges[path=/policies/F4-MVFJSFG0NG/renewals].{method,path}",
+        "reference carried from the route /workbench/policies/:reference/renew"
+      ],
+      "built": true
+    }
+  ],
+  "states": [
+    {
+      "name": "populated",
+      "file": "populated.html",
+      "variant": "092-renew-1-2-renew-on-the-day-of-sale-422.json (recorded 2026-10-19T17:48:10Z): policy F4-MVFJSC6LXX, auto-renewing, renewal at 401.16 refused 422 under RENEW-1/2 with the API's window 2027-09-18 to 2027-10-18; the success terms are the fake-clock test's, labelled not live"
+    },
+    {
+      "name": "submitting",
+      "file": "submitting.html",
+      "variant": "the populated page's values, with the renew request in flight (BUSY-1)"
+    },
+    {
+      "name": "api-error",
+      "file": "api-error.html",
+      "variant": "094-renew-1-2-auto-renew-off-card-and-amount-0-today-422.json (recorded 2026-10-19T17:48:14Z): policy F4-MVFJSFG0NG, not auto-renewing, amount 0 and Card refused 422 with three violations (RENEW-1/2, RENEW-3b, RENEW-5)"
+    },
+    {
+      "name": "api-unreachable",
+      "file": "api-unreachable.html",
+      "variant": "no data: the API does not answer; problem-banner unreachable"
+    }
+  ],
+  "actions": [
+    {
+      "label": "Renew policy",
+      "kind": "request",
+      "to": "POST /policies/:reference/renewals (amount; paymentMethod only when the policy auto-renews)"
+    },
+    {
+      "label": "Try again",
+      "kind": "request",
+      "to": "repeats the request that did not answer"
+    },
+    {
+      "label": "Open policy",
+      "kind": "link",
+      "to": "/workbench/policies/:reference"
+    },
+    {
+      "label": "Rule chips (RENEW-1/2, RENEW-3b, RENEW-5)",
+      "kind": "link",
+      "to": "/rules/:ruleId"
+    },
+    {
+      "label": "Show requests / Hide requests",
+      "kind": "control",
+      "to": "opens or closes the inspector drawer (in the frame)"
+    }
+  ]
+}

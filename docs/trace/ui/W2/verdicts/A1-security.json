@@ -1,0 +1,62 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T19:40:13Z",
+  "plan": "ui",
+  "node": "W2",
+  "attempt": 1,
+  "agent": "security",
+  "agent_id": "a2e1956c04c399959",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "W2",
+    "attempt": 1,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "529739668c7762c563a1db39a20817edab6f87eb",
+    "diff_fingerprint": "d1e4bdec49bf1f25ac11c6c5fbcaf7c794da4342",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.lint",
+      "gate.typecheck",
+      "gate.test",
+      "gate.build",
+      "gate.e2e",
+      "gate.e2e-regression",
+      "gate.scope",
+      "gate.no-stubs"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Code in scope: src/web/app/data/api.ts, src/web/app/workbench/cancel/CancelPolicy.tsx and src/web/app/workbench/routes.tsx. The other 77 files are tests, derived screen contracts under docs/ui/derived and trace files.",
+      "W1 met: the grep over the diff for dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( and new Function found nothing in src/web or the tests. API fields (problem title and detail, dates, refund amounts, rule applied) render as React text through ProblemView and the kit components.",
+      "W2 met: the only hrefs built are '#/rules/'+ruleId (an internal hash route, through the existing ruleHref) and the existing sell link. No javascript: URL and no external link is added. The policy reference is URL-encoded with encodeURIComponent in the API paths and not in an href.",
+      "W3 met: no change to index.html, no third-party origin and no external asset in the diff.",
+      "W4 met: the client calls only /api/policies/{ref}/cancellation-quote?cancellationDate= (GET) and /api/policies/{ref}/cancellation (POST, JSON body with cancellationDate) through the injected deps.fetch. The only storage use is the existing recent-policies list in browser.ts, which this diff doesn't touch. The new code reads no cookies.",
+      "W5 n/a: no change under src/web/compiler.",
+      "W6 met: no local absolute path, personal email, key or token in the diff. The 'src/web/app/data/api' string in wb-4.test.ts is a repo-relative import. 'http://x' in tests/web/e2e/W2/support/cancel.ts:153 is only a base for URL parsing and is never fetched.",
+      "W7 met: no change to package.json or the lockfile. gate.audit (--omit=dev) found 0 vulnerabilities. gate.audit-dev reports 5 high, noted as the known dev-only item (braces GHSA-vfj7-8cjw-p6xm via stylelint). I could not confirm from the receipt that all 5 are that item. The receipt names only that one, and the item is carried in the dev audit, which doesn't gate.",
+      "W8 met: a failed request shows the API's problem details through ProblemView. An unreachable API shows the kit's ProblemBanner with only the client fetch error text (failure.reason), so no server internals. There is no stack trace output and no .stack use.",
+      "API8:2023 covered through W3 and W4. API10:2023 covered through W1 and W8: the API's answers render as text and a non-JSON body is tolerated by the existing ask() catch.",
+      "P2 observation, not a finding: the money() helper is toFixed(2) on JSON numbers, a display-only format in a client that does no money arithmetic. Rounding stays with the API (Money.Round).",
+      "n/a, ui node with no server code: API1, API2, API3, API4, API5, API6, API7 and API9. API6 is the cancel-twice, refund and concurrency logic, which lives in the API and was checked in the server nodes. This UI sends only the quoted date and makes no state change on the quote GET. It guards a double submit with inFlight and a disabled button, and the API's 409 for CANCEL-4 is shown as returned.",
+      ".NET extras n/a: the diff has no C# or server code and no NuGet change.",
+      "gate.e2e-regression exited 1 with 2 failures, activity populated at 1440 in light and dark only. The receipt records this as a known set, a capture timeout already carried as a U7 line, so it isn't a security concern."
+    ]
+  }
+}
