@@ -31,6 +31,11 @@ export interface VerdictFindingRecord {
   route_to?: string;
 }
 
+/** The severity a finding carries, unchanged: P0, P1 or P2. Anything else is not a severity the kit draws, so it falls to P2. */
+export function severityOf(severity: string | undefined): 'P0' | 'P1' | 'P2' {
+  return severity === 'P0' || severity === 'P1' ? severity : 'P2';
+}
+
 /** A verdicts/<round>-<agent>.json (trace.json `verdicts[]`). `raw` is the file as stored. */
 export interface LoopVerdict {
   plan: string;

@@ -3,7 +3,7 @@ import type { BranchEntry, GateResult, LadderAttempt, LadderEscalation, LadderSt
 import type { Trace } from '../data/trace';
 import { agentOf } from '../shell/agents';
 import { commitUrl } from '../shell/repo';
-import { eventsOf, findingsRound, fixingCommitsOf, investigationId, markerOf, shortSha, verdictEvent, verdictsOf } from './loopData';
+import { eventsOf, findingsRound, fixingCommitsOf, investigationId, markerOf, severityOf, shortSha, verdictEvent, verdictsOf } from './loopData';
 import type { FixingCommit, LoopEvent, LoopVerdict } from './loopData';
 
 export const NO_DETAIL = 'No detail recorded in the log.';
@@ -82,7 +82,7 @@ function verdictStep(event: LoopEvent, verdicts: LoopVerdict[], plan: string, no
           rulesMissing={verdict.rulesMissing}
           findings={verdict.findings.map((f) => ({
             id: f.id ?? '',
-            severity: f.severity === 'P1' ? 'P1' : 'P2',
+            severity: severityOf(f.severity),
             summary: f.what ?? '',
             route: f.route_to ?? null,
           }))}

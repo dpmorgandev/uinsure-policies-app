@@ -19,7 +19,7 @@ import { blobUrl, commitUrl } from '../../shell/repo';
 import { Region } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
 import { headOf } from '../Ladder';
-import { shortSha, verdictsOf } from '../loopData';
+import { severityOf, shortSha, verdictsOf } from '../loopData';
 import type { LoopVerdict, VerdictFindingRecord } from '../loopData';
 import '../explorer.css';
 import './verdict.css';
@@ -42,7 +42,7 @@ function Finding({ finding, verdict }: { finding: VerdictFindingRecord; verdict:
     <article className="s-finding">
       <h3 className="s-finding-title">
         {finding.id ?? 'no id'}{' '}
-        {finding.severity === undefined ? null : <StatusTag status={finding.severity === 'P1' ? 'fail' : 'warn'}>{finding.severity}</StatusTag>}
+        {finding.severity === undefined ? null : <StatusTag status={finding.severity === 'P2' ? 'warn' : 'fail'}>{finding.severity}</StatusTag>}
       </h3>
       <KeyValueList
         items={[
@@ -113,7 +113,7 @@ function VerdictPage({ verdict, snapshot }: { verdict: LoopVerdict; snapshot: Sn
             rulesMissing={verdict.rulesMissing}
             findings={verdict.findings.map((f) => ({
               id: f.id ?? 'no id',
-              severity: f.severity === 'P1' ? 'P1' : 'P2',
+              severity: severityOf(f.severity),
               summary: f.what ?? '',
               route: f.route_to ?? null,
             }))}
