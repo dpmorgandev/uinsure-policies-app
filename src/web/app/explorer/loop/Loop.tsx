@@ -23,6 +23,19 @@ function jumpTo(line: number) {
   };
 }
 
+/** DATA-2: the provenance sentence comes from each line's own source value, never a constant. */
+function sourceSentence(events: LoopEvent[]): string {
+  const sources = [...new Set(events.map((e) => e.source))];
+  if (sources.length === 1) {
+    return sources[0] === null ? 'The log records no source for its events.' : `Every event is recorded as ${sources[0]}.`;
+  }
+  const named = sources.filter((s): s is string => s !== null);
+  const [main] = [...named].sort((a, b) => events.filter((e) => e.source === b).length - events.filter((e) => e.source === a).length);
+  const others = events.filter((e) => e.source !== main);
+  const parts = others.map((e) => `line ${e.line} is ${e.source ?? 'without a source'}`);
+  return `Events are recorded as ${main ?? 'unknown'}, except ${parts.join('; ')}.`;
+}
+
 function Ladders({ trace, plan, node, events }: { trace: Trace; plan: string; node: string; events: LoopEvent[] }) {
   const failed = events.filter((e) => e.kind === 'gate' && e.ok === false);
   return (
@@ -39,8 +52,8 @@ function Ladders({ trace, plan, node, events }: { trace: Trace; plan: string; no
         </p>
       ))}
       <p className="s-text">
-        Markers read attempt · log line. Source: the loop log of {plan}/{node}, log lines {events[0]!.line} to {events[events.length - 1]!.line}, each
-        event recorded by the orchestrator.
+        Markers read attempt · log line. Source: the loop log of {plan}/{node}, log lines {events[0]!.line} to {events[events.length - 1]!.line}.{' '}
+        {sourceSentence(events)}
       </p>
       <Ladder trace={trace} plan={plan} node={node} mode="expanded" />
     </>
