@@ -9,12 +9,17 @@ export interface DagNode {
   status: string | null;
   attempt: number | null;
   rules: string[];
+  dependsOn: string[];
 }
 
 export interface Dag {
   id: string | null;
   kind: string | null;
   title: string | null;
+  status: string | null;
+  approvedBy: string | null;
+  approvedOn: string | null;
+  requirementsRev: string | null;
   nodes: DagNode[];
 }
 
@@ -60,6 +65,10 @@ export function parseDag(source: string): Dag {
     id: text(top['plan_id']),
     kind: text(top['kind']),
     title: text(top['title']),
+    status: text(top['status']),
+    approvedBy: text(top['approved_by']),
+    approvedOn: text(top['approved_on']),
+    requirementsRev: text(top['requirements_rev']),
     nodes: items.map((node) => ({
       id: text(node['id']) ?? '',
       title: text(node['title']),
@@ -67,8 +76,23 @@ export function parseDag(source: string): Dag {
       status: text(node['status']),
       attempt: typeof node['attempt'] === 'number' ? node['attempt'] : null,
       rules: Array.isArray(node['rules']) ? node['rules'] : [],
+      dependsOn: Array.isArray(node['depends_on']) ? node['depends_on'] : [],
     })),
   };
+}
+
+/** An investigation's front matter (`---` to `---`): its plan_id and title. Null when the file has no front matter. */
+export function parseInvestigation(source: string): { id: string | null; title: string | null } | null {
+  const lines = source.split(/\r?\n/);
+  if (lines[0] !== '---') return null;
+  const end = lines.indexOf('---', 1);
+  if (end < 0) return null;
+  const front: Record<string, Scalar> = {};
+  for (const line of lines.slice(1, end)) {
+    const entry = /^(\w+):(.*)$/.exec(line);
+    if (entry) front[entry[1] ?? ''] = scalar(entry[2] ?? '');
+  }
+  return { id: text(front['plan_id']), title: text(front['title']) };
 }
 
 /**
