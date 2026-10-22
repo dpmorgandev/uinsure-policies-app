@@ -70,6 +70,9 @@ export function Frame() {
   const verdict = useMatch('/plans/:planId/:nodeId/verdicts/:round/:agent');
   const finding = useMatch('/plans/:planId/:nodeId/findings/:round');
   const planPage = useMatch('/plans/:planId');
+  const sessions = useMatch('/sessions');
+  const harness = useMatch('/harness');
+  const stats = useMatch('/stats');
   const commit = useMatch('/commits/:sha');
   const { planId, nodeId } = (activity ?? walkthrough ?? nodePage ?? loop)?.params ?? {};
 
@@ -82,21 +85,26 @@ export function Frame() {
     [rule !== null, 'Rule'],
     [matrix !== null, 'Requirements matrix'],
     [about !== null, 'How to read this'],
+    [sessions !== null, 'Sessions'],
+    [harness !== null, 'Harness'],
+    [stats !== null, 'Delivery stats'],
     [overview !== null, 'Overview'],
     [workbench !== undefined, workbench?.title ?? ''],
   ];
   const title = titles.find(([matched]) => matched)?.[1] ?? 'Not built yet';
-  const current = about
-    ? 'about'
-    : overview
-      ? 'overview'
-      : planPage || nodePage || walkthrough || activity || commit || loop || verdict || finding
-        ? 'plan'
-        : matrix || rule
-          ? 'matrix'
-          : workbench
-            ? 'workbench'
-            : '';
+  // Sessions and the harness are read as "about" the project; the delivery stats sit under the overview.
+  const current =
+    about || sessions || harness
+      ? 'about'
+      : overview || stats
+        ? 'overview'
+        : planPage || nodePage || walkthrough || activity || commit || loop || verdict || finding
+          ? 'plan'
+          : matrix || rule
+            ? 'matrix'
+            : workbench
+              ? 'workbench'
+              : '';
 
   useEffect(() => {
     document.title = `${title} · Docket`;
