@@ -428,6 +428,7 @@ nodes:
       - "The matrix links a PR cell out only when it matches #<n>, as the rule page does, from one shared parser (U1 review A2 R3, NAV-3)"
       - "A commit trailed 'Rule: none' shows its no-Rule state on its page, with no #/rules/none link, pinned by a screen test (U1 review A2.2 R2, NAV-3)"
       - "compiler/index.ts commitsOf keeps its original spacing; the D3 green reformatted it (U1 review A2.2 R1, RULE-1)"
+      - "The activity regression spec photographs its populated state as a bounded shot, not a full page of about 1130 records (390x144310 px, about 5 MB, and a 5000ms screenshot timeout at 1440), and the trace step writes the activity screen's baselines, which W1 left out (W1 t17, David 2026-10-22)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for U7: rel=noreferrer, the CSP directives, ids refused, repeated trailers kept; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
