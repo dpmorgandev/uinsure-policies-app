@@ -6,6 +6,7 @@ import { agentOf } from '../../shell/agents';
 import { DataNotice } from '../../shell/DataNotice';
 import { commitUrl } from '../../shell/repo';
 import { Rung } from '../../shell/Rung';
+import { chipStatus, ruleHref } from '../../shell/ruleLinks';
 import { useShell } from '../../shell/ShellContext';
 import '../explorer.css';
 
@@ -14,13 +15,6 @@ interface Row {
   n: number;
   rung: TraceRung;
   rules: string[];
-}
-
-/** A rule trailer names a rule the matrix has, or one it does not: the chip says which. */
-function chipStatus(trace: Trace, ruleId: string): 'built' | 'nb' | 'unknown' {
-  const rule = trace.rules.find((candidate) => candidate.id === ruleId);
-  if (rule === undefined) return 'unknown';
-  return rule.status === 'built' ? 'built' : 'nb';
 }
 
 const columnsFor = (trace: Trace): DataTableColumn<Row>[] => [
@@ -37,7 +31,7 @@ const columnsFor = (trace: Trace): DataTableColumn<Row>[] => [
       ) : (
         <span className="s-chips">
           {row.rules.map((id) => (
-            <RuleChip key={id} ruleId={id} status={chipStatus(trace, id)} href={`#/rules/${encodeURIComponent(id)}`} />
+            <RuleChip key={id} ruleId={id} status={chipStatus(trace, id)} href={ruleHref(id)} />
           ))}
         </span>
       ),

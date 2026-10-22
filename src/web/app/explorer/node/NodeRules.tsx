@@ -2,21 +2,13 @@ import { DataTable, RuleChip, StatusTag } from '../../../kit';
 import type { DataTableColumn, Status } from '../../../kit';
 import type { Trace, TraceNode, TraceTask, TraceVerdict } from '../../data/trace';
 import { Rung } from '../../shell/Rung';
+import { chipStatus, ruleHref } from '../../shell/ruleLinks';
 import '../explorer.css';
 
 interface Round {
   id: string;
   covered: string;
   verdict: TraceVerdict;
-}
-
-const ruleHref = (id: string): string => `#/rules/${encodeURIComponent(id)}`;
-
-/** A rule the matrix has is built or not; a rule it does not have is unknown, and its chip says so. */
-function chipStatus(trace: Trace, id: string): 'built' | 'nb' | 'unknown' {
-  const rule = trace.rules.find((candidate) => candidate.id === id);
-  if (rule === undefined) return 'unknown';
-  return rule.status === 'built' ? 'built' : 'nb';
 }
 
 function verdictTag(verdict: string): { status: Status; label: string } {
