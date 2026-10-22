@@ -1,0 +1,125 @@
+{
+  "v": 1,
+  "ts": "2026-10-21T21:49:54Z",
+  "plan": "ui",
+  "node": "W1",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a09fdbaa9990975f1",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "W1",
+    "attempt": 2,
+    "base_sha": "3431ce31adf895a388c3f74f970c6d35d732895b",
+    "head_sha": "42047fac3656f70a703cb0b97ba9575df441c308",
+    "diff_fingerprint": "a410a3858c2e12e51b4dc27c978f0df131a80153",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "gate.typecheck@2026-10-21T06:57:30Z (t1)",
+      "gate.red@2026-10-21T06:57:30Z (t1 acceptance)",
+      "gate.stub@2026-10-21T07:34:32Z (t2)",
+      "pause1@2026-10-21T07:35:02Z",
+      "gate.red@2026-10-21T20:03:47Z (t4 client)",
+      "gate.green@2026-10-21T20:07:45Z (t5 client)",
+      "gate.green@2026-10-21T20:54:39Z (t6 attempt 1, failed)",
+      "findings(A1)@2026-10-21T21:00:34Z",
+      "gate.green@2026-10-21T21:35:57Z (t6 attempt 2)",
+      "gate.refactor@2026-10-21T21:42:27Z (t7)",
+      "gate.e2e-regression@2026-10-21T21:42:27Z",
+      "gate.typecheck@2026-10-21T21:45:05Z (t8)",
+      "gate.lint@2026-10-21T21:45:05Z (t8)",
+      "gate.lint-css@2026-10-21T21:45:05Z (t8)",
+      "gate.test@2026-10-21T21:45:05Z (t8)",
+      "gate.build@2026-10-21T21:45:05Z (t8)",
+      "gate.e2e@2026-10-21T21:45:05Z (t8)",
+      "gate.audit@2026-10-21T21:45:06Z (t8)",
+      "gate.trace-check@2026-10-21T21:45:06Z (t8)",
+      "gate.scope@2026-10-21T21:45:06Z (t8)",
+      "gate.no-stubs@2026-10-21T21:45:06Z (t8)"
+    ],
+    "rules_covered": [
+      "WB-1",
+      "WB-6",
+      "WB-9"
+    ],
+    "rules_missing": [
+      "WB-2",
+      "WB-3",
+      "BUSY-1"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "HONEST-1",
+        "severity": "P1",
+        "file": "src/web/app/workbench/renew/Renew.tsx",
+        "line": 6,
+        "what": "Renew, QuoteCancel and RecordClaim still render t2 stub content at HEAD: another policy's reference, dates and amounts, and Renew/Cancel/Record buttons with no handler.",
+        "why": "docs/ui/derived/W1/derived.json marks these regions as built by W1: wb-renew's WB-3 problems and BUSY-1 renew-busy, wb-cancel's BUSY-1 actions and WB-3 problems, wb-claim's WB-3 problems and BUSY-1 record-claim. The routes are live and linked from the policy view ('Quote a cancellation', 'Record a claim'). For any :reference they show F4-MVFJSC6LXX, a 422 for 2027-09-18..2027-10-18, 'Cancel on 2026-12-02' and amount 401.16. None of that comes from the API's answer, which breaks HONEST-1 (MUST, can't be waived) and react-web ('every value comes from trace.json, the API's answer or the kit's labelled placeholder… never a default'). The buttons are never busy or disabled, so BUSY-1 isn't met on them. The 'Stub: … The client replaces it' comments (QuoteCancel.tsx:5, RecordClaim.tsx:5, Renew.tsx:6) are leftovers after green. No e2e spec or parity Screen covers these three screens: parity.ts types screen as wb-home|wb-sell|wb-policy only. Either build and test these regions, or render them as NotBuiltRegion and have David correct the derived reference or plan scope (t6 names only home, sell and policy).",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "WB-3",
+        "severity": "P1",
+        "file": "src/web/app/shell/RuleLinks.ts",
+        "line": 10,
+        "what": "The shell works around the kit's RuleChip default href with a global MutationObserver that rewrites React-owned <a href='/rules/…'> to '#/rules/…' in the live DOM.",
+        "why": "react-web: 'A missing or wrong component is a kit change: stop and report it, never patch it in the screen.' The file's own comment says 'A kit change (a link prefix) would make this unnecessary.' The patch is also unsound. It watches only childList, but React updates an existing anchor's href through an attribute mutation, which isn't observed. If the summary re-renders with a different violation on a reused <a> (a second 422), the chip goes back to '/rules/<id>', a non-hash path, and WB-3's 'rule chip that links to RULE-1' breaks. The WB-3 e2e checks only the first render. It also rewrites explorer links app-wide. This should go to David as a kit change (a RuleChip link base, or hrefs passed through ErrorSummary, ProblemBanner and SendAnywayToggle).",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "WB-2",
+        "severity": "P1",
+        "file": "tests/web/e2e/W1/wb-2.spec.ts",
+        "line": 123,
+        "what": "WB-2's refunds, claims and cancellation are tested only as empty or null. No test at either layer shows a policy with a refund, a claim or a cancellation rendered from the API.",
+        "why": "WB-2's interpretation lists 'payments, refunds, claims'. The live API already has E3 (cancel) and E5 (claims), so a test can cancel a sold policy (a refund greater than 0, cancellation set) or record a claim, then read the view against the API's GET. PolicyView.tsx:156-189 duck-types refund {reference,type,amount,paymentReference}, claim {reference,claimDate,description} and cancellation {cancellationDate,ruleApplied,totalRefund} from unknown. Nothing proves those rows or the timeline claim and cancellation rungs. A view that always rendered 'no refunds' or 'no claims' would pass every WB-2 test, so those success rows aren't stub-proof. The unit tests (wb-2.test.ts) also assert only the empty lists.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R4",
+        "rule_id": "WB-3",
+        "severity": "P2",
+        "file": "src/web/app/data/api.ts",
+        "line": 255,
+        "what": "ask() parses response.json() inside the fetch try, so an HTTP answer with a non-JSON body is reported as 'unreachable' ('The API did not answer') and its status is dropped.",
+        "why": "WB-3 says to render the answer the API gave. When a request reached the API, or the proxy answered with a status, the UI shouldn't say no request completed. Separate the network failure from a body that can't be read, and keep the status.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R5",
+        "rule_id": "WB-2",
+        "severity": "P2",
+        "file": "src/web/app/workbench/policy/PolicyView.tsx",
+        "line": 381,
+        "what": "NoPolicy says 'the policy was not found' for any problem status, including a 400 for a route reference that fails the pattern.",
+        "why": "The API answers 400 for a route reference that fails ^[A-Z0-9-]{3,20}$ (architecture: strict input), and 404 only under GET-1. Calling a 400 'not found' is a claim the API didn't make (HONEST-1). Word it from the problem's status or title.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R6",
+        "rule_id": "WB-2",
+        "severity": "P2",
+        "file": "src/web/app/data/api.ts",
+        "line": 69,
+        "what": "Policy.refunds, claims and cancellation are typed unknown, although the API contract fixes their shapes, so PolicyView probes string keys at runtime.",
+        "why": "api.md gives the shapes of refunds[], claims (ClaimResponse) and cancellation. Typed interfaces would let tsc catch a misnamed field (claimDate, totalRefund) and remove the duck-typing helpers. That reads better for David to explain line by line (code-quality).",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "TDD order holds from the trailer log. The red commits for WB-1, WB-2, WB-3, WB-6, WB-9 and BUSY-1 (7eec178..cba2ffb) come before the stub (842bac9). The client red commits (4085268..ac0d6a3) come before the client green (bf6339d). The screen greens (a572b5d, 517f470, db4a04b) come after both.",
+      "gate.stub: 0 of 56 node-behaviour tests passed on the stub, and only reachable or parity tests passed. No rule-traited behaviour test passed on the stub.",
+      "Attempt 2 changed tests after their red commits (f11f331, 47c4992, 38b40ef, 5999192: timeouts, the theme-applied wait, the API harness). I can't run git, so I couldn't diff each file at its red commit against HEAD. What the HEAD diff shows (live timeouts, themeApplied, the harness refusing a foreign API) loosens no expected value. 'Assertions unchanged' rests on the gate.green receipt at 21:35:57Z. These commits carry 'TDD: red', but they sync existing tests rather than add new red ones.",
+      "There's no NotImplementedException or 'not implemented' in src/web (gate.no-stubs). R1 is canned content, not a throw stub.",
+      "The e2e tests read today from the real clock (daysFromToday(30), in UTC). That's unavoidable on the live API since WB-8 was cut. Expected values are always the API's answer. The unit tests pass a fixed TODAY and assert literals.",
+      "Seven tests are titled A11Y-1, which isn't a node rule. The orchestrator has already flagged this to David (state event at 19:52:23Z).",
+      "The regression suite and baselines don't exist on origin/ui (gate.e2e-regression). The orchestrator has flagged this to David. The reviewer doesn't gate on it.",
+      "The SELL-1 label on the client's reference-pattern check fits docs/requirements.md SELL-1, which covers both the pattern (400) and uniqueness (409)."
+    ]
+  }
+}

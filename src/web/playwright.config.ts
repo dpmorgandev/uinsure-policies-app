@@ -7,6 +7,8 @@ const config: PlaywrightTestConfig = {
   testDir: '../../tests/web/e2e',
   // One tsconfig for every spec: the specs live outside src/web, so they would find no `paths` of their own.
   tsconfig: './tsconfig.json',
+  // The regression screenshots live with the signed-off screens: docs/ui/baselines/<screen>/<state>-<width>-<theme>.png.
+  snapshotPathTemplate: '{testDir}/../../../docs/ui/baselines/{arg}{ext}',
   use: { baseURL: `http://localhost:${appPort}` },
   webServer: {
     command: `npm run build && npm run preview -- --port ${appPort} --strictPort`,
