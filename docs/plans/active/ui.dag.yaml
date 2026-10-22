@@ -176,7 +176,7 @@ nodes:
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U3 routes render the derived reference as canned content", status: done}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U3 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: done}
       - {id: t4, role: tester, step: red, layer: compiler, rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2], title: "Unit tests for loop events, attempts, verdicts, findings and provenance labels", status: done}
-      - {id: t5, role: builder, step: green, layer: compiler, rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2], title: "Green: loop events, attempts, verdicts, findings and provenance labels", status: pending}
+      - {id: t5, role: builder, step: green, layer: compiler, rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2], title: "Green: loop events, attempts, verdicts, findings and provenance labels", status: done}
       - {id: t6, role: builder, step: green, layer: screen, rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2], title: "The loop, verdict and finding screens; whole acceptance suite green", status: pending}
       - {id: t7, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: pending}
       - {id: t8, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: pending}
