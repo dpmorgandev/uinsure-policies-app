@@ -10,6 +10,7 @@
 import { expect } from '@playwright/test';
 import type { Page, Route } from '@playwright/test';
 import { serveTrace, setTheme, themes, viewports } from '../../U0b/support/app';
+import { builtAt } from '../../U0b/support/built';
 import { literalColours } from '../../U0b/support/reference';
 import { REC, answerWith, exchangeAt } from './recorded';
 import type { RecordedExchange } from './recorded';
@@ -201,8 +202,22 @@ export async function expectRegionComponents(page: Page, s: Screen, slug: string
     .toEqual({ req: wanted?.req, comps: wanted?.comps });
 }
 
+/**
+ * A nav entry a later node builds (in transit against W1's own derived.json, ../../U0b/support/built.ts) is left out
+ * of the shell comparison: whether it is a link yet is that node's to prove. Every entry W1 settled is still
+ * compared exactly.
+ */
+const { settledNav } = builtAt('W1');
+
+/** The shell as parity compares it: the nav's links and not-built entries are every entry but those in transit. */
 function shellOf(s: Structure): Record<string, unknown> {
-  return { title: s.title, shell: s.shell, navLinks: s.navLinks, navNotBuilt: s.navNotBuilt, navCurrent: s.navCurrent };
+  return {
+    title: s.title,
+    shell: s.shell,
+    navLinks: settledNav(s.navLinks),
+    navNotBuilt: settledNav(s.navNotBuilt),
+    navCurrent: s.navCurrent,
+  };
 }
 
 /** The title, the shell's components and the primary nav (links, not-built entries, the current one). */

@@ -9,7 +9,7 @@ import { pathToFileURL } from 'node:url';
 import { expect } from '@playwright/test';
 import type { BrowserContext, Page } from '@playwright/test';
 import { route, serveTrace, setTheme, themes, viewports } from './app';
-import { primaryNav, regionSettled, screenSettled } from './built';
+import { regionSettled, settledNav } from './built';
 import { literalColours, readBuilt, readReference, regionNamed } from './reference';
 import type { Structure } from './reference';
 import { derivedDir, designFixtureDir } from './trail';
@@ -33,10 +33,6 @@ async function open(page: Page, s: Screen): Promise<void> {
   await page.setViewportSize(viewports[1440]);
   await page.goto(s.path);
 }
-
-/** The primary nav's labels whose screen a later node builds: whether each is a link yet is that node's to prove. */
-const navInTransit = new Set(primaryNav.filter((entry) => !screenSettled(entry.screen)).map((entry) => entry.label));
-const settledNav = (labels: string[]): string[] => labels.filter((label) => !navInTransit.has(label));
 
 /**
  * The shell as parity compares it. The title only where the reference's frame names the node shown. The nav's links

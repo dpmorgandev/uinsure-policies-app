@@ -2,10 +2,13 @@
 // (docs/ui/fixture/), so both sides read the same data. Structure only: the tagged regions in order, the catalogued
 // components in each, the shell, the title and the navigation, and tokens in place of literal colours. The same
 // checks as U0b's parity (tests/web/e2e/U0b/support/parity.ts), against U1's references. Parity tests are the only
-// ones, with reachability, that may pass at the stub.
+// ones, with reachability, that may pass at the stub. A nav entry a later node builds (in transit against U1's own
+// derived.json, ../../U0b/support/built.ts) is left out of the shell comparison: whether it is a link yet is that
+// node's to prove. Every entry U1 settled is still compared exactly.
 import { expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { serveTrace, setTheme, themes, viewports } from '../../U0b/support/app';
+import { builtAt } from '../../U0b/support/built';
 import { designFixtureDir } from '../../U0b/support/trail';
 import { route } from './app';
 import { literalColours, readBuilt, readReference, regionNamed, regionOrder } from './reference';
@@ -40,12 +43,15 @@ async function open(page: Page, s: Screen): Promise<void> {
   await page.goto(s.path);
 }
 
+const { settledNav } = builtAt('U1');
+
+/** The shell as parity compares it: the nav's links and not-built entries are every entry but those in transit. */
 function shellOf(s: Structure): Record<string, unknown> {
   return {
     title: s.title,
     shell: s.shell,
-    navLinks: s.navLinks,
-    navNotBuilt: s.navNotBuilt,
+    navLinks: settledNav(s.navLinks),
+    navNotBuilt: settledNav(s.navNotBuilt),
     navCurrent: s.navCurrent,
     tabCurrent: s.tabCurrent,
   };
