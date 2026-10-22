@@ -2,8 +2,15 @@
 
 Rule IDs: WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1, A11Y-1
 Branch: feature/ui/W1   Worktree: .claude/worktrees/ui-W1
-Commit under test: 8ed2ccf. That was HEAD when this script was written, after the A2 round's reviewer and security
-verdicts both passed. This script's own commit changes only this file. Record the SHA you test in the sign-off.
+Commit under test: fe6117a. That was HEAD on `feature/ui/W1` when this script was revised, after the rebase onto U1
+(`origin/ui` at fa18658), attempt 4's reviewer and security verdicts (both PASS) and the integrate gate at that head.
+This script's own commit changes only this file. Record the SHA you test in the sign-off.
+
+The first version (a9bced1) was written at t10 against the pre-rebase head 8ed2ccf, which isn't on this branch. The
+rebase brought U1's routes and nav into the shell (`app/shell/App.tsx`, `app/shell/Frame.tsx`), so this revision
+re-checks every step that touches the shell against fe6117a: the nav (step 1), a rule chip's link (step 38, note 4),
+the not-built routes (step 54), the footer (note 7) and the earlier nodes' suites (step 68). W1's own screens and
+client are unchanged by the rebase, so the other steps stand as written.
 App URL: http://localhost:4178   API: http://localhost:5088. W1 is position 8 in `ui.dag.yaml`, so its ports are 4170 + 8
 and 5080 + 8. The app proxies `/api/…` to the API port it's given in `DOCKET_API_PORT`.
 
@@ -13,7 +20,7 @@ out of W1's scope (W2 and W3). Their routes (`…/cancel`, `…/renew`, `…/cla
 region show as **not built yet** (inv-006, I1). The request log (`wb-requests`) and the sell form's request inspector
 aren't built either.
 
-The Actual and Pass/Fail columns are empty. I wrote the steps from the code and the acceptance suite at 8ed2ccf,
+The Actual and Pass/Fail columns are empty. I wrote the steps from the code and the acceptance suite at fe6117a,
 and I didn't run them. Starting the API and building the app both write outside my write scope (note 6). The API's
 exact words are quoted from the recorded answer for the same input in `docs/ui/fixture/api/` (the file's number is
 given). Where no recording covers an input, the step says to compare with the response in DevTools.
@@ -52,7 +59,8 @@ ASPNETCORE_ENVIRONMENT=Development ConnectionStrings__Policies="Data Source=$(pw
 Terminal 2, the app:
 
 ```sh
-npm --prefix src/web run build
+npm --prefix src/web run trace      # the trail at HEAD -> src/web/public/trace.json, for U1's rule page (step 38)
+npm --prefix src/web run build      # copies src/web/public/ into src/web/dist/
 DOCKET_API_PORT=5088 npm --prefix src/web run preview -- --port 4178 --strictPort   # leave it running
 ```
 
@@ -75,7 +83,11 @@ so on. Type them as `yyyy-MM-dd`. Don't run this script across midnight.
   in recent Chrome). Add the pattern `*/api/*` and tick it, and untick it afterwards. A blocked request fails in the
   browser, so it's the way to see the API give no answer.
 
-When you finish, stop both servers with Ctrl+C and run `rm -f qa-w1.db*`. Never stage `src/web/test-results/`.
+If `npm run trace` exits 1, write down what it lists and carry on: W1's screens don't read `trace.json`, and notes 4
+and 7 say what steps 38 and the footer show then.
+
+When you finish, stop both servers with Ctrl+C and run `rm -f qa-w1.db*` and `rm -rf src/web/public`. Neither
+`src/web/public/` nor `src/web/test-results/` is git-ignored. Never stage them.
 
 ## Steps
 
@@ -83,7 +95,7 @@ When you finish, stop both servers with Ctrl+C and run `rm -f qa-w1.db*`. Never 
 
 | # | Rule | Route | Action | Expected | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|
-| 1 | WB-9 | `#/` → `#/workbench` | Open http://localhost:4178/, then click `Workbench` in the primary nav | the workbench home opens. The tab reads `Workbench · Docket`. The nav's Workbench entry is marked current (Elements: `aria-current="page"`). The header `Workbench` carries the question "Which policy do you want to work on?" and a `Live` tag. Under it are four sections, in this order: `Open a policy by reference`, `Request status`, `Sell a new policy` and `Recent policies in this browser` | | |
+| 1 | WB-9 | `#/` → `#/workbench` | Open http://localhost:4178/, then click `Workbench` in the primary nav | the workbench home opens. The tab reads `Workbench · Docket`. The nav's Workbench entry is marked current (Elements: `aria-current="page"`), and no other entry is. The nav's links, in order: `Overview`, `Requirements matrix` (U1's), `How to read this` and `Workbench`. `Plan` and `Human decisions` are drawn as not built yet, not as links. The header `Workbench` carries the question "Which policy do you want to work on?" and a `Live` tag. Under it are four sections, in this order: `Open a policy by reference`, `Request status`, `Sell a new policy` and `Recent policies in this browser` | | |
 | 2 | WB-9 | `#/workbench` | Read the recent policies section | `This browser only.` and the scope line, then the empty state `No policy has been sold or opened in this browser yet`, with "A reference appears here after you sell a policy or open one by its reference." There's no list. Application → Local Storage → `http://localhost:4178` has no `workbench.recent` key | | |
 | 3 | WB-2 | `#/workbench` | Click the words `Policy reference` above the input. Leave it empty and press `Open policy` | clicking the label puts focus in the input: it is that input's visible label. The empty open shows `Type a policy reference.` under the field, and the Network panel shows no request. Request status still reads `Idle. No request sent. …` | | |
 | 4 | WB-3 | `#/workbench` | Type `QA-W1-NONE`, press `Open policy` | the page stays on the home. Network shows `GET /api/policies/QA-W1-NONE` → 404. Request status shows a banner titled `Policy not found`, with a `404` tag, a `GET-1` rule chip and `No policy with reference 'QA-W1-NONE'.` (the words recorded in 053). The header's live note reads `GET /policies answered 404`. The field still holds `QA-W1-NONE` | | |
@@ -135,7 +147,7 @@ When you finish, stop both servers with Ctrl+C and run `rm -f qa-w1.db*`. Never 
 | 35 | WB-6 | `#/workbench/sell` | Turn Send anyway off, keeping the values. Press Sell | nothing is sent. The form's own checks are back: the summary lists the SELL-2 and SELL-7 messages. The API's 422 table is gone | | |
 | 36 | WB-6 | `#/workbench/sell` | Still off: fix the start to `T+30`, the amount to `300.00`, and Policyholder 2's date of birth to `1990-01-01`. Add a third policyholder (any name, `1980-02-02`) | `3 of 3 policyholders`, with no add button. With the checks on, the form stops at three | | |
 | 37 | WB-6 | `#/workbench/sell` | Turn Send anyway on, press `Add another policyholder`, and fill Policyholder 4 `Radia` `Perlman` `1988-01-18`. Press Sell | a fourth policyholder with its own fields. The payload carries all four. The answer is `422`, and the summary and the table list SELL-4, `A policy needs 1 to 3 policyholders.` (recorded in 024), beside the client check `A policy has 1 to 3 policyholders.` | | |
-| 38 | WB-3 | `#/workbench/sell` → `#/rules/SELL-4` | Click the `SELL-4` chip in the summary | the URL becomes `#/rules/SELL-4`. The chip links to that rule's RULE-1 page, which isn't built yet: the not-built page reads `/rules/SELL-4 has nothing to show yet.` (note 4) | | |
+| 38 | WB-3 | `#/workbench/sell` → `#/rules/SELL-4` | Click the `SELL-4` chip in the summary | the URL becomes `#/rules/SELL-4`, and U1's rule page for SELL-4 opens, not the not-built page. The tab reads `Rule · Docket`. The nav marks `Requirements matrix` as current, and `Workbench` no longer is. Breadcrumbs `Overview › Requirements matrix › SELL-4`, and the title `SELL-4 1 to 3 policyholders` (`docs/requirements.md:60`). The rest of that page is U1's to check (note 4) | | |
 | 39 | WB-3 | `#/workbench/sell` | Reload. Sell `QA-W1-YOUNG` with a valid form, but Policyholder 1 born `2016-01-01`. Send anyway off | the form has no age check, so it sends. The answer is `422`, and the summary lists `Policyholder 1 must be 16 or older on the start date.` (recorded in 025) with a `SELL-5` chip and `whole request`. No send-anyway table is shown, because the switch is off | | |
 | 40 | WB-3 | `#/workbench/sell` | Reload. Sell `QA-W1-FIX` with a valid form (start `T+30`) but amount `527.185`. Send anyway off | the form has no decimal-places check, so it sends. The answer is `400`. The summary lists `The amount must be at most 1,000,000.00 with no more than 2 decimal places.` (recorded in 042) with the key `amount`. Amount alone has `aria-invalid="true"`, with the same words under it. No field holding a valid value carries an error | | |
 | 41 | WB-3 | `#/workbench/sell` | Click that summary entry | focus moves into the Amount field, and the URL stays `#/workbench/sell` | | |
@@ -168,7 +180,7 @@ Cancelling and recording a claim are W2's and W3's screens, so the setup goes st
 
 | # | Rule | Route | Action | Expected | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|
-| 54 | WB-3 | `#/workbench/policies/QA-W1-SOLD/cancel`, `…/renew`, `…/claims/new` | Open each, with Network cleared | the kit's not-built-yet pattern, naming the route (for example `/workbench/policies/QA-W1-SOLD/cancel has nothing to show yet.`), with `Back to the overview`. The tab reads `Not built yet · Docket`. The page sends no request. It shows no date, no amount, no `answered <status>`, no alert, no rule chip, and no reference but the one in the route | | |
+| 54 | WB-3 | `#/workbench/policies/QA-W1-SOLD/cancel`, `…/renew`, `…/claims/new` | Open each, with Network cleared | the kit's not-built-yet pattern, naming the route (for example `/workbench/policies/QA-W1-SOLD/cancel has nothing to show yet.`), with `Back to the overview`. The tab reads `Not built yet · Docket`, and no nav entry is marked current. The page sends no request. It shows no date, no amount, no `answered <status>`, no alert, no rule chip, and no reference but the one in the route | | |
 
 ### H. Keyboard, focus, status words, themes, widths (A11Y-1)
 
@@ -183,7 +195,8 @@ Cancelling and recording a claim are W2's and W3's screens, so the setup goes st
 
 ### I. The acceptance suite: what the running app can't show
 
-First stop the API (Ctrl+C in terminal 1) and the preview (terminal 2). The suite starts its own API on 5088, with its
+First stop the API (Ctrl+C in terminal 1) and the preview (terminal 2), and run `rm -rf src/web/public`, so the suite
+builds the app as the gates did, with no compiled trail in it. The suite starts its own API on 5088, with its
 own fresh database in the OS temp directory. It stops before any test if an API it didn't start already answers on
 5088, because that database can't be known to be fresh. It builds and previews the app on 4178 itself, with the
 proxy on 5088. Rows 61 to 65 also run that rule's client unit tests (`tests/web/unit/client/`, on the recorded
@@ -198,8 +211,10 @@ responses). BUSY-1 and A11Y-1 have no client unit tests.
 | 65 | WB-9 | shell | The same, with `"WB-9 · "` | all passed. This includes "another browser doesn't see it" (a second browser context) and parity of the home | | |
 | 66 | BUSY-1 | shell | `DOCKET_API_PORT=5088 DOCKET_APP_PORT=4178 npm --prefix src/web run e2e -- W1/ --grep "BUSY-1 · "` | all passed: each request held in flight by the test, then let through, and the no-answer cases | | |
 | 67 | A11Y-1 | shell | `DOCKET_API_PORT=5088 DOCKET_APP_PORT=4178 npm --prefix src/web run e2e -- W1/ --grep "A11Y-1 · "` | 7 passed: axe finds no violation on the home listing a sold policy, the sell form filled in, answered 201, answered 422 and answered 400, and the policy view populated and answered 404. Each runs light and dark, at 1440 and 390 | | |
+| 68 | WB-9 | shell | `DOCKET_API_PORT=5088 DOCKET_APP_PORT=4178 npm --prefix src/web run e2e -- U0b/ U1/ --workers=2` | `65 passed` for U0b and `126 passed` for U1, 0 failed, 0 skipped (`191 passed` in all). W1 made `Workbench` a nav link, and this proves the earlier nodes' shell parity still holds: each compares only the nav entries settled at its own derived reference, and leaves Workbench to W1 (85154dd). If a test fails on the 30000 ms timeout with no assertion failed, run it once more and record both runs: the integrate gate at fe6117a saw two such timeouts in U1, and both passed on the re-run | | |
 
-The whole suite in one run: `DOCKET_API_PORT=5088 DOCKET_APP_PORT=4178 npm --prefix src/web run e2e -- W1/`.
+The whole W1 suite in one run: `DOCKET_API_PORT=5088 DOCKET_APP_PORT=4178 npm --prefix src/web run e2e -- W1/`.
+W1's, U0b's and U1's together, as the attempt-4 gates ran them: `… run e2e -- W1/ U0b/ U1/ --workers=2`.
 
 ## Notes
 
@@ -215,9 +230,14 @@ The whole suite in one run: `DOCKET_API_PORT=5088 DOCKET_APP_PORT=4178 npm --pre
 3. **`1 of 4 policyholders` with Send anyway on (step 31).** The form allows a fourth policyholder only with its
    checks off, so the API's own SELL-4 can be shown (WB-6). The kit's count line names that maximum, so it reads
    "of 4" while the switch is on.
-4. **Rule chips open pages that aren't built yet (steps 38 and 44).** Every chip links by hash to RULE-1's route,
-   `#/rules/<ID>`, as WB-3 requires. RULE-1's screen is a later node's, so today the link lands on the not-built
-   page naming that route. That's correct for W1. The link is the contract.
+4. **Rule chips open U1's rule page (steps 38 and 44).** Every chip links by hash to RULE-1's route, `#/rules/<ID>`,
+   as WB-3 requires (`'#/rules/' + ruleId` in `ProblemView.tsx`, `SellPolicy.tsx` and `PolicyView.tsx`). Before the
+   rebase that route fell to the not-built page. Since U1 merged, `app/explorer/u1Routes.tsx` routes `rules/:ruleId`
+   to U1's Rule page, which reads `trace.json`. Step 38 checks only that the chip lands on the right rule. What that
+   page says about SELL-4 (its commits, tests and sign-off) is U1's, checked in `docs/qa/ui-U1.md` part C. If
+   `npm run trace` failed, the rule page still opens (tab `Rule · Docket`, Requirements matrix current), but in place
+   of the rule it shows a `Could not load` notice with a reason naming `trace.json`. That's U1's honest state for a
+   missing trail, and is not a W1 failure. It is never the not-built page.
 5. **What only the suite shows.** The running app can't make the API answer 400 to a policy view (step 62).
    It also can't hold a request in flight exactly (the `W1 slow` profile only delays it), or run axe. Part I covers
    these. Nothing here or in the e2e suite drives the recent list's storage-refused state ("Recent policies can't
@@ -225,18 +245,20 @@ The whole suite in one run: `DOCKET_API_PORT=5088 DOCKET_APP_PORT=4178 npm --pre
    missing, the list reads as unavailable, and the sale and the read still answer. The kit draws that state.
 6. **The tester didn't run these steps.** `npm run build` writes `src/web/dist/`, and the API writes a database
    file, both outside the tester's write scope. The harness also refused a run of the API with its database
-   outside the repo. The expected words are from the code at 8ed2ccf and from the recordings named in each row.
+   outside the repo. `npm run trace` writes `src/web/public/`, also outside it. The expected words are from the code
+   at fe6117a and from the recordings named in each row.
    The values that move with the clock (`T`, `<endDate>`, the `PAY-`, `REF-` and `CLM-` references) are given as
    what to compare against, not as fixed text.
-7. **The footer.** This run doesn't compile the trail (`npm run trace`), so `src/web/public/trace.json` doesn't
-   exist, and the footer reads `No snapshot: trace.json hasn't been read.` That's the shell's honest state (U0b),
-   not part of W1.
+7. **The footer.** This run compiles the trail at HEAD first (`npm run trace`), so the footer shows that snapshot's
+   short SHA (the HEAD you wrote down) and its compile time, linked to the commit. If the compile failed, there's no
+   `src/web/public/trace.json`, and the footer reads `No snapshot: trace.json hasn't been read.` Either way the
+   footer is the shell's (U0b's), not part of W1, and the workbench screens look the same.
 
 ## Sign-off
 
 David: ______ · SHA tested: ______ · date: ______
 
-Steps passed: ____ of 67 · Steer (if any): ______
+Steps passed: ____ of 68 · Steer (if any): ______
 
 Steps not run, or only partly seen, and why:
 - ______
