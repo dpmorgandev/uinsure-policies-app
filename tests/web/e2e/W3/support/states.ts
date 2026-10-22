@@ -12,6 +12,7 @@ import { literalColours } from '../../U0b/support/reference';
 import { answerWith, exchangeAt } from '../../W1/support/recorded';
 import type { RecordedExchange } from '../../W1/support/recorded';
 import { designFixtureDir, readBuilt, readReference, regionNamed, regionOrder, unbuiltComps } from '../../W1/support/reference';
+import type { Structure } from '../../W1/support/reference';
 import { route, unreachable } from '../../W1/support/workbench';
 
 export interface W3Screen {
@@ -161,8 +162,22 @@ export async function expectRegionsInOrder(page: Page, s: W3Screen): Promise<voi
     .toEqual({ order: regionOrder(reference), unbuilt: unbuiltComps(reference) });
 }
 
+/**
+ * The one exception to the reference's components (orchestrator ruling, round A2, under David's delegation):
+ * g4-defects.md section 3, "Duplicates: … wb-requests has two filters with two counts". The reference's page-level
+ * filter-bar in wb-requests' request-log region is that duplicate; the page keeps the kit RequestLog's own filter
+ * and count, so the filter-bar is not required there. Every other region and component stays required.
+ */
+function withoutG4Duplicates(s: W3Screen, reference: Structure): Structure {
+  if (s.screen !== 'wb-requests') return reference;
+  return {
+    ...reference,
+    regions: reference.regions.map((r) => (r.slug === 'request-log' ? { ...r, comps: r.comps.filter((c) => c !== 'filter-bar') } : r)),
+  };
+}
+
 export async function expectEveryRegionsComponents(page: Page, s: W3Screen): Promise<void> {
-  const reference = await readReference(page.context(), w3(s.screen), s.state);
+  const reference = withoutG4Duplicates(s, await readReference(page.context(), w3(s.screen), s.state));
   await prepare(page, s);
   await expect
     .poll(async () => {
