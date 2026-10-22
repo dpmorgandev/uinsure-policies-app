@@ -30,6 +30,19 @@
   overflow-wrap: anywhere;
 }
 
+.s-steps {
+  margin: 0;
+  padding: 0 0 0 var(--space-6);
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.s-next {
+  margin: 0;
+  padding: var(--space-3) 0;
+}
+
 .s-stop {
   margin: 0;
   min-width: 0;
