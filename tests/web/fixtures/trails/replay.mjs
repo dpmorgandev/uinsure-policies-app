@@ -1,6 +1,6 @@
 // Replays a fixture trail into a fresh git repo (web-testing.spec C3; the form is in README.md beside this).
 // The base becomes origin/main; each commit in commits.json is made on feature/<plan>/<node> with its
-// trailers; then the trail files are written, uncommitted, as at the trace step. {{cN}} and {{cN:7}} in any
+// trailers (an array value written as one line per item, as a real body repeats a key); then the trail files are written, uncommitted, as at the trace step. {{cN}} and {{cN:7}} in any
 // file become commit cN's SHA. A path ending .fixture loses the suffix, so the repo's own rule-tag walker
 // never counts a fixture's test titles.
 //
@@ -28,7 +28,9 @@ const placeAll = (dir, root, shas) => {
 
 export function replay(fixture, root, { trail = true } = {}) {
   const spec = JSON.parse(readFileSync(join(fixture, 'commits.json'), 'utf8'));
-  const git = (...a) => execFileSync('git', a, { cwd: root, encoding: 'utf8', env: { ...process.env, GIT_AUTHOR_DATE: spec.date, GIT_COMMITTER_DATE: spec.date } }).trim();
+  // A commit may carry its own `date`; every other git call, and a commit without one, is at the fixture's `date`.
+  const gitAt = (date, a) => execFileSync('git', a, { cwd: root, encoding: 'utf8', env: { ...process.env, GIT_AUTHOR_DATE: date, GIT_COMMITTER_DATE: date } }).trim();
+  const git = (...a) => gitAt(spec.date, a);
   mkdirSync(root, { recursive: true });
   git('init', '-q', '-b', 'main');
   git('config', 'user.email', 'fixture@example.com');
@@ -43,8 +45,11 @@ export function replay(fixture, root, { trail = true } = {}) {
   for (const c of spec.commits) {
     for (const rel of c.files) place(join(fixture, 'files', rel), root, rel, shas);
     git('add', '-A');
-    const trailers = Object.entries(c.trailers).map(([k, v]) => `${k}: ${v}`).join('\n');
-    git('commit', '-q', '--allow-empty', '-m', c.subject, '-m', trailers);
+    // An array value is one line per item, in its order: the real trail repeats Rule and Fixes-Finding in one body.
+    const trailers = Object.entries(c.trailers)
+      .flatMap(([k, v]) => (Array.isArray(v) ? v : [v]).map((item) => `${k}: ${item}`))
+      .join('\n');
+    gitAt(c.date ?? spec.date, ['commit', '-q', '--allow-empty', '-m', c.subject, '-m', trailers]);
     shas[c.id] = git('rev-parse', 'HEAD');
   }
   if (trail && existsSync(join(fixture, 'trail'))) placeAll(join(fixture, 'trail'), root, shas);

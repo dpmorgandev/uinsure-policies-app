@@ -127,7 +127,8 @@ export function replayTrail(name: string, prepare?: (root: string) => void): Tra
   const { shas } = replay(join(fixturesDir, name), root);
   prepare?.(root);
   git(root, 'add', '-A');
-  git(root, 'commit', '-q', '-m', 'chore(trace): the fixture trail, committed for the compiler');
+  // Empty when the fixture has no trail/ and the test changes nothing (requirements-shapes): the commit is still made.
+  git(root, 'commit', '-q', '--allow-empty', '-m', 'chore(trace): the fixture trail, committed for the compiler');
   const head = git(root, 'rev-parse', 'HEAD');
   return { root, shas, head, cleanup: () => rmSync(root, { recursive: true, force: true }) };
 }

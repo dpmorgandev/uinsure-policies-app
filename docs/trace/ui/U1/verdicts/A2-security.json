@@ -1,0 +1,61 @@
+{
+  "v": 1,
+  "ts": "2026-10-21T23:53:33Z",
+  "plan": "ui",
+  "node": "U1",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "afa2e29c6cced1d6a",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U1",
+    "attempt": 2,
+    "base_sha": "64809b4e83c531b4e80ef305ea74bcba2179ee71",
+    "head_sha": "e8fdf4eaf28cf70a7975a00b80450481089a04cd",
+    "diff_fingerprint": "9c983b1d3cfd4fdb2ce36ea1d5c71f8f0b555c81",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.build",
+      "gate.lint",
+      "gate.typecheck",
+      "gate.test",
+      "gate.e2e",
+      "gate.scope",
+      "gate.coverage",
+      "gate.no-stubs"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "W1 met: no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function in the diff or in src/web/**/*.{ts,tsx}. The only hit is a comment in kit MarkdownText.tsx saying it does not use them. Trail text, rule interpretation and completeness reasons render as React text nodes or through the kit's MarkdownText. That component creates a fixed set of elements and keeps an href only after safeHref refuses javascript:, data:, vbscript: and file:. Its links carry rel=\"noopener noreferrer\".",
+      "W2 met: every external href goes through src/web/app/shell/repo.ts (commitUrl, pullUrl, blobUrl, treeUrl). Those prefix the fixed https://github.com/... REPO constant, so data cannot supply a scheme or host. Rule.tsx takes the PR number only after the match /^#(\\d+)$/. Matrix.tsx line 80 builds the PR URL from pr.replace('#','') without that digit check. It is still prefixed by REPO, so only the path varies and there is no scheme injection. Internal links are #/ hash routes with encodeURIComponent on rule ids. External anchors in Matrix.tsx (lines 66, 80) and Rule.tsx (lines 192, 225, 244) carry rel=\"noreferrer\". FileLineLink and the kit link components were not in this diff.",
+      "W3 met: src/web/index.html keeps CSP default-src 'self'; style-src 'self' 'unsafe-inline'. No http(s) origin appears in src/web index.html or CSS. The diff does not touch package.json or any font or asset sources. 'unsafe-inline' for style is the existing U0 posture and was not changed in this diff.",
+      "W4 met: the only fetch sites are in src/web/app/data/trace.ts, and both read the app's own static files. loadTrace fetches 'trace.json'. loadActivity fetches the node's chunk only when it equals trace/<plan>/<node>/activity.json, otherwise it returns an error state. No cookie, localStorage or sessionStorage access in src/web/app. There is no workbench code in this diff.",
+      "W5 met: src/web/compiler/** shells out only through execFileSync('git', ...) with an argument array and no shell. The calls are read-only: rev-parse, ls-tree, cat-file, log. resolveRef refuses a ref starting with '-', and the SHA arguments come from rev-parse. The compiler reads docs/ paths via listDocs, reads the DENYLIST blob, and runs scan/isHit over blobs, test names, commit subjects and trailers. It fails if the denylist is missing or invalid, and a hit goes into the fatal list. index.ts references .claude only in a header comment saying it never reads it. No fetch(, no http, and no process.env in the compiler.",
+      "W6 met: no local absolute path, personal email or key in the added lines of src/web/**, the tests/web fixtures or docs/ui/derived. The fixture git identity is fixture@example.com. The activity.jsonl lines in the trace carry the user name as <user>, a deliberate redaction token. They still show home-relative AppData/Temp session paths in recorded commands. That is trace-log content under docs/trace, outside W6 scope and under the pre-commit privacy scan. I record it as an observation and not a finding.",
+      "W7 met: the diff touches neither src/web/package.json nor the lockfile, so no package was added. gate.audit (--omit=dev --audit-level=high) returned exit 0 with 0 vulnerabilities. gate.audit-dev returned exit 1 with 5 high, and the event labels the item as the known dev-only braces GHSA-vfj7-8cjw-p6xm via stylelint. I could not list the 5 advisories from the receipt, so the orchestrator should confirm that all 5 belong to that stylelint, micromatch and braces chain. Dev-only does not gate.",
+      "W8 met: the explorer shows trace load failures as a short reason string, such as HTTP status or 'trace.json is not a trace object'. Nothing in src/web/app prints a stack trace (no .stack use). There is no workbench or API problem-details code in this diff.",
+      "API8:2023 (misconfiguration) met through W3 and W4. API10:2023 (unsafe consumption of the API's answers) met through W1 and W8. The explorer consumes only its own compiled trace.json, which is rendered as text.",
+      "n/a: API1:2023, API2:2023, API5:2023 are out of scope per the skill (no auth or tenancy, no roles).",
+      "n/a: API3:2023, API4:2023, API6:2023, API7:2023, API9:2023 are n/a (ui node, no server code). The diff has no src/*.cs files, no endpoints, no DTOs and no HttpClient.",
+      "n/a: the .NET extras (raw SQL, decimal money, NuGet packages, logging of personal data) are replaced by W1-W8 for a ui node. No C# is in the diff.",
+      "Gate receipts at f64c03f: typecheck, lint, lint:css, test 133/133, build, e2e U1 124/124, U0b 65/65, coverage OK, scope OK, no-stubs OK. HEAD e8fdf4e only moves plan status in docs/plans, and the fingerprint excludes docs/plans."
+    ]
+  }
+}

@@ -137,6 +137,36 @@ describe('a denylist match fails the compile', () => {
     }
   }, SLOW);
 
+  test('DATA-5 · every line of a repeated trailer key is scanned: an address on the first of two Rule or Fixes-Finding lines fails the compile', () => {
+    // U1 D3/I1: a real body repeats Rule and Fixes-Finding. Once each line is kept, each must be scanned, or an earlier
+    // line would reach trace.json. The address, made from parts, sits on the first line; the last line is clean.
+    const address = ['privacy-repeat-person', 'mail-fixture.net'].join('@');
+    const planted: Record<string, string> = {};
+    const trail = replayTrail('privacy-hit', (root) => {
+      placeHits(root, 'the qa script', CLEAN_PATH);
+      const bodies: Record<string, string> = {
+        Rule: `Agent: builder\nPlan: build\nNode: F1\nRule: ${address}\nRule: SELL-1\nTDD: green`,
+        'Fixes-Finding': `Agent: builder\nPlan: build\nNode: F1\nRule: SELL-1\nTDD: green\nFixes-Finding: ${address}\nFixes-Finding: A1/I1`,
+      };
+      for (const [key, body] of Object.entries(bodies)) {
+        git(root, 'commit', '-q', '--allow-empty', '-m', `fix(SELL-1): green: two ${key} lines`, '-m', body);
+        planted[key] = git(root, 'rev-parse', 'HEAD').slice(0, 7);
+      }
+    });
+    try {
+      const r = run(trail.root);
+      expect(r.problems?.length ?? 0, thrown(r)).toBeGreaterThan(0);
+      const problems = JSON.stringify(r.problems ?? []);
+      for (const [key, short] of Object.entries(planted)) {
+        expect(problems, `a problem names commit ${short}, whose first ${key} line holds the address`).toContain(short);
+      }
+      expect(said(r)).not.toContain('privacy-repeat-person');
+      expect(r.written).toEqual([]);
+    } finally {
+      trail.cleanup();
+    }
+  }, SLOW);
+
   test('DATA-5 · the ref the compile names is scanned too', () => {
     // A branch named as an address the denylist refuses, made from parts: git refuses '@' only alone or before '{'.
     const address = ['privacy-ref-person', 'mail-fixture.net'].join('@');

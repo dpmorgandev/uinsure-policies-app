@@ -83,11 +83,11 @@ nodes:
     rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3]
     cuttable: false
     budget: null
-    status: pending
-    attempt: 0
-    branch: null
-    worktree: null
-    pr: null
+    status: hitl
+    attempt: 2
+    branch: feature/ui/U1
+    worktree: .claude/worktrees/ui-U1
+    pr: 84
     qa: docs/qa/ui-U1.md
     trace: docs/trace/ui/U1/
     acceptance:
@@ -97,21 +97,23 @@ nodes:
       - "A rule with no node or no tests shows not built yet; an incomplete trail shows its reasons verbatim, never clean"
       - "Every rule chip opens its own rule; the overview draws the search and theme toggle once, and an incomplete node's reasons as rendered text, not raw Markdown (g4-defects.md section 3)"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "Playwright acceptance for U1 on fixture trails, and parity with its derived reference; every node rule", status: pending}
-      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U1 routes render the derived reference as canned content", status: pending}
-      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U1 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: pending}
-      - {id: t4, role: tester, step: red, layer: compiler, rules: [NAV-1, RULE-2, DATA-4], title: "Unit tests for rules, their tests, red-before-green order, the receipt figures and TRAIL INCOMPLETE reasons verbatim", status: pending}
-      - {id: t5, role: builder, step: green, layer: compiler, rules: [NAV-1, RULE-2, DATA-4], title: "Green: rules, their tests, red-before-green order, the receipt figures and TRAIL INCOMPLETE reasons verbatim", status: pending}
-      - {id: t6, role: builder, step: green, layer: screen, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "The overview, matrix and rule screens; whole acceptance suite green", status: pending}
-      - {id: t7, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: pending}
-      - {id: t8, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: pending}
-      - {id: t9, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
-      - {id: t10, role: tester, step: qa, layer: null, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "QA script docs/qa/ui-U1.md: steps in the running app, tagged per rule", status: pending}
-      - {id: t11, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: pending}
-      - {id: t12, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: pending}
-      - {id: t13, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: pending}
-      - {id: t14, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: pending}
-      - {id: t15, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "Playwright acceptance for U1 on fixture trails, and parity with its derived reference; every node rule", status: done}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U1 routes render the derived reference as canned content", status: done}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U1 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: done}
+      - {id: t4, role: tester, step: red, layer: compiler, rules: [NAV-1, RULE-2, DATA-4], title: "Unit tests for rules, their tests, red-before-green order, the receipt figures and TRAIL INCOMPLETE reasons verbatim", status: done}
+      - {id: t5, role: builder, step: green, layer: compiler, rules: [NAV-1, RULE-2, DATA-4], title: "Green: rules, their tests, red-before-green order, the receipt figures and TRAIL INCOMPLETE reasons verbatim", status: done}
+      - {id: t6, role: tester, step: red, layer: compiler, rules: [MATRIX-1, RULE-1, NAV-3], title: "Unit tests for the compiler: rule title, feature, priority and interpretation from requirements.md, its source line, tests by name, commit parents", status: done}
+      - {id: t7, role: builder, step: green, layer: compiler, rules: [MATRIX-1, RULE-1, NAV-3], title: "Green: rule title, feature, priority and interpretation from requirements.md, its source line, tests by name, commit parents", status: done}
+      - {id: t8, role: builder, step: green, layer: screen, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "The overview, matrix and rule screens; whole acceptance suite green", status: done}
+      - {id: t9, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: done}
+      - {id: t10, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: done}
+      - {id: t11, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t12, role: tester, step: qa, layer: null, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "QA script docs/qa/ui-U1.md: steps in the running app, tagged per rule", status: done}
+      - {id: t13, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: done}
+      - {id: t14, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: done}
+      - {id: t15, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: done}
+      - {id: t16, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: pending}
+      - {id: t17, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
   - id: U2
     title: Plan DAG, node page and walkthrough
     kind: feature
@@ -415,6 +417,12 @@ nodes:
       - "A commit with several Fixes-Finding lines keeps every one, in order, in trace.json, and each is privacy-scanned (inv-005 I5; skipped if U3 has landed it)"
       - "src/web/public/, src/web/test-results/ and src/web/playwright-report/ are git-ignored, so generated output can't be staged"
       - "The node's e2e suite and every earlier node's pass at the default Playwright worker count, not only at one worker"
+      - "The theme toggle's choice survives a reload; with no choice made, the theme follows the system (U0b carry-over, David 2026-10-21)"
+      - "The overview and node page decide 'no trail' from the compiler's nodes[*].trail flag, which TraceNode declares, not from completeness being null (U1 review A2 R1, DATA-4)"
+      - "TraceRule.status is typed string | null, as the compiler emits it (U1 review A2 R2, MATRIX-1)"
+      - "The matrix links a PR cell out only when it matches #<n>, as the rule page does, from one shared parser (U1 review A2 R3, NAV-3)"
+      - "A commit trailed 'Rule: none' shows its no-Rule state on its page, with no #/rules/none link, pinned by a screen test (U1 review A2.2 R2, NAV-3)"
+      - "compiler/index.ts commitsOf keeps its original spacing; the D3 green reformatted it (U1 review A2.2 R1, RULE-1)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for U7: rel=noreferrer, the CSP directives, ids refused, repeated trailers kept; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}

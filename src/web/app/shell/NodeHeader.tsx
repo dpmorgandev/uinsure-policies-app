@@ -1,6 +1,7 @@
-import { Breadcrumbs, CompletenessBanner, NotBuiltYet, PageHeader, Tabs } from '../../kit';
+import { AgentBadge, Breadcrumbs, CompletenessBanner, NotBuiltYet, PageHeader, Tabs } from '../../kit';
 import type { Status } from '../../kit';
 import type { TraceNode } from '../data/trace';
+import { agentOf } from './agents';
 
 const STATUS: Record<string, { value: Status; label: string }> = {
   done: { value: 'pass', label: 'Done' },
@@ -15,8 +16,10 @@ function statusOf(status: string | null): { value: Status; label: string } | nul
 }
 
 /** The node's header and tabs, from the node's own entry in trace.json. */
-export function NodeHeader({ node, compiledAt }: { node: TraceNode; compiledAt: string }) {
+export function NodeHeader({ node, compiledAt, current }: { node: TraceNode; compiledAt: string; current: 'node' | 'activity' }) {
   const base = `#/plans/${node.plan}/${node.id}`;
+  const gitOnly = node.completeness?.includes('git-only') ?? false;
+  const owner = agentOf(node.owner);
   return (
     <>
       <Breadcrumbs
@@ -32,6 +35,7 @@ export function NodeHeader({ node, compiledAt }: { node: TraceNode; compiledAt: 
         status={statusOf(node.status)}
         ids={[{ label: 'Attempt', value: node.attempt === null ? null : String(node.attempt) }]}
         compiledAt={compiledAt}
+        note={owner === null ? undefined : <AgentBadge agent={owner} />}
       />
       {node.completeness === null ? (
         <NotBuiltYet kind="region" name="trail completeness" />
@@ -39,12 +43,13 @@ export function NodeHeader({ node, compiledAt }: { node: TraceNode; compiledAt: 
         <CompletenessBanner value={node.completeness} />
       )}
       <Tabs
-        current="activity"
+        current={current}
+        label={gitOnly ? 'Views of a git-only node' : undefined}
         items={[
           { key: 'node', label: 'Node', href: base },
           { key: 'walkthrough', label: 'Walkthrough', href: `${base}/commits` },
-          { key: 'loop', label: 'Loop', href: `${base}/loop` },
-          { key: 'activity', label: 'Activity', href: `${base}/activity` },
+          { key: 'loop', label: 'Loop', href: `${base}/loop`, empty: gitOnly },
+          { key: 'activity', label: 'Activity', href: `${base}/activity`, empty: gitOnly },
         ]}
       />
     </>

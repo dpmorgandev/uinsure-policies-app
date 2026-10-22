@@ -19,6 +19,7 @@ import {
   viewports,
 } from './support/app';
 import type { Snapshot } from './support/app';
+import { newest, screenIds, screenPaths } from './support/built';
 import { about, activity, expectRegionComponents, gitOnly } from './support/parity';
 import { compileFixture } from './support/trail';
 import type { CompiledTrail } from './support/trail';
@@ -68,7 +69,12 @@ test.describe('axe', () => {
 
   test("A11Y-1 · an unbuilt screen's page has no axe violation, light and dark, at 1440 and 390", async ({ page }) => {
     await serveTrace(page, fixture.compiled.publicDir);
-    await auditEverywhere(page, '/#/rules', async (p) => {
+    // The first screen, in docs/ui/screens.json's order, that the newest derived reference on the branch lists as
+    // not built (support/built.ts), a real screen rather than the catch-all: with U1's reference, the plan page.
+    const unbuilt = screenIds.find((id) => newest.notBuiltScreens.includes(id) && id !== 'not-found');
+    const path = unbuilt === undefined ? undefined : screenPaths(fixture.trail.shas['c1'] ?? 'c1')[unbuilt];
+    expect(path, `a route for the first screen ${newest.node}'s derived reference lists as not built`).toBeDefined();
+    await auditEverywhere(page, path ?? '', async (p) => {
       await expect(p.getByRole('main')).toContainText('not built yet');
     });
   });
