@@ -298,11 +298,11 @@ nodes:
     rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1]
     cuttable: false
     budget: null
-    status: hitl
+    status: done
     attempt: 4
     branch: feature/ui/W1
     worktree: .claude/worktrees/ui-W1
-    pr: null
+    pr: 92
     qa: docs/qa/ui-W1.md
     trace: docs/trace/ui/W1/
     acceptance:
@@ -329,8 +329,8 @@ nodes:
       - {id: t16, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: done}
       - {id: t17, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; write the baselines; chore(trace) commit; screenshot review page; completeness check passes", status: done}
       - {id: t18, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: done}
-      - {id: t19, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: pending}
-      - {id: t20, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+      - {id: t19, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: done}
+      - {id: t20, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: done}
   - id: W2
     title: Workbench: cancel with quote
     kind: feature
