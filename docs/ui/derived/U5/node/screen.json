@@ -120,7 +120,7 @@
         "events[plan=build][node=F4][kind=signoff].detail",
         "events[plan=build][node=F4][kind=signoff].source"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "who touched what",

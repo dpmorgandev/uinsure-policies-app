@@ -80,7 +80,7 @@
         "events[plan=build][node=F6][line=18].detail (in-flight variant)",
         "events[plan=build][node=F6][line=19].detail (in-flight variant)"
       ],
-      "built": false
+      "built": true
     }
   ],
   "states": [

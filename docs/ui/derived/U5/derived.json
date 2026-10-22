@@ -5,18 +5,19 @@
     "U0b",
     "U1",
     "U2",
+    "U3",
     "U5",
     "W1"
   ],
   "screens": {
     "about": {
       "built": [
+        "provenance-labels",
         "glossary-and-status-legend",
         "guided-tour-entry-one-rule-end-to-end-could",
         "compiled-at-stamp-the-commit-sha-and-utc-time-trace-json-was-compiled-from"
       ],
       "notBuilt": [
-        "provenance-labels",
         "re-verify-with-git"
       ]
     },
@@ -38,10 +39,24 @@
         "trailer-agent-vs-hook-agent"
       ]
     },
+    "finding": {
+      "built": [
+        "findings",
+        "fixed-by"
+      ],
+      "notBuilt": []
+    },
     "harness": {
       "built": [
         "agents",
         "hooks"
+      ],
+      "notBuilt": []
+    },
+    "loop": {
+      "built": [
+        "attempt-ladder",
+        "gate-timeline"
       ],
       "notBuilt": []
     },
@@ -57,10 +72,10 @@
       "built": [
         "completeness-banner",
         "rules",
-        "tasks"
+        "tasks",
+        "attempts"
       ],
       "notBuilt": [
-        "attempts",
         "who-touched-what"
       ]
     },
@@ -80,11 +95,10 @@
     "plan": {
       "built": [
         "plan-header-status-approval-requirements-rev",
-        "node-graph-and-its-table"
-      ],
-      "notBuilt": [
+        "node-graph-and-its-table",
         "investigation-body-inv-plans-only"
-      ]
+      ],
+      "notBuilt": []
     },
     "rule": {
       "built": [
@@ -111,6 +125,14 @@
     "stats": {
       "built": [
         "facts-per-agent-and-node"
+      ],
+      "notBuilt": []
+    },
+    "verdict": {
+      "built": [
+        "verdict-summary",
+        "findings",
+        "raw-json"
       ],
       "notBuilt": []
     },
@@ -193,10 +215,7 @@
   },
   "notBuiltScreens": [
     "decisions",
-    "finding",
-    "loop",
     "not-found",
-    "verdict",
     "wb-requests"
   ],
   "unmappedIds": [],

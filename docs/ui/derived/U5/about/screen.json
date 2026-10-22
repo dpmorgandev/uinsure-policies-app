@@ -17,7 +17,7 @@
         "problems[*]",
         "provenance kinds: generated, recorded, written (kit labels)"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "glossary and status legend",
