@@ -1,6 +1,6 @@
 // Reads the plan DAG (docs/plans/*/<plan>.dag.yaml) and the requirement tables. Only the shapes those files hold:
-// top-level scalars, and under `nodes:` one `- id:` item with scalar and `[a, b]` fields. Nested lists (tasks,
-// acceptance) are skipped.
+// top-level scalars, and under `nodes:` one `- id:` item with scalar and `[a, b]` fields, its `acceptance:` lines
+// (one quoted string each) and its `tasks:` lines (one `{key: value, …}` each).
 
 export interface DagNode {
   id: string;
@@ -10,6 +10,20 @@ export interface DagNode {
   attempt: number | null;
   rules: string[];
   dependsOn: string[];
+  pr: number | null;
+  qa: string | null;
+  /** The node's acceptance lines, in the plan file's order. */
+  acceptance: string[];
+  /** The node's tasks, in the plan file's order. */
+  tasks: DagTask[];
+}
+
+export interface DagTask {
+  id: string;
+  title: string | null;
+  status: string | null;
+  role: string | null;
+  step: string | null;
 }
 
 export interface Dag {
@@ -47,9 +61,37 @@ function scalar(raw: string): Scalar {
 
 const text = (value: Scalar | undefined): string | null => (typeof value === 'string' ? value : null);
 
+/** The `key: value` pairs of a one-line `{…}` mapping; a comma inside quotes or `[]` does not split it. */
+function flowMapping(raw: string): Record<string, Scalar> {
+  const inner = raw.trim().replace(/^\{/, '').replace(/\}$/, '');
+  const parts: string[] = [];
+  let depth = 0;
+  let quote: string | null = null;
+  let start = 0;
+  [...inner].forEach((char, at) => {
+    if (quote !== null) quote = char === quote ? null : quote;
+    else if (char === '"' || char === "'") quote = char;
+    else if (char === '[') depth += 1;
+    else if (char === ']') depth -= 1;
+    else if (char === ',' && depth === 0) {
+      parts.push(inner.slice(start, at));
+      start = at + 1;
+    }
+  });
+  parts.push(inner.slice(start));
+  const pairs = parts.flatMap((part) => {
+    const colon = part.indexOf(':');
+    return colon < 0 ? [] : [[part.slice(0, colon).trim(), scalar(part.slice(colon + 1))] as const];
+  });
+  return Object.fromEntries(pairs);
+}
+
 export function parseDag(source: string): Dag {
   const top: Record<string, Scalar> = {};
   const items: Record<string, Scalar>[] = [];
+  const acceptance: string[][] = [];
+  const tasks: Record<string, Scalar>[][] = [];
+  let listKey: string | null = null;
   let inNodes = false;
   for (const line of source.split(/\r?\n/)) {
     const item = /^ {2}- (\w+):(.*)$/.exec(line);
@@ -58,8 +100,19 @@ export function parseDag(source: string): Dag {
     else if (!inNodes) {
       const entry = /^(\w+):(.*)$/.exec(line);
       if (entry) top[entry[1] ?? ''] = scalar(entry[2] ?? '');
-    } else if (item) items.push({ [item[1] ?? '']: scalar(item[2] ?? '') });
-    else if (field && items.length > 0) (items[items.length - 1] as Record<string, Scalar>)[field[1] ?? ''] = scalar(field[2] ?? '');
+    } else if (item) {
+      items.push({ [item[1] ?? '']: scalar(item[2] ?? '') });
+      acceptance.push([]);
+      tasks.push([]);
+      listKey = null;
+    } else if (field && items.length > 0) {
+      (items[items.length - 1] as Record<string, Scalar>)[field[1] ?? ''] = scalar(field[2] ?? '');
+      listKey = field[2]?.trim() === '' ? (field[1] ?? null) : null;
+    } else if (listKey !== null && items.length > 0) {
+      const entry = /^ {6}- (.*)$/.exec(line);
+      if (entry && listKey === 'acceptance') acceptance[items.length - 1]?.push(text(scalar(entry[1] ?? '')) ?? '');
+      else if (entry && listKey === 'tasks') tasks[items.length - 1]?.push(flowMapping(entry[1] ?? ''));
+    }
   }
   return {
     id: text(top['plan_id']),
@@ -69,7 +122,7 @@ export function parseDag(source: string): Dag {
     approvedBy: text(top['approved_by']),
     approvedOn: text(top['approved_on']),
     requirementsRev: text(top['requirements_rev']),
-    nodes: items.map((node) => ({
+    nodes: items.map((node, at) => ({
       id: text(node['id']) ?? '',
       title: text(node['title']),
       owner: text(node['owner']),
@@ -77,6 +130,16 @@ export function parseDag(source: string): Dag {
       attempt: typeof node['attempt'] === 'number' ? node['attempt'] : null,
       rules: Array.isArray(node['rules']) ? node['rules'] : [],
       dependsOn: Array.isArray(node['depends_on']) ? node['depends_on'] : [],
+      pr: typeof node['pr'] === 'number' ? node['pr'] : null,
+      qa: text(node['qa']),
+      acceptance: acceptance[at] ?? [],
+      tasks: (tasks[at] ?? []).map((task) => ({
+        id: text(task['id']) ?? '',
+        title: text(task['title']),
+        status: text(task['status']),
+        role: text(task['role']),
+        step: text(task['step']),
+      })),
     })),
   };
 }

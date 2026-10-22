@@ -256,7 +256,7 @@ export function compile(options: CompileOptions): void {
         // A node with no README, activity or loop has no trail; its completeness is null, never OK (DATA-4).
         trail: readme !== null || activityText !== null || loopText !== null,
         completeness, completenessReasons: reasons, rules: node.rules,
-        readme, dependsOn: node.dependsOn,
+        readme, dependsOn: node.dependsOn, pr: node.pr, qa: node.qa, acceptance: node.acceptance, tasks: node.tasks,
         walkthrough: own.map((commit) => ({ n: places.get(commit.short) ?? null, sha: commit.sha, tdd: commit.tdd, agent: commit.agent, subject: commit.subject })),
         chunks: { activity: activityChunk, diffs: diffsChunk },
       });
