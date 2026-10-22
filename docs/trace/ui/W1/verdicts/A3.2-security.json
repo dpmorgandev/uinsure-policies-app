@@ -1,0 +1,63 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T01:57:27Z",
+  "plan": "ui",
+  "node": "W1",
+  "attempt": 3,
+  "agent": "security",
+  "agent_id": "aa69f070f2563c626",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "W1",
+    "attempt": 3,
+    "base_sha": "fa18658f714d3f424da3819c53fea510bfb6fc74",
+    "head_sha": "f2e5cecb93d2c2ba8950dae93465507cc5ee6e7d",
+    "diff_fingerprint": "c689ee20a9cd3c188a1ab6090735c52e91da38d0",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.scope",
+      "gate.e2e",
+      "gate.e2e-regression",
+      "gate.integrate",
+      "gate.refactor",
+      "gate.build",
+      "gate.lint",
+      "gate.typecheck",
+      "gate.test",
+      "gate.no-stubs"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Scope of this round: the rebase onto ui with U1 merged (the App.tsx and Frame.tsx union), tests/web/e2e/regression/, snapshotPathTemplate in src/web/playwright.config.ts, plus a re-walk of the W1 workbench client. I read the files in the working tree. They match head_sha, and the diff packet's file list matches what I read.",
+      "W1 met: no hits for dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function in src/web. The one grep hit is a comment in kit MarkdownText.tsx saying it does not use them. API text (problem title, detail, violations, errors, policy fields, the unreachable reason) is rendered as React text.",
+      "W2 met: workbench hrefs are internal hash routes with encodeURIComponent (SellPolicy.tsx:272, WorkbenchHome.tsx:131). The rule chip target is '#/rules/' + ruleId in ProblemView.tsx:4, so it always starts with '#' and cannot become javascript:. Explorer external links are built by repo.ts from trace ids and carry rel=noreferrer (Matrix.tsx, Rule.tsx). P2 hygiene, not a finding: ProblemView.tsx:4 does not encodeURIComponent the API's ruleId, unlike the other routes.",
+      "W3 met: index.html is unchanged and keeps default-src 'self' with style-src 'self' 'unsafe-inline'. The 'unsafe-inline' style source predates this node. Fonts are self-hosted @fontsource woff/woff2 in dist/assets. The built bundle has no remote script, font, image or style. The https and http strings in it are namespace constants, library error text and the repo URL.",
+      "W4 met: the only fetch in the workbench is browserDeps in browser.ts, which calls deps.fetch from api.ts:272. It goes to /api/policies and /api/policies/<encoded reference>, proxied same-origin in vite.config.ts and rewritten to the local API port. Storage is limited to the single 'workbench.recent' slot (WB-9). Nothing reads cookies or sessionStorage, and there is no sendBeacon, WebSocket or XMLHttpRequest.",
+      "W5 n/a: src/web/compiler/** is not in this diff and no compiler file was touched. The grep of src/web/app for .claude and process.env found nothing.",
+      "W6 met: no absolute path, personal email, key or token in src/web or tests/web, and none in dist. The matches for 'nagro' in docs/trace/ui/W1/packet/diff.patch are recorded security-agent grep patterns and an earlier verdict's note in trace files, not code or fixtures. The privacy scan in gate.qa covers them, so I leave them to that scan.",
+      "W7 met: src/web/package.json and the lockfile are not in the diff, so no package was added or changed. All pins are exact. gate.audit (79eda37 and efba17d): the runtime audit is 0 vulnerabilities, gated. The dev audit's 5 highs are reported only and its breakdown is not in the receipt. I take them as the known stylelint/micromatch/braces chain, but I cannot confirm that from the receipt.",
+      "W8 met: no stack, componentStack or error.stack is rendered. The unreachable branch shows the browser's own fetch error text (reasonOf in api.ts:266) beside the kit's problem state. An API answer is shown as returned: status, title, detail, rule and violations, with a non-JSON body leaving only the status. Hardening, not a finding: the app has no React ErrorBoundary or errorElement. An uncaught render error would blank the page. It would not leak a stack.",
+      "API8:2023 met (the ui reading, W3 and W4): see W3 and W4. The regression and e2e support is test code only. The regression suite aborts every unrecorded /api/ request in the browser (refuseUnrecordedApi in regression.ts). e2e support/api.ts starts a throwaway local SQLite database and sets ASPNETCORE_ENVIRONMENT=Development only for the test-spawned API. No secret is committed.",
+      "API10:2023 met: the answers from the API are read defensively (isRecord, text(), and readProblem which ignores unknown shapes) and rendered as text (W1, W8).",
+      "playwright.config.ts: snapshotPathTemplate is a fixed template that writes under docs/ui/baselines/. The {arg} is set by the specs (screen and state names), not by user input. Nothing network-facing changed.",
+      "Out-of-diff observation, no action for this node: kit Footer.tsx and ShaLink.tsx external anchors (repoHref, githubHref) do not set rel=noreferrer. They are not in this diff and the kit is untouched here (gate.scope: none under src/web/kit).",
+      "n/a, ui node, no server code: API1:2023 (no auth or tenancy), API2:2023 (auth out of scope), API3:2023, API4:2023, API5:2023 (no roles), API6:2023, API7:2023 (no outbound URL fetching from server code), API9:2023. The .NET extras (raw SQL, decimal money, NuGet packages, server logging) were replaced by W1 to W8. There is no .NET code in this diff."
+    ]
+  }
+}
