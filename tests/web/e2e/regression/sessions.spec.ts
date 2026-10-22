@@ -1,7 +1,7 @@
-// sessions (U4 builds its open snapshot, NAV-2): its baseline, on the design fixture. The one state U4's tests reach on
-// it is the populated page with the last snapshot, f6-done-merged, open at its own URL.
+// sessions (U5's screen): its baseline, on the design fixture. The one state U5's tests reach on it is the populated
+// page (the fixture's sessions list as it stands).
 import { test } from '@playwright/test';
-import { sessions } from '../U4/support/parity';
+import { sessions } from '../U5/support/parity';
 import { EXPLORER_NOW, at, cases, fixedFormats } from './support/regression';
 
 test.use(fixedFormats);

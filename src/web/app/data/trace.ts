@@ -147,9 +147,31 @@ export interface TraceVerdict {
   round: string;
   agent: string;
   verdict: string;
+  /** The verdict file's envelope stamp and attempt; null when the file holds none (STATS-1). */
+  ts?: string | null;
+  attempt?: number | null;
   rulesCovered?: string[];
   rulesMissing?: string[];
   file?: string | null;
+}
+
+/** One context snapshot (CTX-1). A field its front matter does not hold is null. */
+export interface TraceSession {
+  file: string;
+  ts: string;
+  slug: string | null;
+  plan: string | null;
+  node: string | null;
+  status: string | null;
+  nextAction: string | null;
+}
+
+/** docs/trace/harness.json, as render-trace writes it (AGENT-3, DATA-7). */
+export interface Harness {
+  provenance: string | null;
+  agents: { file: string; name: string; description: string | null; model: string | null; tools: string | null }[];
+  skills: { file: string; name: string; description: string | null }[];
+  hooks: { file: string; purpose: string | null; gates: string[] }[];
 }
 
 export interface TraceDecision {
@@ -172,8 +194,8 @@ export interface Trace {
   verdicts: TraceVerdict[];
   findings: unknown[];
   decisions: TraceDecision[];
-  sessions: unknown[];
-  harness: unknown;
+  sessions: TraceSession[];
+  harness: Harness | null;
 }
 
 export interface ActivityRecord {

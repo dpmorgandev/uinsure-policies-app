@@ -88,6 +88,36 @@ function Stamp({ trace, snapshot }: { trace: Trace; snapshot: Snapshot }) {
   );
 }
 
+/** NAV-5: the five stops of one rule's story. A stop whose page needs data the trace holds links to the first such page. */
+function Tour({ trace }: { trace: Trace | null }) {
+  const rule = trace?.rules.find((r) => r.status === 'built');
+  const node = trace?.nodes.find((n) => (n.walkthrough ?? []).length > 0);
+  const commit = node?.walkthrough?.[0];
+  const walkthroughHref = node ? `#/plans/${node.plan}/${node.id}/commits` : '#/rules';
+  const stops: { href: string; label: string; what: string }[] = [
+    { href: '#/', label: 'Overview', what: 'read the headline answer and check its figures.' },
+    { href: '#/rules', label: 'Requirements matrix', what: 'choose one rule.' },
+    { href: rule ? `#/rules/${encodeURIComponent(rule.id)}` : '#/rules', label: 'Rule', what: 'read its red and green in order.' },
+    { href: walkthroughHref, label: 'Walkthrough', what: 'read the commits of its node, numbered.' },
+    { href: commit ? `#/commits/${commit.sha}` : walkthroughHref, label: 'Commit', what: 'open one commit and its trailers.' },
+  ];
+  return (
+    <>
+      <p className="s-text">Optional. Pick any rule and read it down the five screens below, in this order.</p>
+      <ol className="s-steps">
+        {stops.map((stop) => (
+          <li key={stop.label}>
+            <a href={stop.href}>{stop.label}</a>: {stop.what}
+          </li>
+        ))}
+      </ol>
+      <p className="s-next">
+        <a href="#/rules">Start the tour: open the requirements matrix and pick a rule</a>
+      </p>
+    </>
+  );
+}
+
 const LABELS: { provenance: Provenance; reading: string }[] = [
   { provenance: 'generated', reading: 'The compiled-at stamp in the header above is generated.' },
   { provenance: 'recorded', reading: "A reviewer or security verdict is recorded: you read the agent's own words, not a summary of them." },
@@ -136,10 +166,9 @@ export function About() {
         <MarkdownText source={GLOSSARY} />
       </Rung>
       <NotBuiltRegion region="re-verify-with-git" name="re-verify with git" />
-      <NotBuiltRegion
-        region="guided-tour-entry-one-rule-end-to-end-could"
-        name="guided tour entry: one rule end to end (COULD)"
-      />
+      <Rung region="guided-tour-entry-one-rule-end-to-end-could" req="NAV-5" ordinal="Step 4" heading="Follow one rule">
+        <Tour trace={trace.state === 'ready' ? trace.trace : null} />
+      </Rung>
       {trace.state === 'ready' ? (
         <Rung
           region="compiled-at-stamp-the-commit-sha-and-utc-time-trace-json-was-compiled-from"
