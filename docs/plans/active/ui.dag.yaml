@@ -351,7 +351,7 @@ nodes:
       - "Cancel quotes first, cancels with the quoted date, and compares quote and cancellation"
       - "A successful cancel is shown; submitting shows one busy Cancel button and its request in flight (g4-defects.md section 3)"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-4], title: "Playwright acceptance for W2 on the live API, regression specs, parity with its derived reference, and unit tests (client); every node rule … and unit tests", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-4], title: "Playwright acceptance for W2 on the live API, regression specs, parity with its derived reference, and unit tests (client); every node rule … and unit tests", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The W2 routes render the derived reference as canned content", status: skipped}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the W2 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: skipped}
       - {id: t4, role: builder, step: green, layer: screen, rules: [WB-4], title: "Quote and cancel client, then the cancel screen; whole acceptance suite green … all layers", status: pending}
