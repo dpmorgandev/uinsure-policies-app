@@ -1,0 +1,116 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T21:05:27Z",
+  "plan": "ui",
+  "node": "U5",
+  "attempt": 1,
+  "agent": "reviewer",
+  "agent_id": "ac517d8f06732e79b",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U5",
+    "attempt": 1,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "625a554276f7771be822a26ebb9b4553afbd46f6",
+    "diff_fingerprint": "b4745d88b6ad8a6f666fa874072a302b91316b39",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.red@4041673",
+      "gate.typecheck@2452488",
+      "gate.lint@2452488",
+      "gate.lint-css@2452488",
+      "gate.test@2452488",
+      "gate.build@2452488",
+      "gate.e2e@2452488",
+      "gate.e2e-regression@2452488 (20:54:43, ok:false)",
+      "gate.e2e-regression@2452488 (21:00:40, ruled set)",
+      "gate.audit@2452488",
+      "gate.audit-dev@2452488",
+      "gate.coverage@2452488",
+      "gate.scope@2452488",
+      "gate.no-stubs@2452488",
+      "gate.green@2452488",
+      "gate.e2e-all@2452488"
+    ],
+    "rules_covered": [
+      "CTX-1",
+      "AGENT-3",
+      "STATS-1",
+      "NAV-5"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "NAV-5",
+        "severity": "P2",
+        "file": "src/web/app/explorer/about/About.tsx",
+        "line": 94,
+        "what": "The tour's Walkthrough and Commit stops link to the first node that has a walkthrough, not to the node of the rule the Rule stop opens, though the copy says 'the commits of its node'.",
+        "why": "NAV-5 asks for a path through one rule end to end. rule.matrix.node and plan are in TraceRule, so stops 3 to 5 could follow the same rule. On the real trail the Rule stop opens the first built rule and the Walkthrough stop opens an unrelated node. The signed-off reference also links unrelated pages (GET-1 with F3), so this doesn't block the node.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "NAV-5",
+        "severity": "P2",
+        "file": "tests/web/e2e/U5/nav-5.spec.ts",
+        "line": 45,
+        "what": "Only the hrefs of the Overview and Requirements matrix stops are pinned. The Rule, Walkthrough and Commit stop targets have no test, so R1's mismatch goes unseen.",
+        "why": "web-testing: a behaviour test proves the node's flows. The computed hrefs of stops 3 to 5 are the only data-driven part of the tour, and nothing tests them.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R3",
+        "rule_id": "STATS-1",
+        "severity": "P2",
+        "file": "src/web/app/explorer/stats/Stats.tsx",
+        "line": 145,
+        "what": "The page draws 'commits per agent' as a gap ('this page's data holds ... not commits'), but trace.json's commits[] carries each commit's Agent trailer, so the figure could be computed.",
+        "why": "The STATS-1 row names commits per agent, attempts per node and elapsed time. The build follows the signed-off G4 stats screen, which draws both as gaps, and that screen is the contract. Whether the gap stands is David's call at pause 2. It isn't U5's to change.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "STATS-1",
+        "severity": "P2",
+        "file": "src/web/app/explorer/stats/Stats.tsx",
+        "line": 59,
+        "what": "The reference's 'Sort the table by its first column' action (sortable Node column, aria-sort) isn't built. The DataTable gets no sortable column and no sort or onSortChange.",
+        "why": "docs/ui/derived/U5/stats/screen.json lists the sort as an action, and populated.html draws the header as a sort button with aria-sort. The structural parity checks don't look at it.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R5",
+        "rule_id": "AGENT-3",
+        "severity": "P2",
+        "file": "tests/web/unit/compiler/ctx-1.test.ts",
+        "line": 1,
+        "what": "DAG task t1 names a compiler unit test for the harness file. No AGENT-3 unit test exists, as the tester noted in gate.red.",
+        "why": "ui.dag.yaml U5 t1: 'unit tests (compiler: context snapshots, the harness file, delivery stats)'. The pass-through may be covered by the earlier DATA-7 tests, but the node's own rule has no compiler-level test.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R6",
+        "rule_id": "CTX-1",
+        "severity": "P2",
+        "file": "tests/web/e2e/U5/support/app.ts",
+        "line": 46,
+        "what": "Dead test support: rowOf, mainText, the rowTexts re-export and route.plan aren't used by any U5 spec.",
+        "why": "This is code-quality slop: unused members. The same kind of finding already sits in U7 for U0b's support file (W1 review A4 R1).",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "TDD order holds: the red commits 8357ddc (CTX-1), 06a2946 (AGENT-3), 8292894 (STATS-1) and 5f86ded (NAV-5), plus the regression specs in 4041673, all come before the greens 3798cc3 and 2452488. The stub (t2) and pause 1 (t3) are marked skipped in ui.dag.yaml, so the missing stub commit isn't a finding.",
+      "No test was edited after red: activity.jsonl has no web-tester or web-builder Edit or Write under tests/web after the red gate. The web-builder only read the tests.",
+      "Stub-proofing: the behaviour assertions use values that exist only in the U5 overlay fixture (2026-10-18T16:00:00Z verdict stamps, 'David opens the stub routes at pause 1', tree a1b2c3d, guard-agent.mjs G1), not values from the design fixture. A page canned from the derived reference can't pass them.",
+      "The AGENT-3 gaps (preloaded skills and never-dos per agent) and the STATS-1 gaps (commits per agent, elapsed time) match the signed-off G4 screens, which draw them as gaps because the harness file and the screen's data don't hold them. I counted the rules as met against that contract and raised the commits-per-agent point as R3 for David.",
+      "The DAG acceptance line 'opens one at /sessions/:file' isn't delivered. The derived reference tags that region NAV-2, which belongs to U4, with built:false, and the build draws it as not built. This is a mismatch between the plan text and the reference, not a defect in U5.",
+      "No 'not implemented' is left in src/web (gate.no-stubs). The 10 failing regression shots (about x4, overview x4 intended; activity 1440 x2 already a U7 line) are ruled in gate.e2e-all and gate.e2e-regression at 21:00.",
+      "gate.coverage at 2452488 recorded ok:false ('gate.green is missing'), and gate.green was logged afterwards. No re-run of gate.coverage is recorded, so the completeness check should be re-run at the trace step (t10)."
+    ]
+  }
+}
