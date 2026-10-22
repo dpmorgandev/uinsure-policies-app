@@ -19,6 +19,7 @@ const NINE = [
   'requests-that-touched-this-policy',
 ];
 const ACTIONS = 'actions-quote-and-cancel-record-a-claim-renew';
+const REQUESTS = 'requests-that-touched-this-policy';
 
 for (const s of Object.values(policyStates)) {
   test(`WB-5 · parity: wb-policy ${s.state} has exactly its reference's nine regions, in order, and none of its own`, async ({ page }) => {
@@ -31,5 +32,22 @@ for (const s of Object.values(policyStates)) {
     const { reference, read } = await openAgainstReference(page, s);
     expect(regionNamed(reference, ACTIONS)?.req, 'the W3 reference tags the actions region WB-4 WB-5').toEqual(['WB-4', 'WB-5']);
     await expect.poll(async () => regionNamed(await read(), ACTIONS)?.req ?? null).toEqual(['WB-4', 'WB-5']);
+  });
+
+  test(`WB-7 · parity: wb-policy ${s.state}'s requests-that-touched-this-policy region is built, tagged WB-7, with the request-log`, async ({
+    page,
+  }) => {
+    const { reference, read } = await openAgainstReference(page, s);
+    const wanted = regionNamed(reference, REQUESTS);
+    expect(
+      { req: wanted?.req, built: wanted?.built, requestLog: wanted?.comps.includes('request-log') },
+      'the W3 reference builds the requests region, tagged WB-7, with the request-log',
+    ).toEqual({ req: ['WB-7'], built: true, requestLog: true });
+    await expect
+      .poll(async () => {
+        const found = regionNamed(await read(), REQUESTS);
+        return found ? { req: found.req, built: found.built, requestLog: found.comps.includes('request-log') } : null;
+      })
+      .toEqual({ req: ['WB-7'], built: true, requestLog: true });
   });
 }
