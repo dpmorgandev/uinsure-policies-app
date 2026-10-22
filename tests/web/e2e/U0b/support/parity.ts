@@ -35,8 +35,9 @@ async function open(page: Page, s: Screen): Promise<void> {
 }
 
 /**
- * The shell as parity compares it. The title only where the reference's frame names the node shown. The nav's links
- * and not-built entries are every entry but those in transit, each still on its own side.
+ * The shell as parity compares it. The title only where the reference's frame names the node shown. The nav's links,
+ * not-built entries and current entry are every entry but those in transit, each still on its own side (an entry a
+ * later node builds may become the current one, as Plan does on the activity page once U2 builds it).
  */
 function shellOf(s: Structure, withTitle: boolean): Record<string, unknown> {
   return {
@@ -44,7 +45,7 @@ function shellOf(s: Structure, withTitle: boolean): Record<string, unknown> {
     shell: s.shell,
     navLinks: settledNav(s.navLinks),
     navNotBuilt: settledNav(s.navNotBuilt),
-    navCurrent: s.navCurrent,
+    navCurrent: settledNav(s.navCurrent),
     tabCurrent: s.tabCurrent,
   };
 }
