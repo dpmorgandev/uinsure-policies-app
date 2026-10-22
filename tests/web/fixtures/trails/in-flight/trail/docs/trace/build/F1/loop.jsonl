@@ -1,0 +1,5 @@
+{"v":1,"ts":"2026-10-21T09:05:00Z","plan":"build","node":"F1","attempt":1,"source":"orchestrator","event":"setup","branch":"feature/build/F1","head":"{{c1}}"}
+{"v":1,"ts":"2026-10-21T09:06:00Z","plan":"build","node":"F1","attempt":1,"source":"orchestrator","event":"state(in_progress)","head":"{{c1}}"}
+{"v":1,"ts":"2026-10-21T10:10:00Z","plan":"build","node":"F1","attempt":1,"source":"orchestrator","event":"gate.red","cmd":"fixture gate.red","exit":1,"expect":"fail","ok":true,"head":"{{c2}}"}
+{"v":1,"ts":"2026-10-21T11:05:00Z","plan":"build","node":"F1","attempt":1,"source":"orchestrator","event":"gate.st
+{"v":1,"ts":"2026-10-21T11:10:00Z","plan":"build","node":"F1","attempt":1,"source":"orchestrator","event":"gate.stub","cmd":"fixture gate.stub","exit":0,"expect":"0","ok":true,"head":"{{c3}}"}

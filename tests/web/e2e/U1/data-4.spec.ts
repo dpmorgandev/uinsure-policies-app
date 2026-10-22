@@ -20,7 +20,7 @@ import {
   route,
 } from './support/app';
 import type { CompiledTrail } from './support/app';
-import { expectRegionComponents, expectRegionsInOrder, expectShell, gitOnlyNode, matrix, node, overview } from './support/parity';
+import { expectRegionComponents, expectRegionsInOrder, expectShell, gitOnlyNode, matrix, node, outsideInTransit, overview } from './support/parity';
 
 const TRAIL = 'trail-completeness-trail-incomplete-reasons-verbatim-not-built-yet-and-f0a-as-git-only';
 const SCOPE_NOTE = 'test-count-scope-note-counts-are-per-node-sell-7-10-at-f1-vs-15-traited';
@@ -116,7 +116,9 @@ test.describe('the overview: TRAIL INCOMPLETE, git-only and not built yet', () =
   test('DATA-4 · every rule chip on the overview opens its own rule', async ({ page }) => {
     await openOverviewTrail(page);
     const chips = page.getByRole('main').locator(CHIP);
-    await expect(chips.filter({ hasText: 'CANCEL-1' }), "the overview's chips are the fixture's").toHaveCount(1);
+    // Counted in the regions U1 settled: a region a later node builds (U2's plan at a glance) draws its own chips.
+    const settledChips = page.getByRole('main').locator(`${CHIP}${outsideInTransit('overview')}`);
+    await expect(settledChips.filter({ hasText: 'CANCEL-1' }), "the overview's chips are the fixture's").toHaveCount(1);
     for (const chip of await chips.all()) {
       const id = ((await chip.textContent()) ?? '').trim().split(/\s/)[0] ?? '';
       expect(id, 'the chip names a rule').toMatch(/^[A-Z][A-Z0-9]*-\d/);

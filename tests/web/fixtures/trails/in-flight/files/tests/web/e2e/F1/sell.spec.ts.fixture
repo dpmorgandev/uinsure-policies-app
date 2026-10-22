@@ -1,0 +1,3 @@
+import { test, expect } from '@playwright/test';
+
+test('SELL-1 · a sale with a new reference answers 201', async () => { expect(1).toBe(1); });

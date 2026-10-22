@@ -1,0 +1,20 @@
+{
+ "date": "2026-10-19T08:00:00Z",
+ "branch": "feature/build/F2",
+ "commits": [
+  {
+   "id": "c1",
+   "date": "2026-10-19T09:00:00Z",
+   "subject": "plan(build/F2): F2 pending → in_progress",
+   "trailers": { "Agent": "main", "Plan": "build", "Node": "F2" },
+   "files": []
+  },
+  {
+   "id": "c2",
+   "date": "2026-10-19T10:00:00Z",
+   "subject": "test(GET-1): red: a sold policy reads back in full",
+   "trailers": { "Agent": "tester", "Plan": "build", "Node": "F2", "Rule": "GET-1", "TDD": "red" },
+   "files": []
+  }
+ ]
+}

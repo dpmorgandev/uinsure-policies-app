@@ -6,10 +6,10 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import process from 'node:process';
 import { pathToFileURL } from 'node:url';
-import { listDocs, listPaths, readBlob, readCommits, resolveRef } from './git.ts';
+import { listDocs, listPaths, readBlob, readCommits, readPatch, resolveRef } from './git.ts';
 import { isTestSource, parseTests } from './test-sources.ts';
 import { isHit, parseDenylist, scan } from './privacy.ts';
-import { parseDag, parseRequirements, partsOf } from './plans.ts';
+import { parseDag, parseInvestigation, parseRequirements, partsOf } from './plans.ts';
 import { parseCompleteness, parseMatrix, parseWalkthrough } from './trace-files.ts';
 import type { MatrixRow } from './trace-files.ts';
 
@@ -139,6 +139,7 @@ export function compile(options: CompileOptions): void {
   const dags = [...paths]
     .filter((path) => /^docs\/plans\/(active|archive)\/[^/]+\.dag\.yaml$/.test(path))
     .map((path) => ({ path, dag: parseDag(read(path) ?? '') }));
+  const investigations = [...paths].filter((path) => /^docs\/plans\/(active|archive)\/inv-[^/]+\.plan\.md$/.test(path));
   const rows = PLAN_FILES.flatMap(({ requirements, matrix }) =>
     parseRequirements(read(requirements) ?? '').map((row) => ({ ...row, file: requirements, matrix })),
   );
@@ -183,6 +184,7 @@ export function compile(options: CompileOptions): void {
   const nodes: Json[] = [];
   const verdicts: Json[] = [];
   const decisions: Json[] = [];
+  const events: Json[] = [];
   // A commit's row in its node's walkthrough (RULE-2), by short SHA.
   const places = new Map<string, number>();
   const chunks = new Map<string, unknown>();
@@ -193,7 +195,10 @@ export function compile(options: CompileOptions): void {
       problems.push({ file: isHit(denylist.list, path) ? null : path, line: null, reason: 'the plan has no plan_id' });
       continue;
     }
-    plans.push({ id: dag.id, kind: dag.kind, title: dag.title, source: path, nodes: dag.nodes.map((node) => node.id) });
+    plans.push({
+      id: dag.id, kind: dag.kind, title: dag.title, status: dag.status, approvedBy: dag.approvedBy, approvedOn: dag.approvedOn,
+      requirementsRev: dag.requirementsRev, source: path, nodes: dag.nodes.map((node) => node.id),
+    });
     for (const node of dag.nodes) {
       const dir = `docs/trace/${dag.id}/${node.id}`;
       const activityPath = `${dir}/activity.jsonl`;
@@ -212,7 +217,9 @@ export function compile(options: CompileOptions): void {
       // The loop events are U3's and stay out of trace.json; U1 takes the human decisions from them (NAV-1).
       const loopPath = `${dir}/loop.jsonl`;
       const loopText = read(loopPath);
-      for (const { line, record } of loopText === null ? [] : readLines(loopPath, loopText, problems)) {
+      for (const { line, record, raw } of loopText === null ? [] : readLines(loopPath, loopText, problems)) {
+        // A malformed line is kept as written, at its node and line (DATA-8).
+        if (record === null) events.push({ plan: dag.id, node: node.id, line, event: null, raw });
         // signoff(<sha>) and merged(<sha>) name the commit signed off and the merge commit.
         const event = /^(pause1|pause2|signoff|merged)(?:\(([^)]*)\))?$/.exec(str(record?.['event']) ?? '');
         if (record !== null && event !== null) {
@@ -231,14 +238,38 @@ export function compile(options: CompileOptions): void {
       const walkthrough = read(`${dir}/walkthrough.md`);
       for (const [short, row] of walkthrough === null ? [] : parseWalkthrough(walkthrough)) places.set(short, row);
       const { completeness, reasons } = parseCompleteness(readme);
+      // The node's commits oldest first, each with its walkthrough row when the trace step wrote one (TDD-1, DATA-8).
+      const own = commits.filter((commit) => commit.plan === dag.id && commit.node === node.id);
+      const diffsChunk = own.length === 0 ? null : `trace/${dag.id}/${node.id}/diffs.json`;
+      if (diffsChunk !== null) {
+        chunks.set(
+          diffsChunk,
+          own.map((commit) => {
+            const patch = readPatch(root, commit.sha);
+            fatal.push(...scan(denylist.list, `the diff of commit ${commit.short}`, patch));
+            return { sha: commit.sha, patch };
+          }),
+        );
+      }
       nodes.push({
         plan: dag.id, id: node.id, title: node.title, owner: node.owner, status: node.status, attempt: node.attempt,
         // A node with no README, activity or loop has no trail; its completeness is null, never OK (DATA-4).
         trail: readme !== null || activityText !== null || loopText !== null,
         completeness, completenessReasons: reasons, rules: node.rules,
-        readme, walkthrough: [], chunks: { activity: activityChunk, diffs: null },
+        readme, dependsOn: node.dependsOn, pr: node.pr, qa: node.qa, acceptance: node.acceptance, tasks: node.tasks,
+        walkthrough: own.map((commit) => ({ n: places.get(commit.short) ?? null, sha: commit.sha, tdd: commit.tdd, agent: commit.agent, subject: commit.subject })),
+        chunks: { activity: activityChunk, diffs: diffsChunk },
       });
     }
+  }
+
+  for (const path of investigations) {
+    const front = parseInvestigation(read(path) ?? '');
+    if (front === null || front.id === null) {
+      problems.push({ file: isHit(denylist.list, path) ? null : path, line: null, reason: 'the investigation has no front matter plan_id' });
+      continue;
+    }
+    plans.push({ id: front.id, kind: 'inv', title: front.title, status: null, approvedBy: null, approvedOn: null, requirementsRev: null, source: path, nodes: [] });
   }
 
   const matrices = new Map(
@@ -278,7 +309,7 @@ export function compile(options: CompileOptions): void {
   const trace = {
     schemaVersion: SCHEMA_VERSION,
     compiledAt: { ref, sha, utc: (options.now ?? (() => new Date()))().toISOString() },
-    problems, rules, plans, nodes, commits: placed, events: [], verdicts, findings: [], decisions, sessions: [], harness,
+    problems, rules, plans, nodes, commits: placed, events, verdicts, findings: [], decisions, sessions: [], harness,
   };
   const out = join(root, 'src', 'web', 'public');
   for (const [name, content] of [['trace.json', trace], ...chunks] as [string, unknown][]) {

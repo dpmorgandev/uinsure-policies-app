@@ -23,6 +23,11 @@ export interface TracePlan {
   id: string;
   kind: string | null;
   title: string | null;
+  /** The plan's own status as its file writes it ("approved"); null for an investigation. */
+  status?: string | null;
+  approvedBy?: string | null;
+  approvedOn?: string | null;
+  requirementsRev?: string | null;
   /** The plan file the node list was read from, when the plan has one. */
   source?: string | null;
   nodes: string[];
@@ -33,6 +38,24 @@ export interface TraceChunks {
   diffs: string | null;
 }
 
+/** One of a node's tasks, as its plan file lists it. */
+export interface TraceTask {
+  id: string;
+  title: string | null;
+  status: string | null;
+  role: string | null;
+  step: string | null;
+}
+
+/** One commit of a node's walkthrough. `n` is its row, null when the walkthrough has none for it (a node in flight). */
+export interface TraceRung {
+  n: number | null;
+  sha: string;
+  tdd: string | null;
+  agent: string | null;
+  subject: string | null;
+}
+
 export interface TraceNode {
   plan: string;
   id: string;
@@ -40,6 +63,14 @@ export interface TraceNode {
   owner?: string | null;
   status: string | null;
   attempt: number | null;
+  /** The pull request number, when the plan file records one. */
+  pr?: number | null;
+  dependsOn?: string[];
+  acceptance?: string[];
+  tasks?: TraceTask[];
+  walkthrough?: TraceRung[];
+  /** Whether the node has any trail (a README, a loop or an activity log). */
+  trail?: boolean;
   completeness: string | null;
   completenessReasons: string[];
   rules: string[];
@@ -116,6 +147,8 @@ export interface TraceVerdict {
   round: string;
   agent: string;
   verdict: string;
+  rulesCovered?: string[];
+  rulesMissing?: string[];
   file?: string | null;
 }
 
@@ -153,6 +186,12 @@ export interface ActivityRecord {
   command?: string | null;
   commit?: unknown;
   raw?: string;
+}
+
+/** One commit's patch as `git show` writes it, from a node's diffs chunk. */
+export interface DiffRecord {
+  sha: string;
+  patch: string;
 }
 
 export type TraceLoad = { state: 'ready'; trace: Trace; snapshot: Snapshot } | { state: 'error'; reason: string };
@@ -204,17 +243,26 @@ export async function loadTrace(fetchFile: Fetch = fetch): Promise<TraceLoad> {
   return { state: 'ready', trace: body as unknown as Trace, snapshot };
 }
 
-export async function loadActivity(trace: Trace, plan: string, node: string, fetchFile: Fetch = fetch): Promise<ChunkLoad<ActivityRecord>> {
+async function loadChunk<T>(trace: Trace, plan: string, node: string, kind: 'activity' | 'diffs', fetchFile: Fetch): Promise<ChunkLoad<T>> {
   const found = trace.nodes.find((n) => n.plan === plan && n.id === node);
   if (!found) return { state: 'error', reason: `trace.json holds no node ${plan}/${node}` };
-  const chunk = found.chunks.activity;
+  const chunk = found.chunks[kind];
   if (chunk === null) return { state: 'none' };
   // DATA-1: only the chunk the compiler writes for this node is ever requested.
-  if (chunk !== `trace/${plan}/${node}/activity.json`) {
-    return { state: 'error', reason: `${chunk} is not the activity chunk of ${plan}/${node}` };
+  if (chunk !== `trace/${plan}/${node}/${kind}.json`) {
+    return { state: 'error', reason: `${chunk} is not the ${kind} chunk of ${plan}/${node}` };
   }
   const read = await readJson(fetchFile, chunk);
   if (!read.ok) return { state: 'error', reason: read.reason };
   if (!Array.isArray(read.body)) return { state: 'error', reason: `${chunk} is not a JSON array` };
-  return { state: 'ready', records: read.body as ActivityRecord[] };
+  return { state: 'ready', records: read.body as T[] };
+}
+
+export function loadActivity(trace: Trace, plan: string, node: string, fetchFile: Fetch = fetch): Promise<ChunkLoad<ActivityRecord>> {
+  return loadChunk<ActivityRecord>(trace, plan, node, 'activity', fetchFile);
+}
+
+/** RULE-3: a node's diffs chunk, fetched only when a diff is asked for. */
+export function loadDiffs(trace: Trace, plan: string, node: string, fetchFile: Fetch = fetch): Promise<ChunkLoad<DiffRecord>> {
+  return loadChunk<DiffRecord>(trace, plan, node, 'diffs', fetchFile);
 }
