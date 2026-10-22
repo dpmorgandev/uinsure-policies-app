@@ -171,7 +171,7 @@ test.describe('every plan', () => {
     await expect(page.getByRole('main')).toContainText('F2 stub-gate escalation');
   });
 
-  test("DAG-1 · the primary nav's Plan entry opens the build plan and is marked current there", async ({ page }) => {
+  test("DAG-1 · reachable: the primary nav's Plan entry opens the build plan and is marked current there", async ({ page }) => {
     await openOnFixture(page, fixture, route.overview);
     const entry = primaryNav(page).getByRole('link', { name: 'Plan', exact: true });
     await expect(entry).toHaveAttribute('href', hrefTo(route.plan('build')));
