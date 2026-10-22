@@ -375,7 +375,7 @@ nodes:
     cuttable: false
     budget: null
     status: in_progress
-    attempt: 2
+    attempt: 3
     branch: feature/ui/W3
     worktree: .claude/worktrees/ui-W3
     pr: null
@@ -440,6 +440,9 @@ nodes:
       - "Vitest characterisation tests pin the compiler's node pr, acceptance and tasks (a title with a quoted comma included), parsePatch and loadDiffs (U2 review A2 R4, NODE-1)"
       - "trace.json carries no field nothing reads (nodes[*].qa, TraceTask.step), or a screen reads it (U2 review A2 R5, NODE-1)"
       - "The activity regression baselines at 1440 (populated, light and dark) are written: the full-page capture no longer times out at the 5000ms default (U2 trace, 2026-10-22; non-blocking, tech debt)"
+      - "The renew form never shows a payment method the term does not hold: no Card fallback (W3 review A2 R4, WB-5, HONEST-1)"
+      - "The request log table shows an unanswered or pending request as pending, never status 0 (W3 review A2 R5, WB-7, HONEST-1)"
+      - "W3 e2e specs pass a literal policy reference per test, not one built from Date.now() (W3 review A2 R6, WB-5, WB-7)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for U7: rel=noreferrer, the CSP directives, ids refused, repeated trailers kept; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
