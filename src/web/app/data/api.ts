@@ -266,7 +266,7 @@ function reasonOf(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
 
-async function ask(deps: ApiDeps, url: string, init?: RequestInit): Promise<ApiAnswer<Policy>> {
+async function ask<T>(deps: ApiDeps, url: string, init?: RequestInit): Promise<ApiAnswer<T>> {
   let response: Response;
   try {
     response = await deps.fetch(url, init);
@@ -275,12 +275,12 @@ async function ask(deps: ApiDeps, url: string, init?: RequestInit): Promise<ApiA
   }
   // WB-3: an answer came. A body that is not JSON (a proxy's page) leaves no body, and the status stays.
   const body: unknown = await response.json().catch(() => undefined);
-  if (response.ok) return { kind: 'ok', status: response.status, value: body as Policy };
+  if (response.ok) return { kind: 'ok', status: response.status, value: body as T };
   return { kind: 'problem', status: response.status, problem: readProblem(response.status, body) };
 }
 
 export async function sellPolicy(deps: ApiDeps, body: SellRequest): Promise<ApiAnswer<Policy>> {
-  const answer = await ask(deps, '/api/policies', {
+  const answer = await ask<Policy>(deps, '/api/policies', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
@@ -290,7 +290,7 @@ export async function sellPolicy(deps: ApiDeps, body: SellRequest): Promise<ApiA
 }
 
 export async function getPolicy(deps: ApiDeps, reference: string): Promise<ApiAnswer<Policy>> {
-  const answer = await ask(deps, `/api/policies/${encodeURIComponent(reference)}`);
+  const answer = await ask<Policy>(deps, `/api/policies/${encodeURIComponent(reference)}`);
   if (answer.kind === 'ok' && answer.status === 200) remember(deps.storage, answer.value.reference, 'opened');
   return answer;
 }
@@ -373,18 +373,49 @@ export interface LoggedExchange {
   responseBody: unknown;
 }
 
-export async function recordClaim(deps: ApiDeps, reference: string, body: ClaimRequest): Promise<ApiAnswer<RecordedClaim>> {
-  throw new Error('not implemented');
+function postJson(body: unknown): RequestInit {
+  return { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) };
 }
 
-export async function quoteCancellation(deps: ApiDeps, reference: string, cancellationDate: string): Promise<ApiAnswer<CancellationQuote>> {
-  throw new Error('not implemented');
+export function recordClaim(deps: ApiDeps, reference: string, body: ClaimRequest): Promise<ApiAnswer<RecordedClaim>> {
+  return ask<RecordedClaim>(deps, `/api/policies/${encodeURIComponent(reference)}/claims`, postJson(body));
 }
 
-export async function renewPolicy(deps: ApiDeps, reference: string, body: RenewalRequest): Promise<ApiAnswer<Policy>> {
-  throw new Error('not implemented');
+export function quoteCancellation(deps: ApiDeps, reference: string, cancellationDate: string): Promise<ApiAnswer<CancellationQuote>> {
+  const query = `cancellationDate=${encodeURIComponent(cancellationDate)}`;
+  return ask<CancellationQuote>(deps, `/api/policies/${encodeURIComponent(reference)}/cancellation-quote?${query}`);
 }
 
+export function renewPolicy(deps: ApiDeps, reference: string, body: RenewalRequest): Promise<ApiAnswer<Policy>> {
+  return ask<Policy>(deps, `/api/policies/${encodeURIComponent(reference)}/renewals`, postJson(body));
+}
+
+function parsedBody(body: RequestInit['body']): unknown {
+  if (typeof body !== 'string') return null;
+  try {
+    return JSON.parse(body) as unknown;
+  } catch {
+    return body;
+  }
+}
+
+/** WB-7: keeps each exchange as it went over the wire, in send order, and hands the response on unread. */
 export function loggingFetch(fetch: Fetch, log: LoggedExchange[]): Fetch {
-  throw new Error('not implemented');
+  return async (input, init) => {
+    const entry: LoggedExchange = {
+      method: init?.method ?? 'GET',
+      path: input,
+      requestBody: parsedBody(init?.body),
+      status: null,
+      responseBody: null,
+    };
+    log.push(entry);
+    const response = await fetch(input, init);
+    entry.status = response.status;
+    entry.responseBody = await response
+      .clone()
+      .json()
+      .catch(() => null);
+    return response;
+  };
 }
