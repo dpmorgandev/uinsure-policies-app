@@ -237,8 +237,10 @@ already answers there. It builds and previews the app on 4180 itself.
    - c. *Step 41.* A request that got no answer keeps `status: null`. The drawer reads that as `pending`
      (`app/workbench/RequestsDrawer.tsx:20`), so a blocked request is tagged `Waiting`, as if still in flight. The
      requests table and the policy view's requests region map it to `0` (`requests/RequestLogPage.tsx:20`,
-     `policy/PolicyView.tsx:334`), a status the API never sent. Review A2 R5 moved the `0` to U7: the kit's
-     request-log row has no unanswered state. The requests page's exchange pane itself is right ("No response was read.").
+     `policy/PolicyView.tsx:334`), a status the API never sent. Review A2 R5 and A4 R4 left the `0` to U8 (David's ruling D1): U8's
+     acceptance lines "The request log table shows an unanswered or pending request as pending, never status 0" and
+     "The policy view's requests region shows a pending exchange as pending, never status 0" (`docs/plans/active/ui.dag.yaml`,
+     node U8). The kit's request-log row has no unanswered state. The requests page's exchange pane itself is right ("No response was read.").
    - d. *Step 10.* The claim screen gives the error summary no field ids (`claim/RecordClaim.tsx:205` passes no
      `controlId`), so its entry likely won't link to Claim date. The screen's actions list that link.
    - e. *Step 36.* The exchange gets no `curl` (`requests/RequestLogPage.tsx:46-64`), so the `Repeat it` part with
@@ -248,7 +250,8 @@ already answers there. It builds and previews the app on 4180 itself.
    - f. *Step 42.* `Try again` re-reads the policy only (`claim/RecordClaim.tsx:222-226`). It doesn't resend the quote
      or the claim.
    - g. *Not a step.* When the current term's payment can't be read, renew's Payment method falls back to `Card`
-     (`renew/RenewPolicy.tsx:24, :63`), a value the API never returned. Review A2 R4 moved it to U7. No step reaches
+     (`renew/RenewPolicy.tsx:24, :63`), a value the API never returned. Review A2 R4 left it to U8 (David's ruling D1): U8's acceptance line "The renew
+     form never shows a payment method the term does not hold: no Card fallback". No step reaches
      it live, since every policy sold here has its payment.
    - h. *Step 30.* The sell form's `the request as sent (inspector)` region and the cancel screen's `the requests as
      sent (inspector)` region are still W1's and W2's "not built yet" (`sell/SellPolicy.tsx:406`,
@@ -293,4 +296,4 @@ Steps not run, or only partly seen, and why:
 Defects found (step, what you saw):
 - ______
 
-Decision: Pass / Pass with U7 lines (list them) / Fail
+Decision: Pass / Pass with U8 lines (list them; U8 holds W3's carries, David's ruling D1) / Fail
