@@ -11,13 +11,14 @@ import { serveTrace, setTheme, themes, viewports } from '../../U0b/support/app';
 import { literalColours } from '../../U0b/support/reference';
 import { answerWith, exchangeAt } from '../../W1/support/recorded';
 import type { RecordedExchange } from '../../W1/support/recorded';
+import { policyStates as w1Policy } from '../../W1/support/parity';
 import { designFixtureDir, readBuilt, readReference, regionNamed, regionOrder, unbuiltComps } from '../../W1/support/reference';
 import type { Structure } from '../../W1/support/reference';
 import { route, unreachable } from '../../W1/support/workbench';
 
 export interface W3Screen {
   label: string;
-  screen: 'wb-claim' | 'wb-renew' | 'wb-requests';
+  screen: 'wb-claim' | 'wb-renew' | 'wb-requests' | 'wb-policy';
   state: string;
   open(page: Page): Promise<void>;
 }
@@ -141,6 +142,17 @@ export const requestsStates: Record<'populated', W3Screen> = {
   },
 };
 
+/**
+ * wb-policy, which W1 built and W3 finishes (docs/ui/derived/W3/derived.json builds its actions and
+ * requests-that-touched-this-policy regions), reached by W1's own flows (../../W1/support/parity.ts) and compared
+ * here against W3's reference, docs/ui/derived/W3/wb-policy/.
+ */
+export const policyStates: Record<'populated' | 'error' | 'unreachable', W3Screen> = {
+  populated: { label: 'policy view', screen: 'wb-policy', state: 'populated', open: w1Policy.populated.open },
+  error: { label: 'policy view, answered 404', screen: 'wb-policy', state: 'api-error', open: w1Policy.error.open },
+  unreachable: { label: 'policy view, the API not answering', screen: 'wb-policy', state: 'api-unreachable', open: w1Policy.unreachable.open },
+};
+
 /** W1's reader is rooted at docs/ui/derived/W1; W3's references sit beside it, one folder over. */
 const w3 = (screen: string): string => `../W3/${screen}`;
 
@@ -149,6 +161,16 @@ async function prepare(page: Page, s: W3Screen): Promise<void> {
   await setTheme(page, 'light');
   await page.setViewportSize(viewports[1440]);
   await s.open(page);
+}
+
+/**
+ * Opens `s` and gives its W3 reference and a reader of the page's structure, read with that reference's components,
+ * for a test that compares one part of the page against literal values.
+ */
+export async function openAgainstReference(page: Page, s: W3Screen): Promise<{ reference: Structure; read: () => Promise<Structure> }> {
+  const reference = await readReference(page.context(), w3(s.screen), s.state);
+  await prepare(page, s);
+  return { reference, read: () => readBuilt(page, reference) };
 }
 
 export async function expectRegionsInOrder(page: Page, s: W3Screen): Promise<void> {
