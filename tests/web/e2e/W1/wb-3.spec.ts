@@ -176,18 +176,15 @@ test.describe('404', () => {
   });
 });
 
-// inv-006 I1: W1 doesn't build the cancel, renew and claim screens (W2 and W3 do), so their routes fall to the
-// not-built page. Opened on a policy the live API sold, before any request, they show no value the API didn't
-// return for it: no recorded reference, date or amount, no answer to a request that was never sent, no problem.
+// inv-006 I1: W1 doesn't build the cancel screen (W2 does), so its route falls to the not-built page. Opened on a
+// policy the live API sold, before any request, it shows no value the API didn't return for it: no recorded
+// reference, date or amount, no answer to a request that was never sent, no problem. The renew and record-a-claim
+// cases left this list when W3 built those screens (W3 round A2, a correction: W3's own WB-5 tests now cover them).
 test.describe('screens W1 does not build', () => {
   /** A reference, payment, refund or claim reference in the recorded design fixture's shape (F4-MVFJSC6LXX, PAY-…). */
   const RECORDED_REFERENCE = /\b(F\d-[A-Z0-9]{10}|(PAY|REF)-[0-9a-f]{32}|CLM-[A-Z0-9-]+)\b/;
 
-  for (const [name, path, reference] of [
-    ['quote and cancel', route.cancel, 'W1-UNBUILT-CXL'],
-    ['renew', route.renew, 'W1-UNBUILT-RNW'],
-    ['record a claim', route.claim, 'W1-UNBUILT-CLM'],
-  ] as const) {
+  for (const [name, path, reference] of [['quote and cancel', route.cancel, 'W1-UNBUILT-CXL']] as const) {
     test(`WB-3 · the ${name} route shows no canned value and no other policy's reference`, async ({ page, api }) => {
       void api;
       const policy = await sellThroughApi(requestOf(sellForm(reference)));
