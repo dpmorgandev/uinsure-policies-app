@@ -1,0 +1,56 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T21:42:21Z",
+  "plan": "ui",
+  "node": "U5",
+  "attempt": 1,
+  "agent": "reviewer",
+  "agent_id": "a14c980c7ec9578d1",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U5",
+    "attempt": 1,
+    "base_sha": "48186c128034f1e5918559eac37370a723431fd0",
+    "head_sha": "bbcd3d9a43f81a5465f78483b672d7a7c2d2ab12",
+    "diff_fingerprint": "6865889c74e308b56af5b73d133633f166645822",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.integrate@a34e673",
+      "gate.typecheck@a34e673",
+      "gate.lint@a34e673",
+      "gate.lint-css@a34e673",
+      "gate.test@a34e673",
+      "gate.build@a34e673",
+      "gate.e2e@a34e673",
+      "gate.e2e-regression@a34e673 (21:32:01, ok:false)",
+      "gate.audit@a34e673",
+      "gate.audit-dev@a34e673",
+      "gate.coverage@a34e673",
+      "gate.scope@a34e673",
+      "gate.no-stubs@a34e673",
+      "gate.red@4041673",
+      "gate.green@2452488"
+    ],
+    "rules_covered": [
+      "CTX-1",
+      "AGENT-3",
+      "STATS-1",
+      "NAV-5"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "I couldn't run git show 1db2c0f because I have no shell. I judged the merge resolution two ways instead: I read the four files at HEAD in the worktree, and I read their hunks in packet/diff.patch, which runs from base 48186c1 (origin/ui with U3) to HEAD. If the resolution had dropped a U3 line, it would show there as a removal.",
+      "src/web/app/explorer/about/About.tsx: the only removal is the NotBuiltRegion placeholder for the guided-tour region. U5's NAV-5 Tour Rung replaces it, which is U5's own change. U3's DATA-2 provenance-labels region, the LABELS list, the PageHeader status line ('counted from problems in trace.json'), the A11Y-1 legend, the re-verify NotBuiltRegion and the DATA-3 stamp are all kept at HEAD.",
+      "src/web/app/shell/App.tsx: one import and {u5Routes} were added after {u3Routes}. U3's routes are untouched. The U5 paths (sessions, harness, stats) don't collide with U1, U2 or U3 paths.",
+      "src/web/app/shell/Frame.tsx: three useMatch calls and three title entries were added. The `current` ternary was reformatted with sessions/harness put under 'about' and stats under 'overview'. U3's loop, verdict and finding branches are still under 'plan'. No U3 line was removed.",
+      "src/web/compiler/index.ts: frontMatter() and the CTX-1 sessions block were added, and the literal `sessions: []` became `sessions`. verdictOf at HEAD still emits ts and attempt for STATS-1. That code isn't in the U5 hunk, so the base (U3) already holds equivalent lines, and the merge kept a single copy.",
+      "Evidence that both nodes still behave: gate.integrate@a34e673 records unit 311/311, U5 e2e 41/41 and 660 passed across all specs, with every rule test of every node passing. The 6 failures are regression shots: about x4, the merged page re-baselined in the trace commit (the about PNGs are in the diff), and activity 1440 x2, an existing U7 line. gate.coverage is now OK, which closes the earlier verdict's note about gate.coverage at 2452488.",
+      "I didn't check that bbcd3d9 and 5966bd0 (after a34e673) are docs/trace and docs/plans only, because I have no shell. Their subjects say so, and the diff fingerprint excludes those paths. No regression re-run is recorded after the about re-baseline. It passes by construction, so there is no finding.",
+      "Pre-existing, not part of this merge: u2Routes and u3Routes both register plans/:planId. Both came in with origin/ui and are outside U5's diff.",
+      "Not re-raised: the earlier A1 P2s R1 to R6 are U7 lines. TDD order and test integrity are unchanged since the A1 PASS. The merge touched no file under tests/web/e2e/U5 or tests/web/unit/compiler."
+    ]
+  }
+}
