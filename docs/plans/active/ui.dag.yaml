@@ -340,11 +340,11 @@ nodes:
     rules: [WB-4]
     cuttable: false
     budget: null
-    status: hitl
+    status: done
     attempt: 2
     branch: feature/ui/W2
     worktree: .claude/worktrees/ui-W2
-    pr: null
+    pr: 100
     qa: docs/qa/ui-W2.md
     trace: docs/trace/ui/W2/
     acceptance:
@@ -361,8 +361,8 @@ nodes:
       - {id: t8, role: tester, step: qa, layer: null, rules: [WB-4], after: [t6], title: "QA script docs/qa/ui-W2.md, beside review", status: done}
       - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: done}
       - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: done}
-      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
-      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script, then sign off", status: pending}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script, then sign off", status: done}
       - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
   - id: W3
     title: Workbench: claims, renew and the request inspector
