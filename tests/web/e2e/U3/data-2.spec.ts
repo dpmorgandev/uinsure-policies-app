@@ -2,17 +2,20 @@
 // render-trace.mjs wrote it), recorded (an agent's judgement stored verbatim) or written (by David or the main
 // session), shown wherever the item appears. U3's screens: the about page's provenance labels, the verdict (recorded:
 // verdicts/<round>-<agent>.json), the finding round (recorded: findings/<round>.md) and the compiled-at stamp beside
-// it (generated). On the `retry-ladder` fixture trail (retry-ladder/README.md); parity on the design fixture against
-// docs/ui/derived/U3/about/.
+// it (generated). On the `retry-ladder` fixture trail (retry-ladder/README.md); a loop line's own source on the
+// `p0-reconciled` fixture (p0-reconciled/README.md); parity on the design fixture against docs/ui/derived/U3/about/.
 import { expect, test } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
 import {
   FINDINGS,
+  LADDER,
   PROVENANCE,
   RAW_JSON,
+  RECONCILED_LINE,
   REPO,
   SUMMARY,
   auditEverywhere,
+  compileP0Reconciled,
   compileRetry,
   openOnFixture,
   openRegion,
@@ -94,6 +97,42 @@ test.describe('the finding round', () => {
     const findings = await openRegion(page, fixture, route.findings('build', 'F1', 'A1'), FINDINGS);
     await expect(findings).toContainText(snapshotOf(fixture.compiled).short);
     await expect(label(findings, 'generated').first()).toContainText('generated');
+  });
+});
+
+// Round A2's I2: a loop line keeps the source it was recorded with. The `p0-reconciled` fixture
+// (tests/web/fixtures/trails/p0-reconciled/README.md) holds one line, 13, with source `reconciled`, and every other
+// line with source `orchestrator`. The loop page's source sentence comes from the lines' own source fields.
+test.describe("the loop page's source, line by line", () => {
+  let reconciled: CompiledTrail;
+  test.beforeAll(() => {
+    reconciled = compileP0Reconciled();
+  });
+  test.afterAll(() => {
+    reconciled?.trail.cleanup();
+  });
+
+  /** Opens F1's loop page on the fixture and waits until its ladder draws the fixture's attempts. */
+  async function openLadder(page: Page): Promise<Locator> {
+    const ladder = await openRegion(page, reconciled, route.loop('build', 'F1'), LADDER);
+    await expect(ladder, "the ladder shows the fixture's attempts").toContainText('(sale route 500); failure route round A1');
+    return ladder;
+  }
+
+  test("DATA-2 · the loop page names line 13's source as reconciled", async ({ page }) => {
+    const ladder = await openLadder(page);
+    const named = ladder
+      .locator('p')
+      .filter({ hasText: /reconciled/ })
+      .filter({ hasText: new RegExp(`\\b${RECONCILED_LINE}\\b`) });
+    await expect(named.first(), `a sentence names line ${RECONCILED_LINE} and its source, reconciled`).toBeVisible();
+  });
+
+  test('DATA-2 · the loop page never says every event was recorded by the orchestrator when line 13 is reconciled', async ({ page }) => {
+    const ladder = await openLadder(page);
+    await expect(ladder, 'the region names the log it reads').toContainText('the loop log of build/F1');
+    await expect(ladder).not.toContainText('each event recorded by the orchestrator');
+    await expect(ladder).not.toContainText(/(each|every|all) (event|line)s?[^.]*recorded by the orchestrator/i);
   });
 });
 
