@@ -112,3 +112,45 @@ export function partsOf(id: string): string[] {
   if (slash < 0) return [id];
   return [id.slice(0, slash), id.slice(0, id.lastIndexOf('-', slash) + 1) + id.slice(slash + 1)];
 }
+
+/** The `key: value` lines between a file's leading `---` fences, and the text after them. No fence: no frontmatter. */
+export function splitFrontmatter(source: string): { frontmatter: Record<string, Scalar> | null; body: string } {
+  const fenced = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)([\s\S]*)$/.exec(source);
+  if (fenced === null) return { frontmatter: null, body: source };
+  const frontmatter: Record<string, Scalar> = {};
+  for (const line of (fenced[1] ?? '').split(/\r?\n/)) {
+    const entry = /^(\w+):(.*)$/.exec(line);
+    if (entry) frontmatter[entry[1] ?? ''] = scalar(entry[2] ?? '');
+  }
+  return { frontmatter, body: fenced[2] ?? '' };
+}
+
+/** The text under a `## <heading>` line, up to the next `##` heading, trimmed; null when the file has no such section. */
+export function sectionOf(source: string, heading: string): string | null {
+  const lines = source.split(/\r?\n/);
+  const start = lines.findIndex((line) => line.trim() === `## ${heading}`);
+  if (start < 0) return null;
+  const rest = lines.slice(start + 1);
+  const end = rest.findIndex((line) => line.startsWith('## '));
+  return (end < 0 ? rest : rest.slice(0, end)).join('\n').trim();
+}
+
+export interface RootCause {
+  symptom: string | null;
+  cause: string | null;
+  fixDirection: string | null;
+}
+
+/** A root_cause split at its "Symptom:", "Cause:" and "Fix direction:" markers; text with no marker is kept whole as the cause. */
+export function splitRootCause(text: string): RootCause {
+  const marks = [...text.matchAll(/(Symptom|Cause|Fix direction):/g)];
+  if (marks.length === 0) return { symptom: null, cause: text, fixDirection: null };
+  const found: Record<string, string> = {};
+  marks.forEach((mark, at) => {
+    const name = mark[1] ?? '';
+    if (name in found) return;
+    const from = (mark.index ?? 0) + mark[0].length;
+    found[name] = text.slice(from, marks[at + 1]?.index ?? text.length).trim();
+  });
+  return { symptom: found['Symptom'] ?? null, cause: found['Cause'] ?? null, fixDirection: found['Fix direction'] ?? null };
+}
