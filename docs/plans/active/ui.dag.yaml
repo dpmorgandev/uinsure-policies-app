@@ -159,7 +159,7 @@ nodes:
     rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2]
     cuttable: false
     budget: null
-    status: paused_acceptance
+    status: in_progress
     attempt: 2
     branch: feature/ui/U3
     worktree: .claude/worktrees/ui-U3
@@ -174,7 +174,7 @@ nodes:
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2], title: "Playwright acceptance for U3 on fixture trails, and parity with its derived reference; every node rule", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U3 routes render the derived reference as canned content", status: done}
-      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U3 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: pending}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U3 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: done}
       - {id: t4, role: tester, step: red, layer: compiler, rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2], title: "Unit tests for loop events, attempts, verdicts, findings and provenance labels", status: pending}
       - {id: t5, role: builder, step: green, layer: compiler, rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2], title: "Green: loop events, attempts, verdicts, findings and provenance labels", status: pending}
       - {id: t6, role: builder, step: green, layer: screen, rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2], title: "The loop, verdict and finding screens; whole acceptance suite green", status: pending}
