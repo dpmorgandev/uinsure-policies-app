@@ -1,0 +1,89 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T21:03:43Z",
+  "plan": "ui",
+  "node": "U5",
+  "attempt": 1,
+  "agent": "security",
+  "agent_id": "aa849508bee52c988",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U5",
+    "attempt": 1,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "625a554276f7771be822a26ebb9b4553afbd46f6",
+    "diff_fingerprint": "b4745d88b6ad8a6f666fa874072a302b91316b39",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.red",
+      "gate.typecheck",
+      "gate.lint",
+      "gate.test",
+      "gate.build",
+      "gate.e2e",
+      "gate.e2e-regression",
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.coverage",
+      "gate.scope",
+      "gate.no-stubs",
+      "gate.green",
+      "gate.e2e-all"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "src/web/compiler/index.ts",
+        "line": 298,
+        "what": "A context snapshot's file path and filename slug go into trace.json sessions[] without being scanned against the denylist.",
+        "why": "W5/W6 and DATA-5: the compiler says a git path only after scanning it, as it does for plan files at lines 206-207. The body is scanned through read(), but the filename is not. The slug appears on the Sessions page. Hygiene only: /save-context writes the filenames and the real ones are clean.",
+        "route_to": "builder"
+      },
+      {
+        "id": "S2",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "tests/web/unit/compiler/ctx-1.test.ts",
+        "line": 1,
+        "what": "No test shows that a denylist hit inside a docs/context snapshot (front matter or body) fails the compile with no trace.json written.",
+        "why": "W5 and DATA-5 on the new CTX-1 boundary. The behaviour holds through read() (line 291), but data-5.test.ts has no docs/context case, so a later change to the read path could drop the scan unnoticed.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "Scope: the CTX-1 boundary and privacy were checked first, as asked. docs/plans/active/ui.dag.yaml U7 lines were not re-raised.",
+      "CTX-1 boundary (W5): the session code reads only via read(path), which calls git cat-file at the compile ref for paths listed by git ls-tree under docs/. It reads no .claude/, no network, no process.env and no fetch. The only '.claude' hit in src/web/compiler is a comment on line 1.",
+      "CTX-1 privacy (W5/W6): read() scans every line of the whole snapshot (front matter and body) against the denylist and pushes fatal problems, so the compile fails before anything is written. The emitted fields are only file, ts, slug, plan, node, status and nextAction. Branch, worktree, head, and the body never reach trace.json. A grep of the repo's 84 real docs/context front-matter lines and bodies found no absolute path, email or token.",
+      "CTX-1 undated or no-front-matter snapshots are reported in problems[] by file, with the path replaced by null if it hits the denylist (line 294). They are never put in the timeline.",
+      "frontMatter(): keys match [\\w-]+ and the object is local. A '__proto__: null' line would only change that one object's prototype, with no global pollution and no unsafe consumption. Values are strings or null.",
+      "W1: no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval or new Function in the diff's src/web/app files. Session, harness and stats values render as React text. The Timestamp kit shows an unparsable value as raw text and does not throw.",
+      "W2: the About tour links are hash routes built from trace.rules, trace.nodes and commit sha, with the rule id passed through encodeURIComponent. No data-supplied href, no javascript: and no external link was added.",
+      "W3: index.html is not in this diff. The derived HTML under docs/ui/derived/U5 holds only SVG namespace URIs, links to the repo's own GitHub and localhost design text, and no third-party script, font or style.",
+      "W4: the diff adds no fetch, storage or cookie access. The only fetch and localStorage hits under src/web/app are the existing workbench files, which this diff does not touch.",
+      "W7: src/web/package.json and the lockfile are unchanged. gate.audit (runtime, high) found 0 vulnerabilities. gate.audit-dev reports 5 high, the known dev-only braces/stylelint item (GHSA-vfj7-8cjw-p6xm), which doesn't gate.",
+      "W8: Sessions, Harness and Stats show DataNotice when the trace isn't ready. Missing values show as 'not recorded' and not as stack traces. No error text from the server is echoed.",
+      "The only email-like string in the diff is noreply@anthropic.com, which the denylist allows. No key or local absolute path was found. The fixture paths are relative '.claude/...' strings in the synthetic harness.json overlay. The activity.jsonl in the diff holds a claude.ai session URL inside a command string. That is a trace-log fact already covered by the compiler's denylist scan, not a secret.",
+      "Gate observations, not security findings: gate.e2e-regression and gate.e2e-all show exit 1, ok:true against the ruled set of 10 regression shots. gate.coverage ('gate.green is missing') was logged before gate.green and was superseded by it.",
+      "n/a: API1:2023, API2:2023, API5:2023 (auth and roles out of scope; the ui node has no server code).",
+      "n/a: API3:2023, API4:2023, API6:2023, API7:2023, API9:2023 (ui node, no server code).",
+      "API8:2023 is covered by W3, W4 and W8, and API10:2023 by W1 and W8. The .NET extras (SQL, money, NuGet packages, logging) are n/a for the ui node, which touches no src/ .NET code."
+    ]
+  }
+}

@@ -102,6 +102,18 @@ function verdictOf(file: string, text: string, plan: string, node: string): Json
   };
 }
 
+/** A context snapshot's front matter as `key: value` lines; the word `null` is no value. Null when the file has none. */
+function frontMatter(text: string): Record<string, string | null> | null {
+  const match = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/.exec(text);
+  if (match === null) return null;
+  const fields: Record<string, string | null> = {};
+  for (const line of (match[1] ?? '').split(/\r?\n/)) {
+    const pair = /^([\w-]+):\s*(.*)$/.exec(line);
+    if (pair !== null) fields[pair[1] ?? ''] = pair[2] === '' || pair[2] === 'null' ? null : (pair[2] ?? null);
+  }
+  return fields;
+}
+
 /** A line of a loop.jsonl as an event: the event name gives its kind (gate.<gate>, state(…), or the name before its argument). */
 function eventOf(plan: string, node: string, line: number, record: Json | null, raw: string): Json {
   const event = str(record?.['event']);
@@ -337,6 +349,21 @@ export function compile(options: CompileOptions): void {
     });
   }
 
+  // CTX-1: the snapshot chain. A snapshot with no front matter or no timestamp is reported, never guessed into the timeline.
+  const sessions = [...paths]
+    .filter((path) => /^docs\/context\/[^/]+\.md$/.test(path))
+    .flatMap((path) => {
+      const fields = frontMatter(read(path) ?? '');
+      const ts = fields?.['timestamp'] ?? null;
+      if (fields === null || ts === null) {
+        problems.push({ file: isHit(denylist.list, path) ? null : path, line: null, reason: 'the context snapshot has no front matter timestamp' });
+        return [];
+      }
+      const slug = /^\d{8}-\d{6}-(.+)\.md$/.exec(path.slice('docs/context/'.length))?.[1] ?? null;
+      return [{ file: path, ts, slug, plan: fields['plan'] ?? null, node: fields['node'] ?? null, status: fields['status'] ?? null, nextAction: fields['next-action'] ?? null }];
+    })
+    .sort((a, b) => a.ts.localeCompare(b.ts));
+
   const matrices = new Map(
     PLAN_FILES.map(({ matrix }) => {
       const text = read(matrix);
@@ -374,7 +401,7 @@ export function compile(options: CompileOptions): void {
   const trace = {
     schemaVersion: SCHEMA_VERSION,
     compiledAt: { ref, sha, utc: (options.now ?? (() => new Date()))().toISOString() },
-    problems, rules, plans, nodes, commits: placed, events, verdicts, findings, decisions, sessions: [], harness,
+    problems, rules, plans, nodes, commits: placed, events, verdicts, findings, decisions, sessions, harness,
   };
   const out = join(root, 'src', 'web', 'public');
   for (const [name, content] of [['trace.json', trace], ...chunks] as [string, unknown][]) {
