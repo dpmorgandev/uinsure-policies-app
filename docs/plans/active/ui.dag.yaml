@@ -150,7 +150,7 @@ nodes:
       - {id: t12, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: done}
       - {id: t13, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: done}
       - {id: t14, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: done}
-      - {id: t15, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: pending}
+      - {id: t15, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: done}
       - {id: t16, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
   - id: U3
     title: Loop, verdicts, findings and the retry ladder
