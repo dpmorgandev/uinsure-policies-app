@@ -26,7 +26,7 @@
         "events[plan=build][node=F6][line<=20].attempt (in-flight variant)",
         "events[plan=build][node=F6][line=20].ts (in-flight variant)"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "receipt figures (rules built/total, tests passing, nodes done, attempts and FAILs, human decisions)",
@@ -57,7 +57,7 @@
         "events[plan=build][node=F6][line=9].cmd (in-flight variant)",
         "events[plan=build][node=F6][line=9].detail (in-flight variant)"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "build plan at a glance",
@@ -157,7 +157,7 @@
         "rules[*].matrix.green",
         "rules[*].matrix.refactor"
       ],
-      "built": false
+      "built": true
     }
   ],
   "states": [

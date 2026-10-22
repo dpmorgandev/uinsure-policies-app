@@ -3,6 +3,7 @@
   "builtNodes": [
     "U0a",
     "U0b",
+    "U1",
     "W1"
   ],
   "screens": {
@@ -25,31 +26,60 @@
         "agent-lanes"
       ]
     },
-    "overview": {
+    "commit": {
       "built": [
-        "compiled-at-stamp",
-        "top-bar-search-and-theme-toggle-global-tagged-here-once"
+        "links-out"
       ],
       "notBuilt": [
+        "commit-header-and-trailers",
+        "trailer-agent-vs-hook-agent",
+        "diff-lazy"
+      ]
+    },
+    "matrix": {
+      "built": [
+        "filters-status-feature",
+        "matrix-table",
+        "test-count-scope-note-counts-are-per-node-sell-7-10-at-f1-vs-15-traited"
+      ],
+      "notBuilt": []
+    },
+    "node": {
+      "built": [
+        "completeness-banner"
+      ],
+      "notBuilt": [
+        "rules",
+        "tasks",
+        "attempts",
+        "who-touched-what"
+      ]
+    },
+    "overview": {
+      "built": [
         "headline-answer",
         "receipt-figures-rules-built-total-tests-passing-nodes-done-attempts-and-fails-human-decisions",
-        "build-plan-at-a-glance",
-        "latest-human-decisions",
+        "compiled-at-stamp",
+        "top-bar-search-and-theme-toggle-global-tagged-here-once",
         "trail-completeness-trail-incomplete-reasons-verbatim-not-built-yet-and-f0a-as-git-only"
+      ],
+      "notBuilt": [
+        "build-plan-at-a-glance",
+        "latest-human-decisions"
       ]
     },
     "rule": {
       "built": [
-        "load-diff-busy-while-the-diff-chunk-loads"
-      ],
-      "notBuilt": [
         "rule-text-and-agreed-interpretation",
         "signature-red-before-green-evidence-custody-chain-tdd-ticks-chronology-per-style",
         "tests-count-and-scope",
         "qa-step-and-sign-off",
-        "red-and-green-diffs-lazy",
-        "verify-it-yourself",
+        "load-diff-busy-while-the-diff-chunk-loads",
         "links-out-commit-shas-pr-numbers-and-file-line-references-to-github-at-that-sha"
+      ],
+      "notBuilt": [
+        "red-and-green-diffs-lazy",
+        "verify-it-yourself"
       ]
     },
     "wb-cancel": {
@@ -124,13 +154,10 @@
     }
   },
   "notBuiltScreens": [
-    "commit",
     "decisions",
     "finding",
     "harness",
     "loop",
-    "matrix",
-    "node",
     "not-found",
     "plan",
     "sessions",

@@ -34,7 +34,7 @@
         "stamp.sha",
         "stamp.utc"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "signature: red-before-green evidence (custody chain / TDD ticks / chronology, per style)",
@@ -77,7 +77,7 @@
         "decisions[plan=build][node=F2].what",
         "decisions[plan=build][node=F2].sha"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "tests (count and scope)",
@@ -99,7 +99,7 @@
         "events[plan=build][node=F2][kind=gate].attempt",
         "events[plan=build][node=F2][kind=gate].detail"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "QA step and sign-off",
@@ -125,7 +125,7 @@
         "docs/qa/build-F2.md: Verdict",
         "docs/qa/build-F2.md: Signature"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "red and green diffs (lazy)",
@@ -203,7 +203,7 @@
         "rules[id=:ruleId].matrix.qaStep",
         "stamp.sha"
       ],
-      "built": false
+      "built": true
     }
   ],
   "states": [
