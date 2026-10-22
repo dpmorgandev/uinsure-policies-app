@@ -374,10 +374,10 @@ nodes:
     rules: [WB-5, WB-7]
     cuttable: false
     budget: null
-    status: pending
-    attempt: 0
-    branch: null
-    worktree: null
+    status: in_progress
+    attempt: 1
+    branch: feature/ui/W3
+    worktree: .claude/worktrees/ui-W3
     pr: null
     qa: docs/qa/ui-W3.md
     trace: docs/trace/ui/W3/
@@ -387,21 +387,19 @@ nodes:
       - "One inspector per page; the requests page has one filter and one count and shows only times it recorded; the claim description has a label and renew's amount is named as shown (g4-defects.md sections 1 and 3)"
       - "The workbench cross-node flow gates pass: sell, then cancel, claim and renew the same policy"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-5, WB-7], title: "Playwright acceptance for W3 on fixture trails, and parity with its derived reference; every node rule", status: pending}
-      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The W3 routes render the derived reference as canned content", status: pending}
-      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the W3 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: pending}
-      - {id: t4, role: tester, step: red, layer: client, rules: [WB-5, WB-7], title: "Unit tests for claims, renewals and the request log", status: pending}
-      - {id: t5, role: builder, step: green, layer: client, rules: [WB-5, WB-7], title: "Green: claims, renewals and the request log", status: pending}
-      - {id: t6, role: builder, step: green, layer: screen, rules: [WB-5, WB-7], title: "The claim, renew and requests screens and the inspector drawer; the workbench flows; whole acceptance suite green", status: pending}
-      - {id: t7, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: pending}
-      - {id: t8, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: pending}
-      - {id: t9, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
-      - {id: t10, role: tester, step: qa, layer: null, rules: [WB-5, WB-7], title: "QA script docs/qa/ui-W3.md: steps in the running app, tagged per rule", status: pending}
-      - {id: t11, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: pending}
-      - {id: t12, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: pending}
-      - {id: t13, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: pending}
-      - {id: t14, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: pending}
-      - {id: t15, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-5, WB-7], title: "Playwright acceptance for W3 on the live API, regression specs, parity with its derived reference, and unit tests (client: claims, renewals, the request log); every node rule … and unit tests", status: pending}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The W3 routes render the derived reference as canned content", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the W3 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: skipped}
+      - {id: t4, role: builder, step: green, layer: screen, rules: [WB-5, WB-7], title: "Claims, renewals and request-log client, then the claim, renew and requests screens and the inspector drawer; the workbench flows; whole acceptance suite green … all layers", status: pending}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: pending}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity, the regression, rule coverage, diff scope", status: pending}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [WB-5, WB-7], after: [t6], title: "QA script docs/qa/ui-W3.md, beside review", status: pending}
+      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: pending}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: pending}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script, then sign off", status: pending}
+      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
   - id: U7
     title: "Tech debt: the non-blocking carries (inv-005)"
     kind: feature
