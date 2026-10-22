@@ -1,0 +1,2 @@
+{"v":1,"ts":"2026-10-22T20:21:41Z","plan":"ui","node":"U5","attempt":1,"source":"orchestrator","event":"setup","detail":"feature/ui/U5 from origin/ui 7736c1c; derived reference built nodes U0a U0b U1 U2 U5 W1; lean tasks, stub and pause1 skipped (A6)"}
+{"v":1,"ts":"2026-10-22T20:21:41Z","plan":"ui","node":"U5","attempt":1,"source":"orchestrator","event":"state(in_progress)"}
