@@ -1,0 +1,155 @@
+{
+  "screen": "plan",
+  "route": "/plans/:planId",
+  "regions": [
+    {
+      "name": "plan header (status, approval, requirements rev)",
+      "req": [
+        "DAG-1"
+      ],
+      "components": [
+        "page-header",
+        "status-tag"
+      ],
+      "fields": [
+        "plans[id=build].id",
+        "plans[id=build].status",
+        "plans[id=build].approvedBy",
+        "plans[id=build].approvedOn",
+        "plans[id=build].source",
+        "plans[id=build].nodes",
+        "nodes[plan=build][*].id",
+        "nodes[plan=build][*].status",
+        "nodes[plan=build][id=F7].dependsOn",
+        "nodes[plan=build][id=F7].title",
+        "stamp.ref",
+        "stamp.sha",
+        "stamp.utc",
+        "requirements rev: not in the data (shown as a gap)",
+        "events[plan=build][node=F6][line<=20].event (in-flight variant)",
+        "events[plan=build][node=F6][line<=20].attempt (in-flight variant)",
+        "events[plan=build][node=F6][line=15].detail (in-flight variant)",
+        "events[plan=build][node=F6][line=20].ts (in-flight variant)",
+        "events[plan=build][node=F6][line=20].ok (in-flight variant)"
+      ],
+      "built": true
+    },
+    {
+      "name": "node graph and its table",
+      "req": [
+        "DAG-1"
+      ],
+      "components": [
+        "dag-graph",
+        "dag-table",
+        "status-tag"
+      ],
+      "fields": [
+        "nodes[plan=build][*].id",
+        "nodes[plan=build][*].title",
+        "nodes[plan=build][*].status",
+        "nodes[plan=build][*].dependsOn",
+        "nodes[plan=build][*].rules",
+        "nodes[plan=build][*].pr",
+        "events[plan=build][node=F6][line<=20].line (in-flight variant)",
+        "events[plan=build][node=F6][line<=20].attempt (in-flight variant)",
+        "events[plan=build][node=F6][line<=20].event (in-flight variant)",
+        "events[plan=build][node=F6][line<=20].gate (in-flight variant)",
+        "events[plan=build][node=F6][line<=20].exit (in-flight variant)",
+        "events[plan=build][node=F6][line<=20].expect (in-flight variant)",
+        "events[plan=build][node=F6][line<=20].ok (in-flight variant)",
+        "events[plan=build][node=F6][line<=20].detail (in-flight variant)"
+      ],
+      "built": true
+    },
+    {
+      "name": "investigation body (inv-* plans only)",
+      "req": [
+        "LOOP-2"
+      ],
+      "components": [
+        "key-value-list",
+        "markdown-text",
+        "status-tag"
+      ],
+      "fields": [
+        "plans[id=build].kind (build, so the body is empty: populated)",
+        "inv-* question, hypothesis, findings, recommendations: not in the data (shown as gaps)",
+        "events[plan=build][node=F6][line=17].event (in-flight variant)",
+        "events[plan=build][node=F6][line=17].detail (in-flight variant)",
+        "events[plan=build][node=F6][line=18].detail (in-flight variant)",
+        "events[plan=build][node=F6][line=19].detail (in-flight variant)"
+      ],
+      "built": true
+    }
+  ],
+  "states": [
+    {
+      "name": "populated",
+      "file": "populated.html",
+      "variant": "the ref's own data (origin/main b394466)"
+    },
+    {
+      "name": "in-flight",
+      "file": "in-flight.html",
+      "variant": "build/F6 as it stood after its first 20 loop events (F6 is done at this ref), cut from its loop.jsonl; only those events are used, so only F6 is drawn"
+    },
+    {
+      "name": "not-built",
+      "file": "not-built.html",
+      "variant": "labelled placeholders attached to no real plan, rule or node: every rule is built at this ref"
+    }
+  ],
+  "actions": [
+    {
+      "label": "Show me the proof: open node F6, which took attempt 4 (populated)",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId"
+    },
+    {
+      "label": "Show me the proof: open F6's loop log (in-flight only)",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId/loop"
+    },
+    {
+      "label": "Show me the proof: open a node (loading and not-built)",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId"
+    },
+    {
+      "label": "Rule chip (every rule chip in the table)",
+      "kind": "link",
+      "to": "/rules/:ruleId"
+    },
+    {
+      "label": "Text equivalent: the plan as a table",
+      "kind": "control",
+      "to": "opens or closes the table, no request"
+    },
+    {
+      "label": "UTC",
+      "kind": "control",
+      "to": "switches the compiled-at time between BST and UTC, no request"
+    },
+    {
+      "label": "Sources and provenance",
+      "kind": "link",
+      "to": "/about"
+    },
+    {
+      "label": "Repository on GitHub",
+      "kind": "link",
+      "to": "https://github.com/dpmorgandev/uinsure-policies-api"
+    },
+    {
+      "label": "Search",
+      "kind": "control",
+      "to": "/rules, /plans/:planId/:nodeId or /commits/:sha by what is typed"
+    },
+    {
+      "label": "Theme",
+      "kind": "control",
+      "to": "sets the theme, no request"
+    }
+  ]
+}
