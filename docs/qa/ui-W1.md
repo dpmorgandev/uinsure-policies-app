@@ -256,9 +256,16 @@ W1's, U0b's and U1's together, as the attempt-4 gates ran them: `… run e2e -- 
 
 ## Sign-off
 
-David: ______ · SHA tested: ______ · date: ______
+David: run by Claude (scripted, headless Chromium, fresh profile), reviewed by David · SHA tested: a145d24 (a145d248bee9859ed0ae3e8d9ea966c3f68f7929) · date: 2026-10-22
 
-Steps passed: ____ of 68 · Steer (if any): ______
+Steps passed: 68 of 68 on their scripted checks, 7 of them only partly seen (below) · Steer (if any): none
 
 Steps not run, or only partly seen, and why:
-- ______
+- Who ran it: Claude ran every step, not David by hand. Parts A to H were driven by a Playwright script against the API on 5088 (fresh qa-w1.db) and the built preview on 4178, after `npm run trace` and `npm run build`. The W1 slow profile was a 4 s route delay, and Blocked was an aborted request. Part I ran the commands as written.
+- 17, 19, 58 (partly seen): the words were checked (Sold, Opened, Pending, Cancelled, Paid, 404, not built yet), and glyphs were found in the DOM. Whether each glyph sits beside its word and reads as a glyph needs eyes.
+- 55 (partly seen): the tab order was checked from the start of the document: Skip to the content, the top bar, the nav, then the form in order, ending at Sell this policy. A visible focus ring on each stop, the arrow keys between the Type radios, and Space on each switch need eyes. Step 67's focus-indicator test passed.
+- 56 (partly seen): focus lands on the new Policyholder 2 heading and then on Policyholders, and the count text updates. A screen reader announcing it wasn't heard.
+- 59 (partly seen): the toggle sets data-theme dark and light. Legibility and the glyphs in both themes need eyes. axe found no contrast violation in step 67.
+- 60 (partly seen): no sideways scroll on all four routes at 390 and 1440, light and dark (16 checks). Tables scrolling inside their own frame at 390 need eyes.
+- 31 and 38: the script quotes "form's" with a straight apostrophe, and the app writes "form’s". On the rule page, the "nothing to show yet" lines are U1's own unbuilt regions, not the not-built page. Both pass.
+- 67: the script says 7 passed. 20 A11Y-1 tests ran and all passed: the 7 workbench axe tests the step names, plus 13 earlier-node ones the filter also matched.
