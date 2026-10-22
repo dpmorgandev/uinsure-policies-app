@@ -327,3 +327,64 @@ function remember(storage: RecentStore | null, reference: string, how: RecentEnt
     // storage full or refused: the list just doesn't grow.
   }
 }
+
+export interface ClaimRequest {
+  claimDate: string;
+  description?: string;
+}
+
+export interface RecordedClaim {
+  reference: string;
+  policyReference: string;
+  claimDate: string;
+  description: string | null;
+  hasClaims: boolean;
+}
+
+export interface QuoteTerm {
+  termNumber: number;
+  ruleApplied: string;
+  daysInTerm: number;
+  daysUsed: number;
+  unusedDays: number;
+  refundAmount: number;
+}
+
+export interface CancellationQuote {
+  reference: string;
+  cancellationDate: string;
+  ruleApplied: string;
+  totalRefund: number;
+  terms: QuoteTerm[];
+  refunds: Refund[];
+  quotedOn: string;
+}
+
+export interface RenewalRequest {
+  amount: number;
+  paymentMethod?: PaymentMethod;
+}
+
+export interface LoggedExchange {
+  method: string;
+  path: string;
+  requestBody: unknown;
+  status: number | null;
+  responseBody: unknown;
+}
+
+export async function recordClaim(deps: ApiDeps, reference: string, body: ClaimRequest): Promise<ApiAnswer<RecordedClaim>> {
+  throw new Error('not implemented');
+}
+
+export async function quoteCancellation(deps: ApiDeps, reference: string, cancellationDate: string): Promise<ApiAnswer<CancellationQuote>> {
+  throw new Error('not implemented');
+}
+
+export async function renewPolicy(deps: ApiDeps, reference: string, body: RenewalRequest): Promise<ApiAnswer<Policy>> {
+  throw new Error('not implemented');
+}
+
+export function loggingFetch(fetch: Fetch, log: LoggedExchange[]): Fetch {
+  throw new Error('not implemented');
+}
