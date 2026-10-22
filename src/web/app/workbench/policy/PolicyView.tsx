@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { useParams } from 'react-router';
+import { Link, useParams } from 'react-router';
 import { DataTable, KeyValueList, PageHeader, ProblemBanner, StatusTag, TermTimeline } from '../../../kit';
 import type { DataTableColumn, KeyValueItem, Status, TermTimelineProps } from '../../../kit';
 import { getPolicy } from '../../data/api';
@@ -164,7 +164,7 @@ function PolicyDetail({ policy }: PolicyDetailProps) {
           empty={{
             context: 'empty',
             title: `The API returned no claims for ${reference}.`,
-            why: 'claims is an empty list. A recorded claim would appear here as one numbered row. Recording a claim is not built yet.',
+            why: 'claims is an empty list. A recorded claim would appear here as one numbered row.',
           }}
         />
       </Region>
@@ -383,7 +383,18 @@ export function PolicyView() {
         />
       )}
 
-      <NotBuiltRegion region="actions-quote-and-cancel-record-a-claim-renew" name="actions: quote and cancel, record a claim, renew" />
+      <section className="s-wb-region" data-region="actions-quote-and-cancel-record-a-claim-renew" data-req="WB-5">
+        <h2 className="s-wb-heading">Actions</h2>
+        <ul className="s-wb-list">
+          <li>
+            <Link to={`/workbench/policies/${encodeURIComponent(reference)}/claims/new`}>Record a claim</Link>
+          </li>
+          <li>
+            <Link to={`/workbench/policies/${encodeURIComponent(reference)}/renew`}>Renew</Link>
+          </li>
+        </ul>
+        <NotBuiltRegion region="quote-and-cancel" name="quote and cancel" />
+      </section>
       <NotBuiltRegion region="requests-that-touched-this-policy" name="requests that touched this policy" />
     </div>
   );

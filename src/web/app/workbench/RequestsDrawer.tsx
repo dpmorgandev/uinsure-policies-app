@@ -7,13 +7,10 @@ import { useRequestLog } from './browser';
 /** The path as the API's contract writes it: the app's /api proxy prefix is not part of the exchange. */
 export const apiPathOf = (path: string): string => path.replace(/^\/api(?=\/)/, '');
 
-/** A body as it went over the wire, laid out for reading. */
-export const bodyText = (body: unknown): string => JSON.stringify(body, null, 2);
-
 function describe(entry: LoggedExchange, number: number): InspectorRequest {
   const parts = [
-    entry.requestBody !== null ? `request\n${bodyText(entry.requestBody)}` : null,
-    entry.responseBody !== null ? `response\n${bodyText(entry.responseBody)}` : null,
+    entry.requestBody !== null ? `request\n${entry.requestBody}` : null,
+    entry.responseBody !== null ? `response\n${entry.responseBody}` : null,
   ].filter((part): part is string => part !== null);
   return {
     number,

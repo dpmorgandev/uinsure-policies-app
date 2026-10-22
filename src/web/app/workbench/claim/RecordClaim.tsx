@@ -166,8 +166,9 @@ export function RecordClaim() {
           {(control) => <DateInput {...control} value={date} onChange={(e) => setDate(e.target.value)} />}
         </Field>
         <div className="s-wb-stack">
-          <h3 className="s-wb-heading">Claim description</h3>
-          <TextArea aria-label="Claim description" maxLength={MAX_DESCRIPTION} value={description} onChange={(e) => setDescription(e.target.value)} />
+          <Field id="claim-description" label="Claim description">
+            {(control) => <TextArea {...control} maxLength={MAX_DESCRIPTION} value={description} onChange={(e) => setDescription(e.target.value)} />}
+          </Field>
         </div>
       </section>
 

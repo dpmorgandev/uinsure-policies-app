@@ -368,9 +368,15 @@ export interface RenewalRequest {
 export interface LoggedExchange {
   method: string;
   path: string;
-  requestBody: unknown;
+  /** The headers the page set, by lower-case name. */
+  requestHeaders: Record<string, string>;
+  /** The body as the exact text sent. */
+  requestBody: string | null;
   status: number | null;
-  responseBody: unknown;
+  /** The headers the page received, by lower-case name. Null until an answer comes. */
+  responseHeaders: Record<string, string> | null;
+  /** The body as the exact text received. */
+  responseBody: string | null;
 }
 
 function postJson(body: unknown): RequestInit {
@@ -390,14 +396,7 @@ export function renewPolicy(deps: ApiDeps, reference: string, body: RenewalReque
   return ask<Policy>(deps, `/api/policies/${encodeURIComponent(reference)}/renewals`, postJson(body));
 }
 
-function parsedBody(body: RequestInit['body']): unknown {
-  if (typeof body !== 'string') return null;
-  try {
-    return JSON.parse(body) as unknown;
-  } catch {
-    return body;
-  }
-}
+const headersOf = (headers: Headers | HeadersInit | undefined): Record<string, string> => Object.fromEntries(new Headers(headers).entries());
 
 /** WB-7: keeps each exchange as it went over the wire, in send order, and hands the response on unread. */
 export function loggingFetch(fetch: Fetch, log: LoggedExchange[]): Fetch {
@@ -405,17 +404,17 @@ export function loggingFetch(fetch: Fetch, log: LoggedExchange[]): Fetch {
     const entry: LoggedExchange = {
       method: init?.method ?? 'GET',
       path: input,
-      requestBody: parsedBody(init?.body),
+      requestHeaders: headersOf(init?.headers),
+      requestBody: typeof init?.body === 'string' ? init.body : null,
       status: null,
+      responseHeaders: null,
       responseBody: null,
     };
     log.push(entry);
     const response = await fetch(input, init);
     entry.status = response.status;
-    entry.responseBody = await response
-      .clone()
-      .json()
-      .catch(() => null);
+    entry.responseHeaders = headersOf(response.headers);
+    entry.responseBody = await response.clone().text();
     return response;
   };
 }
