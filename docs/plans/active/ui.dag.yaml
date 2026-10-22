@@ -108,7 +108,7 @@ nodes:
       - {id: t9, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: done}
       - {id: t10, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: done}
       - {id: t11, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
-      - {id: t12, role: tester, step: qa, layer: null, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "QA script docs/qa/ui-U1.md: steps in the running app, tagged per rule", status: pending}
+      - {id: t12, role: tester, step: qa, layer: null, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "QA script docs/qa/ui-U1.md: steps in the running app, tagged per rule", status: done}
       - {id: t13, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: pending}
       - {id: t14, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: pending}
       - {id: t15, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: pending}
