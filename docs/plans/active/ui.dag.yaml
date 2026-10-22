@@ -122,7 +122,7 @@ nodes:
     rules: [DAG-1, NODE-1, TDD-1, RULE-3, DATA-8]
     cuttable: false
     budget: null
-    status: in_progress
+    status: hitl
     attempt: 2
     branch: feature/ui/U2
     worktree: .claude/worktrees/ui-U2
