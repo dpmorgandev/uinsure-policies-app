@@ -136,7 +136,7 @@ nodes:
       - "The walkthrough lists the node commits in order with their TDD steps; a commit shows its diff"
       - "A node in flight compiles with what exists and shows as in progress; malformed lines are reported, never dropped"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [DAG-1, NODE-1, TDD-1, RULE-3, DATA-8], title: "Playwright acceptance for U2 on fixture trails, and parity with its derived reference; every node rule", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [DAG-1, NODE-1, TDD-1, RULE-3, DATA-8], title: "Playwright acceptance for U2 on fixture trails, and parity with its derived reference; every node rule", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U2 routes render the derived reference as canned content", status: pending}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U2 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: pending}
       - {id: t4, role: tester, step: red, layer: compiler, rules: [DAG-1, TDD-1, RULE-3, DATA-8], title: "Unit tests for plans, nodes, commits with TDD trailers and diffs, and in-flight tolerance", status: pending}
