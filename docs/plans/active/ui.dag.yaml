@@ -436,9 +436,6 @@ nodes:
       - "Vitest characterisation tests pin the compiler's node pr, acceptance and tasks (a title with a quoted comma included), parsePatch and loadDiffs (U2 review A2 R4, NODE-1)"
       - "trace.json carries no field nothing reads (nodes[*].qa, TraceTask.step), or a screen reads it (U2 review A2 R5, NODE-1)"
       - "The activity regression baselines at 1440 (populated, light and dark) are written: the full-page capture no longer times out at the 5000ms default (U2 trace, 2026-10-22; non-blocking, tech debt)"
-      - "The renew form never shows a payment method the term does not hold: no Card fallback (W3 review A2 R4, WB-5, HONEST-1)"
-      - "The request log table shows an unanswered or pending request as pending, never status 0 (W3 review A2 R5, WB-7, HONEST-1)"
-      - "W3 e2e specs pass a literal policy reference per test, not one built from Date.now() (W3 review A2 R6, WB-5, WB-7)"
       - "The cancel screen states the HTTP status it received, never a literal 200 or 201 (W2 A1 R1, HONEST-1)"
       - "After a 201 cancel the cancel screen re-reads the policy, so its header status is the one the API holds now (W2 A1 R2, WB-4)"
       - "The cancel screen builds its rule links with the shared ruleLinks helper, encoded, not a local copy (W2 A1 R3, WB-3)"
@@ -465,12 +462,6 @@ nodes:
       - "A test shows that a denylist hit in a docs/context snapshot fails the compile with no trace.json written (U5 A1 S2, CTX-1)"
       - "Each sessions entry opens its own snapshot at /sessions/:file: the reference tags it NAV-2, so U4 or U7 builds it (U5 A1 reviewer note, CTX-1)"
       - "plans/:planId is registered once: u2Routes and u3Routes both register it, so one shadows the other (U5 A1.2 reviewer note, DAG-1)"
-      - "The policy view's requests region shows a pending exchange as pending, never status 0 (W3 review A4 R4, WB-7, HONEST-1)"
-      - "The request log's one-exchange region draws the kit HttpExchange curl part ('Repeat it') the wb-requests reference draws (W3 review A4 R5, WB-7)"
-      - "W3's cheque COULD-3 e2e waits for the policy read before typing, and the intermittent 'amount null' renewal is explained or fixed in RenewPolicy (W3 review A4 R6, WB-5)"
-      - "routes.tsx's doc comment no longer says cancel falls to the not-built page (W3 review A4 R7, WB-5)"
-      - "tests/web/e2e/W1/support/parity.ts has no orphan nav-settle comment block (W3 review A4 R8)"
-      - "The workbench request log is capped, or publish() stops re-copying the whole log on every exchange (W3 security A4 S1, WB-7)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for U7: rel=noreferrer, the CSP directives, ids refused, repeated trailers kept; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
@@ -487,3 +478,45 @@ nodes:
       - {id: t13, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
       - {id: t14, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: check the fixes from the QA script, then sign off", status: pending}
       - {id: t15, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: U8
+    title: "Tech debt: W3's carries (D1, W3 review A2/A4)"
+    kind: feature
+    owner: loop
+    depends_on: [W3]
+    rules: []
+    cuttable: true
+    budget: null
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/ui-U8.md
+    trace: docs/trace/ui/U8/
+    acceptance:
+      - "The policy view's actions region draws the reference's three kit Buttons (quote and cancel, record a claim, renew), and a W3 parity test checks that region's components (W3 review A4 R1, WB-5; landed as tech debt by David's ruling D1)"
+      - "The policy view's requests region matches the policy reference on a path-segment boundary, so ABC never lists ABC-2's requests, with a behaviour test over two policies sharing a prefix (W3 review A4 R2, WB-7, HONEST-1; David D1)"
+      - "wb-claim, wb-renew and wb-requests have axe tests, light and dark at 1440 and 390, and a gate.axe receipt (W3 review A4 R3, A11Y-1; David D1)"
+      - "The renew form never shows a payment method the term does not hold: no Card fallback (W3 review A2 R4, WB-5, HONEST-1)"
+      - "The request log table shows an unanswered or pending request as pending, never status 0 (W3 review A2 R5, WB-7, HONEST-1)"
+      - "W3 e2e specs pass a literal policy reference per test, not one built from Date.now() (W3 review A2 R6, WB-5, WB-7)"
+      - "The policy view's requests region shows a pending exchange as pending, never status 0 (W3 review A4 R4, WB-7, HONEST-1)"
+      - "The request log's one-exchange region draws the kit HttpExchange curl part ('Repeat it') the wb-requests reference draws (W3 review A4 R5, WB-7)"
+      - "W3's cheque COULD-3 e2e waits for the policy read before typing, and the intermittent 'amount null' renewal is explained or fixed in RenewPolicy (W3 review A4 R6, WB-5)"
+      - "routes.tsx's doc comment no longer says cancel falls to the not-built page (W3 review A4 R7, WB-5)"
+      - "tests/web/e2e/W1/support/parity.ts has no orphan nav-settle comment block (W3 review A4 R8)"
+      - "The workbench request log is capped, or publish() stops re-copying the whole log on every exchange (W3 security A4 S1, WB-7)"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance and unit tests for every U8 acceptance line … and unit tests", status: pending}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the U8 acceptance tests; go or change", status: pending}
+      - {id: t4, role: builder, step: green, layer: screen, rules: [], title: "The fixes for every U8 acceptance line; whole acceptance suite green … all layers", status: pending}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: pending}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, the regression, rule coverage, diff scope", status: pending}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [], after: [t6], title: "QA script docs/qa/ui-U8.md, beside review", status: pending}
+      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: pending}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: pending}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: check the fixes from the QA script, then sign off", status: pending}
+      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
