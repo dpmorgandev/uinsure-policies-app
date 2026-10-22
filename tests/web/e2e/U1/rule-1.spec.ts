@@ -10,6 +10,7 @@ import {
   TESTS,
   auditEverywhere,
   commitHref,
+  compileRealTrailers,
   compileRules,
   compileTwoPlans,
   openOnFixture,
@@ -164,6 +165,39 @@ test.describe('on a trail with a merge, a sign-off SHA and a parameterised title
     await expect(loop).toContainText(/parameteri[sz]ed/i);
     await expect(loop).toContainText(/reads .+ from the fixture/);
     await expect(tests).not.toContainText('${');
+  });
+});
+
+// U1 D3/I3, on the `real-trailers` fixture (its README): RENEW-1/2's red c6 (F4 walkthrough #2) is trailed with the
+// slash ID; its green c7 (#3), cut from the real F4 services green, is trailed with its parts, `RENEW-1, RENEW-2`.
+// Under David's ruling "Collect the parts", a slash rule's commits are those trailed with it or with any of its parts,
+// and a part on a commit is its slash rule's: RENEW-1 and RENEW-2 are no requirement rows.
+test.describe('a slash rule whose commits trail its parts', () => {
+  let real: CompiledTrail;
+  test.beforeAll(() => {
+    real = compileRealTrailers();
+  });
+  test.afterAll(() => {
+    real?.trail.cleanup();
+  });
+
+  test("RULE-1 · RENEW-1/2's spine takes the commits trailed with its parts: red c6 (#2) then green c7 (#3), trailed RENEW-1, RENEW-2", async ({ page }) => {
+    // The route carries the ID as the matrix links it, the slash encoded (#/rules/RENEW-1%2F2).
+    await openOnFixture(page, real, route.rule(encodeURIComponent('RENEW-1/2')));
+    await expect(page.getByRole('heading', { level: 1 }), 'the page heads RENEW-1/2').toContainText('RENEW-1/2');
+    await expect.poll(() => rungCommits(page, real), 'the red rung is drawn').toContain('c6');
+    expect(await rungCommits(page, real)).toEqual(['c6', 'c7']);
+  });
+
+  test("RULE-1 · a part on a commit resolves to its slash rule: c7's Rule entry links to #/rules/RENEW-1%2F2, and to no RENEW-1 or RENEW-2 page", async ({ page }) => {
+    const c7 = shaOf(real, 'c7');
+    await openOnFixture(page, real, route.commit(c7));
+    const links = region(page, 'links-out');
+    await expect(links, "the page is c7's").toContainText(short(c7));
+    await expect(links.locator('a[href="#/rules/RENEW-1%2F2"]').first(), "a link to RENEW-1/2's page").toBeVisible();
+    const hrefs = await links.locator('a[href^="#/rules/"]').evaluateAll((all) => all.map((a) => a.getAttribute('href') ?? ''));
+    expect([...new Set(hrefs)], 'every rule link is the slash rule').toEqual(['#/rules/RENEW-1%2F2']);
+    await expect(links, 'a part is not shown as an unknown rule').not.toContainText('unknown rule ID');
   });
 });
 

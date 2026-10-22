@@ -53,6 +53,18 @@ export function compileTwoPlans(): CompiledTrail {
   return compileFixture(TWO_PLANS);
 }
 
+/**
+ * The `real-trailers` fixture (tests/web/fixtures/trails/real-trailers/README.md, U1 D3): commit bodies as the real
+ * trail writes them, a repeated `Rule:` and `Fixes-Finding:`, `Rule: none`, and RENEW-1/2's red trailed `RENEW-1/2`
+ * (c6, F4 #2) and its green trailed by its parts `RENEW-1, RENEW-2` (c7, F4 #3).
+ */
+export const REAL_TRAILERS = 'real-trailers';
+
+/** Compiles the `real-trailers` fixture once for a describe block. */
+export function compileRealTrailers(): CompiledTrail {
+  return compileFixture(REAL_TRAILERS);
+}
+
 /** A fixture commit's full SHA, by its id in rules/commits.json. Fails, as an assertion, on an unknown id. */
 export function shaOf(fixture: CompiledTrail, id: string): string {
   const sha = fixture.trail.shas[id];
