@@ -88,7 +88,7 @@ collapsed · **dis** sources disagree · **red** redacted · **nb** not built ye
 | sources-disagree | Two sources that conflict, both shown, the event-derived value first, each with its source (e.g. README "merge pending" vs `merged(…)`) | pop | 4 (E+W) | `trail-inventory.md` §4 stale headers |
 | gate-row | One loop event: gate, command, exit code against expected, ok, detail; `ok:false` on `gate.stub` read as expected, not an error | ok, not ok, expected-fail, waived, state event | 1 (E) | D6, P opportunity 2 |
 | attempt-ladder | Attempts as a chain: FAIL → findings → red test → `Fixes-Finding` commit → re-run verdicts; aggregated or expanded | one attempt, several, same-attempt re-review (A3, A3.2), escalation (inv-001) | 2 (E) | LOOP-2, P5, C2 retry selector |
-| verdict-card | A verdict: PASS or FAIL, agent, round, head SHA, rules covered and missing, findings with severity and route | PASS, FAIL, no findings, lost (F0b A1, reconciled) | 1 (E) | D9, C8 |
+| verdict-card | A verdict: PASS or FAIL, agent, round, head SHA, rules covered and missing, findings with severity and route | PASS, FAIL, no findings, lost (F0b A1, reconciled), a P0 finding | 1 (E) | D9, C8 |
 | finding-card | One finding: symptom and cause, files, fix direction, suggested test, testable or untestable reason, fixed-by commit | testable, untestable, unfixed, long | 1 (E) | D10, M6, C6 |
 | agent-lanes | Per-agent lanes of activity over time, with a table as its text equivalent | pop, one agent, empty, git-only | 1 (E) | AGENT-2, P opportunity 4 |
 | human-decision-row | One decision: who, what, when, where, linking to its evidence | pause 1, pause 2, steer, ruling, sign-off, merge | 2 (E) | HITL-1, P opportunity 3, C6 |

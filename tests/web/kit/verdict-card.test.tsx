@@ -13,7 +13,13 @@ const byState = (state: string) => {
 
 describe('verdict-card examples', () => {
   it('has exactly the catalogued states', () => {
-    expect(examples.map((e) => e.state)).toEqual(['PASS', 'FAIL', 'no findings', 'lost (F0b A1, reconciled)']);
+    expect(examples.map((e) => e.state)).toEqual([
+      'PASS',
+      'FAIL',
+      'no findings',
+      'lost (F0b A1, reconciled)',
+      'a P0 finding',
+    ]);
   });
 
   it.each(examples)('renders the example: $state', ({ element }) => {
@@ -58,6 +64,28 @@ describe('VerdictCard', () => {
     expect(within(items[0]!).getByText('P1')).toBeTruthy();
     expect(within(items[0]!).getByText('hasClaims hard-coded false though stored, no test seeds true.')).toBeTruthy();
     expect(within(items[1]!).getByText('P2')).toBeTruthy();
+  });
+
+  it('a P0 finding: its tag reads P0 with the fail tone, as P1 does, and P2 keeps the warn tone', () => {
+    render(byState('a P0 finding'));
+    const list = screen.getByRole('list', { name: 'Findings of the reviewer verdict A1' });
+    const [item] = within(list).getAllByRole('listitem');
+    const tag = within(item!).getByText('P0').closest('[data-status]');
+    expect(tag?.getAttribute('data-status')).toBe('fail');
+    cleanup();
+    render(
+      <VerdictCard
+        agent="reviewer"
+        round="A2"
+        verdict="FAIL"
+        findings={[
+          { id: 'R1', severity: 'P1', summary: 'x' },
+          { id: 'R2', severity: 'P2', summary: 'y' },
+        ]}
+      />,
+    );
+    expect(screen.getByText('P1').closest('[data-status]')?.getAttribute('data-status')).toBe('fail');
+    expect(screen.getByText('P2').closest('[data-status]')?.getAttribute('data-status')).toBe('warn');
   });
 
   it('shows the route when the verdict records one', () => {

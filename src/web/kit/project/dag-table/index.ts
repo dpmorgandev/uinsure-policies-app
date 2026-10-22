@@ -1,2 +1,2 @@
 export { DagTable } from './DagTable';
-export type { DagTableProps } from './DagTable';
+export type { DagNode, DagTableProps } from './DagTable';

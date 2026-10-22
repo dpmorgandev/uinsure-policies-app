@@ -1,7 +1,7 @@
 {
  "stamp": {
-  "kitTree": "7b9f56f1c4d996792ed220a53e16c3d258c2a571",
-  "builtAt": "2026-10-21T23:55:54Z",
+  "kitTree": "22b25c7d18395ba10dffc7fe14784765d3ac6941",
+  "builtAt": "2026-10-22T13:36:38Z",
   "from": "src/web/kit",
   "script": ".claude/scripts/design/build-stylekit.mjs"
  },
@@ -9834,6 +9834,17 @@
     },
     "lost (F0b A1, reconciled)": {
      "file": "components/verdict-card/lost-f0b-a1-reconciled.html",
+     "roots": [
+      {
+       "tag": "article",
+       "classes": [
+        "kit-verdict-card__card"
+       ]
+      }
+     ]
+    },
+    "a P0 finding": {
+     "file": "components/verdict-card/a-p0-finding.html",
      "roots": [
       {
        "tag": "article",
