@@ -1,5 +1,5 @@
 import { MarkdownText, PageHeader, ProvenanceLabel, StatusTag } from '../../../kit';
-import type { Status } from '../../../kit';
+import type { Provenance, Status } from '../../../kit';
 import type { Snapshot, Trace } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
 import { NotBuiltRegion, Region, Rung } from '../../shell/Rung';
@@ -88,8 +88,18 @@ function Stamp({ trace, snapshot }: { trace: Trace; snapshot: Snapshot }) {
   );
 }
 
+const LABELS: { provenance: Provenance; reading: string }[] = [
+  { provenance: 'generated', reading: 'The compiled-at stamp in the header above is generated.' },
+  { provenance: 'recorded', reading: "A reviewer or security verdict is recorded: you read the agent's own words, not a summary of them." },
+  {
+    provenance: 'written',
+    reading: 'Text authored by a person or the main session carries this label. Read it as a claim made by its author, not as a measurement.',
+  },
+];
+
 export function About() {
   const { trace } = useShell();
+  const gaps = trace.state === 'ready' ? gapsOf(trace.trace).length : null;
   return (
     <>
       {trace.state === 'ready' ? null : <DataNotice trace={trace} />}
@@ -98,12 +108,20 @@ export function About() {
           eyebrow="Docket · how the trail is made"
           title="How to read this"
           question="Is what I am reading recorded evidence, and how can I check it myself?"
+          status={gaps === null ? null : { value: gaps === 0 ? 'pass' : 'warn', label: `${gaps} ${gaps === 1 ? 'gap' : 'gaps'}, counted from problems in trace.json` }}
+          ids={[{ label: 'Snapshot SHA', value: trace.state === 'ready' ? `${trace.snapshot.ref} ${trace.snapshot.short}` : null }]}
+          compiledAt={trace.state === 'ready' ? trace.snapshot.utc : null}
         />
         <h2 className="s-heading">Read the labels</h2>
         <p className="s-text">Each value on the other screens carries one of these three labels. Read it before you weigh the value.</p>
-        <ProvenanceLabel provenance="generated" />
-        <ProvenanceLabel provenance="recorded" />
-        <ProvenanceLabel provenance="written" />
+        <div className="s-list">
+          {LABELS.map((entry) => (
+            <div className="s-item" key={entry.provenance}>
+              <ProvenanceLabel provenance={entry.provenance} />
+              <p className="s-item-text">{entry.reading}</p>
+            </div>
+          ))}
+        </div>
       </Region>
       <Rung region="glossary-and-status-legend" req="A11Y-1" ordinal="Step 2" heading="Look up the terms">
         <p className="s-text">A status is always a word, a glyph and a colour. Colour is never the only signal.</p>
