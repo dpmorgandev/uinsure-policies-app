@@ -266,3 +266,39 @@ export function loadActivity(trace: Trace, plan: string, node: string, fetchFile
 export function loadDiffs(trace: Trace, plan: string, node: string, fetchFile: Fetch = fetch): Promise<ChunkLoad<DiffRecord>> {
   return loadChunk<DiffRecord>(trace, plan, node, 'diffs', fetchFile);
 }
+
+export type TraceEntityKind = 'rule' | 'node' | 'commit' | 'verdict' | 'finding' | 'session';
+
+export interface TraceEntity {
+  kind: TraceEntityKind;
+  id?: string;
+  plan?: string;
+  node?: string;
+  sha?: string;
+  round?: string;
+  agent?: string;
+  file?: string;
+}
+
+export function entityUrl(entity: TraceEntity): string {
+  throw new Error('not implemented');
+}
+
+export interface SearchEntry {
+  kind: 'rule' | 'node' | 'sha' | 'path';
+  label: string;
+  detail: string | null;
+  href: string;
+}
+
+export function searchIndex(trace: Trace): SearchEntry[] {
+  throw new Error('not implemented');
+}
+
+export function searchTrace(index: SearchEntry[], query: string): SearchEntry[] {
+  throw new Error('not implemented');
+}
+
+export function markInteractive(perf: Pick<Performance, 'mark' | 'now'>): number {
+  throw new Error('not implemented');
+}
