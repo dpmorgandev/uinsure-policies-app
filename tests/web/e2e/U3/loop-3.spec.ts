@@ -1,17 +1,20 @@
 // LOOP-3 · Verdicts. Each reviewer and security verdict rendered from its JSON: verdict, gate refs, head SHA, diff
 // fingerprint, findings. Raw JSON one click away. On the `retry-ladder` fixture trail (retry-ladder/README.md):
 // verdicts/A2-reviewer.json is a FAIL at head c6, base c0, with five gate refs, SELL-2 missing and findings R1 (P1,
-// src/sell.txt:1) and R2 (P2, tests/web/e2e/F1/sell.spec.ts:4); A2 security, A3 reviewer and A3 security PASS. Parity
-// on the design fixture against docs/ui/derived/U3/verdict/.
+// src/sell.txt:1) and R2 (P2, tests/web/e2e/F1/sell.spec.ts:4); A2 security, A3 reviewer and A3 security PASS. A P0
+// finding on the `p0-reconciled` fixture (p0-reconciled/README.md), round A2's I1. Parity on the design fixture against
+// docs/ui/derived/U3/verdict/.
 import { expect, test } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
 import {
+  LADDER,
   RAW_JSON,
   REPO,
   SUMMARY,
   VERDICT_FINDINGS,
   auditEverywhere,
   blobHref,
+  compileP0Reconciled,
   compileRetry,
   fact,
   openOnFixture,
@@ -20,6 +23,8 @@ import {
   route,
   shaOf,
   short,
+  stepsAt,
+  stepsOf,
 } from './support/app';
 import type { CompiledTrail } from './support/app';
 import { expectRegionComponents, expectRegionsInOrder, expectShell, expectTokensOnly, verdict, verdictLong } from './support/parity';
@@ -198,6 +203,72 @@ test.describe('the other verdicts', () => {
     const crumbs = (await openSummary(page)).getByRole('navigation', { name: 'Breadcrumb' });
     await expect(crumbs.locator('a[href$="#/plans/build/F1"]')).toHaveCount(1);
     await expect(crumbs.locator('a[href$="#/plans/build/F1/loop"]')).toHaveCount(1);
+  });
+});
+
+// Round A2's I1: the verdict schema allows P0, P1 and P2, and the `p0-reconciled` fixture
+// (tests/web/fixtures/trails/p0-reconciled/README.md) records the A2 reviewer's R1 as P0. A severity is drawn as
+// recorded, never fitted to another level, and P0 takes a tone at least as severe as P1's: the fail tone.
+test.describe('a P0 finding, as recorded', () => {
+  let p0: CompiledTrail;
+  test.beforeAll(() => {
+    p0 = compileP0Reconciled();
+  });
+  test.afterAll(() => {
+    p0?.trail.cleanup();
+  });
+
+  /** Opens the P0 fixture's A2 reviewer verdict and waits until its findings region draws R1's own reason. */
+  async function openP0Summary(page: Page): Promise<Locator> {
+    const summary = await openRegion(page, p0, A2_REVIEWER, SUMMARY);
+    await expect(summary, "the summary is the fixture's build/F1").toContainText('build/F1');
+    await expect(region(page, VERDICT_FINDINGS), "the findings are the fixture's").toContainText(R1.why);
+    return summary;
+  }
+
+  /** Each finding of a verdict card's findings list, as [id, its severity tag's text, the tag's tone]. */
+  async function cardSeverities(scope: Locator): Promise<string[][]> {
+    const items = scope.getByRole('list', { name: 'Findings of the reviewer verdict A2' }).locator('xpath=./li');
+    await expect(items).toHaveCount(2);
+    return items.evaluateAll((lis) =>
+      lis.map((li) => {
+        const tag = li.querySelector('[data-status]');
+        // The card's first element names the finding: "R1".
+        const id = (li.firstElementChild?.textContent ?? '').trim();
+        return [id, (tag?.textContent ?? '').trim(), tag?.getAttribute('data-status') ?? ''];
+      }),
+    );
+  }
+
+  test('LOOP-3 · a P0 finding is drawn as P0 on its verdict card, never as P2', async ({ page }) => {
+    const verdictCard = card(await openP0Summary(page));
+    expect(await cardSeverities(verdictCard)).toEqual([
+      ['R1', 'P0', 'fail'],
+      ['R2', 'P2', 'warn'],
+    ]);
+  });
+
+  test("LOOP-3 · a P0 finding's tag in the verdict's findings region reads P0, in the card's tone for it, the fail tone", async ({ page }) => {
+    const verdictCard = card(await openP0Summary(page));
+    const r1 = finding(region(page, VERDICT_FINDINGS), 'R1');
+    await expect(r1).toHaveCount(1);
+    const tag = r1.locator('[data-status]').first();
+    await expect(tag).toHaveText('P0');
+    const cardTone = (await cardSeverities(verdictCard))[0]?.[2];
+    expect(await tag.getAttribute('data-status'), "R1's tone is the verdict card's tone for it").toBe(cardTone);
+    await expect(tag, 'a P0 is at least as severe as a P1').toHaveAttribute('data-status', 'fail');
+  });
+
+  test("LOOP-3 · a P0 finding is drawn as P0 on attempt 2's A2 reviewer verdict in the loop ladder, never as P2", async ({ page }) => {
+    const ladder = await openRegion(page, p0, route.loop('build', 'F1'), LADDER);
+    await expect(ladder, "the ladder shows the fixture's attempts").toContainText('(sale route 500); failure route round A1');
+    const verdicts = stepsAt(await stepsOf(ladder, 2), 'verdict');
+    await expect(verdicts).toHaveCount(2);
+    await expect(verdicts.nth(1)).toContainText('reviewer verdict A2');
+    expect(await cardSeverities(verdicts.nth(1))).toEqual([
+      ['R1', 'P0', 'fail'],
+      ['R2', 'P2', 'warn'],
+    ]);
   });
 });
 

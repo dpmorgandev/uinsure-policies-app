@@ -31,6 +31,20 @@ export function compileRetry(): CompiledTrail {
   return compileFixture(RETRY);
 }
 
+/**
+ * `retry-ladder` with the A2 reviewer's R1 recorded P0 and loop line 13 recorded with source `reconciled`
+ * (tests/web/fixtures/trails/p0-reconciled/README.md): round A2's I1 and I2.
+ */
+export const P0_RECONCILED = 'p0-reconciled';
+
+/** The `p0-reconciled` fixture's reconciled loop line. */
+export const RECONCILED_LINE = 13;
+
+/** Compiles the `p0-reconciled` fixture once for a describe block. */
+export function compileP0Reconciled(): CompiledTrail {
+  return compileFixture(P0_RECONCILED);
+}
+
 /** The regions U3 builds, by their data-region slugs (docs/ui/derived/U3/<screen>/screen.json). */
 export const LADDER = 'attempt-ladder';
 export const TIMELINE = 'gate-timeline';
