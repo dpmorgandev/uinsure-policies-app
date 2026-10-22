@@ -281,3 +281,67 @@ describe('text the real rounds write: a qualified marker', () => {
     expectEveryWord(text, i1);
   }, SLOW);
 });
+
+// A marker quoted inside a sentence (A4/R1). The real rounds quote the marker words when they write about them
+// ("open with 'Symptom:'", "says 'no \"Cause:\" marker'", "has 'Cause (kit):'", U3's own round A3). A quoted marker is
+// not a split point: its words stay in place, in the field the sentence around it belongs to. The word check here
+// strips nothing. A field's words, read in order, are the recorded words with only the split-point markers taken out,
+// so a quoted "Symptom:" or "Cause:" that went missing, or moved, fails it.
+
+/** The words of a text as written, split at white space only; nothing is stripped. */
+function wordsAsWritten(text: string | null | undefined): string[] {
+  return (text ?? '').split(/\s+/).filter(Boolean);
+}
+
+/** Symptom, cause and fix direction, read in that order, hold exactly `bodies`' words: the text without its split markers. */
+function expectEveryWordAsWritten(bodies: string[], f: FindingOut | undefined): void {
+  expect(
+    [...wordsAsWritten(f?.symptom), ...wordsAsWritten(f?.cause), ...wordsAsWritten(f?.fixDirection)],
+    'every recorded word, the quoted marker words included, in order',
+  ).toEqual(bodies.flatMap(wordsAsWritten));
+}
+
+describe('text the real rounds write: a marker quoted inside a sentence', () => {
+  test("LOOP-4 · a quoted 'Symptom:' and 'Cause:' inside the cause are not split points: the cause keeps them, word for word", () => {
+    const cause = "it matches only 'Symptom:' and 'Cause:'.";
+    const text = `Cause: ${cause} Fix direction: F1.`;
+    const i1 = compiledWith(text);
+    expect([i1?.symptom ?? null, i1?.cause ?? null, i1?.fixDirection ?? null]).toEqual([null, cause, 'F1.']);
+    expectEveryWordAsWritten([cause, 'F1.'], i1);
+  }, SLOW);
+
+  test('LOOP-4 · a double-quoted "Cause:" and a quoted \'Fix direction:\' inside the symptom stay in the symptom', () => {
+    const symptom = "the Cause field says 'no \"Cause:\" marker in the recorded text', and the fix direction opens on 'Fix direction:'.";
+    const text = `Symptom: ${symptom} Cause: C1. Fix direction: F1.`;
+    const i1 = compiledWith(text);
+    expect([i1?.symptom ?? null, i1?.cause ?? null, i1?.fixDirection ?? null]).toEqual([symptom, 'C1.', 'F1.']);
+    expectEveryWordAsWritten([symptom, 'C1.', 'F1.'], i1);
+  }, SLOW);
+
+  test("LOOP-4 · a quoted qualified marker such as 'Symptom (security S1, P2, verdict PASS):' is not a split point: the cause keeps it whole", () => {
+    const cause = "real rounds write 'Symptom (security S1, P2, verdict PASS):', 'Cause (kit):' and 'Cause (screen):'.";
+    const text = `Cause: ${cause} Fix direction: F1.`;
+    const i1 = compiledWith(text);
+    expect([i1?.symptom ?? null, i1?.cause ?? null, i1?.fixDirection ?? null]).toEqual([null, cause, 'F1.']);
+    expectEveryWordAsWritten([cause, 'F1.'], i1);
+  }, SLOW);
+
+  test("LOOP-4 · a round that quotes the markers in its cause, as U3's round A3 writes it, keeps the whole cause in the cause field", () => {
+    const preamble =
+      "Reviewer R1 (P1), part 1 of 2. I split R1 in two because it has two separate code faults; I2 is the other part. Layer: the ui compiler. It is recorded as 'api' because the schema's layer enum has no ui layer, as in A2.";
+    const symptom =
+      'on the finding page, text the investigator recorded before the first marker is missing, and so is text after a repeated marker.';
+    const cause =
+      "splitRootCause (src/web/compiler/plans.ts:232-243) builds each field only from the text between one marker and the next. The signed-off reference already decides the preamble case. docs/ui/derived/U3/finding/long-content.html:33 says 'Where a sentence comes before the \"Symptom:\" marker, it opens the Symptom field', and :61 draws D2 I7 that way. Only about 35 of the roughly 148 root_cause values open with 'Symptom:'. The marker pattern at src/web/compiler/plans.ts:233 matches only the exact words 'Symptom:', 'Cause:' and 'Fix direction:'. Real rounds also write qualified forms: 'Cause (kit):' and 'Cause (screen):'.";
+    const fix =
+      'every character of the recorded root_cause must end up in some field. A preamble opens the Symptom field, as long-content.html:33 says. Recurrence: new fingerprint.';
+    const text = `${preamble} Symptom: ${symptom} Cause: ${cause} Fix direction: ${fix}`;
+    const i1 = compiledWith(text);
+    const got = i1?.symptom ?? '';
+    expect(got.startsWith(preamble), `the preamble opens the symptom: ${JSON.stringify(got)}`).toBe(true);
+    expect(got.endsWith(symptom), `the symptom ends with its own text and holds no cause text: ${JSON.stringify(got)}`).toBe(true);
+    expect(i1?.cause ?? null, 'the cause, its quoted "Symptom:", \'Symptom:\', \'Cause:\', \'Fix direction:\' and qualified forms in place').toBe(cause);
+    expect(i1?.fixDirection ?? null).toBe(fix);
+    expectEveryWordAsWritten([preamble, symptom, cause, fix], i1);
+  }, SLOW);
+});
