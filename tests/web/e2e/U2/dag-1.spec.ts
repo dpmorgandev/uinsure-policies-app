@@ -83,11 +83,15 @@ test.describe('the graph', () => {
     }
   });
 
-  test("DAG-1 · following F2's graph link opens F2's node page, headed F2, not another node", async ({ page }) => {
+  // F5 is a node only the trail has (the design fixture's graph has none), so following it proves the graph is
+  // drawn from the trail, not from a canned reference.
+  test("DAG-1 · following F5's graph link opens F5's node page, headed F5, not another node", async ({ page }) => {
     const graph = await openBuild(page);
-    await graphNode(graph, 'F2').getByRole('link', { name: 'F2', exact: true }).click();
-    await expect(page).toHaveURL(hrefTo(route.node('build', 'F2')));
-    await expect(heading(page)).toContainText('F2 Retrieve');
+    const link = graphNode(graph, 'F5').getByRole('link', { name: 'F5', exact: true });
+    await expect(link, "the graph draws F5's link, from the trail").toHaveCount(1);
+    await link.click();
+    await expect(page).toHaveURL(hrefTo(route.node('build', 'F5')));
+    await expect(heading(page)).toContainText('F5 Pipeline (evidence only)');
     await expect(heading(page)).not.toContainText('F3');
   });
 });
