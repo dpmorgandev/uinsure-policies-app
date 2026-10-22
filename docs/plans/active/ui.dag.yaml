@@ -83,7 +83,7 @@ nodes:
     rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3]
     cuttable: false
     budget: null
-    status: hitl
+    status: done
     attempt: 2
     branch: feature/ui/U1
     worktree: .claude/worktrees/ui-U1
@@ -112,8 +112,8 @@ nodes:
       - {id: t13, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: done}
       - {id: t14, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: done}
       - {id: t15, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: done}
-      - {id: t16, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: pending}
-      - {id: t17, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+      - {id: t16, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: done}
+      - {id: t17, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: done}
   - id: U2
     title: Plan DAG, node page and walkthrough
     kind: feature
