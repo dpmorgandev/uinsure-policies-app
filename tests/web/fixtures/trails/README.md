@@ -53,6 +53,7 @@ the same way it reads the real one. The live `docs/trace/` is never a test input
 | `real-trailers/` | Commit bodies as the real trail writes them: a body that repeats `Rule:` and `Fixes-Finding:`, a `Rule: none` sentinel, and a slash rule's commits trailed by the slash ID and by its parts (U1 D3: RULE-2, RULE-1, NAV-3) |
 | `two-plans/` | Both plans' rules, each read against its own matrix (`requirements-matrix.md`, `ui-requirements-matrix.md`): a `RENEW-1/2` row, `undefined` refactor cells, a `signoff(<sha>)` and a `merged(<sha>)` event, and a template-literal test title in a loop, each cut from the real file (MATRIX-1, NAV-1, RULE-1, NAV-3) |
 | `plans/` | Three plans of three kinds: a `build` DAG whose file order is neither alphabetical nor the graph's layer order, with a branch and a join; a `ui` DAG; an investigation `inv-001.plan.md` with no DAG. Each node's `depends_on`, `rules`, `pr`, `acceptance` and one-line `tasks` (DAG-1, NODE-1) |
+| `in-flight/` | A node mid-loop, between the stub and pause 1: a loop and an activity log, each with one line cut off mid-write, and no README, walkthrough or verdicts yet; its stub commit changes one line of a file (DATA-8, RULE-3) |
 
 `replay.d.mts` types `replay.mjs` for the TypeScript tests that import it.
 

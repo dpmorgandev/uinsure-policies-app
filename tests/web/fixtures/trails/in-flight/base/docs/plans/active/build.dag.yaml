@@ -1,0 +1,51 @@
+plan_id: build
+kind: build
+title: Fixture build
+status: approved
+created: 2026-10-20
+approved_by: David Morgan
+approved_on: 2026-10-20
+requirements_rev: 9b8c7d6
+parent: null
+nodes:
+  - id: F1
+    title: Sell
+    kind: feature
+    owner: loop
+    depends_on: []
+    rules: [SELL-1]
+    cuttable: false
+    budget: null
+    status: in_progress
+    attempt: 1
+    branch: feature/build/F1
+    worktree: .claude/worktrees/build-F1
+    pr: null
+    qa: docs/qa/build-F1.md
+    trace: docs/trace/build/F1/
+    acceptance:
+      - "POST /policies sells a policy under a reference no other policy has"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [SELL-1], title: "Acceptance tests for the sale", status: done}
+      - {id: t2, role: builder, step: stub, layer: api, rules: [], title: "Stub the sale route", status: done}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: David reads the stub", status: pending}
+      - {id: t4, role: builder, step: green, layer: api, rules: [SELL-1], title: "Sell a policy", status: pending}
+  - id: F2
+    title: Retrieve
+    kind: feature
+    owner: loop
+    depends_on: [F1]
+    rules: [GET-1]
+    cuttable: false
+    budget: null
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/build-F2.md
+    trace: docs/trace/build/F2/
+    acceptance:
+      - "GET /policies/{ref} reads a sold policy back in full"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [GET-1], title: "Acceptance tests for the retrieve", status: pending}
