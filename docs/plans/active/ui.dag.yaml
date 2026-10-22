@@ -255,7 +255,7 @@ nodes:
       - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: skipped}
       - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity, the regression, rule coverage, diff scope", status: done}
       - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
-      - {id: t8, role: tester, step: qa, layer: null, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], after: [t6], title: "QA script docs/qa/ui-U5.md, beside review", status: pending}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], after: [t6], title: "QA script docs/qa/ui-U5.md, beside review", status: done}
       - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: pending}
       - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: pending}
       - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
