@@ -251,9 +251,9 @@ nodes:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], title: "Playwright acceptance for U5 on fixture trails, regression specs, parity with its derived reference, and unit tests (compiler: context snapshots, the harness file, delivery stats); every node rule … and unit tests", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U5 routes render the derived reference as canned content", status: skipped}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U5 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: skipped}
-      - {id: t4, role: builder, step: green, layer: screen, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], title: "Compiler (context snapshots, the harness file, delivery stats), then the sessions, harness and stats screens and the tour; whole acceptance suite green … all layers", status: pending}
-      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: pending}
-      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity, the regression, rule coverage, diff scope", status: pending}
+      - {id: t4, role: builder, step: green, layer: screen, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], title: "Compiler (context snapshots, the harness file, delivery stats), then the sessions, harness and stats screens and the tour; whole acceptance suite green … all layers", status: done}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: skipped}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity, the regression, rule coverage, diff scope", status: done}
       - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
       - {id: t8, role: tester, step: qa, layer: null, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], after: [t6], title: "QA script docs/qa/ui-U5.md, beside review", status: pending}
       - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: pending}
