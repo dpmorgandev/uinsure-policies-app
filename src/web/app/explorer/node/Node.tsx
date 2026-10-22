@@ -1,8 +1,8 @@
 import { useParams } from 'react-router';
-import { MarkdownText, NotBuiltYet, VerifyCommand } from '../../../kit';
+import { AgentBadge, AttemptLadder, MarkdownText, NotBuiltYet, VerifyCommand } from '../../../kit';
 import type { TraceNode } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
-import { NotBuiltRegion, Rung } from '../../shell/Rung';
+import { NotBuiltRegion, Region, Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
 
 /** What the node's completeness says, in a sentence. The value itself is the banner above, verbatim (DATA-4). */
@@ -37,7 +37,15 @@ export function Node() {
       </Rung>
       <NotBuiltRegion region="rules" name="rules" />
       <NotBuiltRegion region="tasks" name="tasks" />
-      <NotBuiltRegion region="attempts" name="attempts" />
+      <Region region="attempts" req="LOOP-2" label="Attempts">
+        <AttemptLadder
+          mode="aggregated"
+          headingLevel={2}
+          attempts={[{ n: 1, outcome: { status: 'pass', label: 'Passed' }, steps: [{ marker: '1·1', stage: 'gate', content: <p className="s-text">Canned: the attempt's gates.</p> }] }]}
+        />
+        <AgentBadge agent="builder" />
+        <VerifyCommand command={`git log --oneline --grep='(${planId}/${nodeId})'`} intro="Run this in a clone. It lists the commits whose message names this node." />
+      </Region>
       <NotBuiltRegion region="who-touched-what" name="who touched what" />
     </>
   );

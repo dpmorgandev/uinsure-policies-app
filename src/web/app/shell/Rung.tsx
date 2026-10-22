@@ -28,6 +28,15 @@ export function Rung({ region, req, ordinal, heading, children }: RungProps) {
   );
 }
 
+/** A tagged region that is not a numbered step: a page's header and its first answer sit in one. */
+export function Region({ region, req, label, children }: { region: string; req: string; label: string; children: ReactNode }) {
+  return (
+    <section className="s-region" data-region={region} data-req={req} aria-label={label}>
+      <div className="s-body">{children}</div>
+    </section>
+  );
+}
+
 /** A region the screen file marks as not built: the kit's pattern, with no requirement ID claimed. */
 export function NotBuiltRegion({ region, name }: { region: string; name: string }) {
   return (

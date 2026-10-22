@@ -14,7 +14,7 @@ import './notice.css';
 const NAV: NavItem[] = [
   { key: 'overview', label: 'Overview', href: '#/', scope: 'explorer' },
   { key: 'matrix', label: 'Requirements matrix', href: '#/rules', scope: 'explorer' },
-  { key: 'plan', label: 'Plan', notBuilt: true, scope: 'explorer' },
+  { key: 'plan', label: 'Plan', href: '#/plans/build', scope: 'explorer' },
   { key: 'decisions', label: 'Human decisions', notBuilt: true, scope: 'explorer' },
   { key: 'about', label: 'How to read this', href: '#/about', scope: 'explorer' },
   { key: 'workbench', label: 'Workbench', href: '#/workbench', scope: 'workbench' },
@@ -65,11 +65,18 @@ export function Frame() {
   const matrix = useMatch('/rules');
   const rule = useMatch('/rules/:ruleId');
   const nodePage = useMatch('/plans/:planId/:nodeId');
+  const loop = useMatch('/plans/:planId/:nodeId/loop');
+  const verdict = useMatch('/plans/:planId/:nodeId/verdicts/:round/:agent');
+  const finding = useMatch('/plans/:planId/:nodeId/findings/:round');
+  const plan = useMatch('/plans/:planId');
   const commit = useMatch('/commits/:sha');
-  const { planId, nodeId } = (activity ?? nodePage)?.params ?? {};
+  const { planId, nodeId } = (activity ?? nodePage ?? loop)?.params ?? {};
 
   const titles: [boolean, string][] = [
-    [activity !== null || nodePage !== null, `Node ${planId}/${nodeId}`],
+    [activity !== null || nodePage !== null || loop !== null, `Node ${planId}/${nodeId}`],
+    [verdict !== null, 'Verdict'],
+    [finding !== null, 'Finding'],
+    [plan !== null, 'Plan'],
     [commit !== null, `Commit ${(commit?.params.sha ?? '').slice(0, 7)}`],
     [rule !== null, 'Rule'],
     [matrix !== null, 'Requirements matrix'],
@@ -78,7 +85,17 @@ export function Frame() {
     [workbench !== undefined, workbench?.title ?? ''],
   ];
   const title = titles.find(([matched]) => matched)?.[1] ?? 'Not built yet';
-  const current = about ? 'about' : overview ? 'overview' : matrix || rule ? 'matrix' : workbench ? 'workbench' : '';
+  const current = about
+    ? 'about'
+    : overview
+      ? 'overview'
+      : matrix || rule
+        ? 'matrix'
+        : workbench
+          ? 'workbench'
+          : plan || loop || verdict || finding
+            ? 'plan'
+            : '';
 
   useEffect(() => {
     document.title = `${title} · Docket`;
@@ -87,7 +104,7 @@ export function Frame() {
   const node = trace.state === 'ready' ? trace.trace.nodes.find((n) => n.plan === planId && n.id === nodeId) : undefined;
   const content = (
     <ShellProvider value={{ trace, theme, setTheme }}>
-      {node !== undefined && trace.state === 'ready' ? <NodeHeader node={node} compiledAt={trace.snapshot.utc} current={activity ? 'activity' : 'node'} /> : null}
+      {node !== undefined && trace.state === 'ready' ? <NodeHeader node={node} compiledAt={trace.snapshot.utc} current={activity ? 'activity' : loop ? 'loop' : 'node'} /> : null}
       <Outlet />
     </ShellProvider>
   );

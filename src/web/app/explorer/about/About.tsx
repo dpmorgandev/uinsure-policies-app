@@ -1,8 +1,8 @@
-import { MarkdownText, StatusTag } from '../../../kit';
+import { MarkdownText, PageHeader, ProvenanceLabel, StatusTag } from '../../../kit';
 import type { Status } from '../../../kit';
 import type { Snapshot, Trace } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
-import { NotBuiltRegion, Rung } from '../../shell/Rung';
+import { NotBuiltRegion, Region, Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
 import './about.css';
 
@@ -93,7 +93,18 @@ export function About() {
   return (
     <>
       {trace.state === 'ready' ? null : <DataNotice trace={trace} />}
-      <NotBuiltRegion region="provenance-labels" name="provenance labels" />
+      <Region region="provenance-labels" req="DATA-2" label="Provenance labels">
+        <PageHeader
+          eyebrow="Docket · how the trail is made"
+          title="How to read this"
+          question="Is what I am reading recorded evidence, and how can I check it myself?"
+        />
+        <h2 className="s-heading">Read the labels</h2>
+        <p className="s-text">Each value on the other screens carries one of these three labels. Read it before you weigh the value.</p>
+        <ProvenanceLabel provenance="generated" />
+        <ProvenanceLabel provenance="recorded" />
+        <ProvenanceLabel provenance="written" />
+      </Region>
       <Rung region="glossary-and-status-legend" req="A11Y-1" ordinal="Step 2" heading="Look up the terms">
         <p className="s-text">A status is always a word, a glyph and a colour. Colour is never the only signal.</p>
         <div className="s-list">
