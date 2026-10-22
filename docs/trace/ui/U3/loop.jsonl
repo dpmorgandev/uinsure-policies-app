@@ -133,3 +133,4 @@
 {"v":1,"ts":"2026-10-22T20:19:59Z","plan":"ui","node":"U3","attempt":5,"source":"orchestrator","event":"pr.comment(reviewer,6350422768)"}
 {"v":1,"ts":"2026-10-22T20:19:59Z","plan":"ui","node":"U3","attempt":5,"source":"orchestrator","event":"pr.comment(security,6350423224)"}
 {"v":1,"ts":"2026-10-22T20:19:59Z","plan":"ui","node":"U3","attempt":5,"source":"orchestrator","event":"pr.comment(integrate,6350423679)"}
+{"v":1,"ts":"2026-10-22T20:28:55Z","plan":"ui","node":"U3","attempt":5,"source":"orchestrator","event":"gate.e2e-regression","cmd":"npx playwright test --workers=2 --reporter=line,html U3/ regression/","exit":1,"expect":"activity 1440 only (U7)","ok":true,"head":"e2c0cc088cbff0acc38569c51164e76379834b42","detail":"Pause 2 run: 611 passed, 2 failed, both regression/activity at 1440 (U7 line since W1). U3 suite all green; about, node, plan pass on the baselines committed at e2c0cc0."}
