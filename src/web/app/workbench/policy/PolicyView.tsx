@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { Link, useParams } from 'react-router';
-import { DataTable, KeyValueList, PageHeader, ProblemBanner, StatusTag, TermTimeline } from '../../../kit';
-import type { DataTableColumn, KeyValueItem, Status, TermTimelineProps } from '../../../kit';
+import { DataTable, KeyValueList, NotBuiltYet, PageHeader, ProblemBanner, RequestLog, StatusTag, TermTimeline } from '../../../kit';
+import type { DataTableColumn, KeyValueItem, RequestLogEntry, Status, TermTimelineProps } from '../../../kit';
 import { getPolicy } from '../../data/api';
 import type { ApiAnswer, Policy, Problem } from '../../data/api';
-import { NotBuiltRegion } from '../../shell/Rung';
-import { browserDeps } from '../browser';
+import { browserDeps, useRequestLog } from '../browser';
+import { apiPathOf } from '../RequestsDrawer';
 import { ProblemView } from '../ProblemView';
 import '../workbench.css';
 
@@ -314,6 +314,17 @@ export function PolicyView() {
   const key = `${reference}#${attempt}`;
   const [settled, setSettled] = useState<{ key: string; answer: ApiAnswer<Policy> } | null>(null);
   const answer = settled?.key === key ? settled.answer : null;
+  const log = useRequestLog();
+  // WB-7: an exchange touched this policy if its path names it, or it is the sale whose answer created it.
+  const touching: RequestLogEntry[] = log
+    .map((entry, index) => ({ n: index + 1, entry }))
+    .filter(
+      ({ entry }) =>
+        entry.path.includes(`/policies/${reference}`) ||
+        (entry.method === 'POST' && apiPathOf(entry.path) === '/policies' && (entry.responseBody ?? '').includes(`"${reference}"`)),
+    )
+    .map(({ n, entry }) => ({ n, method: entry.method, path: apiPathOf(entry.path), status: entry.status ?? 0 }))
+    .reverse();
 
   useEffect(() => {
     let current = true;
@@ -383,7 +394,7 @@ export function PolicyView() {
         />
       )}
 
-      <section className="s-wb-region" data-region="actions-quote-and-cancel-record-a-claim-renew" data-req="WB-5">
+      <section className="s-wb-region" data-region="actions-quote-and-cancel-record-a-claim-renew" data-req="WB-4 WB-5">
         <h2 className="s-wb-heading">Actions</h2>
         <ul className="s-wb-list">
           <li>
@@ -393,9 +404,13 @@ export function PolicyView() {
             <Link to={`/workbench/policies/${encodeURIComponent(reference)}/renew`}>Renew</Link>
           </li>
         </ul>
-        <NotBuiltRegion region="quote-and-cancel" name="quote and cancel" />
+        <NotBuiltYet kind="region" name="quote and cancel" />
       </section>
-      <NotBuiltRegion region="requests-that-touched-this-policy" name="requests that touched this policy" />
+
+      <section className="s-wb-region" data-region="requests-that-touched-this-policy" data-req="WB-7">
+        <h2 className="s-wb-heading">Requests that touched this policy</h2>
+        <RequestLog entries={touching} headingLevel={3} />
+      </section>
     </div>
   );
 }
