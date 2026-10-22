@@ -1,0 +1,110 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T20:57:24Z",
+  "plan": "ui",
+  "node": "W3",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "ac6928f30d8cf955b",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "W3",
+    "attempt": 2,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "e674cdc292ac55cdde65cee0c064106ad7e01c43",
+    "diff_fingerprint": "b9ae9628256a0e195873199d1f5493a040394377",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "loop.jsonl:3 gate.red ok (75f3244)",
+      "loop.jsonl:4 gate.green ok:false (50d3d4e)",
+      "loop.jsonl:7 gate.finding-red ok (ab061ce)",
+      "loop.jsonl:8 gate.green ok (e795f19)",
+      "loop.jsonl:9 gate.typecheck (7d72f24)",
+      "loop.jsonl:10 gate.lint (7d72f24)",
+      "loop.jsonl:11 gate.test (7d72f24)",
+      "loop.jsonl:12 gate.build (7d72f24)",
+      "loop.jsonl:14 gate.e2e 33 passed (7d72f24)",
+      "loop.jsonl:15 gate.e2e-regression (7d72f24)",
+      "loop.jsonl:17 gate.diff-scope (7d72f24)",
+      "loop.jsonl:18 gate.no-stub (7d72f24)",
+      "loop.jsonl:19 gate.lint-css (7d72f24)"
+    ],
+    "rules_covered": [],
+    "rules_missing": [
+      "WB-5",
+      "WB-7"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "WB-5",
+        "severity": "P1",
+        "file": "tests/web/e2e/W3/wb-5.spec.ts",
+        "line": 3,
+        "what": "No test checks that the renew screen shows an accepted renewal. The only success test is a client unit test on a made-up 201, which a stub that only echoes would pass.",
+        "why": "WB-5 includes 'renew inside the window'. RenewPolicy.tsx handles the success path (the 'Renewed…' answer, and `shown = renewal.value` drawing the new term last on the timeline), but no e2e or screen test reaches it. The e2e comment scopes it out. tests/web/unit/client/wb-5.test.ts:78 only checks that renewPolicy hands back the body it was served. A page.route answer of 201, the same made-up body the unit test already uses, could drive the screen. Each rule row needs a success test that a stub can't pass (reviewer check 3).",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "WB-5",
+        "severity": "P1",
+        "file": "tests/web/e2e/W3/wb-5.spec.ts",
+        "line": 85,
+        "what": "The default-method test sells with 'Card', which is also the screen's starting value and its fallback. A screen that never reads the term's method still passes.",
+        "why": "Anti-oracle rule: the value a test sets must differ from what a stub or the code's default would produce. Here the test value equals the screen's starting state and its fallback (RenewPolicy.tsx:24 and :68). It never proves that the payment-method default comes from the current term. Selling with DirectDebit would.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R3",
+        "rule_id": "WB-7",
+        "severity": "P1",
+        "file": "src/web/app/data/api.ts",
+        "line": 368,
+        "what": "The request log keeps no headers and rebuilds bodies by parsing and re-stringifying them, so the page can't show the exact exchange the signed-off wb-requests reference shows.",
+        "why": "WB-7 asks for 'the exact request and response of every action'. docs/ui/derived/W3/wb-requests/populated.html:33 shows 'Request headers (6)' and 'Response headers (4)' inside http-exchange. LoggedExchange has no headers, and RequestLogPage.tsx gives HttpExchange none. JSON.parse also loses the API's own number formatting (100.00 becomes 100). Parity passed because it compares data-comp structure only. No wb-7 test asserts headers, so the tests need a matching addition.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "WB-5",
+        "severity": "P2",
+        "file": "src/web/app/workbench/renew/RenewPolicy.tsx",
+        "line": 24,
+        "what": "termMethod falls back to 'Card' when the term's payment isn't found or isn't recognised. The form then shows a method the API never returned.",
+        "why": "react-web, 'Screens are composed': a value the data doesn't hold renders as an empty or 'not built' state, never as a default (HONEST-1). The code-quality slop list also counts invented behaviour.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R5",
+        "rule_id": "WB-7",
+        "severity": "P2",
+        "file": "src/web/app/workbench/requests/RequestLogPage.tsx",
+        "line": 26,
+        "what": "A request still waiting for its answer shows in the log table with status 0 (`entry.status ?? 0`). The API never returned that status.",
+        "why": "HONEST-1: no number may appear that isn't in the data. A pending or unanswered exchange should look pending or unanswered, as the drawer already does with outcome 'pending'.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R6",
+        "rule_id": "WB-5",
+        "severity": "P2",
+        "file": "tests/web/e2e/W3/wb-5.spec.ts",
+        "line": 10,
+        "what": "unique() builds policy references from Date.now(), in wb-5.spec.ts:10 and wb-7.spec.ts:11. The test data then depends on the time of the run.",
+        "why": "Anti-oracle rule: no random or time-of-day data, and each test passes its own literal reference. The e2e API starts on a fresh database (web-testing, 'Running'), so a literal reference per test would be unique enough.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "TDD order holds: the WB-5 and WB-7 red commits (8c26d5d..75f3244) come before the greens (70dea3a, 50d3d4e). The I5 finding-red ab061ce failed at gate.finding-red before the fix e795f19, and that fix carries Fixes-Finding A1/I5.",
+      "There's no stub commit and no gate.stub receipt. loop.jsonl:1 records t2/t3 as skipped under delegation (the lean loop), so I couldn't check whether any rule-traited test passed on a stub.",
+      "Tests edited after red (fd987b6, d16f39e) match A1 findings I1-I4: locators use the reference's accessible names and table rows, the log is seeded, and the quote GETs are answered from recordings. I compared the HEAD test files with the investigator's description, not with each red commit's file, since I run no git commands. In the HEAD files every remaining assertion holds its expected value.",
+      "The green commits 70dea3a and 50d3d4e put both rules on one 'Rule: WB-5, WB-7' line instead of one trailer per ID. Minor.",
+      "Leftovers: gate.no-stub found no 'not implemented' in src/web. The node adds no banned time or rounding API in src/web.",
+      "WB-5's claim side holds up: the live e2e asserts the quote before the claim is above 0, the quote after is exactly 0, the screen shows £0.00, and there's a COULD-2 chip. The cheque/COULD-3 refusal and the RENEW-1/2 refusal are both driven live."
+    ]
+  }
+}

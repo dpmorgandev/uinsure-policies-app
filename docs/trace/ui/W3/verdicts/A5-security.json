@@ -1,0 +1,64 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T22:55:05Z",
+  "plan": "ui",
+  "node": "W3",
+  "attempt": 5,
+  "agent": "security",
+  "agent_id": "a74ea6d657e7a26c5",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "W3",
+    "attempt": 5,
+    "base_sha": "209fd0aa2f16cef6aed8be921f9d57061da58a06",
+    "head_sha": "4b2d06420129bb8a8337084176f8233128765d94",
+    "diff_fingerprint": "77cbd2eb455b2f867e7967ce6a9d3bdee522ab1e",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.typecheck",
+      "gate.lint",
+      "gate.build",
+      "gate.test",
+      "gate.lint-css",
+      "gate.e2e",
+      "gate.e2e-regression",
+      "gate.integrate",
+      "gate.audit"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "W4",
+        "severity": "P2",
+        "file": "src/web/app/workbench/browser.ts",
+        "line": 15,
+        "what": "The request log keeps every exchange, with full headers and bodies, for the life of the page. It has no cap, and publish() re-copies the whole array on each send and each answer.",
+        "why": "Hardening only, carried from A4. The log is memory-only and holds no cookies or auth. It grows without bound in a long session. WB-7 asks for no cap, so this does not block. David's ruling D1 carries it to U8.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Scope of this round: the diff fingerprint is the same as at A4 (77cbd2eb...), and the commits since 343c270 are plan, QA and trace only. I can't run git, so I took the fingerprint and head from the coordinator's prompt and re-checked the evidence by reading and grepping the files.",
+      "Re-checks at this head. A grep of src/web/app finds no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval(, new Function, javascript:, sessionStorage or document.cookie (W1, W2). In src/web/app/workbench the only fetch( is the one logging wrapper in browser.ts:18, and the only storage is localStorage in browser.ts:8, which is the WB-9 recent-policies list (W4). There are no http(s) URLs in non-test workbench source. A grep of src/web/app for local absolute paths and personal email finds nothing (W6).",
+      "The diff touches no package.json or lockfile, no src/web/index.html and no src/web/compiler files, so W3 is unchanged (CSP default-src 'self' and no third-party origin) and W5 is n/a with nothing to fail on. W7: gate.audit at 343c270 (omit=dev, high) exited 0, runtime clean. The dev audit shows 5 high, which is the known stylelint/micromatch/braces item, so it is not a finding. The localhost URLs in the packet diff sit only in the QA script prose.",
+      "W8: failure paths show only the API's own problem fields or 'The API did not answer'. No stack trace or server internals, as at A4.",
+      "API8:2023 is covered by W3 and W4. API10:2023 is covered by W1 and W8. API1, API2, API3, API4, API5, API6, API7 and the .NET extras are n/a: ui node, no server code in the diff.",
+      "Gate receipts at 343c270 show e2e contention failures that pass at 1 worker, and the known regression set (wb-policy x12 for the Pause 2 baseline ruling, activity x2 for U7). None of these is a security matter. Receipts after that head are gate.qa only, so no source gate has been re-run for the later plan, QA and trace commits."
+    ]
+  }
+}

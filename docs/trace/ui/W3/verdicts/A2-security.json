@@ -1,0 +1,58 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T20:55:10Z",
+  "plan": "ui",
+  "node": "W3",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a6b004f5b870e7f26",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "W3",
+    "attempt": 2,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "e674cdc292ac55cdde65cee0c064106ad7e01c43",
+    "diff_fingerprint": "b9ae9628256a0e195873199d1f5493a040394377",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.diff-scope",
+      "gate.e2e",
+      "gate.build",
+      "gate.lint",
+      "gate.typecheck",
+      "gate.test",
+      "gate.no-stub",
+      "gate.trace-check"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "API1:2023, API2:2023, API3:2023, API4:2023, API5:2023, API6:2023, API7:2023, API9:2023: n/a, ui node, no server code (API1, API2 and API5 are also out of scope for auth).",
+      "W1: no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function in src/web. The only hits are comments in kit MarkdownText.tsx. Request and response bodies in RequestsDrawer.tsx and RequestLogPage.tsx render as JSX text via JSON.stringify. The diff changes nothing under kit/.",
+      "W2: the only hrefs the diff builds are '#/rules/' + ruleId and '#/workbench/policies/' + encodeURIComponent(reference). Both stay internal hash routes, so a ruleId from an API body cannot produce a javascript: URL. The diff adds no external link.",
+      "W3: the diff doesn't touch index.html, the CSP, fonts or styles from another origin, and adds no URL literal under src/web/app.",
+      "W4: the new network calls are in api.ts, all under /api/policies/... with encodeURIComponent on the reference and the cancellationDate query. browser.ts wraps the existing fetch with loggingFetch. The request log is held in memory only, with no storage or cookie use. The existing localStorage use for the recent-policies list is unchanged (WB-9).",
+      "W5: the diff doesn't touch src/web/compiler. The files under docs/ui/derived/W3 are generated static reference HTML and screen.json, and they are not shipped.",
+      "W6: no local absolute path, personal email, key or token in the new src/web/app files or in tests/web. The only URL literal is the existing REPO constant in shell/repo.ts. I did not read every line of the 1.8 MB generated docs/ui/derived output: its greps hit only long generated HTML lines, which I did not inspect, so the privacy scan on the built output rests on the pre-commit scan.",
+      "W7: the diff changes no package.json or lockfile. The runtime audit passed with exit 0. The gate detail says the dev audit shows 5 high, which doesn't gate, and I could not confirm from the receipt that all 5 belong to the known stylelint/micromatch/braces item. The orchestrator should check that, since this diff adds no dependency.",
+      "W8: failure() and ProblemView show only the API's status, title and problem fields. An unreachable API gets the kit's 'did not answer' banner with no exception text. loggingFetch swallows a non-JSON body to null and lets a fetch rejection reach ask(), which already maps it to unreachable.",
+      "API8:2023 is covered by W3 and W4 above. API10:2023 is covered by W1 and W8: the API's answers are only rendered as text.",
+      "P2, not raised as a finding: the in-memory request log has no cap, so a very long session grows it. It is bounded by the page lifetime and only holds this tool's own exchanges."
+    ]
+  }
+}

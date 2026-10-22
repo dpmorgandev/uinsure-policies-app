@@ -1,0 +1,139 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T22:41:25Z",
+  "plan": "ui",
+  "node": "W3",
+  "attempt": 4,
+  "agent": "reviewer",
+  "agent_id": "ae42b17feaa7aa7a0",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "W3",
+    "attempt": 4,
+    "base_sha": "209fd0aa2f16cef6aed8be921f9d57061da58a06",
+    "head_sha": "343c2709312189ac527427a888f791e03039e348",
+    "diff_fingerprint": "77cbd2eb455b2f867e7967ce6a9d3bdee522ab1e",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "loop.jsonl:1 setup (t2/t3 skipped under delegation)",
+      "loop.jsonl:3 gate.red ok (75f3244)",
+      "loop.jsonl:7 gate.finding-red ok (ab061ce)",
+      "loop.jsonl:27 gate.finding-red ok (9edd13f)",
+      "loop.jsonl:33 gate.e2e ok:false (6f7a385)",
+      "loop.jsonl:36 gate.finding-red ok (673c93d)",
+      "loop.jsonl:44 gate.e2e ok (44285d4), intermittent COULD-3 'amount null' named",
+      "loop.jsonl:50 gate.integrate ok:false (conflicts, stopped for David)",
+      "loop.jsonl:51 gate.finding-red ok (c80c957)",
+      "loop.jsonl:58 gate.e2e ok (acf5685)",
+      "loop.jsonl:63 gate.integrate ok (acf5685)",
+      "loop.jsonl:66 gate.typecheck (343c270)",
+      "loop.jsonl:67 gate.lint (343c270)",
+      "loop.jsonl:68 gate.build (343c270)",
+      "loop.jsonl:69 gate.test 338 passed (343c270)",
+      "loop.jsonl:70 gate.lint-css (343c270)",
+      "loop.jsonl:71 gate.e2e 220 passed + 2 contention re-runs (343c270)",
+      "loop.jsonl:72 gate.e2e-regression known set (343c270)",
+      "loop.jsonl:73 gate.trace-check (343c270)",
+      "loop.jsonl:74 gate.integrate ok (343c270)",
+      "gates.jsonl:12 and :24 gate.no-stub (no match)"
+    ],
+    "rules_covered": [],
+    "rules_missing": [
+      "WB-5",
+      "WB-7"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "WB-5",
+        "severity": "P1",
+        "file": "tests/web/e2e/W3/wb-policy.spec.ts",
+        "line": 27,
+        "what": "No test checks the components in wb-policy's actions region. The page draws three links where the signed-off reference has three kit Buttons plus the link list (PolicyView.tsx:405).",
+        "why": "docs/ui/derived/W3/wb-policy/populated.html:78-80 has data-comp 'button · primitive · primary' and two 'secondary' buttons in the actions region. react-web says a screen keeps each component's data-comp root, and web-testing's parity says the same. W1's parity now compares this region by place only and leaves its components to W3 (W1/support/parity.ts header). W3's wb-policy.spec checks only the region's data-req, so nothing catches the missing buttons. g4-defects.md has no ruling that lets them go, unlike the wb-requests filter-bar.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "WB-7",
+        "severity": "P1",
+        "file": "src/web/app/workbench/policy/PolicyView.tsx",
+        "line": 331,
+        "what": "'Requests that touched this policy' matches paths by substring, so policy ABC also lists requests to /policies/ABC-2. No behaviour test covers what the region shows.",
+        "why": "entry.path.includes(`/policies/${reference}`) has no path-segment boundary. References are chosen by the seller (WB-1), so sharing a prefix is plausible, and the region would then show exchanges that never touched this policy (HONEST-1). The only tests for the region are W3's wb-policy parity (req, built, request-log present). Under web-testing, parity is allowed to pass on canned content, so a stub log would pass. The filter (path match plus the sale's responseBody match) is untested.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R3",
+        "rule_id": "A11Y-1",
+        "severity": "P1",
+        "file": "tests/web/e2e/W3",
+        "what": "No axe test covers W3's three new routes (wb-claim, wb-renew, wb-requests), and no gate.axe receipt exists for W3, although t6 lists axe.",
+        "why": "web-testing, step 1 (red) requires 'axe on each of the node's routes', and 'Parity, axe and baselines' requires light and dark at 1440 and 390. None of the 27 files that use axe is under tests/web/e2e/W3. W1/a11y-1.spec.ts covers only home and the policy view. W2 has its own axe in wb-4.spec.ts. ui.dag.yaml W3 t6 names axe, but gates.jsonl has no axe event.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R4",
+        "rule_id": "WB-7",
+        "severity": "P2",
+        "file": "src/web/app/workbench/policy/PolicyView.tsx",
+        "line": 334,
+        "what": "The new requests region maps a pending exchange to status 0 (`entry.status ?? 0`). A2 R5 made the same mistake in RequestLogPage; this is a second place with it.",
+        "why": "HONEST-1 says no number may be shown that the data doesn't hold. The U7 line at ui.dag.yaml:440 names only the request log table, so this site should be added to it or fixed along with it.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R5",
+        "rule_id": "WB-7",
+        "severity": "P2",
+        "file": "src/web/app/workbench/requests/RequestLogPage.tsx",
+        "line": 46,
+        "what": "HttpExchange gets no curl prop, so the reference's 'Repeat it' curl part of the one-exchange region is never drawn.",
+        "why": "docs/ui/derived/W3/wb-requests/populated.html has the curl part, and the region slug itself ends in '-curl'. The kit takes the prop (HttpExchange.tsx:43, :154). Parity compares data-comp roots only, so it misses this. A2/I3 noted it without raising it.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R6",
+        "rule_id": "WB-5",
+        "severity": "P2",
+        "file": "tests/web/e2e/W3/wb-5.spec.ts",
+        "line": 200,
+        "what": "The cheque COULD-3 test types the amount before the policy read lands. The defaults test waits for it. The gate's intermittent 'amount null' failure is still unexplained.",
+        "why": "gates.jsonl:8 records that one run sent `amount: null` (Number() gave NaN), and that it passed when re-run. A flaky rule test can hide a real race in RenewPolicy, which sends Number(amount) unchecked. The cause isn't established, and passing on re-run doesn't explain it.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R7",
+        "rule_id": "WB-5",
+        "severity": "P2",
+        "file": "src/web/app/workbench/routes.tsx",
+        "line": 18,
+        "what": "The doc comment says 'Cancel is W2's: until then it falls to the not-built page', but the cancel route is registered two lines below.",
+        "why": "code-quality slop list: a comment must explain why and stay true. This one went stale in the W2 merge.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R8",
+        "rule_id": "WB-5",
+        "severity": "P2",
+        "file": "tests/web/e2e/W1/support/parity.ts",
+        "line": 225,
+        "what": "The nav-settle comment block was demoted to `/*` and left with nothing under it after `settledNav` moved up to line 184.",
+        "why": "code-quality slop list: a leftover comment that describes no code.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "WB-5's behaviour rows hold at HEAD. Live tests prove that the quote after a claim is exactly 0 under COULD-2, that cheque is refused for an auto-renewing policy (COULD-3 chip) and that RENEW-1/2 refuses outside the window. A2 R1 is fixed: a page.route 201 test asserts literal new-term dates that appear nowhere in the read. A2 R2 is fixed: the test now sells with DirectDebit and waits for the read. WB-5 is listed as missing only because of R1.",
+      "WB-7's client is now right (A2 R3 fixed). loggingFetch keeps request and response headers and the raw text of both bodies. The strengthened unit tests serve a pretty-printed body that re-stringifying can't reproduce, and an e2e asserts the response-headers disclosure. WB-7 is listed as missing because of R2.",
+      "TDD order: every WB-5 and WB-7 red commit (8c26d5d, 6aaebab, db15c21, ac94134) comes before the greens (70dea3a, 50d3d4e). Each finding-red (ab061ce, 979ee63/054ca72, a25db9d/ea1f575/673c93d, c80c957) came before its fix, and each failed in a gate.finding-red receipt. There's no stub commit and no gate.stub receipt, because t2/t3 were skipped under the lean loop (loop.jsonl:1). So I couldn't confirm that no behaviour test passed on a stub.",
+      "Assertions changed after red, all to make them stricter or because they were obsolete. wb-7.test.ts now requires headers and raw text (A2/I3). W1 wb-3.spec.ts dropped the renew/claim 'not built' cases because W3 builds both screens. W1 parity.ts now compares in-transit regions by place only (A3/I1), which shifts checking to W3; R1 is the gap that shift left open.",
+      "Leftovers: gate.no-stub found no 'not implemented' in src/web. The diff adds no banned time or rounding API.",
+      "Deferred to U7 and still present: the 'Card' fallback (RenewPolicy.tsx:24, A2 R4), status 0 in RequestLogPage (A2 R5), and Date.now() references in wb-5/wb-7 (A2 R6). These are not raised again.",
+      "Small style point: PolicyView.tsx line 3 is missing the space in `KeyValueList,PageHeader`, a merge leftover. Lint passes.",
+      "Green commits put both IDs on one 'Rule: WB-5, WB-7' trailer instead of one trailer per ID. Minor, already noted at A2."
+    ]
+  }
+}
