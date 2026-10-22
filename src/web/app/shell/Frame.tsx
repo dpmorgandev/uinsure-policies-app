@@ -11,10 +11,10 @@ import type { TraceState } from './ShellContext';
 import './notice.css';
 
 // The built sections are links. The ones the app has not built are drawn as "not built yet", never as a link.
-const NAV: NavItem[] = [
+const navFor = (buildPlanId: string): NavItem[] => [
   { key: 'overview', label: 'Overview', href: '#/', scope: 'explorer' },
   { key: 'matrix', label: 'Requirements matrix', href: '#/rules', scope: 'explorer' },
-  { key: 'plan', label: 'Plan', href: '#/plans/build', scope: 'explorer' },
+  { key: 'plan', label: 'Plan', href: `#/plans/${buildPlanId}`, scope: 'explorer' },
   { key: 'decisions', label: 'Human decisions', notBuilt: true, scope: 'explorer' },
   { key: 'about', label: 'How to read this', href: '#/about', scope: 'explorer' },
   { key: 'workbench', label: 'Workbench', href: '#/workbench', scope: 'workbench' },
@@ -65,18 +65,19 @@ export function Frame() {
   const matrix = useMatch('/rules');
   const rule = useMatch('/rules/:ruleId');
   const nodePage = useMatch('/plans/:planId/:nodeId');
+  const walkthrough = useMatch('/plans/:planId/:nodeId/commits');
   const loop = useMatch('/plans/:planId/:nodeId/loop');
   const verdict = useMatch('/plans/:planId/:nodeId/verdicts/:round/:agent');
   const finding = useMatch('/plans/:planId/:nodeId/findings/:round');
-  const plan = useMatch('/plans/:planId');
+  const planPage = useMatch('/plans/:planId');
   const commit = useMatch('/commits/:sha');
-  const { planId, nodeId } = (activity ?? nodePage ?? loop)?.params ?? {};
+  const { planId, nodeId } = (activity ?? walkthrough ?? nodePage ?? loop)?.params ?? {};
 
   const titles: [boolean, string][] = [
-    [activity !== null || nodePage !== null || loop !== null, `Node ${planId}/${nodeId}`],
+    [activity !== null || walkthrough !== null || nodePage !== null || loop !== null, `Node ${planId}/${nodeId}`],
     [verdict !== null, 'Verdict'],
     [finding !== null, 'Finding'],
-    [plan !== null, 'Plan'],
+    [planPage !== null, 'Plan'],
     [commit !== null, `Commit ${(commit?.params.sha ?? '').slice(0, 7)}`],
     [rule !== null, 'Rule'],
     [matrix !== null, 'Requirements matrix'],
@@ -89,22 +90,25 @@ export function Frame() {
     ? 'about'
     : overview
       ? 'overview'
-      : matrix || rule
-        ? 'matrix'
-        : workbench
-          ? 'workbench'
-          : plan || loop || verdict || finding
-            ? 'plan'
+      : planPage || nodePage || walkthrough || activity || commit || loop || verdict || finding
+        ? 'plan'
+        : matrix || rule
+          ? 'matrix'
+          : workbench
+            ? 'workbench'
             : '';
 
   useEffect(() => {
     document.title = `${title} · Docket`;
   }, [title]);
 
+  const buildPlanId = (trace.state === 'ready' ? trace.trace.plans.find((plan) => plan.kind === 'build')?.id : undefined) ?? 'build';
   const node = trace.state === 'ready' ? trace.trace.nodes.find((n) => n.plan === planId && n.id === nodeId) : undefined;
   const content = (
     <ShellProvider value={{ trace, theme, setTheme }}>
-      {node !== undefined && trace.state === 'ready' ? <NodeHeader node={node} compiledAt={trace.snapshot.utc} current={activity ? 'activity' : loop ? 'loop' : 'node'} /> : null}
+      {node !== undefined && trace.state === 'ready' ? (
+        <NodeHeader node={node} compiledAt={trace.snapshot.utc} current={activity ? 'activity' : walkthrough ? 'walkthrough' : loop ? 'loop' : 'node'} />
+      ) : null}
       <Outlet />
     </ShellProvider>
   );
@@ -125,7 +129,7 @@ export function Frame() {
         }
       : { noSnapshot: true, provenanceHref: '#/about', repoHref: REPO };
   return (
-    <AppShell topBar={topBar} nav={{ current, items: NAV }} footer={footer}>
+    <AppShell topBar={topBar} nav={{ current, items: navFor(buildPlanId) }} footer={footer}>
       {content}
     </AppShell>
   );

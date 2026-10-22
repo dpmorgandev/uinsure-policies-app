@@ -12,6 +12,10 @@
   min-width: 0;
 }
 
+.s-subheading {
+  margin: 0;
+}
+
 .s-chips {
   display: flex;
   flex-wrap: wrap;

@@ -49,6 +49,11 @@ function trailersOf(body: string): Record<string, string[]> {
   return trailers;
 }
 
+/** One commit's patch, with a/ and b/ prefixes whatever the user's git config says; empty for a merge. */
+export function readPatch(root: string, sha: string): string {
+  return git(root, ['show', '--format=', '--patch', '--no-color', '--no-ext-diff', '--src-prefix=a/', '--dst-prefix=b/', sha]);
+}
+
 /** Every commit reachable from the commit, oldest first. */
 export function readCommits(root: string, sha: string): GitCommit[] {
   const log = git(root, ['log', '--reverse', '--format=%H%x1f%P%x1f%s%x1f%aI%x1f%b%x1e', sha]);

@@ -54,6 +54,8 @@ the same way it reads the real one. The live `docs/trace/` is never a test input
 | `retry-ladder/` | Three attempts as LOOP-2's chain, cut from build/F2 and build/F3: a stub gate ok false, round A1 (a testable and an untestable finding), its red test and `Fixes-Finding` fix, the re-run verdicts with a reviewer FAIL (findings with file and line, a missing rule, gate refs), `inv-001` stepping off before attempt 3, round A2 fixed, then a PASS pair (LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2) |
 | `p0-reconciled/` | `retry-ladder` with the A2 reviewer's R1 recorded P0, and one loop line (13) whose source is `reconciled`, the rest `orchestrator`: values the kit's two-severity card and a fixed source sentence can't show (U3 A2/I1 LOOP-3, A2/I2 DATA-2) |
 | `two-plans/` | Both plans' rules, each read against its own matrix (`requirements-matrix.md`, `ui-requirements-matrix.md`): a `RENEW-1/2` row, `undefined` refactor cells, a `signoff(<sha>)` and a `merged(<sha>)` event, and a template-literal test title in a loop, each cut from the real file (MATRIX-1, NAV-1, RULE-1, NAV-3) |
+| `plans/` | Three plans of three kinds: a `build` DAG whose file order is neither alphabetical nor the graph's layer order, with a branch and a join; a `ui` DAG; an investigation `inv-001.plan.md` with no DAG. Each node's `depends_on`, `rules`, `pr`, `acceptance` and one-line `tasks` (DAG-1, NODE-1) |
+| `in-flight/` | A node mid-loop, between the stub and pause 1: a loop and an activity log, each with one line cut off mid-write, and no README, walkthrough or verdicts yet; its stub commit changes one line of a file (DATA-8, RULE-3) |
 
 `replay.d.mts` types `replay.mjs` for the TypeScript tests that import it.
 

@@ -1,0 +1,77 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T13:13:11Z",
+  "plan": "ui",
+  "node": "U2",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "af55f2810cc04f9f3",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U2",
+    "attempt": 2,
+    "base_sha": "5da3f478c77a93d036aa6897dcf9193465e465ca",
+    "head_sha": "7c2eae4cf431e71942eb6df8f919499fdbd09e7a",
+    "diff_fingerprint": "f610fd68d25dba24779f38755cb0556c98f74a03",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.scope",
+      "gate.no-stubs",
+      "gate.lint",
+      "gate.build",
+      "gate.e2e",
+      "gate.e2e-regression"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "src/web/kit/primitives/sha-link/ShaLink.tsx",
+        "line": 61,
+        "what": "GitHub anchors drawn by ShaLink (and the PageHeader id links) have no rel=\"noreferrer\"; U2 adds new uses.",
+        "why": "web-security W2 says external links carry rel=\"noreferrer\". Only MarkdownText and some app anchors do. The hrefs are safe, built from the REPO constant and trace.json ids. The exposure is the Referer header, which carries only the app's own URL. Hardening, not blocking.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Reviewed the first-party diff: src/web/app/**, src/web/compiler/{git,index,plans}.ts, the tests and fixtures, and the derived screens. The nested copy of the packet diff.patch was only grepped.",
+      "API1:2023 n/a: ui node, no server code; auth and tenancy are out of scope.",
+      "API2:2023 n/a: ui node, no server code; authentication is out of scope.",
+      "API3:2023 n/a: ui node, no server code.",
+      "API4:2023 n/a: ui node, no server code. Client-side only: parsePatch runs on a commit's whole patch. The chunk is fetched on request, and a packet commit's patch can be several MB. Not a security issue.",
+      "API5:2023 n/a: ui node, no server code; no roles.",
+      "API6:2023 n/a: ui node, no server code. The U2 pages are read-only.",
+      "API7:2023 n/a: ui node, no server code. U2 adds no outbound fetch.",
+      "API9:2023 n/a: ui node, no server code.",
+      ".NET extras (SQL, money, packages, logging) n/a: ui node. No .cs files are in the diff. W1-W8 were walked in their place.",
+      "W1 met: grepping src/web/{app,kit,compiler} for dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( and new Function found only a MarkdownText.tsx comment that says it is not used. Patch lines, task titles, acceptance lines and the malformed-line reasons all render as React text.",
+      "W2 met, with the S1 P2: every external href comes from commitUrl, pullUrl or blobUrl over the fixed REPO constant, and from an ID in trace.json. node.pr is numeric by the compiler's typeof check. Rule links use encodeURIComponent. PlanGraph's own ruleHref does not encode, but the link is an internal hash route. There is no javascript: in src/web or the derived screens.",
+      "W3 met: index.html is untouched in the diff and keeps default-src 'self'. The U2 screens add no script, font or style from another origin.",
+      "W4 met: loadChunk fetches only trace/<plan>/<node>/<kind>.json, and only when that matches the path the compiler wrote into trace.chunks (DATA-1). Diffs load only when asked (RULE-3). The U2 code adds no storage or cookie access. The localStorage and fetch hits are in the existing workbench code.",
+      "W5 met: the compiler's .claude hit is a comment that says it never reads .claude/. There is no process.env, fetch( or http in src/web/compiler. readPatch calls execFileSync with an args array and a SHA taken from git log, so there is no shell and no injection. Every patch is scanned against the privacy denylist and a hit goes into fatal (DATA-5). Malformed loop and activity lines are kept as raw only from files that read() has already scanned.",
+      "W6 met: grepping the packet diff, including its nested patches, for added lines with local absolute paths, personal emails or key material found none. A grep of src/web/app, src/web/compiler, tests/web and docs/ui/derived/U2 found none either. The /users/ hits in tests/web/fixtures are the denylist regex itself. Outside the diff, the working tree has untracked src/web/test-results/*/error-context.md files that hold local absolute paths. Nobody should stage them, and they could be gitignored.",
+      "W7 met: src/web/package.json and the lockfile are not in the diff. gate.audit (runtime, high) found 0 vulnerabilities. gate.audit-dev reports 5 highs, with the known braces/stylelint item named. I read that receipt as covering the dev highs, but it names only that one item.",
+      "W8 met: useDiffs and the loaders show only their own reason strings or the chunk path. Node.tsx shows the compile's problem file:line and reason, which are the compiler's own wording. There is no stack trace or exception message in the new UI.",
+      "API8:2023 (W3, W4) met. API10:2023 (W1, W8) met: the U2 pages consume only the static trace and chunk files and render them as text.",
+      "gate.e2e-regression exit 1: the loop.jsonl setup entry attributes it to the intended primary-nav baseline change (the Plan entry became a link). I did not verify the baseline claim, and it is not a security matter."
+    ]
+  }
+}

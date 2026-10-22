@@ -1,0 +1,130 @@
+plan_id: build
+kind: build
+title: Fixture build
+status: approved
+created: 2026-10-15
+approved_by: David Morgan
+approved_on: 2026-10-15
+requirements_rev: 1a2b3c4
+parent: null
+nodes:
+  - id: F0a
+    title: Harness
+    kind: harness
+    owner: david
+    depends_on: []
+    rules: []
+    cuttable: false
+    budget: null
+    status: done
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/build-F0a.md
+    trace: docs/trace/build/F0a/
+    acceptance:
+      - "The six agents and the hooks are in place"
+    tasks:
+      - {id: t1, role: david, step: session, layer: null, rules: [], title: "Agents and hooks written in-session", status: done}
+  - id: F0b
+    title: Walking skeleton
+    kind: feature
+    owner: loop
+    depends_on: [F0a]
+    rules: []
+    cuttable: false
+    budget: null
+    status: done
+    attempt: 1
+    branch: feature/build/F0b
+    worktree: .claude/worktrees/build-F0b
+    pr: 3
+    qa: docs/qa/build-F0b.md
+    trace: docs/trace/build/F0b/
+    acceptance:
+      - "The API answers its health checks"
+    tasks:
+      - {id: t1, role: builder, step: scaffold, layer: null, rules: [], title: "Four projects and a health check", status: done}
+  - id: F1
+    title: Sell
+    kind: feature
+    owner: loop
+    depends_on: [F0b]
+    rules: [SELL-1, SELL-2]
+    cuttable: false
+    budget: null
+    status: done
+    attempt: 2
+    branch: feature/build/F1
+    worktree: .claude/worktrees/build-F1
+    pr: 10
+    qa: docs/qa/build-F1.md
+    trace: docs/trace/build/F1/
+    acceptance:
+      - "POST /policies sells a policy under a reference no other policy has"
+      - "A start date more than 60 days ahead answers 422"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [SELL-1, SELL-2], title: "Acceptance tests for the sale", status: done}
+      - {id: t2, role: builder, step: stub, layer: api, rules: [], title: "Stub the sale route", status: done}
+      - {id: t3, role: builder, step: green, layer: api, rules: [SELL-1, SELL-2], title: "Sell a policy", status: done}
+  - id: F2
+    title: Retrieve
+    kind: feature
+    owner: loop
+    depends_on: [F1]
+    rules: [GET-1]
+    cuttable: false
+    budget: null
+    status: in_progress
+    attempt: 1
+    branch: feature/build/F2
+    worktree: .claude/worktrees/build-F2
+    pr: null
+    qa: docs/qa/build-F2.md
+    trace: docs/trace/build/F2/
+    acceptance:
+      - "GET /policies/{ref} reads a sold policy back in full, and an unknown reference answers 404"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [GET-1], title: "Acceptance tests for the retrieve", status: done}
+      - {id: t2, role: builder, step: stub, layer: api, rules: [], title: "Stub the retrieve route", status: done}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: David reads the stub", status: pending}
+      - {id: t4, role: builder, step: green, layer: api, rules: [GET-1], title: "Read a policy back by its reference", status: pending}
+  - id: F5
+    title: Pipeline (evidence only)
+    kind: feature
+    owner: loop
+    depends_on: [F0b]
+    rules: []
+    cuttable: true
+    budget: null
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/build-F5.md
+    trace: docs/trace/build/F5/
+    acceptance:
+      - "The pipeline file builds and tests on every push"
+    tasks:
+      - {id: t1, role: builder, step: green, layer: null, rules: [], title: "Write the pipeline file", status: pending}
+  - id: F3
+    title: Cancel
+    kind: feature
+    owner: loop
+    depends_on: [F2, F5]
+    rules: [CANCEL-1]
+    cuttable: false
+    budget: null
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/build-F3.md
+    trace: docs/trace/build/F3/
+    acceptance:
+      - "A cancellation refunds the unused days of the current term"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [CANCEL-1], title: "Acceptance tests for the cancellation", status: pending}
