@@ -227,3 +227,57 @@ describe('text the real rounds write: a preamble, a repeated marker', () => {
     expectEveryWord(text, i1);
   }, SLOW);
 });
+
+describe('text the real rounds write: a qualified marker', () => {
+  test('LOOP-4 · a qualified marker such as Cause (kit): splits the text as its marker does, keeping the qualifier', () => {
+    const text = 'Symptom (security S1): S1. Cause (screen): C1. Cause (kit): C2. Fix direction: F1.';
+    const i1 = compiledWith(text);
+    const symptom = i1?.symptom ?? '';
+    const cause = i1?.cause ?? '';
+    expect(symptom, 'the symptom keeps its qualifier').toContain('(security S1)');
+    expect(symptom).toContain('S1.');
+    for (const other of ['(screen)', 'C1', '(kit)', 'C2', 'F1']) expect(symptom, `the symptom holds no ${other}`).not.toContain(other);
+    const at = ['(screen)', 'C1.', '(kit)', 'C2.'].map((part) => cause.indexOf(part));
+    expect(at[0], `the cause opens with (screen): ${JSON.stringify(cause)}`).toBeGreaterThanOrEqual(0);
+    expect(at, `the cause holds (screen) C1 then (kit) C2, in order: ${JSON.stringify(cause)}`).toEqual([...at].sort((a, b) => a - b));
+    expect(new Set(at).size, 'each part is its own place in the cause').toBe(4);
+    expect(i1?.fixDirection ?? null).toBe('F1.');
+    expectEveryWord(text, i1);
+  }, SLOW);
+
+  test("LOOP-4 · a round with Cause (screen): and Cause (kit):, as U3's round A2 writes it, keeps both causes out of the symptom and in order", () => {
+    const preamble = "Layer: the kit, with a screen part. It is recorded as 'api' because the schema's layer enum has no ui layer.";
+    const symptom = "a gate event whose log line holds no ok is drawn as 'Waived'.";
+    const screen = "resultOf maps event.ok === null to 'waived' (src/web/app/explorer/Ladder.tsx:19), and its own comment (:16) says such a gate 'did not decide'.";
+    const kit =
+      'GateResult has only held, failed, expected-fail and waived (src/web/kit/project/gate-row/GateRow.tsx:13). Rule: LOOP-1 shows ok as the line records it, and HONEST-1 applies.';
+    const fix = "a kit change in a /kit-gap node for gate-row, with a state for 'ok not recorded'.";
+    const text = `${preamble} Symptom: ${symptom} Cause (screen): ${screen} Cause (kit): ${kit} Fix direction: ${fix}`;
+    const i1 = compiledWith(text);
+    const got = i1?.symptom ?? '';
+    const cause = i1?.cause ?? '';
+    expect(got.endsWith(symptom), `the symptom ends with its own text: ${JSON.stringify(got)}`).toBe(true);
+    for (const other of ['resultOf', 'GateResult']) expect(got, `the symptom holds no cause text (${other})`).not.toContain(other);
+    expect(cause.indexOf('(screen)'), `the cause keeps (screen): ${JSON.stringify(cause)}`).toBeGreaterThanOrEqual(0);
+    expect(cause.indexOf(screen), 'the screen cause follows its qualifier').toBeGreaterThan(cause.indexOf('(screen)'));
+    expect(cause.indexOf('(kit)'), 'the kit qualifier follows the screen cause').toBeGreaterThan(cause.indexOf(screen));
+    expect(cause.indexOf(kit), 'the kit cause follows its qualifier').toBeGreaterThan(cause.indexOf('(kit)'));
+    expect(i1?.fixDirection ?? null).toBe(fix);
+    expectEveryWord(text, i1);
+  }, SLOW);
+
+  test("LOOP-4 · a Symptom (security S1, P2, verdict PASS): marker, as U3's round A2 writes it, opens the symptom with its qualifier", () => {
+    const preamble = "Layer: the kit primitives. It is recorded as 'api' because the schema's layer enum has no ui layer.";
+    const symptom = "external GitHub anchors render without rel='noreferrer'.";
+    const cause = "ShaLink's anchors (src/web/kit/primitives/sha-link/ShaLink.tsx:45-54 and :61) set no rel attribute.";
+    const fix = "none in U3. Leave it to U7, which adds rel='noreferrer' to the kit's external anchors.";
+    const text = `${preamble} Symptom (security S1, P2, verdict PASS): ${symptom} Cause: ${cause} Fix direction: ${fix}`;
+    const i1 = compiledWith(text);
+    const got = i1?.symptom ?? '';
+    expect(got, 'the symptom keeps its qualifier').toContain('(security S1, P2, verdict PASS)');
+    expect(got.endsWith(symptom), `the symptom ends with its own text: ${JSON.stringify(got)}`).toBe(true);
+    expect(got.indexOf('(security S1, P2, verdict PASS)'), 'the qualifier comes before the symptom text').toBeLessThan(got.indexOf(symptom));
+    expect([i1?.cause ?? null, i1?.fixDirection ?? null]).toEqual([cause, fix]);
+    expectEveryWord(text, i1);
+  }, SLOW);
+});
