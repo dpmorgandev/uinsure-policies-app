@@ -10,6 +10,7 @@ import {
   FINDINGS,
   FIXED_BY,
   REPO,
+  RETRY,
   auditEverywhere,
   compileRetry,
   fact,
@@ -23,6 +24,9 @@ import {
 } from './support/app';
 import type { CompiledTrail } from './support/app';
 import { expectRegionComponents, expectRegionsInOrder, expectShell, expectTokensOnly, finding, findingLong } from './support/parity';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { compileFixture } from '../U0b/support/trail';
 
 const A1 = route.findings('build', 'F1', 'A1');
 const A1_I1 = {
@@ -168,6 +172,46 @@ test.describe('the commit that fixed it', () => {
     await expect(fact(i1, 'Symptom')).toHaveText('a reference that differs from a sold one only in case is sold again, 201.');
     await expect(fact(i1, 'Suggested test')).toHaveText('Given ABC-1 sold, When abc-1 is sold, Then the answer is 409.');
     await expect(ownBlock(i1)).toContainText(/\bservices\b/);
+  });
+});
+
+// A3/I1: text as the real rounds write it. U3's own round A2 opens each root_cause with a sentence before "Symptom:"
+// ("Layer: ... recorded as 'api' because ..."). The signed-off reference decides where it goes: "Where a sentence comes
+// before the "Symptom:" marker, it opens the Symptom field" (docs/ui/derived/U3/finding/long-content.html).
+test.describe('text the real rounds write', () => {
+  const A2_ROOT_CAUSE =
+    'Symptom: a reference that differs from a sold one only in case is sold again, 201. Cause: the uniqueness check compares references as written, case-sensitively. Hypothesis inv-001 holds: no test sells such a pair. Fix direction: compare the normalised reference, with the case-only pair as a red test first.';
+  const PREAMBLE = "Layer: screen only, no kit change. It is recorded as 'api' because the schema's layer enum has no ui layer.";
+  const SYMPTOM =
+    "every node's loop page says its events were 'each event recorded by the orchestrator'. In fact 37 lines in 7 real logs have source 'reconciled'.";
+  const CAUSE = 'src/web/app/explorer/loop/Loop.tsx:42-43 prints that sentence as a fixed string. It never reads LoopEvent.source.';
+  const FIX = 'in the screen, derive the provenance clause from the source values of the events in the log.';
+  const TEXT = `${PREAMBLE} Symptom: ${SYMPTOM} Cause: ${CAUSE} Fix direction: ${FIX}`;
+
+  let preambled: CompiledTrail;
+  test.beforeAll(() => {
+    preambled = compileFixture(RETRY, (root) => {
+      const file = join(root, 'docs/trace/build/F1/findings/A2.md');
+      const text = readFileSync(file, 'utf8');
+      if (!text.includes(A2_ROOT_CAUSE)) throw new Error("fixture setup: retry-ladder's round A2 holds no I1 root_cause to replace");
+      writeFileSync(file, text.replace(A2_ROOT_CAUSE, JSON.stringify(TEXT).slice(1, -1)));
+    });
+  });
+  test.afterAll(() => {
+    preambled?.trail.cleanup();
+  });
+
+  test("LOOP-4 · a finding whose recorded text opens with a sentence before Symptom: shows that sentence at the start of its Symptom field", async ({
+    page,
+  }) => {
+    const findings = await openRegion(page, preambled, route.findings('build', 'F1', 'A2'), FINDINGS);
+    await expect(findings, "the round is the fixture's build/F1").toContainText('build/F1');
+    const i1 = findingCard(findings, 'I1');
+    const symptom = fact(i1, 'Symptom');
+    await expect(symptom).toHaveText(new RegExp(`^\\s*${PREAMBLE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`));
+    await expect(symptom).toContainText(SYMPTOM);
+    await expect(fact(i1, 'Cause')).toHaveText(CAUSE);
+    await expect(fact(i1, 'Fix direction')).toHaveText(FIX);
   });
 });
 

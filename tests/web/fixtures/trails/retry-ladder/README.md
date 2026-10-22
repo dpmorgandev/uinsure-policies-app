@@ -29,8 +29,11 @@ loop, verdict and finding screens (U3: LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2).
   (`gate.qa` line 22) and `gate.integrate` (line 23, **no detail**).
 - **`docs/plans/active/inv-001.plan.md`** (in `base/`): the investigation's plan, `parent: build/F1`, with its
   Question and Hypothesis, in the form of the real `inv-001.plan.md`.
-- **Every finding's text** is `root_cause` with its own `Symptom:`, `Cause:` and `Fix direction:` markers, as
-  the real rounds write it; no structured `symptom` or `fix_direction` field.
+- **Every finding's text** is `root_cause` with its own `Symptom:`, `Cause:` and `Fix direction:` markers, and
+  no structured `symptom` or `fix_direction` field. Each opens with `Symptom:`, which only about a quarter of the
+  real rounds' root_cause values do. The rest open with a sentence before the first marker, and some write a marker
+  with a qualifier (`Cause (kit):`, `Symptom (security S1, P2, verdict PASS):`), as U3's own round A2 does. LOOP-4's
+  tests put those real shapes into round A2's I1 when they replay this trail (U3 A3/I1, A3/I2).
 
 Each commit has its own date, in log order, and an activity record, so the trail is complete.
 

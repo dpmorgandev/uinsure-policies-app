@@ -11,6 +11,7 @@ import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { replaceIn, replayTrail, run, SLOW, thrown } from './support/trail';
 import type { Run, Trail } from './support/trail';
 import { A1_FILE, A2_FILE, findingOf, findingsOf, RETRY, sha } from './support/loop';
+import type { FindingOut } from './support/loop';
 
 let trail: Trail;
 let r: Run;
@@ -154,5 +155,75 @@ describe('text with no markers, and a round that cannot be read', () => {
     } finally {
       broken.cleanup();
     }
+  }, SLOW);
+});
+
+// Text as the real rounds write it (A3/I1, A3/I2). Of the root_cause values under docs/trace/**/findings, only about a
+// quarter open with "Symptom:". The rest open with a sentence before the first marker (U3's own round A2: "Layer: ...
+// recorded as 'api' because ..."), and some write a marker with a parenthesised qualifier ("Cause (kit):",
+// "Symptom (security S1, P2, verdict PASS):"). The signed-off reference decides the preamble: "Where a sentence comes
+// before the "Symptom:" marker, it opens the Symptom field" (docs/ui/derived/U3/finding/long-content.html). No recorded
+// word is dropped: a repeated marker's text joins its field, in order, and a qualified marker splits as its marker does,
+// its qualifier kept in the field.
+
+/** A marker's name ("Symptom", "Cause", "Fix direction") where a colon, or a qualifier and a colon, follows it. */
+const MARKER_NAME = /\b(?:Symptom|Cause|Fix direction)(?=\s*(?:\([^)]*\))?\s*:)/g;
+
+/** The recorded words of a text, without the marker names and the colons and brackets around them. */
+function wordsOf(text: string | null | undefined): string[] {
+  return (text ?? '').replace(MARKER_NAME, ' ').split(/[\s:()]+/).filter(Boolean);
+}
+
+/** Compiles retry-ladder with A2/I1's root_cause recorded as `rootCause`, and gives that finding back. */
+function compiledWith(rootCause: string): FindingOut | undefined {
+  const value = JSON.stringify(rootCause).slice(1, -1);
+  const changed = replayTrail(RETRY, (root) => replaceIn(root, A2_FILE, A2_ROOT_CAUSE, value));
+  try {
+    const c = run(changed.root);
+    expect(c.error, thrown(c)).toBeUndefined();
+    const i1 = findingOf(c, 'A2', 'I1');
+    expect(i1, 'A2/I1 compiled').toBeDefined();
+    return i1;
+  } finally {
+    changed.cleanup();
+  }
+}
+
+/** Every recorded word of the root_cause is in symptom, cause and fix direction, read in that order. */
+function expectEveryWord(rootCause: string, f: FindingOut | undefined): void {
+  expect([...wordsOf(f?.symptom), ...wordsOf(f?.cause), ...wordsOf(f?.fixDirection)], 'every recorded word, in order').toEqual(
+    wordsOf(rootCause),
+  );
+}
+
+describe('text the real rounds write: a preamble, a repeated marker', () => {
+  test('LOOP-4 · a preamble and a repeated marker keep every word of the root_cause', () => {
+    const text = 'Layer note: filed as api. Symptom: S1. Cause: C1. Cause: C2. Fix direction: F1.';
+    const i1 = compiledWith(text);
+    const symptom = i1?.symptom ?? '';
+    const cause = i1?.cause ?? '';
+    expect(symptom.startsWith('Layer note: filed as api.'), `the preamble opens the symptom: ${JSON.stringify(symptom)}`).toBe(true);
+    expect(symptom).toContain('S1.');
+    expect(symptom).not.toContain('C1');
+    expect(cause.indexOf('C1.'), `C1 is in the cause: ${JSON.stringify(cause)}`).toBeGreaterThanOrEqual(0);
+    expect(cause.indexOf('C2.'), `C2 follows C1 in the cause: ${JSON.stringify(cause)}`).toBeGreaterThan(cause.indexOf('C1.'));
+    expect(i1?.fixDirection ?? null).toBe('F1.');
+    expectEveryWord(text, i1);
+  }, SLOW);
+
+  test("LOOP-4 · a round's sentence before Symptom:, as U3's round A2 writes it, opens the symptom and keeps every word", () => {
+    const preamble = "Layer: screen only, no kit change. It is recorded as 'api' because the schema's layer enum has no ui layer.";
+    const symptom =
+      "every node's loop page says its events were 'each event recorded by the orchestrator'. In fact 37 lines in 7 real logs have source 'reconciled'.";
+    const cause =
+      "src/web/app/explorer/loop/Loop.tsx:42-43 prints that sentence as a fixed string. It never reads LoopEvent.source. Rule: DATA-2 says every item keeps its provenance, and HONEST-1 forbids a name the trail doesn't hold.";
+    const fix = 'in the screen, derive the provenance clause from the source values of the events in the log, and name a line whose source differs.';
+    const text = `${preamble} Symptom: ${symptom} Cause: ${cause} Fix direction: ${fix}`;
+    const i1 = compiledWith(text);
+    const got = i1?.symptom ?? '';
+    expect(got.startsWith(preamble), `the preamble opens the symptom: ${JSON.stringify(got)}`).toBe(true);
+    expect(got.endsWith(symptom), `the symptom ends with its own text: ${JSON.stringify(got)}`).toBe(true);
+    expect([i1?.cause ?? null, i1?.fixDirection ?? null]).toEqual([cause, fix]);
+    expectEveryWord(text, i1);
   }, SLOW);
 });
