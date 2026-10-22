@@ -235,7 +235,7 @@ nodes:
     rules: [CTX-1, AGENT-3, STATS-1, NAV-5]
     cuttable: true
     budget: null
-    status: hitl
+    status: done
     attempt: 1
     branch: feature/ui/U5
     worktree: .claude/worktrees/ui-U5
@@ -259,7 +259,7 @@ nodes:
       - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: done}
       - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: done}
       - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
-      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script, then sign off", status: pending}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script, then sign off", status: done}
       - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
   - id: U6
     title: Hosting: static build and deep links on a static host
