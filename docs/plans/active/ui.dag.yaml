@@ -387,7 +387,7 @@ nodes:
       - "One inspector per page; the requests page has one filter and one count and shows only times it recorded; the claim description has a label and renew's amount is named as shown (g4-defects.md sections 1 and 3)"
       - "The workbench cross-node flow gates pass: sell, then cancel, claim and renew the same policy"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-5, WB-7], title: "Playwright acceptance for W3 on the live API, regression specs, parity with its derived reference, and unit tests (client: claims, renewals, the request log); every node rule … and unit tests", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-5, WB-7], title: "Playwright acceptance for W3 on the live API, regression specs, parity with its derived reference, and unit tests (client: claims, renewals, the request log); every node rule … and unit tests", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The W3 routes render the derived reference as canned content", status: skipped}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the W3 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: skipped}
       - {id: t4, role: builder, step: green, layer: screen, rules: [WB-5, WB-7], title: "Claims, renewals and request-log client, then the claim, renew and requests screens and the inspector drawer; the workbench flows; whole acceptance suite green … all layers", status: pending}
