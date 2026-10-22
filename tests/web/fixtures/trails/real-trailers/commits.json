@@ -1,0 +1,62 @@
+{
+ "date": "2026-10-16T08:00:00Z",
+ "branch": "feature/build/F4",
+ "commits": [
+  {
+   "id": "c0",
+   "date": "2026-10-16T09:00:00Z",
+   "subject": "plan(build/F1): F1 pending → in_progress",
+   "trailers": { "Agent": "main", "Plan": "build", "Node": "F1", "Co-Authored-By": "Claude Opus 5.5 <noreply@anthropic.com>" },
+   "files": []
+  },
+  {
+   "id": "c1",
+   "date": "2026-10-16T10:00:00Z",
+   "subject": "test(SELL-1): red: a duplicate reference answers 409",
+   "trailers": { "Agent": "tester", "Plan": "build", "Node": "F1", "Rule": "SELL-1", "TDD": "red", "Co-Authored-By": "Claude Opus 5.5 <noreply@anthropic.com>" },
+   "files": []
+  },
+  {
+   "id": "c2",
+   "date": "2026-10-16T11:00:00Z",
+   "subject": "test(SELL-2): red: a start date 61 days ahead answers 422",
+   "trailers": { "Agent": "tester", "Plan": "build", "Node": "F1", "Rule": "SELL-2", "TDD": "red", "Co-Authored-By": "Claude Opus 5.5 <noreply@anthropic.com>" },
+   "files": []
+  },
+  {
+   "id": "c3",
+   "date": "2026-10-16T12:00:00Z",
+   "subject": "feat(SELL-2): green: domain Policy.Sell enforces SELL-1 and SELL-2, collecting every violation",
+   "trailers": { "Agent": "builder", "Plan": "build", "Node": "F1", "Rule": ["SELL-1", "SELL-2"], "TDD": "green", "Co-Authored-By": "Claude Sonnet 5.5 <noreply@anthropic.com>" },
+   "files": []
+  },
+  {
+   "id": "c4",
+   "date": "2026-10-16T13:00:00Z",
+   "subject": "fix(none): transport hardening: HTTPS reject, body limit, 413/408/400 problems",
+   "trailers": { "Agent": "builder", "Plan": "build", "Node": "F1", "Rule": "none", "TDD": "green", "Fixes-Finding": ["A1/I1", "A1/I2"], "Co-Authored-By": "Claude Sonnet 5.5 <noreply@anthropic.com>" },
+   "files": []
+  },
+  {
+   "id": "c5",
+   "date": "2026-10-17T09:00:00Z",
+   "subject": "plan(build/F4): F4 pending → in_progress",
+   "trailers": { "Agent": "main", "Plan": "build", "Node": "F4", "Co-Authored-By": "Claude Opus 5.5 <noreply@anthropic.com>" },
+   "files": []
+  },
+  {
+   "id": "c6",
+   "date": "2026-10-17T10:00:00Z",
+   "subject": "test(RENEW-1/2): red: a renewal is allowed from the latest end - 30 days to the end date, inclusive",
+   "trailers": { "Agent": "tester", "Plan": "build", "Node": "F4", "Rule": "RENEW-1/2", "TDD": "red", "Co-Authored-By": "Claude Opus 5.5 <noreply@anthropic.com>" },
+   "files": []
+  },
+  {
+   "id": "c7",
+   "date": "2026-10-17T12:00:00Z",
+   "subject": "feat(RENEW-1/2): green: services PolicyService.Renew with UK today and method default",
+   "trailers": { "Agent": "builder", "Plan": "build", "Node": "F4", "Rule": "RENEW-1, RENEW-2", "TDD": "green", "Co-Authored-By": "Claude Sonnet 5.5 <noreply@anthropic.com>" },
+   "files": []
+  }
+ ]
+}

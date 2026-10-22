@@ -17,6 +17,11 @@ export const SHAPES = 'requirements-shapes';
  * `undefined` refactor cells, F1's signoff(<sha>) and merged(<sha>) events, and a template-literal test title (U1 D2).
  */
 export const TWO_PLANS = 'two-plans';
+/**
+ * tests/web/fixtures/trails/real-trailers/README.md: commit bodies as the real trail writes them, a repeated `Rule:` and
+ * `Fixes-Finding:`, the `Rule: none` sentinel, and RENEW-1/2's commits trailed by the slash ID and by its parts (U1 D3).
+ */
+export const REAL_TRAILERS = 'real-trailers';
 export const REQUIREMENTS_FILE = 'docs/requirements.md';
 export const UI_REQUIREMENTS_FILE = 'docs/ui-requirements.md';
 export const MATRIX_FILE = 'docs/trace/requirements-matrix.md';
@@ -96,6 +101,8 @@ export interface CommitOut {
   node?: string | null;
   rule?: string[];
   tdd?: string | null;
+  /** The findings the commit's Fixes-Finding trailer lines name (trace.json's commits[*].fixesFinding). */
+  fixesFinding?: { round?: number | null; id?: string }[];
   order?: number | null;
   date?: string | null;
   parents?: string[];

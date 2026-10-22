@@ -6,9 +6,9 @@
 // order is the commits' own, never re-sorted to look right. On the `rules` fixture trail: SELL-1's red c2 (row 2,
 // 2026-10-16) comes before its green c4 (row 4, 2026-10-17); GET-1's green c11 (row 2) came before its red c12 (row 3).
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { replayTrail, run, SLOW, thrown } from './support/trail';
+import { git, replayTrail, run, SLOW, thrown } from './support/trail';
 import type { Run, Trail } from './support/trail';
-import { commitByShort, commitOf, fixtureDates, ruleOf, RULES, shortOf } from './support/rules';
+import { commitByShort, commitOf, fixtureDates, REAL_TRAILERS, ruleOf, RULES, shaOf, shortOf } from './support/rules';
 
 let trail: Trail;
 let r: Run;
@@ -100,5 +100,42 @@ describe('red before green, and the order that does not hold', () => {
     expect([red?.sha ?? null, red?.node ?? null, red?.tdd ?? null, red?.order ?? null]).toEqual([trail.shas['c12'], 'F2', 'red', 3]);
     expect([green?.sha ?? null, green?.node ?? null, green?.tdd ?? null, green?.order ?? null]).toEqual([trail.shas['c11'], 'F2', 'green', 2]);
     expect(Date.parse(green?.date ?? ''), 'green c11 (12:00) is dated before red c12 (13:00)').toBeLessThan(Date.parse(red?.date ?? ''));
+  });
+});
+
+// U1 D3/I1, on the `real-trailers` fixture (its README): a real commit body repeats a trailer key. build/F1's domain
+// green carries seven `Rule:` lines and its fix(none) commit seven `Fixes-Finding:` lines; the fixture's c3 carries
+// `Rule: SELL-1` then `Rule: SELL-2`, and c4 `Fixes-Finding: A1/I1` then `Fixes-Finding: A1/I2`. Every line counts,
+// in its order; none is dropped for the last. Each test first reads the body back from git, so the assertion is
+// about the compiler, not the fixture.
+describe('a body that repeats a trailer key', () => {
+  let real: Trail;
+  let t: Run;
+  beforeAll(() => {
+    real = replayTrail(REAL_TRAILERS);
+    t = run(real.root);
+  }, SLOW);
+  afterAll(() => real?.cleanup());
+
+  /** The lines of a fixture commit's body that start with a trailer key, as git holds them. */
+  const linesOf = (id: string, key: string): string[] =>
+    git(real.root, 'log', '-1', '--format=%B', shaOf(real, id))
+      .split(/\r?\n/)
+      .filter((line) => line.startsWith(`${key}: `));
+
+  test("RULE-2 · a commit whose body repeats Rule: names every line's rule, in order: c3 is SELL-1 then SELL-2, not only the last", () => {
+    expect(linesOf('c3', 'Rule'), "the fixture's c3 body holds both lines").toEqual(['Rule: SELL-1', 'Rule: SELL-2']);
+    expect(t.error, thrown(t)).toBeUndefined();
+    expect(commitOf(t, real, 'c3')?.rule ?? null).toEqual(['SELL-1', 'SELL-2']);
+  });
+
+  test('RULE-2 · a commit whose body repeats Fixes-Finding: keeps every finding, in order: c4 fixes A1/I1 then A1/I2', () => {
+    expect(linesOf('c4', 'Fixes-Finding'), "the fixture's c4 body holds both lines").toEqual(['Fixes-Finding: A1/I1', 'Fixes-Finding: A1/I2']);
+    expect(t.error, thrown(t)).toBeUndefined();
+    const found = commitOf(t, real, 'c4')?.fixesFinding?.map((f) => [f.round ?? null, f.id ?? null]) ?? null;
+    expect(found).toEqual([
+      [1, 'I1'],
+      [1, 'I2'],
+    ]);
   });
 });

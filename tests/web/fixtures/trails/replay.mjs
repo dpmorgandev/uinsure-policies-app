@@ -1,6 +1,6 @@
 // Replays a fixture trail into a fresh git repo (web-testing.spec C3; the form is in README.md beside this).
 // The base becomes origin/main; each commit in commits.json is made on feature/<plan>/<node> with its
-// trailers; then the trail files are written, uncommitted, as at the trace step. {{cN}} and {{cN:7}} in any
+// trailers (an array value written as one line per item, as a real body repeats a key); then the trail files are written, uncommitted, as at the trace step. {{cN}} and {{cN:7}} in any
 // file become commit cN's SHA. A path ending .fixture loses the suffix, so the repo's own rule-tag walker
 // never counts a fixture's test titles.
 //
@@ -45,7 +45,10 @@ export function replay(fixture, root, { trail = true } = {}) {
   for (const c of spec.commits) {
     for (const rel of c.files) place(join(fixture, 'files', rel), root, rel, shas);
     git('add', '-A');
-    const trailers = Object.entries(c.trailers).map(([k, v]) => `${k}: ${v}`).join('\n');
+    // An array value is one line per item, in its order: the real trail repeats Rule and Fixes-Finding in one body.
+    const trailers = Object.entries(c.trailers)
+      .flatMap(([k, v]) => (Array.isArray(v) ? v : [v]).map((item) => `${k}: ${item}`))
+      .join('\n');
     gitAt(c.date ?? spec.date, ['commit', '-q', '--allow-empty', '-m', c.subject, '-m', trailers]);
     shas[c.id] = git('rev-parse', 'HEAD');
   }
