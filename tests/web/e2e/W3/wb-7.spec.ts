@@ -57,6 +57,33 @@ test('WB-7 · the request log shows the exact request body and response body of 
   for (const value of leaves(claim.responseBody)) await expect(main, `the response's ${value}`).toContainText(value, live);
 });
 
+// A2/I3: the exchange is shown as it went over the wire, headers included. The response headers are the ones the
+// browser received for the claim; the page can't see headers the browser adds itself, so the request side isn't
+// compared with a Postman recording here.
+test("WB-7 · the request log's opened claim shows its response headers, holding the content type the API served", async ({ page, api }) => {
+  void api;
+  const reference = 'W3HDRCLAIM0001';
+  const today = await apiToday('W3HDRPROBE0001');
+  await sellThroughApi(requestOf(sellForm(reference, { startDate: today })));
+  const seen = watchApi(page);
+  await page.goto(route.claim(reference));
+  await field(page, 'Claim date').fill(today);
+  const claimPath = `/api/policies/${reference}/claims`;
+  const response = page.waitForResponse((r) => new URL(r.url()).pathname === claimPath && r.request().method() === 'POST', live);
+  await page.getByRole('main').getByRole('button', { name: 'Record this claim' }).click();
+  const contentType = (await response).headers()['content-type'];
+  expect(contentType, 'setup: the API served a content type').toMatch(/^application\/(problem\+)?json/);
+  const claim = await answered(seen, 'POST', claimPath);
+  await page.goto(requestsRoute);
+  await logRow(page, claim).getByRole('button', { name: /^Open request #\d+, POST / }).click(live);
+  const disclosure = page.getByRole('main').getByRole('button', { name: /^Response headers \(\d+\)$/ });
+  await expect(disclosure, 'the opened exchange has a response-headers disclosure').toHaveCount(1, live);
+  if ((await disclosure.getAttribute('aria-expanded')) !== 'true') await disclosure.click();
+  const panel = page.locator(`[id="${await disclosure.getAttribute('aria-controls')}"]`);
+  await expect(panel.locator('dt').filter({ hasText: /^content-type$/ })).toHaveCount(1);
+  await expect(panel.locator('dd').filter({ hasText: contentType as string })).toHaveCount(1);
+});
+
 test("WB-7 · the claim page's Show requests drawer holds the claim exchange", async ({ page, api }) => {
   void api;
   const claim = await recordClaim(page);
@@ -64,6 +91,21 @@ test("WB-7 · the claim page's Show requests drawer holds the claim exchange", a
   const drawer = page.getByRole('dialog').or(page.getByRole('complementary', { name: /requests/i }));
   await expect(drawer.first()).toContainText(apiPath(claim), live);
   await expect(drawer.first()).toContainText(String(claim.status));
+});
+
+// QA note 3d (AC3; g4-defects section 3, "wb-requests has two filters with two counts"): the reference's duplicate
+// is a defect not to copy. The log region holds one way to filter the rows and one count of the rows shown.
+test('WB-7 · the requests page has one filter and one count of the rows shown', async ({ page }) => {
+  await requestsStates.populated.open(page);
+  const log = page.locator('[data-region="request-log"]');
+  await expect(log.getByRole('row').nth(1), 'setup: the log holds an exchange').toBeVisible();
+  const counts = log.getByRole('status').filter({ hasText: /Showing \d+ of \d+/ });
+  await expect(counts, 'one count of the rows shown').toHaveCount(1);
+  const textFilters = await log.getByRole('textbox').count();
+  const selectFilters = await log.locator('fieldset').count();
+  expect({ textFilter: textFilters, filterBar: selectFilters }, 'one filter: a text filter or a filter bar, exactly one of them').toEqual(
+    textFilters > 0 ? { textFilter: 1, filterBar: 0 } : { textFilter: 0, filterBar: 1 },
+  );
 });
 
 test('WB-7 · reachable: the request log route answers with its filter', async ({ page }) => {
