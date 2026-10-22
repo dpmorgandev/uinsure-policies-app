@@ -57,7 +57,7 @@
       "fields": [
         "routes: overview, matrix, rule, walkthrough, commit"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "compiled-at stamp: the commit SHA and UTC time trace.json was compiled from",

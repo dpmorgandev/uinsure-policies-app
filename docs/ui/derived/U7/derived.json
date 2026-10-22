@@ -6,6 +6,7 @@
     "U1",
     "U2",
     "U3",
+    "U5",
     "U7",
     "W1",
     "W2"
@@ -15,11 +16,11 @@
       "built": [
         "provenance-labels",
         "glossary-and-status-legend",
+        "guided-tour-entry-one-rule-end-to-end-could",
         "compiled-at-stamp-the-commit-sha-and-utc-time-trace-json-was-compiled-from"
       ],
       "notBuilt": [
-        "re-verify-with-git",
-        "guided-tour-entry-one-rule-end-to-end-could"
+        "re-verify-with-git"
       ]
     },
     "activity": {
@@ -44,6 +45,13 @@
       "built": [
         "findings",
         "fixed-by"
+      ],
+      "notBuilt": []
+    },
+    "harness": {
+      "built": [
+        "agents",
+        "hooks"
       ],
       "notBuilt": []
     },
@@ -107,6 +115,20 @@
       "notBuilt": [
         "verify-it-yourself"
       ]
+    },
+    "sessions": {
+      "built": [
+        "snapshot-timeline"
+      ],
+      "notBuilt": [
+        "one-snapshot-open-at-its-own-url-sessions-file"
+      ]
+    },
+    "stats": {
+      "built": [
+        "facts-per-agent-and-node"
+      ],
+      "notBuilt": []
     },
     "verdict": {
       "built": [
@@ -195,10 +217,7 @@
   },
   "notBuiltScreens": [
     "decisions",
-    "harness",
     "not-found",
-    "sessions",
-    "stats",
     "wb-requests"
   ],
   "unmappedIds": [],
