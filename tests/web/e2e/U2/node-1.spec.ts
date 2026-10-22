@@ -123,7 +123,7 @@ test.describe('the header, from the route', () => {
     await expect(headerField(page, 'Depends on')).toContainText('F5');
   });
 
-  test("NODE-1 · each tab of F2's node page opens F2's own view, headed F2, with that tab current", async ({ page }) => {
+  test("NODE-1 · reachable: each tab of F2's node page opens F2's own view, headed F2, with that tab current", async ({ page }) => {
     await openNode(page, 'F2');
     for (const [tab, path] of [
       ['Walkthrough', route.walkthrough('build', 'F2')],
