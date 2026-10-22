@@ -1,0 +1,102 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T13:15:30Z",
+  "plan": "ui",
+  "node": "U3",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "ae07c4846b7672c13",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U3",
+    "attempt": 2,
+    "base_sha": "3c7b146d8f5697a517e565d54ee25ad741d7724e",
+    "head_sha": "8d31cbcf43a36fe0525e97e25680bf6ab26da5bd",
+    "diff_fingerprint": "9415dacf86aead16a6ad6f380ace8f0d11791a8a",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "loop.jsonl:3 gate.red@b8ee2c6",
+      "loop.jsonl:4 gate.stub@edc078a (ok:false)",
+      "loop.jsonl:7 gate.finding-red@e3bdb71",
+      "loop.jsonl:8 gate.stub@e3bdb71",
+      "loop.jsonl:11 gate.red@b135aa8",
+      "loop.jsonl:13 gate.red@da1a037",
+      "loop.jsonl:14 gate.green@91618e9",
+      "loop.jsonl:15 gate.green@83165fd",
+      "loop.jsonl:16 gate.refactor@838e7bb",
+      "loop.jsonl:17 gate.typecheck@5f168d5",
+      "loop.jsonl:18 gate.lint@5f168d5",
+      "loop.jsonl:19 gate.lint-css@5f168d5",
+      "loop.jsonl:20 gate.test@5f168d5",
+      "loop.jsonl:21 gate.build@5f168d5",
+      "loop.jsonl:22 gate.e2e@5f168d5",
+      "loop.jsonl:23 gate.e2e-regression@5f168d5 (ok:false)",
+      "loop.jsonl:24 gate.audit@5f168d5",
+      "loop.jsonl:26 gate.coverage@5f168d5 (ok:false)",
+      "loop.jsonl:27 gate.scope@5f168d5",
+      "loop.jsonl:28 gate.no-stubs@5f168d5"
+    ],
+    "rules_covered": [
+      "LOOP-1",
+      "LOOP-2",
+      "LOOP-4",
+      "DATA-2"
+    ],
+    "rules_missing": [
+      "LOOP-3"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "LOOP-3",
+        "severity": "P1",
+        "file": "src/web/app/explorer/verdict/Verdict.tsx",
+        "line": 115,
+        "what": "A P0 finding is passed to VerdictCard as P2 (`f.severity === 'P1' ? 'P1' : 'P2'`), so the page's own findings region says P0 while its verdict card says P2.",
+        "why": "LOOP-3 says each verdict is rendered from its JSON. The verdict schema allows P0 (rule broken or exploitable), and this code would show it as the least severe level. Ladder.tsx:85 has the same coercion, so the loop and node pages show it too. The kit's VerdictCard takes only 'P1' | 'P2' (VerdictCard.tsx:14). react-web says a missing kit variant is reported as a kit change, never worked around in the screen, and HONEST-1 can't be waived. No fixture verdict holds a P0 and no test asserts severity, so the suite can't see this.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "DATA-2",
+        "severity": "P2",
+        "file": "src/web/app/explorer/loop/Loop.tsx",
+        "line": 42,
+        "what": "Every node's loop page says 'each event recorded by the orchestrator', but 37 events in 7 real loop logs have source 'reconciled', and the compiled `source` field is ignored.",
+        "why": "DATA-2 keeps each item's provenance, and HONEST-1 forbids a name the trail doesn't hold. The reference sentence was true for the design fixture's F3. The screen turned it into a fixed claim for every node, including build/F1 (lines 56-72), F0b, U0b, U1, U3 (line 29) and W1, whose reconciled lines were added afterwards.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "LOOP-1",
+        "severity": "P2",
+        "file": "src/web/app/explorer/Ladder.tsx",
+        "line": 19,
+        "what": "resultOf maps a gate event with no recorded ok to 'waived', which the kit words as 'Waived' (the gate did not run). The log records no waiver, and the code's own comment says 'did not decide'.",
+        "why": "LOOP-1 shows ok as the line records it. The kit's GateRow defines waived as 'the gate was waived, so it did not run' (GateRow.tsx:11), which is a claim the log line doesn't make. No real gate line lacks ok today, so nothing shows it yet.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "LOOP-4",
+        "severity": "P2",
+        "file": "src/web/app/explorer/finding/Finding.tsx",
+        "line": 89,
+        "what": "A finding whose testable is null is passed to FindingCard as testable=false, so the card is headed 'Untestable' while the line above it says 'testable: not recorded'.",
+        "why": "LOOP-4 shows 'testable or not' as recorded. Turning null into false invents an untestable verdict (HONEST-1), and the page then contradicts itself. The compiler keeps testable null when the round doesn't hold a boolean (compiler/index.ts).",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "TDD order holds for every node rule. Red came first (e2e at 26107b1, 61a3737, 679858e, 367038d and d27794e; unit tests at d50b58b to b135aa8), then the stub at edc078a, then green (91618e9, aa6ef7c, 89eb3ec, 4cdb627, f3ab245, cc591e9). gate.stub at e3bdb71 had no illegal pass, and gate.no-stubs found nothing.",
+      "Test integrity: e3bdb71 (A1/I1) tightens the LOOP-1 axe guard. da1a037 makes the DATA-1 events test stricter, pinning nine exact events where it used to expect []; the ruling is at loop.jsonl:12. 83165fd narrows the LOOP-1 command-block locator from `[class*=kit-code-block__]`, which matched 3 elements so toHaveCount(1) could never pass, to the code element. The count stays 1, so nothing is weakened. But that commit is trailed TDD: red and was never shown red: it first ran in gate.green.",
+      "The LOOP-1 timeline covers gate and state events only. That is the signed-off loop screen's own wording ('setup, pause1 ... not gate'), so it is the design, not a builder choice.",
+      "DATA-2: provenance labels match the U3 derived references (about 4, verdict 2, finding 2). Loop and node references draw none, so gate events and ladder verdicts carry no label. The pause-1 ruling (loop.jsonl:10) defers this to a U7 line that has not been written yet.",
+      "gate.e2e-regression is ok:false at 5f168d5. loop.jsonl:30 rules it an intended nav change: Plan became a link. The new baselines need David's approval at pause 2, and the regression must be re-run once U2's baselines are integrated.",
+      "gate.coverage is ok:false at 5f168d5 (a3f301a has no activity record). The gap is reconciled at loop.jsonl:29, but no re-run of the coverage gate is recorded.",
+      "LOOP-4 file:line: investigator `files` holds paths only, and line numbers appear only in the root_cause prose. The page links each file and invents no line, which is right for the data."
+    ]
+  }
+}

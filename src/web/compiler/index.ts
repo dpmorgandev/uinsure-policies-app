@@ -9,7 +9,7 @@ import { pathToFileURL } from 'node:url';
 import { listDocs, listPaths, readBlob, readCommits, readPatch, resolveRef } from './git.ts';
 import { isTestSource, parseTests } from './test-sources.ts';
 import { isHit, parseDenylist, scan } from './privacy.ts';
-import { parseDag, parseInvestigation, parseRequirements, partsOf } from './plans.ts';
+import { parseDag, parseRequirements, partsOf, sectionOf, splitFrontmatter, splitRootCause } from './plans.ts';
 import { parseCompleteness, parseMatrix, parseWalkthrough } from './trace-files.ts';
 import type { MatrixRow } from './trace-files.ts';
 
@@ -94,9 +94,11 @@ function verdictOf(file: string, text: string, plan: string, node: string): Json
   const verdict = str(inner?.['verdict']);
   if (inner === null || name === null || verdict === null) return null;
   return {
-    plan, node, round: name[1], ts: str(outer?.['ts']), attempt: num(outer?.['attempt']), agent: str(inner['agent']) ?? name[2], verdict, head: str(inner['head_sha']),
+    plan, node, round: name[1], agent: str(inner['agent']) ?? name[2], verdict, head: str(inner['head_sha']),
+    attempt: num(outer?.['attempt']) ?? num(inner['attempt']), ts: str(outer?.['ts']),
+    base: str(inner['base_sha']), diffFingerprint: str(inner['diff_fingerprint']), gateRefs: list(inner['gate_refs']),
     rulesCovered: list(inner['rules_covered']), rulesMissing: list(inner['rules_missing']),
-    findings: Array.isArray(inner['findings']) ? inner['findings'] : [], file,
+    findings: Array.isArray(inner['findings']) ? inner['findings'] : [], file, raw: text, provenance: 'recorded',
   };
 }
 
@@ -110,6 +112,34 @@ function frontMatter(text: string): Record<string, string | null> | null {
     if (pair !== null) fields[pair[1] ?? ''] = pair[2] === '' || pair[2] === 'null' ? null : (pair[2] ?? null);
   }
   return fields;
+}
+
+/** A line of a loop.jsonl as an event: the event name gives its kind (gate.<gate>, state(…), or the name before its argument). */
+function eventOf(plan: string, node: string, line: number, record: Json | null, raw: string): Json {
+  const event = str(record?.['event']);
+  const kind = event === null ? null : event.startsWith('gate.') ? 'gate' : (/^[^(]*/.exec(event)?.[0] ?? event);
+  const ok = record?.['ok'];
+  return {
+    plan, node, line, ts: str(record?.['ts']), attempt: num(record?.['attempt']), event, kind,
+    gate: kind === 'gate' ? event?.slice('gate.'.length) ?? null : null,
+    cmd: str(record?.['cmd']), exit: num(record?.['exit']), expect: str(record?.['expect']),
+    ok: typeof ok === 'boolean' ? ok : null, head: str(record?.['head']), detail: str(record?.['detail']),
+    source: str(record?.['source']), raw, provenance: 'generated',
+  };
+}
+
+/** A findings/<round>.md: its frontmatter, then the round's JSON bare or in a ```json fence. Null JSON is unreadable. */
+function roundOf(text: string): { frontmatter: Record<string, unknown> | null; round: Json | null } {
+  const { frontmatter, body } = splitFrontmatter(text);
+  const fenced = /^\s*```json\r?\n([\s\S]*?)\r?\n```/.exec(body);
+  let round: Json | null = null;
+  try {
+    const parsed: unknown = JSON.parse(fenced ? (fenced[1] ?? '') : body);
+    if (typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed)) round = parsed as Json;
+  } catch {
+    round = null;
+  }
+  return { frontmatter, round };
 }
 
 export function compile(options: CompileOptions): void {
@@ -195,8 +225,9 @@ export function compile(options: CompileOptions): void {
   const plans: Json[] = [];
   const nodes: Json[] = [];
   const verdicts: Json[] = [];
-  const decisions: Json[] = [];
   const events: Json[] = [];
+  const findings: Json[] = [];
+  const decisions: Json[] = [];
   // A commit's row in its node's walkthrough (RULE-2), by short SHA.
   const places = new Map<string, number>();
   const chunks = new Map<string, unknown>();
@@ -226,12 +257,12 @@ export function compile(options: CompileOptions): void {
           ),
         );
       }
-      // The loop events are U3's and stay out of trace.json; U1 takes the human decisions from them (NAV-1).
       const loopPath = `${dir}/loop.jsonl`;
       const loopText = read(loopPath);
       for (const { line, record, raw } of loopText === null ? [] : readLines(loopPath, loopText, problems)) {
-        // A malformed line is kept as written, at its node and line (DATA-8).
-        if (record === null) events.push({ plan: dag.id, node: node.id, line, event: null, raw });
+        // A malformed line is kept as written, at its node and line (DATA-8); eventOf gives it a null event.
+        events.push(eventOf(dag.id, node.id, line, record, raw));
+        // The human decisions are taken from the same lines (NAV-1).
         // signoff(<sha>) and merged(<sha>) name the commit signed off and the merge commit.
         const event = /^(pause1|pause2|signoff|merged)(?:\(([^)]*)\))?$/.exec(str(record?.['event']) ?? '');
         if (record !== null && event !== null) {
@@ -245,6 +276,33 @@ export function compile(options: CompileOptions): void {
         const verdict = verdictOf(path, read(path) ?? '', dag.id, node.id);
         if (verdict === null) problems.push({ file: path, line: null, reason: 'the verdict file is not a verdict' });
         else verdicts.push(verdict);
+      }
+      for (const path of [...paths].filter((p) => p.startsWith(`${dir}/findings/`) && p.endsWith('.md'))) {
+        const { frontmatter, round } = roundOf(read(path) ?? '');
+        if (round === null || !Array.isArray(round['findings'])) {
+          problems.push({ file: path, line: null, reason: 'the findings round has no readable JSON' });
+          continue;
+        }
+        const name = str(frontmatter?.['round']) ?? /\/([^/]+)\.md$/.exec(path)?.[1] ?? null;
+        for (const item of round['findings'] as unknown[]) {
+          const finding = typeof item === 'object' && item !== null ? (item as Json) : {};
+          const id = str(finding['id']);
+          const text = str(finding['root_cause']);
+          findings.push({
+            plan: dag.id, node: node.id, round: name, id,
+            kind: str(round['source']) === 'david' ? 'steer' : 'investigator',
+            attempt: num(round['attempt']) ?? num(frontmatter?.['attempt']), source: str(round['source_ref']), file: path,
+            rule: str(finding['rule_id']), layer: str(finding['layer']), files: list(finding['files']),
+            ...(text === null ? { symptom: null, cause: null, fixDirection: null } : splitRootCause(text)),
+            testable: typeof finding['testable'] === 'boolean' ? finding['testable'] : null,
+            suggestedTest: str(finding['suggested_test']), untestableReason: str(finding['untestable_reason']),
+            // The commits whose Fixes-Finding names this round and finding, oldest first.
+            fixedBy: commits
+              .filter((c) => c.plan === dag.id && c.node === node.id && c.fixesFinding.some((f) => `A${f.round}` === name && f.id === id))
+              .map((c) => c.sha),
+            provenance: 'recorded',
+          });
+        }
       }
       const readme = read(`${dir}/README.md`);
       const walkthrough = read(`${dir}/walkthrough.md`);
@@ -275,13 +333,20 @@ export function compile(options: CompileOptions): void {
     }
   }
 
+  // An investigation has a plan file of its own and no DAG; its parent node is where it rejoins the spine (LOOP-2).
   for (const path of investigations) {
-    const front = parseInvestigation(read(path) ?? '');
-    if (front === null || front.id === null) {
-      problems.push({ file: isHit(denylist.list, path) ? null : path, line: null, reason: 'the investigation has no front matter plan_id' });
+    const text = read(path) ?? '';
+    const { frontmatter } = splitFrontmatter(text);
+    const id = typeof frontmatter?.['plan_id'] === 'string' ? frontmatter['plan_id'] : null;
+    if (id === null) {
+      problems.push({ file: isHit(denylist.list, path) ? null : path, line: null, reason: 'the plan has no plan_id' });
       continue;
     }
-    plans.push({ id: front.id, kind: 'inv', title: front.title, status: null, approvedBy: null, approvedOn: null, requirementsRev: null, source: path, nodes: [] });
+    plans.push({
+      id, kind: 'inv', title: typeof frontmatter?.['title'] === 'string' ? frontmatter['title'] : null,
+      status: null, approvedBy: null, approvedOn: null, requirementsRev: null, source: path, nodes: [],
+      frontmatter, question: sectionOf(text, 'Question'), hypothesis: sectionOf(text, 'Hypothesis'),
+    });
   }
 
   // CTX-1: the snapshot chain. A snapshot with no front matter or no timestamp is reported, never guessed into the timeline.
@@ -336,7 +401,7 @@ export function compile(options: CompileOptions): void {
   const trace = {
     schemaVersion: SCHEMA_VERSION,
     compiledAt: { ref, sha, utc: (options.now ?? (() => new Date()))().toISOString() },
-    problems, rules, plans, nodes, commits: placed, events, verdicts, findings: [], decisions, sessions, harness,
+    problems, rules, plans, nodes, commits: placed, events, verdicts, findings, decisions, sessions, harness,
   };
   const out = join(root, 'src', 'web', 'public');
   for (const [name, content] of [['trace.json', trace], ...chunks] as [string, unknown][]) {

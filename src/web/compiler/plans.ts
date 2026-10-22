@@ -199,3 +199,62 @@ export function partsOf(id: string): string[] {
   if (slash < 0) return [id];
   return [id.slice(0, slash), id.slice(0, id.lastIndexOf('-', slash) + 1) + id.slice(slash + 1)];
 }
+
+/** The `key: value` lines between a file's leading `---` fences, and the text after them. No fence: no frontmatter. */
+export function splitFrontmatter(source: string): { frontmatter: Record<string, Scalar> | null; body: string } {
+  const fenced = /^---\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)([\s\S]*)$/.exec(source);
+  if (fenced === null) return { frontmatter: null, body: source };
+  const frontmatter: Record<string, Scalar> = {};
+  for (const line of (fenced[1] ?? '').split(/\r?\n/)) {
+    const entry = /^(\w+):(.*)$/.exec(line);
+    if (entry) frontmatter[entry[1] ?? ''] = scalar(entry[2] ?? '');
+  }
+  return { frontmatter, body: fenced[2] ?? '' };
+}
+
+/** The text under a `## <heading>` line, up to the next `##` heading, trimmed; null when the file has no such section. */
+export function sectionOf(source: string, heading: string): string | null {
+  const lines = source.split(/\r?\n/);
+  const start = lines.findIndex((line) => line.trim() === `## ${heading}`);
+  if (start < 0) return null;
+  const rest = lines.slice(start + 1);
+  const end = rest.findIndex((line) => line.startsWith('## '));
+  return (end < 0 ? rest : rest.slice(0, end)).join('\n').trim();
+}
+
+export interface RootCause {
+  symptom: string | null;
+  cause: string | null;
+  fixDirection: string | null;
+}
+
+/** A marker counts only at the start of the text or after a sentence end or newline, and not when quoted: a quoted marker is words. */
+function opensASentence(text: string, at: number): boolean {
+  const before = text.slice(0, at);
+  if (!/(^|[.!?]\s+|\n\s*)$/.test(before)) return false;
+  const count = (quote: string): number => before.split(quote).length - 1;
+  return count('"') % 2 === 0 && count('`') % 2 === 0 && count('“') === count('”');
+}
+
+/**
+ * A root_cause split at its "Symptom:", "Cause:" and "Fix direction:" markers (LOOP-4). Every character lands in a field:
+ * a sentence before the first marker opens the symptom, a repeated marker's text joins its field in order, and a marker's
+ * parenthesised qualifier ("Cause (kit):") stays in the field text. Text with no marker is kept whole as the cause.
+ */
+export function splitRootCause(text: string): RootCause {
+  const marks = [...text.matchAll(/(Symptom|Cause|Fix direction)(\s*\([^)]*\))?:/g)].filter((mark) =>
+    opensASentence(text, mark.index ?? 0),
+  );
+  if (marks.length === 0) return { symptom: null, cause: text, fixDirection: null };
+  const found: Record<string, string[]> = {};
+  const preamble = text.slice(0, marks[0]?.index ?? 0).trim();
+  if (preamble !== '') found['Symptom'] = [preamble];
+  marks.forEach((mark, at) => {
+    const from = (mark.index ?? 0) + mark[0].length;
+    const body = text.slice(from, marks[at + 1]?.index ?? text.length).trim();
+    const qualifier = (mark[2] ?? '').trim();
+    (found[mark[1] ?? ''] ??= []).push(qualifier === '' ? body : `${qualifier} ${body}`);
+  });
+  const field = (name: string): string | null => found[name]?.join(' ') ?? null;
+  return { symptom: field('Symptom'), cause: field('Cause'), fixDirection: field('Fix direction') };
+}

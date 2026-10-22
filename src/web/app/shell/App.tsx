@@ -4,6 +4,7 @@ import { Activity } from '../explorer/activity/Activity';
 import { Overview } from '../explorer/overview/Overview';
 import { u1Routes } from '../explorer/u1Routes';
 import { u2Routes } from '../explorer/u2Routes';
+import { u3Routes } from '../explorer/u3Routes';
 import { u5Routes } from '../explorer/u5Routes';
 import { workbenchRoutes } from '../workbench/routes';
 import { Frame } from './Frame';
@@ -20,6 +21,7 @@ export function App() {
           <Route path="plans/:planId/:nodeId/activity" element={<Activity />} />
           {u1Routes}
           {u2Routes}
+          {u3Routes}
           {u5Routes}
           {workbenchRoutes.map((route) => (
             <Route key={route.path} path={route.path} element={route.element} />
