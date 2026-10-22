@@ -5,17 +5,19 @@
     "U0b",
     "U1",
     "U2",
+    "U3",
     "W1",
+    "W2",
     "W3"
   ],
   "screens": {
     "about": {
       "built": [
+        "provenance-labels",
         "glossary-and-status-legend",
         "compiled-at-stamp-the-commit-sha-and-utc-time-trace-json-was-compiled-from"
       ],
       "notBuilt": [
-        "provenance-labels",
         "re-verify-with-git",
         "guided-tour-entry-one-rule-end-to-end-could"
       ]
@@ -38,6 +40,20 @@
         "trailer-agent-vs-hook-agent"
       ]
     },
+    "finding": {
+      "built": [
+        "findings",
+        "fixed-by"
+      ],
+      "notBuilt": []
+    },
+    "loop": {
+      "built": [
+        "attempt-ladder",
+        "gate-timeline"
+      ],
+      "notBuilt": []
+    },
     "matrix": {
       "built": [
         "filters-status-feature",
@@ -50,10 +66,10 @@
       "built": [
         "completeness-banner",
         "rules",
-        "tasks"
+        "tasks",
+        "attempts"
       ],
       "notBuilt": [
-        "attempts",
         "who-touched-what"
       ]
     },
@@ -73,11 +89,10 @@
     "plan": {
       "built": [
         "plan-header-status-approval-requirements-rev",
-        "node-graph-and-its-table"
-      ],
-      "notBuilt": [
+        "node-graph-and-its-table",
         "investigation-body-inv-plans-only"
-      ]
+      ],
+      "notBuilt": []
     },
     "rule": {
       "built": [
@@ -93,6 +108,14 @@
         "verify-it-yourself"
       ]
     },
+    "verdict": {
+      "built": [
+        "verdict-summary",
+        "findings",
+        "raw-json"
+      ],
+      "notBuilt": []
+    },
     "walkthrough": {
       "built": [
         "commit-sequence"
@@ -101,15 +124,14 @@
     },
     "wb-cancel": {
       "built": [
+        "cancellation-date-and-quote",
         "quote-and-cancel-actions-each-busy-while-its-request-runs",
         "problems-cancel-3-cancel-4-cancel-7",
+        "the-refund-as-a-worked-sum-per-term-with-the-rule-applied",
+        "cancel-with-the-quoted-date-then-quote-and-cancellation-compared",
         "the-requests-as-sent-inspector"
       ],
-      "notBuilt": [
-        "cancellation-date-and-quote",
-        "the-refund-as-a-worked-sum-per-term-with-the-rule-applied",
-        "cancel-with-the-quoted-date-then-quote-and-cancellation-compared"
-      ]
+      "notBuilt": []
     },
     "wb-claim": {
       "built": [
@@ -175,13 +197,10 @@
   },
   "notBuiltScreens": [
     "decisions",
-    "finding",
     "harness",
-    "loop",
     "not-found",
     "sessions",
-    "stats",
-    "verdict"
+    "stats"
   ],
   "unmappedIds": [],
   "nodeRulesWithoutRegion": []

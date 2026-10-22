@@ -17,7 +17,7 @@
         "076-cancel-4-cancel-twice-409.json exchanges[role=request].requestBody.cancellationDate",
         "076-cancel-4-cancel-twice-409.json exchanges[role=setup,path=/policies].responseBody.{reference,terms[0].startDate,terms[0].endDate}"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "quote and cancel actions, each busy while its request runs",
@@ -64,7 +64,7 @@
         "076-cancel-4-cancel-twice-409.json exchanges[role=setup,path=/policies/F3-MVFJRN08DV/cancellation].responseBody.{cancellationDate,ruleApplied,totalRefund,terms[0]} (the earlier cancellation, api-error page only)",
         "076-cancel-4-cancel-twice-409.json exchanges[role=setup,path=/policies].responseBody.terms[0].amount"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "cancel with the quoted date, then quote and cancellation compared",
@@ -80,7 +80,7 @@
         "the quoted date carried from rung 1 into rung 2 (not typed again)",
         "076-cancel-4-cancel-twice-409.json exchanges[role=request].{requestBody.cancellationDate,status}"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "the requests as sent (inspector)",
