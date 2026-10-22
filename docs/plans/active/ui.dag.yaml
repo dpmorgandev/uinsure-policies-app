@@ -148,7 +148,7 @@ nodes:
       - {id: t10, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
       - {id: t11, role: tester, step: qa, layer: null, rules: [DAG-1, NODE-1, TDD-1, RULE-3, DATA-8], title: "QA script docs/qa/ui-U2.md: steps in the running app, tagged per rule", status: done}
       - {id: t12, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: done}
-      - {id: t13, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: pending}
+      - {id: t13, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: done}
       - {id: t14, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: pending}
       - {id: t15, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: pending}
       - {id: t16, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
