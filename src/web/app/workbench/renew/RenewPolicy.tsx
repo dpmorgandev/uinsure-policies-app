@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { useParams } from 'react-router';
 import { RefreshCw } from 'lucide-react';
@@ -58,6 +58,8 @@ export function RenewPolicy() {
   const [policy, setPolicy] = useState<ApiAnswer<Policy> | null>(null);
   const [attempt, setAttempt] = useState(0);
   const [amount, setAmount] = useState('');
+  // WB-5: the term amount is only a starting value; it never replaces what the person typed first.
+  const typedAmount = useRef(false);
   const [method, setMethod] = useState<PaymentMethod>('Card');
   const [renewal, setRenewal] = useState<ApiAnswer<Policy> | null>(null);
   const [busy, setBusy] = useState(false);
@@ -68,7 +70,7 @@ export function RenewPolicy() {
       if (!current) return;
       setPolicy(got);
       if (got.kind === 'ok') {
-        setAmount(got.value.amount.toFixed(2));
+        if (!typedAmount.current) setAmount(got.value.amount.toFixed(2));
         setMethod(termMethod(got.value));
       }
     });
@@ -133,7 +135,16 @@ export function RenewPolicy() {
             label="Renewal amount"
             hint={known ? `The new term's amount, at most 2 decimal places. Term ${known.currentTermNumber} is ${known.amount.toFixed(2)}.` : "The new term's amount, at most 2 decimal places."}
           >
-            {(control) => <MoneyInput {...control} value={amount} onChange={(e) => setAmount(e.target.value)} />}
+            {(control) => (
+              <MoneyInput
+                {...control}
+                value={amount}
+                onChange={(e) => {
+                  typedAmount.current = true;
+                  setAmount(e.target.value);
+                }}
+              />
+            )}
           </Field>
           {known?.autoRenew ? (
             <Field
