@@ -1,0 +1,74 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T17:22:20Z",
+  "plan": "ui",
+  "node": "U3",
+  "attempt": 3,
+  "agent": "security",
+  "agent_id": "a414c23bb5d18ccac",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U3",
+    "attempt": 3,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "ca3f1a3a30c5bd1ea51e5b4e02159146b988652c",
+    "diff_fingerprint": "3c604de728da85ba8590fd64bddceec6c145f78f",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.typecheck",
+      "gate.lint",
+      "gate.lint-css",
+      "gate.test",
+      "gate.build",
+      "gate.e2e",
+      "gate.e2e-regression",
+      "gate.coverage",
+      "gate.scope",
+      "gate.no-stubs",
+      "gate.green"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "src/web/kit/primitives/sha-link/ShaLink.tsx",
+        "line": 61,
+        "what": "The kit's external GitHub anchors (ShaLink githubHref, FileLineLink) carry no rel=\"noreferrer\"; U3 renders many of them. Carried over from attempt 2, still open.",
+        "why": "W2 says external links carry rel=\"noreferrer\". MarkdownText and the Matrix and Rule pages set it. ShaLink (lines 45-61) and FileLineLink (line 17) do not. The kit files are outside this diff, but the U3 pages are the heaviest users. The leak is only the page URL to github.com, and there is no target=_blank. This is hygiene and doesn't block.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "n/a (ui node, no server code): API1, API2, API3, API4, API5, API6, API7, and the .NET extras (SQL, money, packages, logging). The diff touches only src/web, tests/web and docs.",
+      "head_sha is ca3f1a3, the checked-out HEAD that the stop hook requires. It adds only the docs/trace review packet commit on top of 28a63c8, the head named in my prompt. The code I reviewed is the same, and the diff fingerprint is unchanged.",
+      "W1 met: a grep of src/web finds no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function in app or compiler code. Trail, verdict, finding and plan text render through JSX text nodes, JsonViewer, or the kit's MarkdownText, which filters hrefs by scheme. The new Plan question and hypothesis, and the Loop completenessReasons, go through MarkdownText.",
+      "W2 met for U3's own links. External hrefs are built by commitUrl and blobUrl in shell/repo.ts, which fix the prefix to https://github.com/dpmorgandev/uinsure-policies-api. The head SHA used as the file link base comes from a 40-hex regex, and GateRef takes only [0-9a-f]{7,40}. Every other href is an internal '#/...' hash route, with rule ids passed through encodeURIComponent. A route param can't produce a javascript: scheme because every route href starts with '#'. blobUrl doesn't encode the data-supplied path, but it can't change host or scheme. The only gap is S1, a P2.",
+      "W3 met: src/web/index.html isn't in the diff and keeps default-src 'self' (style-src 'self' 'unsafe-inline'). The diff adds no script, font, image or style from another origin. The derived screen HTML has no script, iframe or @import.",
+      "W4 met: U3 code adds no fetch, XHR, cookie or storage use. The existing fetch (data/api.ts, workbench/browser.ts) and localStorage (workbench/browser.ts) are workbench code outside this diff. The new explorer pages read only the already-loaded trace.json.",
+      "W5 met: the new compiler code (eventOf, roundOf, the findings loop, the inv-plan loop, and splitFrontmatter, sectionOf and splitRootCause in plans.ts) reads docs and git through the existing read wrapper, which runs the privacy denylist scan. A grep for .claude, process.env and http in src/web/compiler finds only a comment in compiler/index.ts. splitRootCause matches only three fixed marker names.",
+      "W6 met: a grep of the packet diff finds no local absolute path, personal email, key or token. The only matches are the denylist regex patterns in the fixtures and the prose of the earlier security verdict.",
+      "W7 met: no package.json or lockfile change in the diff. gate.audit (runtime) reports 0 vulnerabilities. gate.audit-dev reports 5 high, annotated as the known braces item via stylelint. That is dev-only and non-gating. I couldn't run npm audit myself, and the receipt doesn't list the 5 advisories.",
+      "W8 met: no error-boundary or error-path change. The new pages show fixed text ('No detail recorded in the log.', NotBuiltYet) or recorded values. Nothing reaches the screen from server internals or stack traces.",
+      "API8:2023 (W3, W4) and API10:2023 (W1, W8) met as above.",
+      "Attempt 3 changes since the attempt 2 PASS: the A2 fixes (Loop.tsx sourceSentence derives its text from event source values; severityOf passes P0 through unchanged) and the U2 merge integration (Plan.tsx, Node.tsx and the Region/Rung changes). None adds a sink or a link source. gate.e2e-regression at 28a63c8's parent recorded ok:true with a written ruling that the failures are U3's intended changes. That is the reviewer's concern, not a security matter."
+    ]
+  }
+}
