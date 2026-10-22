@@ -375,7 +375,7 @@ nodes:
     cuttable: false
     budget: null
     status: in_progress
-    attempt: 1
+    attempt: 2
     branch: feature/ui/W3
     worktree: .claude/worktrees/ui-W3
     pr: null
