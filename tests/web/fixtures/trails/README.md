@@ -52,6 +52,7 @@ the same way it reads the real one. The live `docs/trace/` is never a test input
 | `requirements-shapes/` | The rule tables of `requirements.md` and `ui-requirements.md` as each writes them (a heading's priority tag or a Priority column, `RENEW-1/2`, a dash note row, a heading with no tag), and C# test sources traited per rule, `RENEW-1/2`'s by its parts `RENEW-1` and `RENEW-2` (MATRIX-1, RULE-1, NAV-3) |
 | `real-trailers/` | Commit bodies as the real trail writes them: a body that repeats `Rule:` and `Fixes-Finding:`, a `Rule: none` sentinel, and a slash rule's commits trailed by the slash ID and by its parts (U1 D3: RULE-2, RULE-1, NAV-3) |
 | `two-plans/` | Both plans' rules, each read against its own matrix (`requirements-matrix.md`, `ui-requirements-matrix.md`): a `RENEW-1/2` row, `undefined` refactor cells, a `signoff(<sha>)` and a `merged(<sha>)` event, and a template-literal test title in a loop, each cut from the real file (MATRIX-1, NAV-1, RULE-1, NAV-3) |
+| `plans/` | Three plans of three kinds: a `build` DAG whose file order is neither alphabetical nor the graph's layer order, with a branch and a join; a `ui` DAG; an investigation `inv-001.plan.md` with no DAG. Each node's `depends_on`, `rules`, `pr`, `acceptance` and one-line `tasks` (DAG-1, NODE-1) |
 
 `replay.d.mts` types `replay.mjs` for the TypeScript tests that import it.
 
