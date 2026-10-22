@@ -1,0 +1,152 @@
+{
+ "date": "2026-10-18T12:00:00Z",
+ "branch": "feature/build/F1",
+ "commits": [
+  {
+   "id": "c0",
+   "subject": "plan(build/F1): F1 pending → in_progress",
+   "date": "2026-10-18T12:00:00Z",
+   "trailers": {
+    "Agent": "main",
+    "Plan": "build",
+    "Node": "F1"
+   },
+   "files": []
+  },
+  {
+   "id": "c1",
+   "subject": "test(SELL-1): red: the acceptance suite",
+   "date": "2026-10-18T12:10:00Z",
+   "trailers": {
+    "Agent": "tester",
+    "Plan": "build",
+    "Node": "F1",
+    "Rule": "SELL-1, SELL-2",
+    "TDD": "red"
+   },
+   "files": [
+    "tests/web/e2e/F1/sell.spec.ts.fixture"
+   ]
+  },
+  {
+   "id": "c2",
+   "subject": "feat(F1): stub the sale route",
+   "date": "2026-10-18T12:20:00Z",
+   "trailers": {
+    "Agent": "builder",
+    "Plan": "build",
+    "Node": "F1",
+    "Rule": "SELL-1, SELL-2",
+    "TDD": "stub"
+   },
+   "files": []
+  },
+  {
+   "id": "c3",
+   "subject": "plan(build/F1): attempt 1 → 2",
+   "date": "2026-10-18T12:31:00Z",
+   "trailers": {
+    "Agent": "main",
+    "Plan": "build",
+    "Node": "F1"
+   },
+   "files": []
+  },
+  {
+   "id": "c4",
+   "subject": "test(SELL-2): red: fix A1/I1, a second sale of a reference answers 409",
+   "date": "2026-10-18T12:40:00Z",
+   "trailers": {
+    "Agent": "tester",
+    "Plan": "build",
+    "Node": "F1",
+    "Rule": "SELL-2",
+    "TDD": "red",
+    "Fixes-Finding": "A1/I1"
+   },
+   "files": []
+  },
+  {
+   "id": "c5",
+   "subject": "fix(SELL-2): the stub answers a repeated reference with 409",
+   "date": "2026-10-18T12:50:00Z",
+   "trailers": {
+    "Agent": "builder",
+    "Plan": "build",
+    "Node": "F1",
+    "Rule": "SELL-2",
+    "TDD": "stub",
+    "Fixes-Finding": "A1/I1"
+   },
+   "files": []
+  },
+  {
+   "id": "c6",
+   "subject": "feat(SELL-1): green: the sale",
+   "date": "2026-10-18T13:30:00Z",
+   "trailers": {
+    "Agent": "builder",
+    "Plan": "build",
+    "Node": "F1",
+    "Rule": "SELL-1, SELL-2",
+    "TDD": "green"
+   },
+   "files": [
+    "src/sell.txt"
+   ]
+  },
+  {
+   "id": "c7",
+   "subject": "plan(build/F1): attempt 2 → 3",
+   "date": "2026-10-18T14:01:00Z",
+   "trailers": {
+    "Agent": "main",
+    "Plan": "build",
+    "Node": "F1"
+   },
+   "files": []
+  },
+  {
+   "id": "c8",
+   "subject": "test(SELL-2): red: fix A2/I1, a reference differing only in case answers 409",
+   "date": "2026-10-18T14:40:00Z",
+   "trailers": {
+    "Agent": "tester",
+    "Plan": "build",
+    "Node": "F1",
+    "Rule": "SELL-2",
+    "TDD": "red",
+    "Fixes-Finding": "A2/I1"
+   },
+   "files": []
+  },
+  {
+   "id": "c9",
+   "subject": "fix(SELL-2): compare references case-insensitively",
+   "date": "2026-10-18T14:50:00Z",
+   "trailers": {
+    "Agent": "builder",
+    "Plan": "build",
+    "Node": "F1",
+    "Rule": "SELL-2",
+    "TDD": "green",
+    "Fixes-Finding": "A2/I1"
+   },
+   "files": []
+  },
+  {
+   "id": "c10",
+   "subject": "docs(F1): QA script",
+   "date": "2026-10-18T15:30:00Z",
+   "trailers": {
+    "Agent": "tester",
+    "Plan": "build",
+    "Node": "F1",
+    "Rule": "SELL-1, SELL-2"
+   },
+   "files": [
+    "docs/qa/build-F1.md"
+   ]
+  }
+ ]
+}
