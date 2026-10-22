@@ -2,8 +2,9 @@
 
 Rule IDs: WB-4
 Branch: feature/ui/W2   Worktree: .claude/worktrees/ui-W2
-Commit under test: 5297396, HEAD on `feature/ui/W2` when this script was written. The screen and its client landed in
-42b57b7 (green), and the commits after it are plan and trace only. This script's own commit changes only this file.
+Commit under test: f8c2268, HEAD on `feature/ui/W2` when this script was revised. The screen and its client landed in
+42b57b7 (green) and `src/web/` is unchanged since 5297396. The one later code commit, 46e3e11, changes tests only: it
+moves the cancel route's pre-quote honesty check (WB-3) from W1's spec into W2's (note 7).
 Record the SHA you test in the sign-off.
 App URL: http://localhost:4179   API: http://localhost:5089. W2 is position 9 in `ui.dag.yaml`, so its ports are 4170 + 9
 and 5080 + 9. The app proxies `/api/…` to the API port it's given in `DOCKET_API_PORT`.
@@ -13,7 +14,7 @@ first, cancels with the quoted date, and compares the quote with the cancellatio
 the requests-as-sent inspector shows as **not built yet** (WB-7), and so does the policy view's actions region (W1's
 screen, unchanged here). So the cancel screen is reached by typing its URL, not from a button on the policy (note 1).
 
-The Actual and Pass/Fail columns are empty. I wrote the steps from the code at 5297396, the acceptance suite
+The Actual and Pass/Fail columns are empty. I wrote the steps from the code at f8c2268, the acceptance suite
 (`tests/web/e2e/W2/wb-4.spec.ts`) and the recorded answers in `docs/ui/fixture/api/` (the file's number is given), and
 I didn't run them (note 5). Where no recording covers an input, the step says to compare with the response in DevTools.
 
@@ -152,12 +153,12 @@ app on 4179. It stops before any test if an API it didn't start already answers 
 
 | # | Rule | Route | Action | Expected | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|
-| 31 | WB-4 | shell | `DOCKET_API_PORT=5089 DOCKET_APP_PORT=4179 npm --prefix src/web run e2e -- W2/ --grep "WB-4 · "` | All passed, 0 failed, 0 skipped (26 by my count). This includes the cases the running app can't make: a cancellation whose `totalRefund` differs from the quote's by 1.00 reads `Differ on 1 of 3 compared fields: totalRefund`, with `ruleApplied` still `Agrees`; and a request held exactly in flight (steps 24 and 25 only delay it) | | |
+| 31 | WB-4 | shell | `DOCKET_API_PORT=5089 DOCKET_APP_PORT=4179 npm --prefix src/web run e2e -- W2/ --grep "WB-[34] · "` | All passed, 0 failed, 0 skipped (27 by my count: 26 `WB-4 · ` tests and the one `WB-3 · ` cancel test, note 7). This includes the cases the running app can't make: a cancellation whose `totalRefund` differs from the quote's by 1.00 reads `Differ on 1 of 3 compared fields: totalRefund`, with `ruleApplied` still `Agrees`; and a request held exactly in flight (steps 24 and 25 only delay it) | | |
 | 32 | WB-4 | shell | `npm --prefix src/web run test -- -t "WB-4 · "` | All passed: the client's quote and cancel on the recorded responses, handing back the API's answer as it came | | |
 | 33 | WB-4 | shell | The step-31 run's axe tests: `… run e2e -- W2/ --grep "WB-4 · the cancel screen, "` | 3 passed: quoted, asking to confirm, and cancelled and compared, each with no axe violation light and dark, at 1440 and 390 | | |
 | 34 | WB-4 | shell | The parity tests: `… run e2e -- W2/ --grep "WB-4 · parity: "` | 9 passed: the populated, submitting, error and unreachable states keep the regions of `docs/ui/derived/W2/wb-cancel/` in order; the four built regions carry its components; colours from tokens only, light and dark | | |
 | 35 | WB-4 | shell | `DOCKET_API_PORT=5089 DOCKET_APP_PORT=4179 npm --prefix src/web run e2e -- regression/wb-cancel.spec.ts` | 16 passed (4 states × 2 widths × 2 themes) against `docs/ui/baselines/wb-cancel/`. Before the trace step those baselines are in the worktree but not yet committed (note 4) | | |
-| 36 | WB-4 | shell | `DOCKET_API_PORT=5089 DOCKET_APP_PORT=4179 npm --prefix src/web run e2e -- W1/ regression/ --workers=2` | Every earlier screen's baseline and W1's flows hold, with **one test I expect to fail** (note 7): W1's `WB-3 · the quote and cancel route shows no canned value and no other policy's reference`, which still expects the cancel route to be W1's not-built page, sending no request and showing no date. W2 built that route, which reads the policy and shows its term dates. Record the run's pass and fail counts and the failing titles | | |
+| 36 | WB-4 | shell | `DOCKET_API_PORT=5089 DOCKET_APP_PORT=4179 npm --prefix src/web run e2e -- W1/ regression/ --workers=2` | W1's flows all pass, including its `screens W1 does not build` cases, now renew and record a claim only (note 7). Every earlier screen's baseline holds except two: `activity` at 1440, light and dark, which also failed in the orchestrator's all-e2e gate at f576e09 and are already U7 acceptance lines, not W2's. Record the run's pass and fail counts and the failing titles | | |
 
 ## Notes
 
@@ -173,20 +174,26 @@ app on 4179. It stops before any test if an API it didn't start already answers 
 4. **Baselines.** `docs/ui/baselines/wb-cancel/` is in the worktree, written by the orchestrator, and is committed at
    the trace step (t10). Step 35 compares against the files present when you run it.
 5. **I didn't run these steps.** `npm run build` writes `src/web/dist/`, `npm run trace` writes `src/web/public/` and
-   the API writes a database file, all outside my write scope. The expected words are the code's at 5297396 and the
+   the API writes a database file, all outside my write scope. The expected words are the code's at f8c2268 and the
    recordings named in each row. Values that move with the clock (`T`, `<endDate>`, the `REF-` and `PAY-` references)
    are given as what to compare against, not as fixed text. The figures in steps 3, 4, 7 and 8 are my arithmetic from
    CANCEL-1c's interpretation (amount × unused days ÷ days in term, the cancellation day used, 2 dp half away from zero),
    checked against 061 and 062. If the screen and DevTools agree with each other but not with my figure, the figure is
    wrong, not the screen.
-6. **The test count in step 31** is mine, from the spec file: 17 flow, busy and axe tests plus 9 parity tests. Record
-   the number the run prints.
-7. **A W1 test W2 supersedes (step 36).** `tests/web/e2e/W1/wb-3.spec.ts`, in `screens W1 does not build`, opens
-   `route.cancel` on a sold policy and asserts `not built yet`, no request sent (`setup: the page sent no request`) and
-   no date shown. At 5297396 the cancel screen sends `GET /policies/<reference>` on open and shows `Term 1`'s dates,
-   so I expect that one case to fail; its renew and record-a-claim cases should still pass. I read this from the code
-   and didn't run it, and I couldn't find a W1 e2e run among W2's gate events in the trail (the regression gate ran
-   `tests/web/e2e/regression`). If it fails, it's for the orchestrator to route: a tester may not weaken or delete it.
+6. **The test count in step 31** is mine, from the spec file: 17 `WB-4 · ` flow, busy and axe tests, 9 parity tests,
+   and the `WB-3 · ` cancel honesty test, 27 in all, as the orchestrator's W2 e2e gate ran. Record the number the run
+   prints.
+7. **The cancel route's honesty check moved to W2 (steps 31 and 36).** Until 46e3e11, W1's
+   `tests/web/e2e/W1/wb-3.spec.ts` (`screens W1 does not build`) opened the cancel route on a sold policy and asserted
+   `not built yet`, no request and no date, which W2's built screen contradicts: it reads the policy on open and shows
+   `Term 1`'s dates. 46e3e11 (W2 finding A1/I1) took the cancel case out of W1's loop, leaving renew and record a claim
+   with their assertions unchanged, and added `WB-3 · the cancel route, before Quote is pressed, shows no canned value
+   and no other policy's reference` to `tests/web/e2e/W2/wb-4.spec.ts`. That test checks the screen as built: the
+   route's own reference and term start, as the API returned them; no recorded-fixture reference and no other live
+   policy's; no `answered NNN`, no alert, and no rule chip but the Problems region's standing CANCEL-3, CANCEL-4 and
+   CANCEL-7; no cancellation-quote or cancellation request. It isn't a W2 rule (WB-4), so step 31's filter names
+   both. The removal of W1's cancel case is a test edit after red, logged by the investigator for you to read at
+   pause 2.
 
 ## Sign-off
 
