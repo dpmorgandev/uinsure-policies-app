@@ -235,7 +235,7 @@ nodes:
     rules: [CTX-1, AGENT-3, STATS-1, NAV-5]
     cuttable: true
     budget: null
-    status: in_progress
+    status: hitl
     attempt: 1
     branch: feature/ui/U5
     worktree: .claude/worktrees/ui-U5
@@ -257,7 +257,7 @@ nodes:
       - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
       - {id: t8, role: tester, step: qa, layer: null, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], after: [t6], title: "QA script docs/qa/ui-U5.md, beside review", status: done}
       - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: done}
-      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: pending}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: done}
       - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
       - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script, then sign off", status: pending}
       - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
@@ -460,6 +460,7 @@ nodes:
       - "A context snapshot's path and slug are denylist-scanned before they reach trace.json (U5 A1 S1, CTX-1)"
       - "A test shows that a denylist hit in a docs/context snapshot fails the compile with no trace.json written (U5 A1 S2, CTX-1)"
       - "Each sessions entry opens its own snapshot at /sessions/:file: the reference tags it NAV-2, so U4 or U7 builds it (U5 A1 reviewer note, CTX-1)"
+      - "plans/:planId is registered once: u2Routes and u3Routes both register it, so one shadows the other (U5 A1.2 reviewer note, DAG-1)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for U7: rel=noreferrer, the CSP directives, ids refused, repeated trailers kept; every node rule", status: pending}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
