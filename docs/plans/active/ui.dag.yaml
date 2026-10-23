@@ -196,7 +196,7 @@ nodes:
     rules: [AGENT-1, AGENT-2, HITL-1, VERIFY-1, NAV-2, NAV-4, PERF-1]
     cuttable: false
     budget: null
-    status: in_progress
+    status: hitl
     attempt: 2
     branch: feature/ui/U4
     worktree: .claude/worktrees/ui-U4
@@ -220,7 +220,7 @@ nodes:
       - {id: t8, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
       - {id: t9, role: tester, step: qa, layer: null, rules: [AGENT-1, AGENT-2, HITL-1, VERIFY-1, NAV-2, NAV-4, PERF-1], after: [t7], title: "QA script docs/qa/ui-U4.md, beside review", status: done}
       - {id: t10, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: done}
-      - {id: t11, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: pending}
+      - {id: t11, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: done}
       - {id: t12, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
       - {id: t13, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script, then sign off", status: pending}
       - {id: t14, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
