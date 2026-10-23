@@ -101,6 +101,19 @@ test.describe("the about page's re-verify with git", () => {
     expect(await commands(verify).allInnerTexts(), 'no command holds a placeholder').not.toContainEqual(expect.stringMatching(/‹|›/));
   });
 
+  test("VERIFY-1 · the TDD-trailer command's expectation names every value the loop writes: scaffold, red, stub, green and refactor", async ({ page }) => {
+    // A3 I7: the loop's TDD trailer set is scaffold|red|stub|green|refactor.
+    const verify = await openRegion(page, fixture, route.about, RE_VERIFY);
+    await expect(commands(verify).filter({ hasText: 'trailers:key=TDD' })).toHaveCount(1);
+    const text = (await verify.innerText()).replace(/\s+/g, ' ');
+    // The expectation sentence: from an "Expect" to its full stop, the one that names stub.
+    const expectation = [...text.matchAll(/\bExpect\b[^.]*\./g)].map((m) => m[0]).find((s) => /\bstub\b/.test(s));
+    expect(expectation, `the TDD-trailer expectation is shown:\n${text}`).toBeDefined();
+    for (const value of ['scaffold', 'red', 'stub', 'green', 'refactor']) {
+      expect(expectation, `the expectation names ${value}`).toMatch(new RegExp(`\\b${value}\\b`));
+    }
+  });
+
   test('VERIFY-1 · the about page has no axe violation, light and dark, 1440 and 390', async ({ page }) => {
     await openRegion(page, fixture, route.about, RE_VERIFY);
     const snap = snapshotOf(fixture.compiled);
