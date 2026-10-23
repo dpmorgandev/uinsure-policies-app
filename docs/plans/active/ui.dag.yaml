@@ -269,7 +269,8 @@ nodes:
     rules: []
     cuttable: true
     budget: null
-    status: pending
+    status: cut
+    decided_by: david
     attempt: 0
     branch: null
     worktree: null
@@ -520,3 +521,34 @@ nodes:
       - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
       - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: check the fixes from the QA script, then sign off", status: pending}
       - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: U9
+    title: "Hosting evidence: Azure Static Web Apps for Docket in the Bicep"
+    kind: evidence
+    owner: loop
+    depends_on: []
+    rules: []
+    cuttable: true
+    budget: null
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/ui-U9.md
+    trace: docs/trace/ui/U9/
+    acceptance:
+      - "Replaces U6 (cut by David 2026-10-23: one Azure hosting story, not GitHub Pages): a hand-written infrastructure/modules/staticwebapp.bicep, wired into main.bicep beside the App Service"
+      - "The Static Web App links the App Service as its backend, so /api reaches the API from the same origin and the CSP stays default-src 'self'"
+      - "The static build's settings and deep links on the host (routes fall back to index.html); trace.json is compiled before the build"
+      - "bicep build and bicep build-params succeed for dev, test and prod; the pipeline gains a web build and deploy stage from the existing stage template; pipeline schema check passes"
+      - "No secrets (deployment token from the resource, never in params); az never run; nothing deployed"
+    tasks:
+      - {id: t1, role: builder, step: write, layer: null, rules: [], title: "staticwebapp.bicep, main.bicep wiring, three param files, the web pipeline stage and the static build settings", status: pending}
+      - {id: t2, role: orchestrator, step: gates, layer: null, rules: [], title: "bicep build and build-params exit 0 for dev, test and prod; pipeline schema check; typecheck, unit, build, e2e and regression still green; diff scope", status: pending}
+      - {id: t3, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t4, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U9.md", status: pending}
+      - {id: t5, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: pending}
+      - {id: t6, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; chore(trace) commit", status: pending}
+      - {id: t7, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
+      - {id: t8, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md and the QA script", status: pending}
+      - {id: t9, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
