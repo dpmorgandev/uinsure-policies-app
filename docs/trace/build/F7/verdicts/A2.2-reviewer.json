@@ -1,0 +1,111 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T11:53:02Z",
+  "plan": "build",
+  "node": "F7",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "af67d71309e571a1a",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "build",
+    "node_id": "F7",
+    "attempt": 2,
+    "base_sha": "f041f019e9a55ae31055c71adf589c9a2db56d81",
+    "head_sha": "6083d2d6a08c2d875d7687e1a22b1467fc49af82",
+    "diff_fingerprint": "ed686851218e86ad60c0517db0a4267a6650e669",
+    "verdict": "PASS",
+    "gate_refs": [
+      "loop.jsonl:15 gate.finding-red",
+      "loop.jsonl:16 gate.green",
+      "loop.jsonl:17 gate.build",
+      "loop.jsonl:18 gate.test",
+      "loop.jsonl:19 gate.guide",
+      "loop.jsonl:22 steer(D1,pause2)",
+      "loop.jsonl:23 gate.green"
+    ],
+    "rules_covered": [],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R2",
+        "rule_id": "§8.3",
+        "severity": "P2",
+        "file": "docs/plans/active/build.dag.yaml",
+        "line": 402,
+        "what": "Carried from A2. Acceptance 3 says the run is recorded in docs/trace/build/F7/, but the receipts are only in docs/guides/api/receipts.md.",
+        "why": "§8.3 says the run 'is recorded in the node's trace', and DAG acceptance line 3 names docs/trace/build/F7/. D1 did not change this. Per David's ruling it is a PR note, not a blocker.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "§8.3",
+        "severity": "P2",
+        "file": "docs/guides/api/index.html",
+        "line": 195,
+        "what": "Carried from A2. The EF tools warning is cut short with no '…', unlike the receipt R8 line.",
+        "why": "index.html says a '…' marks text left out, and §8.3 says each output is copied from the run. The substring match in check.test.mjs lets the shortened line pass. D1 did not touch it.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "LRN-5",
+        "severity": "P2",
+        "file": "docs/guides/api/index.html",
+        "line": 280,
+        "what": "Carried from A2. The text says 'starts today. Sell it now', but startDate is fixed at 2026-10-23, so on any later day the GUIDE-002 steps get 422 SELL-2.",
+        "why": "LRN-5 asks for the exact command and what you should see, and §8.2 says a reader can follow the guide alone. No step tells the reader to shift the dates to their own today.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R5",
+        "rule_id": "LRN-9",
+        "severity": "P2",
+        "file": "docs/guides/test/index.html",
+        "line": 52,
+        "what": "Carried from A2. The test page keeps the old a.ref href form that doesn't resolve, and the template's '../../' is right only where the template sits.",
+        "why": "guide-format.spec.md:29 says an a.ref href is relative to the guide's folder, with the line as a fragment. The I12 fix did not reach the test page, and F8 will reuse the template.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R6",
+        "rule_id": "MAN-3",
+        "severity": "P2",
+        "file": "docs/guides/api/index.html",
+        "line": 222,
+        "what": "Carried from A2. The A1/I5 deferral (U9 joint launch and the web test suites are not on this branch) was accepted by David on 2026-10-23.",
+        "why": "documentation-requirements.md:86, :121 and :132 and DAG acceptance line 2. The gap is disclosed and the deferral is accepted (loop.jsonl:22). It is recorded so the PR shows it.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R7",
+        "rule_id": "LRN-4",
+        "severity": "P2",
+        "file": "docs/specs/api-guide.spec.md",
+        "line": 116,
+        "what": "Carried from A2. The A1/I6 deferral was accepted: the spec still says 'at most one diagram' per section, and only three of seven big ideas have one.",
+        "why": "LRN-4 (documentation-requirements.md:66) asks for one diagram per big idea. David accepted the deferral (loop.jsonl:22). It is recorded so the PR shows it.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R8",
+        "rule_id": "§9",
+        "severity": "P2",
+        "file": "docs/guides/api/check.test.mjs",
+        "line": 2,
+        "what": "No suite runs the moved guide check (dotnet test, pre-push or the harness self-test). Only the spec line and the file header give the command.",
+        "why": "This is what is left of A2 R1's second point. §9 now holds, but after merge nothing will catch a regression of the A1 fixes unless someone runs 'node --test docs/guides/api/check.test.mjs' by hand. It doesn't block, so it goes in the PR as a note.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "R1 (P1) is closed. In delta.patch (282ec25..864b5ee), tests/guides/api-guide.test.mjs is renamed to docs/guides/api/check.test.mjs at 99% similarity. Only two things change: the header's Run line, and the root resolve, which now goes up '..' three times instead of two. Three up from docs/guides/api is the repo root, so this is correct. The spec gains one line at docs/specs/api-guide.spec.md:146. No assertion was changed.",
+      "I checked D1 against the worktree at HEAD myself. A search of src/ (including src/web) for docs/guides finds nothing. A search of tests/ for docs/guides or guides/ finds nothing. No file exists under tests/guides/**. check.test.mjs itself doesn't mention tests/. This agrees with gate.green at 864b5ee (loop.jsonl:23): 12 of 12 pass at the new path. The empty tests/guides directory the gate mentions is untracked, so it doesn't reach the repo.",
+      "The guide's index.html doesn't point readers at check.test.mjs (the only node --test lines are the harness self-test at :722 and :745). The reader-facing content is unchanged by D1.",
+      "trailers.txt ends at 864b5ee, and HEAD 6083d2d is a chore(trace) commit that the packet builder made after it. The D1 move commit carries Agent, Plan, Node, Rule: none and TDD: refactor, and it changes no behaviour.",
+      "R2-R7 are carried as P2 PR notes, as David ruled on 2026-10-23 (loop.jsonl:22): only a P1 reopens a docs node, and the I5 and I6 deferrals are accepted. R8 is new, from the part of A2 R1 that D1 doesn't address, and it is also a P2.",
+      "This node has no rule IDs and no src/ change in scope, so it has no product code to judge for SOLID, NotImplementedException or banned APIs. That is unchanged from A2."
+    ]
+  }
+}

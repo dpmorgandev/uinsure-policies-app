@@ -1,0 +1,50 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T11:52:32Z",
+  "plan": "build",
+  "node": "F7",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a63642680de5a31a2",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "build",
+    "node_id": "F7",
+    "attempt": 2,
+    "base_sha": "f041f019e9a55ae31055c71adf589c9a2db56d81",
+    "head_sha": "6083d2d6a08c2d875d7687e1a22b1467fc49af82",
+    "diff_fingerprint": "ed686851218e86ad60c0517db0a4267a6650e669",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.green head 864b5ee (D1: node --test docs/guides/api/check.test.mjs 12/12 at the new path; no src/ or tests/ file references docs/guides; tests/guides tracks no files)"
+    ],
+    "rules_covered": [
+      "API3:2023",
+      "API4:2023",
+      "API6:2023",
+      "API8:2023",
+      "API9:2023",
+      "NET-SQL",
+      "NET-Money",
+      "NET-Packages",
+      "NET-Secrets",
+      "NET-Logging"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Delta only, 282ec25..864b5ee (docs/trace/build/F7/packet/delta.patch). The previous verdict (A2-security, PASS) stands for everything outside the delta.",
+      "Delta content: tests/guides/api-guide.test.mjs renamed to docs/guides/api/check.test.mjs (99% similarity). The only code edits are the header comment's run path and the root resolution, which gains one more '..' so the repo root still resolves from the new depth. One line is added to docs/specs/api-guide.spec.md giving the run command. No file under src/ changed, and no csproj or package manifest changed, so no code or package surface was added.",
+      "The moved test spawns only the repo's own copy of print.mjs in a mkdtemp sandbox (spawnSync with process.execPath) and removes the sandbox in a finally block. It makes no network call and reads no secrets. The env passes through process.env with PLAYWRIGHT_MODULE overridden, which is local to the test run. This is unchanged from the version the previous verdict cleared.",
+      "Privacy (the repo goes public): greps of the moved file for drive-letter paths, /c/Users, a local user name, a personal email, file:// and any http(s) URL found no hit. The moved file is not under .claude/ and references it nowhere. The spec line holds only a repo-relative command.",
+      "The gate receipt for D1 shows 12/12 passing at the new path, no reference to docs/guides from src/ or tests/, and no tracked file left in tests/guides. I saw the old path is gone on disk.",
+      "API1:2023 n/a: no auth or tenancy, the reference is the only key.",
+      "API2:2023 n/a: authentication is out of scope.",
+      "API5:2023 n/a: no roles.",
+      "API7:2023 n/a: no outbound URL fetching, and the delta adds no HttpClient.",
+      "API10:2023 n/a: no upstream APIs.",
+      "API3, API4, API6, API8 and API9 are met in the sense that the delta changes none of the code behind them."
+    ]
+  }
+}
