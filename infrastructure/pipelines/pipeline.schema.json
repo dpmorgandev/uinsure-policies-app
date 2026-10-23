@@ -115,7 +115,12 @@
       "oneOf": [
         {
           "required": ["script"],
-          "properties": { "script": { "type": "string" }, "displayName": { "type": "string" }, "name": { "type": "string" } },
+          "properties": { "script": { "type": "string" }, "displayName": { "type": "string" }, "name": { "type": "string" }, "env": { "type": "object", "additionalProperties": { "type": "string" } } },
+          "additionalProperties": false
+        },
+        {
+          "required": ["checkout"],
+          "properties": { "checkout": { "enum": ["self"] }, "fetchDepth": { "type": "integer", "minimum": 0 }, "displayName": { "type": "string" } },
           "additionalProperties": false
         },
         {

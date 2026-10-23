@@ -87,6 +87,8 @@ stages:
                         --parameters $(drop)/infrastructure/params/${{ parameters.environmentName }}.bicepparam \
                         --parameters sqlAdminGroupObjectId=$(sqlAdminGroupObjectId) \
                         --query properties.outputs --output json)
+                      echo "##vso[task.setvariable variable=webSiteName]$(echo "$outputs" | jq -r .webSiteName.value)"
+                      echo "##vso[task.setvariable variable=webHostName]$(echo "$outputs" | jq -r .webHostName.value)"
                       echo "##vso[task.setvariable variable=resourceGroupName]$(echo "$outputs" | jq -r .resourceGroupName.value)"
                       echo "##vso[task.setvariable variable=appName]$(echo "$outputs" | jq -r .appName.value)"
                       echo "##vso[task.setvariable variable=appHostName]$(echo "$outputs" | jq -r .appHostName.value)"

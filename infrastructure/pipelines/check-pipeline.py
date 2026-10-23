@@ -42,8 +42,15 @@ for name, doc in (("azure-pipelines.yml", pipeline), ("stage-template.yml", temp
 uses = [s for s in pipeline["stages"] if "template" in s]
 check([u["parameters"]["environmentName"] for u in uses] == ["dev", "test", "prod"], "template must be used for dev, test, prod in order")
 check(all(u["template"] == "stage-template.yml" for u in uses), "every deploy stage must use stage-template.yml")
-check([u["parameters"]["dependsOn"] for u in uses] == ["Build", "Deploy_dev", "Deploy_test"], "stages must chain Build -> dev -> test -> prod")
+check([u["parameters"]["dependsOn"] for u in uses] == ["Web", "Deploy_dev", "Deploy_test"], "stages must chain Build -> Web -> dev -> test -> prod")
 check(any(s.get("stage") == "Build" for s in pipeline["stages"]), "missing Build stage")
+
+# Web stage: build and test run from the Build stage and before dev; the host settings ship with the artifact.
+web_stage = next((s for s in pipeline["stages"] if s.get("stage") == "Web"), None)
+web_text = json.dumps(web_stage) if web_stage else ""
+check(web_stage is not None and web_stage.get("dependsOn") == "Build", "Web stage must depend on Build")
+for needle in ("npm --prefix src/web ci", "run typecheck", "run lint", "run lint:css", "run test", "run trace", "run build", "run e2e", "staticwebapp.config.json"):
+    check(needle in web_text, f"Web stage must run: {needle}")
 
 # Build stage: build, test, idempotent script.
 build_stage = next((s for s in pipeline["stages"] if s.get("stage") == "Build"), None)
