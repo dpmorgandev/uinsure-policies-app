@@ -1,0 +1,104 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T22:33:00Z",
+  "plan": "bug-002",
+  "node": "N1",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "ac7851b3072d19713",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "bug-002",
+    "node_id": "N1",
+    "attempt": 2,
+    "base_sha": "6b6bdb529cf494ea5e3992988091f883e1b0dcaa",
+    "head_sha": "9271325792b1b611c67b6510872273dc61fe7e08",
+    "diff_fingerprint": "d9c497d2fa2fe06ce02979ad68a9b8d74b5c034a",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "setup@8009b950",
+      "gate.red@6ee2e957",
+      "gate.green@35122e4b (ok:false)",
+      "attempt++@35122e4b",
+      "findings(findings/A1.md)@8b1b5611",
+      "gate.green@9972c248",
+      "gate.typecheck@95d15128",
+      "gate.lint@95d15128",
+      "gate.test@95d15128",
+      "gate.build@95d15128",
+      "gate.e2e@95d15128",
+      "gate.e2e-regression@95d15128",
+      "gate.audit@95d15128",
+      "gate.trace-check@95d15128",
+      "gate.scope@95d15128",
+      "gate.stubs@95d15128"
+    ],
+    "rules_covered": [],
+    "rules_missing": [
+      "DATA-1"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "DATA-1",
+        "severity": "P1",
+        "file": "src/Uinsure.Policies.Web/vite.config.ts",
+        "line": 48,
+        "what": "F5 now opens the browser before the compile ends; the shell reads trace.json once, gets 503 and stays on 'could not be read (HTTP 503)' until a manual reload",
+        "why": "Node N1 is titled 'A fresh clone F5s straight into Docket', and U10 has a one-key F5 acceptance. launch.json:10 passes --open. Vite 8 calls server.openBrowser() inside listen() (node_modules/vite/dist/node/chunks/node.js:24964), before the CLI's printUrls, so holding back the 'Local:' line (vite.config.ts:49-50) doesn't hold back the browser. Frame.tsx:41-53 calls loadTrace() once with no retry, and trace.ts:246 turns the 503 into 'trace.json could not be read (HTTP 503)' and drops the 'compiling' body. On main the compile ran in the config hook, so the browser opened onto the trail. N1 swaps 'the port refuses for 60-128 s' for 'F5 lands on an error page' on the exact path the node exists to fix. Acceptance line 2 is met word for word; the F5 outcome is not. No test opens the page during the compile.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "DATA-1",
+        "severity": "P2",
+        "file": "src/Uinsure.Policies.Web/Docket.Web.esproj",
+        "line": 4,
+        "what": "The esproj StartupCommand still runs 'npx vite …', which skips scripts/dev.mjs, so that launch path neither restores packages nor names npm ci on a fresh clone",
+        "why": "The plan's N1 green list names Docket.Web.esproj, and its evidence is that the esproj has no npm/restore. The DATA-1 test header (data-1-trace-on-start.test.ts:4) lists 'the StartupCommand' as a launch path. With no node_modules, npx resolves vite from the registry, unpinned. The new first-run test covers only the launch.json DebugTarget. I can't confirm from the code whether VS runs StartupCommand when a node DebugTarget is chosen, so this is P2.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "DATA-1",
+        "severity": "P2",
+        "file": "src/Uinsure.Policies.Web/vite.config.ts",
+        "line": 53,
+        "what": "decodeURIComponent runs on every dev request before the /trace filter, so a malformed %-escape on any path throws URIError and becomes a 500 instead of reaching Vite",
+        "why": "The decode is only needed for /trace.json and /trace/* (the traversal guard at :55-56). Running it ahead of the path check changes how every other dev request is handled, which no rule asks for (code-quality: invented behaviour).",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "DATA-1",
+        "severity": "P2",
+        "file": "tests/Uinsure.Policies.Web.Tests/unit/toolchain/data-1-first-run.test.ts",
+        "line": 218,
+        "what": "The 'first answer says the trail is compiling' assertion uses /compil/i, which also matches the failure text 'The trail did not compile'",
+        "why": "Acceptance line 2 says /trace.json says it is compiling until the compile ends. A server that wrongly answered 'did not compile' during the compile would pass this line. The later isTrace assertion covers most of the gap, so this is P2. Tightening the expected text in a new commit is stricter, not weaker.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R5",
+        "rule_id": "DATA-1",
+        "severity": "P2",
+        "file": "tests/Uinsure.Policies.Web.Tests/unit/toolchain/data-1-trace-on-start.test.ts",
+        "line": 147,
+        "what": "The describe title 'the dev server compiles the trail before it serves' and the header at :2-5 now say the opposite of the behaviour: it listens first",
+        "why": "code-quality slop list: a comment or name that no longer states what the code does. N1 deliberately changed this to listen first (vite.config.ts:26-28).",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "HEAD confirmed by reading git metadata: the worktree's HEAD is refs/heads/bug/bug-002/N1, and that ref reads 9271325792b1b611c67b6510872273dc61fe7e08. HEAD moved from 4ebe53f8 only through web-tester a973af33's QA-script commit (activity.jsonl:181, :188), which touches only the QA folder that the fingerprint excludes. The reviewed code diff and fingerprint are unchanged, and I didn't review the QA script. This review used only Read, Grep and Glob, and changed nothing.",
+      "TDD order holds. red 6ee2e957 (adds only data-1-first-run.test.ts; gate.red shows the 4 new DATA-1 tests failing by assertion on base code) → green 35122e4b → 9972c248 (test-only A1/I1 fix, Fixes-Finding A1/I1). The stub was skipped by the plan (t2), which is fine for a bug node with existing routes.",
+      "No weakening found. In data-1-trace-on-start.test.ts the base..head diff is additions only (waitFor and namesAll before the unchanged toContain assertions). In data-1-first-run.test.ts the HEAD preview branch keeps the ACTIVITY:2, LOOP:3 and 503 assertions, and attempt 2's two tester edits match A1's fix direction. Per activity.jsonl:60-67 the builder edited no test file.",
+      "The 9972c248 trailer says 'TDD: red' but the commit passes; it is a test-observation fix for an investigator-declared untestable finding. It's mislabelled but harmless, so I didn't raise it as a finding.",
+      "Acceptance lines 1, 3 and 4 are met: dev.mjs names npm ci and src/Uinsure.Policies.Web; apply() excludes isPreview, so preview never compiles; engines >=22.22.0 matches .nvmrc 22.22.0.",
+      "Acceptance line 6: unit 393/393, but the whole-suite e2e exits 1 with 64 regression-screenshot failures. Main fails 65, a superset of these 64, and the gap is carried to N6 as an amended acceptance line. No dotnet test receipt; N1 touches no .NET code (scoped gates). I accepted the orchestrator's ruling, but on a literal reading line 6 is met only by that carry.",
+      "No 'not implemented' remains in src/Uinsure.Policies.Web (gate.stubs). No banned time or rounding API in the diff.",
+      "Path traversal on /trace/* is guarded: resolve plus startsWith(publicDir + sep) after decoding. Security owns the full judgement."
+    ]
+  }
+}
