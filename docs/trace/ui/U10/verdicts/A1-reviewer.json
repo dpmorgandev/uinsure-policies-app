@@ -1,0 +1,147 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T11:46:40Z",
+  "plan": "ui",
+  "node": "U10",
+  "attempt": 1,
+  "agent": "reviewer",
+  "agent_id": "a66b984cd1281c75f",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U10",
+    "attempt": 1,
+    "base_sha": "c1a280dad9cbd61ca09aef6fe862a1ce13f63dfc",
+    "head_sha": "5ac63435bf09623da4b1e2d638042a4905649efc",
+    "diff_fingerprint": "2f2bed2b1d6721129b9327291e4ea6685182059d",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "docs/trace/ui/U10/loop.jsonl#3 gate.red@c314a61",
+      "docs/trace/ui/U10/loop.jsonl#4 gate.green@a0dd496"
+    ],
+    "rules_covered": [
+      "DATA-1",
+      "SEC-1",
+      "WB-7",
+      "NAV-4",
+      "AGENT-2"
+    ],
+    "rules_missing": [
+      "DAG-1",
+      "WB-5"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "DAG-1",
+        "severity": "P1",
+        "file": "docs/trace/ui/U10/loop.jsonl",
+        "line": 4,
+        "what": "No receipt for typecheck, lint, lint:css, e2e, regression or render-trace check at HEAD. gate.green ran only dotnet, vitest unit/kit, the prod audit and the harness tests. t9 is still pending.",
+        "why": "U10 acceptance, last line: 'Every check passes on the renamed tree: dotnet build and test, typecheck, unit, e2e, regression, the harness self-test, render-trace check for every ui node'. Most of this node's carries are proved only by e2e: the DAG-1 e2e, the 22 re-derived shell parity tests, STATS-1 within 5s, NAV-5 openTour, wb-5/wb-7 isolation, RESP-1, A11Y-1 and HONEST-1 re-pointed. None has a receipt. gate.red's 'e2e 3/93' is a web-tester claim, not an orchestrator run. No tsc receipt after the mechanical import rewrite. This is why DAG-1 and WB-5 are listed as missing.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "DATA-1",
+        "severity": "P1",
+        "file": "README.md",
+        "line": 134,
+        "what": "README still reads 'Measured ... on 2026-10-19: 637 tests'. It wasn't re-measured; gate.green@a0dd496 records dotnet 649/649.",
+        "why": "U10 acceptance (U9 carries, D1 round A2.2): 'the README's measured test count is re-measured (R2)'. U10 is the last ui node, so there is no later node to carry it to.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "DAG-1",
+        "severity": "P2",
+        "file": "src/Uinsure.Policies.Web/app/shell/Frame.tsx",
+        "line": 128,
+        "what": "The Plan nav entry still always opens the build plan (navFor:18, buildPlanId:126). The switcher is a Tabs strip drawn only on /plans/:planId, and the comment says so.",
+        "why": "Acceptance: 'the Plan nav entry no longer always opens the build plan ... It offers every plan in trace.json'. The user's question (reach the ui plan) is answered one click later, and the red tests encode the same reading. But the first clause is not met as written. David should confirm this reading.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "AGENT-2",
+        "severity": "P2",
+        "file": "tests/Uinsure.Policies.Web.Tests/e2e/U10/agent-2.spec.ts",
+        "line": 22,
+        "what": "The AGENT-2 carry (the s-events-note notice as a kit state) is recorded only as a code comment over test.fixme. ui.plan.md 'Carried past the demo' has no line for it.",
+        "why": "Judged under the orchestrator's ruling (cut to a carry, with an e2e test.fixme). A carry that lives only in a test comment drops out of the debt list David reads. The U4 A2 R2 line in the U10 acceptance is otherwise unmet.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R5",
+        "rule_id": "WB-5",
+        "severity": "P2",
+        "file": "tests/Uinsure.Policies.Web.Tests/e2e/W3/support/fresh.ts",
+        "line": 12,
+        "what": "freshReference builds policy references from crypto randomBytes. The W3 wb-5 and wb-7 specs now sell random references.",
+        "why": "Reviewer check 3 and web/tdd conventions: 'No random data'. The acceptance asks for no shared API data across repeats and sessions. Random references meet that, but the move away from literal references needs a deterministic scheme (run id plus repeatEachIndex) or David's ruling.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R6",
+        "rule_id": "DATA-1",
+        "severity": "P2",
+        "file": "docs/qa/ui-U9.md",
+        "line": 56,
+        "what": "Step 2 still expects 'A `web` solution folder holds Docket.Web'. Note 1 and step 28 say the infra README still says 'run with npx', but this diff rewords it to npm ci.",
+        "why": "Acceptance: 'docs/qa/ui-U9.md ... match the deploy steps' and 'say what F5 opens'. The slnx now puts Docket.Web in /src/ (WebProjectLocationTests), and infrastructure/README.md:89 names the lockfile. The QA script predicts failures that no longer exist.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R7",
+        "rule_id": "DATA-1",
+        "severity": "P2",
+        "file": "src/Uinsure.Policies.Web/vite.config.ts",
+        "line": 36,
+        "what": "apply:'serve' likely also runs traceOnStart under `vite preview` (e2e webServer, CI): each preview recompiles into public/, and a failed compile there goes unreported.",
+        "why": "Acceptance: 'a failed compile is reported in the console and the page, never a silent empty trail'. Vite resolves preview config with command 'serve' and mode 'production', so the mode==='test' guard doesn't skip it, and configureServer doesn't run for preview, so the failure branch is silent there. Please check against Vite 8, and skip the plugin for preview or report through configurePreviewServer.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R8",
+        "rule_id": "SEC-1",
+        "severity": "P2",
+        "file": "docs/trace/ui/U10/packet/trailers.txt",
+        "line": 116,
+        "what": "78f52d2 'fix(ui/U10): one-key F5 target, SWA headers, CI wait and the SWA CLI lockfile' has no Fixes-Finding trailer, though it fixes U9 A1 R7, security A1 S2 and A2 S1, and D2.",
+        "why": "requirements-trace, order and integrity: 'A fix(…) commit carries Fixes-Finding.' Without it, the trace's retry ladder (LOOP-2) can't link these fixes to their findings.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R9",
+        "rule_id": "SEC-1",
+        "severity": "P2",
+        "file": "src/Uinsure.Policies.Web/package.json",
+        "line": 36,
+        "what": "stylelint is pinned to the pre-release 18.0.0-next.0. No receipt shows lint:css passing on it, or the dev advisory GHSA-vfj7-8cjw-p6xm cleared (the gate audit was --omit=dev).",
+        "why": "U9 carry: 'stylelint is upgraded past the braces advisory'. The only evidence is the commit subject, and producer claims aren't evidence. A prerelease major also needs David's approval under the react-web packages rule.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R10",
+        "rule_id": "NAV-4",
+        "severity": "P2",
+        "file": "docs/trace/ui/U10/packet/trailers.txt",
+        "line": 143,
+        "what": "The harness edits (.claude/agents, hooks, scripts, CLAUDE.md) are commit a0dd496 on feature/ui/U10, so they ride the ui merge. The packet shows no separate harness/<slug> PR into main.",
+        "why": "Acceptance line 2: 'The harness edits are the orchestrator's, through a harness/<slug> PR into main'. If such a PR exists it isn't in the packet's evidence. If it doesn't, the edits land on ui and not main.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Checked and met on the evidence: the rename is git mv (850 renames at 100% or with path-only edits). WebProjectLocationTests pins the esproj path, the /src/ solution folder, Build Project=false, JavaScriptTestRoot and no live old path. Its receipts list is defensible. LaunchProfileTests D2 was changed red first in c9f8844 (node type, cwd, program vite.js, --port equal to StartupCommand's, --strictPort, --open; the Edge configuration is kept). The slnLaunch DebugTarget is 'Vite dev server'.",
+      "SEC-1 was judged against the ruling (the acceptance's stated alternative): sec-1-links-out.test.tsx proves the index.html meta no-referrer, the host's Referrer-Policy: no-referrer, and that none of the four kit links sets a weaker referrerpolicy. staticwebapp.config.json adds frame-ancestors 'none'. These are characterisation tests, likely green at red, which is fine for a 'confirm the cover' acceptance.",
+      "WB-7: the publish() cap of 1000 plus the WeakMap settled-copy cache is sound, and wb-7-log-cap.test.tsx proves both bound and newest-kept. WB-5: amountToSend uses /^-?\\d+(\\.\\d+)?$/, pinned for '0x10', '1e2' and '527.18'. The onFocus guard fixes the '527.18544.10' join (wb-5-renew-merge.test.tsx). Side effect, not tested: focusing the field without typing suppresses the term default.",
+      "NAV-4: SearchEntry is split into route and repoPath, with a unit test. nav-4.spec.ts:40's title now says 'clicking'.",
+      "The orchestrator's mechanical rewrite of the kit tests' imports was sampled (agent-badge, agent-lanes, app-shell): import paths only.",
+      "The re-pointed earlier-node e2e tests (A11Y-1 and HONEST-1 to not-found, RESP-1 at a 1200px window, DATA-1 row count scoped to the event table, STATS-1 and NAV-5 waiting for the trace) each carry a written diagnosis and are within the U4 carry's 're-pointed or retired'. STATS-1's 5s now starts after a 20s setup wait for the trace. The old HONEST-1 'every unbuilt screen' loop now iterates an empty list.",
+      "Unit total rose from 387 at gate.red to 389 at gate.green with no further red receipt. Two unit tests may have entered in builder commits. I can't tell which without git.",
+      "No NotImplementedException or 'not implemented' throw remains in src/. No banned time or rounding API was introduced. Stub and pause 1 were skipped under delegation (A5), as the dag records. The TDD order red (c9f8844, c314a61) before green holds for every node rule."
+    ]
+  }
+}

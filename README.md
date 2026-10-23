@@ -131,8 +131,8 @@ Health checks are at `/health/live` and `/health/ready`.
 dotnet test --solution Uinsure.Policies.slnx
 ```
 
-Measured with that command on this branch on 2026-10-19: 637 tests (173 domain, 65 services, 332 API acceptance
-and 67 architecture), 0 failed, 0 skipped.
+Measured with that command on this branch on 2026-10-23: 649 tests (173 domain, 65 services, 332 API acceptance
+and 79 architecture), 0 failed, 0 skipped.
 
 **Run the Postman collection** (109 requests; start the API first):
 

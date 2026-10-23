@@ -573,7 +573,7 @@ nodes:
     cuttable: true
     budget: null
     status: in_progress
-    attempt: 1
+    attempt: 2
     branch: feature/ui/U10
     worktree: .claude/worktrees/ui-U10
     pr: null
