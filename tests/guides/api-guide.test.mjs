@@ -8,8 +8,10 @@
 //   `…words…` is one elision, so the words between two ellipses are a description, not literal text.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
-import { dirname, isAbsolute, relative, resolve } from "node:path";
+import { spawnSync } from "node:child_process";
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -269,4 +271,26 @@ test("LRN-4 A1/I13: a figure whose caption speaks of arrows draws every connecto
     }
   }
   assert.deepEqual(problems, [], "the direction a caption claims is drawn");
+});
+
+// The web project's directory on this branch's layout: CLAUDE.md's Docket commands run `npm --prefix src/web ci`.
+// src/Uinsure.Policies.Web is the name after the ui plan's U10 rename, which has not landed here.
+test("STY-5 A1/I14: with no Playwright, print.mjs exits 2 and its hint names the web directory of this branch's layout", () => {
+  // A copy in an empty tree, so no installed Playwright anywhere can be found.
+  const sandbox = mkdtempSync(join(tmpdir(), "guide-print-"));
+  try {
+    mkdirSync(join(sandbox, "docs", "guides"), { recursive: true });
+    const script = join(sandbox, "docs", "guides", "print.mjs");
+    copyFileSync(resolve(root, "docs/guides/print.mjs"), script);
+
+    const run = spawnSync(process.execPath, [script, "test"], {
+      cwd: sandbox,
+      encoding: "utf8",
+      env: { ...process.env, PLAYWRIGHT_MODULE: join(sandbox, "no-playwright") },
+    });
+    assert.equal(run.status, 2, `print.mjs exits 2 when Playwright is missing (stderr: ${run.stderr.trim()})`);
+    assert.match(run.stderr, /npm --prefix src\/web ci/, "the hint names src/web, the web directory of this branch's layout, not only the post-U10 name");
+  } finally {
+    rmSync(sandbox, { recursive: true, force: true });
+  }
 });
