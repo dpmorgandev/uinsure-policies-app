@@ -123,12 +123,14 @@ interface Answer {
   status: number;
   type: string;
   text: string;
+  /** The X-Docket-Trace header: the trail's state as the dev server names it ('compiling', 'failed'), or null. */
+  marker: string | null;
 }
 
 async function ask(url: string): Promise<Answer | null> {
   try {
     const answer = await fetch(url, { headers: { accept: 'application/json' }, signal: AbortSignal.timeout(60_000) });
-    return { status: answer.status, type: answer.headers.get('content-type') ?? '', text: await answer.text() };
+    return { status: answer.status, type: answer.headers.get('content-type') ?? '', text: await answer.text(), marker: answer.headers.get('x-docket-trace') };
   } catch {
     return null;
   }
@@ -216,6 +218,8 @@ describe('a fresh clone F5s straight into Docket', () => {
       expect(first, `the dev server answers at all\n${running.output()}`).toBeDefined();
       expect(isTrace(first ?? null), `the port answers before the compile ends, so its first /trace.json is not yet the trail\n${running.output()}`).toBe(false);
       expect(first?.text ?? '', `the first answer says the trail is compiling: ${first?.status ?? '-'} ${first?.text.slice(0, 200) ?? ''}`).toMatch(/compil/i);
+      expect(first?.status, 'the compiling answer is 503').toBe(503);
+      expect(first?.marker ?? null, `and names its state, machine-readably, as compiling (never failed): X-Docket-Trace ${first?.marker ?? 'absent'}`).toBe('compiling');
       const last = answers[answers.length - 1];
       expect(isTrace(last ?? null), `once the compile ends, /trace.json is the compiled trail\n${running.output()}`).toBe(true);
       expect(last === undefined ? undefined : shaOf(last), "compiled from this tree's trail, at its HEAD").toBe(trail.head);
