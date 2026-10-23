@@ -35,6 +35,8 @@ const browser = await chromium.launch();
 const page = await browser.newPage();
 await page.goto(pathToFileURL(source).href, { waitUntil: "networkidle" });
 await page.evaluate(() => document.fonts.ready);
+// Relative hrefs resolve to file:// URLs and would embed the local checkout path in the PDF's link annotations (privacy, §8.6).
+await page.evaluate(() => document.querySelectorAll("a[href]").forEach((a) => a.removeAttribute("href")));
 const title = await page.title();
 const style = "font-family: sans-serif; font-size: 8px; color: #555b62; width: 100%; padding: 0 16mm;";
 await page.pdf({
