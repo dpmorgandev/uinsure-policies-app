@@ -8,7 +8,7 @@
 //   `…words…` is one elision, so the words between two ellipses are a description, not literal text.
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -170,4 +170,23 @@ test("LRN-3 A1/I7: no list outside the front sheet has more than four items", ()
     .filter(({ items }) => items > 4)
     .map(({ list, items }) => `index.html:${list.line} ${list.name}.${classes(list).join(".")} has ${items} items`);
   assert.deepEqual(long, [], "lists have three items, or four at most; longer ones are grouped under labels");
+});
+
+test("A1/I8: the API guide spec states its real question count and a receipts path that exists", () => {
+  const spec = read("docs/specs/api-guide.spec.md");
+  const rows = [...spec.matchAll(/^\| [ADU]\d+ \|/gm)].length;
+  assert.ok(rows > 0, "the spec has a question bank");
+
+  const stated = [
+    ...[...spec.matchAll(/(?<!at least )\b(\d+) questions\b/g)].map((m) => `"${m[0]}"`),
+    ...[...spec.matchAll(/\bMet at (\d+)\b/g)].map((m) => `"${m[0]}"`),
+  ];
+  assert.ok(stated.length > 0, "the spec states its question count");
+  const wrong = stated.filter((s) => Number(s.match(/\d+/)[0]) !== rows);
+  assert.deepEqual(wrong, [], `the question bank has ${rows} rows, so every stated count must be ${rows}`);
+
+  const paths = [...new Set([...spec.matchAll(/\bdocs\/[\w./-]*receipts\.md\b/g)].map((m) => m[0]))];
+  assert.ok(paths.length > 0, "the spec names where the receipts are written");
+  const absent = paths.filter((p) => !existsSync(resolve(root, p)));
+  assert.deepEqual(absent, [], "every receipts path the spec names exists");
 });
