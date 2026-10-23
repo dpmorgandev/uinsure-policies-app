@@ -250,3 +250,23 @@ test("LRN-9 A1/I12: every code-reference link in the guide opens an existing rep
     .map((el) => `index.html:${el.line} href="${el.attrs.href}"`);
   assert.deepEqual(broken, [], "an a.ref href, resolved against the page's own URL, reaches a file in the repository (the line goes in the fragment or the text, not the file name)");
 });
+
+test("LRN-4 A1/I13: a figure whose caption speaks of arrows draws every connector with an arrowhead", () => {
+  const html = read(guidePath);
+  const figures = [...html.matchAll(/<figure\b[\s\S]*?<\/figure>/g)].map((m) => ({ text: m[0], line: lineAt(html, m.index) }));
+  assert.ok(figures.length > 0, "the guide has figures");
+  // A caption that stops claiming direction is the other allowed fix, so no claiming caption passes.
+  const claiming = figures.filter((f) => /\barrows?\b/i.test(f.text.match(/<figcaption\b[\s\S]*?<\/figcaption>/)?.[0] ?? ""));
+
+  const problems = [];
+  for (const f of claiming) {
+    const markerIds = [...f.text.matchAll(/<marker\b[^>]*\bid="([^"]+)"/g)].map((m) => m[1]);
+    if (markerIds.length === 0) problems.push(`index.html:${f.line} the svg defines no <marker>`);
+    const connectors = f.text.replace(/<marker\b[\s\S]*?<\/marker>/g, "").match(/<path\b[^>]*>/g) ?? [];
+    for (const path of connectors) {
+      const used = [...path.matchAll(/\bmarker-(?:end|start|mid)="url\(#([^)]+)\)"/g)].map((m) => m[1]);
+      if (!used.some((id) => markerIds.includes(id))) problems.push(`index.html:${f.line} connector without an arrowhead: ${path.slice(0, 50)}`);
+    }
+  }
+  assert.deepEqual(problems, [], "the direction a caption claims is drawn");
+});
