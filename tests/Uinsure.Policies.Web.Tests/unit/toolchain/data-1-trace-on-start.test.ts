@@ -1,8 +1,11 @@
 // @vitest-environment node
 // DATA-1 · One compiled data file: trace on start (David 2026-10-23, U10). trace.json is written to the web project's
 // public/ folder, which git ignores, so a fresh clone has none and Docket opened on "Could not load trace.json" until
-// someone ran `npm run trace`. Starting the dev server (F5's Vite dev server target, the StartupCommand, npx vite)
-// compiles the trail first; a compile that fails is reported, never served as a silent empty trail.
+// someone ran `npm run trace`. The dev server (however it is started: F5's Vite dev server target or the esproj's
+// StartupCommand through scripts/dev.mjs, or vite itself) listens at once and compiles the trail beside it. Until the
+// compile ends /trace.json answers that the trail is compiling; then it serves the compiled trail, or, when the compile
+// fails, reports each problem in the console and serves no trace.json, never a silent empty trail. The "Local:" line
+// is printed once the compile has ended, so these tests ask the server after it.
 // Each test is a fresh tree: a fixture trail replayed into a new git repo, the web project copied in beside it with no
 // public/ (its node_modules linked, not copied), and Vite started from there on its own vite.config.ts, on a port the
 // OS gives. Nothing here knows how the compile is wired in; it only asks the running server.
@@ -146,7 +149,7 @@ async function askTrace(started: Started): Promise<{ status: number; type: strin
   return { status: answer.status, type: answer.headers.get('content-type') ?? '', text: await answer.text() };
 }
 
-describe('the dev server compiles the trail before it serves', () => {
+describe('the dev server listens at once, answers compiling, then serves the compiled trail or reports why not', () => {
   test('DATA-1 · a fresh tree started with npx vite serves /trace.json, compiled from the trail at its HEAD', async () => {
     const trail = replayTrail('complete');
     await onFreshTree(trail, async (started) => {
