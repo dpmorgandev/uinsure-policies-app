@@ -24,10 +24,9 @@ function termMethod(policy: Policy): PaymentMethod | null {
   return (method?.value as PaymentMethod | undefined) ?? null;
 }
 
-/** WB-5: a clean number goes as a number; anything else, empty included, goes as typed so the API's 400 answers it. */
+/** WB-5: a decimal goes as a number; anything else, empty, '0x10' and '1e2' included, goes as typed so the API's 400 answers it. */
 function amountToSend(typed: string): number | string {
-  const number = Number(typed);
-  return typed.trim() !== '' && Number.isFinite(number) ? number : typed;
+  return /^-?\d+(\.\d+)?$/.test(typed) ? Number(typed) : typed;
 }
 
 function Timeline({ policy }: { policy: Policy }) {
@@ -145,6 +144,10 @@ export function RenewPolicy() {
               <MoneyInput
                 {...control}
                 value={amount}
+                // A person already on the field when the read lands is typing their own amount; the term's is not joined to it.
+                onFocus={() => {
+                  typedAmount.current = true;
+                }}
                 onChange={(e) => {
                   typedAmount.current = true;
                   setAmount(e.target.value);
