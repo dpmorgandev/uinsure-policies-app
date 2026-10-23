@@ -1,12 +1,15 @@
 // NAV-4 · Search. Jump to any rule ID, node, SHA or file path from one input: the top bar's search, on every page.
 // On the `agents` fixture trail (agents/README.md): rule SELL-2, node build/F2, commit c4 by a prefix of its SHA, and
 // the path src/sell.txt (a file of build/F1's A1 finding). A query nothing matches says so. Parity on the design
-// fixture against docs/ui/derived/U4/overview/ (the top bar's search is tagged there once).
+// fixture against docs/ui/derived/U4/overview/ (the top bar's search is tagged there once). The region tags the global
+// controls: the search is the top bar's, once on the page, and not drawn again in the region, as THEME-1 checks the
+// same region (U0b's expectRegionControlsInTopBar, here given U4's reference through its derived path).
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
 import { auditEverywhere, compileAgents, openOnFixture, route, searchField, searchOptions, shaOf, short } from './support/app';
 import type { CompiledTrail } from './support/app';
-import { expectRegionComponents, overview } from './support/parity';
+import { expectRegionControlsInTopBar } from '../U0b/support/parity';
+import { overview } from './support/parity';
 
 let fixture: CompiledTrail;
 test.beforeAll(() => {
@@ -74,5 +77,5 @@ test('NAV-4 · the search, open with its matches, has no axe violation, light an
 });
 
 test("NAV-4 · parity: the overview's top bar search, its components", async ({ page }) => {
-  await expectRegionComponents(page, overview, TOP_BAR);
+  await expectRegionControlsInTopBar(page, { ...overview, screen: '../U4/overview' }, TOP_BAR);
 });
