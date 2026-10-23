@@ -36,6 +36,7 @@ public sealed class WebProjectLocationTests
         ("docs/ui/styles.md", "signed-off G3 design output, stamped"),
         ("docs/requirements.md", "the agreed brief, as written when agreed; the reserved-web-folder line is history"),
         ("docs/ui-requirements.md", "the agreed brief, as written when agreed; the reserved-web-folder line is history"),
+        ("docs/documentation-requirements.md", "the agreed brief, as written when agreed; it quotes the rename itself"),
         ("src/Uinsure.Policies.Web/kit/project/agent-lanes/agent-lanes.examples.tsx", "kit example data naming trail paths; the kit is out of U10's scope"),
         ("tests/Uinsure.Policies.Web.Tests/e2e/U1/rule-1.spec.ts", "names paths inside a fixture trail's simulated repo, not this repo"),
         ("tests/Uinsure.Policies.Web.Tests/e2e/U2/rule-3.spec.ts", "names paths inside a fixture trail's simulated repo, not this repo"),
