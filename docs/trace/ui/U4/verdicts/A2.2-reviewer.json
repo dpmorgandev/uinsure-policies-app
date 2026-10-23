@@ -1,0 +1,84 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T05:52:37Z",
+  "plan": "ui",
+  "node": "U4",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a705b8cdd2bb824a9",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U4",
+    "attempt": 2,
+    "base_sha": "e7ca509f098ebc8dd00f20553d3786ace4245846",
+    "head_sha": "b2fcbebea91d55533882b6a919f83c17c04b7942",
+    "diff_fingerprint": "9106533064ca8540db41c109801e5635c814335a",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.kit-audit@fecfb4e (2026-10-23T05:25:37Z, after the U8 integrate)",
+      "gate.stylekit@fecfb4e (2026-10-23T05:25:37Z, fbb7488: 207 snippets, 0 problems)",
+      "gate.screens-audit@fecfb4e (2026-10-23T05:25:38Z)",
+      "gate.frames-audit@fecfb4e (2026-10-23T05:25:38Z)",
+      "gate.fingerprint@fecfb4e (2026-10-23T05:26:13Z, 21f21f8 at d7888d1 = 21f21f8 at fecfb4e)",
+      "gate.e2e@fecfb4e (2026-10-23T05:40:18Z, 136/140, none in e2e/U4)",
+      "gate.integrate@fecfb4e (2026-10-23T05:40:19Z, ok:false, superseded)",
+      "gate.e2e@365a8b1 (2026-10-23T05:42:25Z, 4 W3 re-run at --workers=1, 4 passed)",
+      "gate.integrate@365a8b1 (2026-10-23T05:42:25Z, ok:true, unit 373/373, e2e 140)",
+      "gate.qa@d7888d1 (2026-10-23T04:47:54Z)",
+      "gate.finding-red@cd7b589 (2026-10-23T03:49:37Z, carried from A2)",
+      "gate.typecheck/lint/lint-css/test/build/audit/e2e/e2e-regression@62cf910 (carried from A2)"
+    ],
+    "rules_covered": [
+      "AGENT-1",
+      "AGENT-2",
+      "HITL-1",
+      "VERIFY-1",
+      "NAV-2",
+      "NAV-4",
+      "PERF-1"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "NAV-4",
+        "severity": "P2",
+        "file": "tests/web/e2e/U4/nav-4.spec.ts",
+        "line": 40,
+        "what": "Carried from A2 and unchanged at HEAD: the test is titled 'Enter on it opens the node page', but it presses ArrowDown and clicks. Enter is proven by the separate keyboard test.",
+        "why": "web-testing: a test asserts the behaviour its title claims. Renaming it would weaken no assertion.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "AGENT-2",
+        "severity": "P2",
+        "file": "src/web/app/explorer/activity/Activity.tsx",
+        "line": 175,
+        "what": "Carried from A2: the screen writes the undrawn-lines notice as its own <p className=\"s-events-note\">. It does not come from agent-lanes' kit state or slot.",
+        "why": "react-web 'screens are composed, not designed': a notice the reference lacks belongs to the kit. The parity gates pass, so it doesn't block.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "NAV-4",
+        "severity": "P2",
+        "file": "src/web/app/data/trace.ts",
+        "line": 342,
+        "what": "Carried from A2: SearchEntry.href is an in-app route for most kinds but a repo-relative path for kind 'path'. Only a doc comment tells the two apart.",
+        "why": "Finding I1 named this overloaded field as its cause. The fix is correct (SiteSearch.tsx turns a path into a blobUrl), but the field is still a trap for the next consumer.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Delta review, d7888d1 to b2fcbeb. Since A2 there are two merges of origin/ui (d7aa18a: U7 and W3; 61e13a2: U8), the re-derived U4 references (032785d, fecfb4e), the regenerated stylekit (fbb7488), and bookkeeping commits (dd06526, 365a8b1, 531139b, b2fcbeb). None of these carries a TDD trailer, and none adds a red or green for a U4 rule. The A2 trailer order still holds.",
+      "delta.patch touches only docs/ui/derived/U4/derived.json, docs/ui/derived/U4/wb-* (wb-cancel, wb-claim, wb-policy, wb-renew, wb-requests, wb-sell) and 6 docs/ui/stylekit files. It has no src/, tests/, docs/ui/screens, docs/ui/kit or baselines path. No derived reference for a U4 explorer screen (activity, decisions, about, not-found, search, overview) changed, so the parity targets for U4's rules are unchanged. In derived.json the hunks show only workbench built/notBuilt moves, wb-requests added, and U7/U8/W3 added to the node list. nodeRulesWithoutRegion still lists PERF-1, as it did at A2.",
+      "gate.fingerprint: U4's own diff, with bookkeeping and generated paths excluded, has patch-id 21f21f8 at both d7888d1 and fecfb4e. That backs the claim that no U4 code or test changed since the A2 PASS. The four commits after fecfb4e are bookkeeping by their subjects.",
+      "There are two gate.integrate receipts. The first, at fecfb4e, is ok:false with 4 W3 failures (wb-5:23, :38, :154 and wb-7:52), in files U4 doesn't touch. The second, at 365a8b1, is ok:true: those 4 passed at --workers=1, unit tests are 373/373, and the 140 scoped e2e (U4, U7, U8, W3) cover all of e2e/U4. The second receipt supersedes the first. The scoped gates follow David's 2026-10-23 ruling; the full cross-node e2e and visual regression are deferred to U10.",
+      "At HEAD, src/web/app has no throw new Error('not implemented') and no dangerouslySetInnerHTML. The only match in the kit is a comment in kit/patterns/markdown-text/MarkdownText.tsx saying the function is not used. The other matches are under src/web/public/, which is untracked compiled trace output (git status '?? src/web/public/'). It is not source, but it should stay out of any commit.",
+      "Still U10 debt, not judged here: the DATA-1 '5 vs 10' row count, RESP-1 and WB-3 from the 62cf910 gate.e2e, and now the 4 W3 contention timeouts. The A2 note that the F3 fixture can't explain DATA-1 still stands."
+    ]
+  }
+}
