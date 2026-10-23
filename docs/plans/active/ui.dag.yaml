@@ -200,7 +200,7 @@ nodes:
     attempt: 2
     branch: feature/ui/U4
     worktree: .claude/worktrees/ui-U4
-    pr: null
+    pr: 113
     qa: docs/qa/ui-U4.md
     trace: docs/trace/ui/U4/
     acceptance:
