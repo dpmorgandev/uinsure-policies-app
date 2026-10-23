@@ -427,7 +427,7 @@ nodes:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for the U7 demo slice (rel=noreferrer and the CSP directives, the cancel status and re-read, the tour following one rule, one plans/:planId route, the bounded activity shot) … and unit tests", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: skipped}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the U7 acceptance tests; go or change", status: skipped}
-      - {id: t4, role: builder, step: green, layer: screen, rules: [], title: "The demo slice: external links, CSP, cancel status and re-read, the tour, one plans route, the activity shot; whole acceptance suite green … all layers", status: pending}
+      - {id: t4, role: builder, step: green, layer: screen, rules: [], title: "The demo slice: external links, CSP, cancel status and re-read, the tour, one plans route, the activity shot; whole acceptance suite green … all layers", status: done}
       - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: pending}
       - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, every screen built so far against its baseline, rule coverage, diff scope", status: pending}
       - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
