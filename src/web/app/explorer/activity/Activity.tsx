@@ -87,7 +87,7 @@ function lanesOf(trace: Trace, records: ActivityRecord[]): Lane[] {
     const commit = commitOf(trace, record);
     const touched = record.command ?? record.file ?? '';
     const label = [record.tool, touched].filter((part) => part !== null && part !== undefined && part !== '').join(' ');
-    const event: LaneEvent = { n: record.line, label: label === '' ? `line ${record.line}` : label, tdd: commit?.tdd ?? null, sha: commit?.sha.slice(0, 7) ?? null };
+    const event: LaneEvent = { n: record.line, label: label === '' ? `line ${record.line}` : label, tool: record.tool ?? null, file: touched === '' ? null : touched, tdd: commit?.tdd ?? null, sha: commit?.sha.slice(0, 7) ?? null };
     lanes.set(agent, [...(lanes.get(agent) ?? []), event]);
   }
   return [...lanes].map(([agent, events]) => ({ agent, events }));
