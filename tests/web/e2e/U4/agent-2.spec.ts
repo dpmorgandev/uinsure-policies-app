@@ -3,6 +3,7 @@
 // reviewer; the reviewer's one line is a Read of src/sell.txt; the builder's lane holds the Edit of src/sell.txt and
 // its commits. Parity on the design fixture against docs/ui/derived/U4/activity/.
 import { expect, test } from '@playwright/test';
+import type { Locator } from '@playwright/test';
 import { LANES, auditEverywhere, compileAgents, laneAgents, openRegion, region, route } from './support/app';
 import type { CompiledTrail } from './support/app';
 import { activity, expectRegionComponents, expectRegionsInOrder } from './support/parity';
@@ -33,6 +34,17 @@ test("AGENT-2 · the reviewer's lane names its tool and file: Read, src/sell.txt
   const reviewer = lanes.locator('ol[aria-label="reviewer rungs"]');
   await expect(reviewer).toContainText('Read');
   await expect(reviewer).toContainText('src/sell.txt');
+});
+
+// build/F3 (agents/README.md): web-tester 2 lines, web-builder 1, then one design-auditor line and one with no agent.
+const F3 = route.activity('build', 'F3');
+const ticksOf = async (lanes: Locator, agent: string): Promise<number> => lanes.locator(`ol[aria-label="${agent} rungs"] > li`).count();
+
+test("AGENT-2 · build/F3's ui-plan agents get lanes, in first-seen order: web-tester 2 lines, web-builder 1", async ({ page }) => {
+  // A3 I2: the kit draws the ui plan's agents, and the app's list follows it.
+  const lanes = await openRegion(page, fixture, F3, LANES);
+  await expect.poll(() => laneAgents(lanes)).toEqual(['web-tester', 'web-builder']);
+  await expect.poll(async () => [await ticksOf(lanes, 'web-tester'), await ticksOf(lanes, 'web-builder')]).toEqual([2, 1]);
 });
 
 test('AGENT-2 · the activity page has no axe violation, light and dark, 1440 and 390', async ({ page }) => {
