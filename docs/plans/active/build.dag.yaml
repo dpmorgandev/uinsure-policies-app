@@ -432,10 +432,10 @@ nodes:
       - "UI_UserGuide.pdf at the root is printed by node docs/guides/print.mjs from docs/guides/ui/index.html with F7's format, and covers every item in documentation-requirements §7: every shipped screen with a highlighted screenshot, its regions, rule ids, numbered steps and the code that draws it; running the tests by hand per §4b"
       - "Screenshots come from the final app after U10; highlight markers are measured from region tags, never hand-placed; every path:line link resolves at HEAD; the privacy scan passes on the HTML, assets and PDF text (§4 LRN-6, §8.4–§8.6)"
     tasks:
-      - {id: t1, role: builder, step: write, layer: null, rules: [], title: "docs/specs/ui-guide.spec.md: the reader question bank first, then research with path:line citations, the region-tag audit, outline and acceptance", status: pending}
-      - {id: t2, role: builder, step: write, layer: null, rules: [], title: "Capture every screen and workflow step from the running app, with highlight markers measured from region tags", status: pending}
-      - {id: t3, role: builder, step: write, layer: null, rules: [], title: "docs/guides/ui/index.html built from the spec; UI_UserGuide.pdf printed", status: pending}
-      - {id: t4, role: orchestrator, step: gates, layer: null, rules: [], title: "Links resolve, privacy scan, the PDF reprints from its HTML, question bank fully answered, full suite green", status: pending}
+      - {id: t1, role: builder, step: write, layer: null, rules: [], title: "docs/specs/ui-guide.spec.md: the reader question bank first, then research with path:line citations, the region-tag audit, outline and acceptance", status: done}
+      - {id: t2, role: builder, step: write, layer: null, rules: [], title: "Capture every screen and workflow step from the running app, with highlight markers measured from region tags", status: done}
+      - {id: t3, role: builder, step: write, layer: null, rules: [], title: "docs/guides/ui/index.html built from the spec; UI_UserGuide.pdf printed", status: done}
+      - {id: t4, role: orchestrator, step: gates, layer: null, rules: [], title: "Links resolve, privacy scan, the PDF reprints from its HTML, question bank fully answered, full suite green", status: done}
       - {id: t5, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
       - {id: t6, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/build-F8.md: David follows the guide's workflows in the running app", status: skipped}
       - {id: t7, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: pending}
