@@ -338,6 +338,7 @@ export interface SearchEntry {
   kind: 'rule' | 'node' | 'sha' | 'path';
   label: string;
   detail: string | null;
+  /** An in-app route; for a path, the repo-relative path itself, which the search opens on GitHub at the snapshot. */
   href: string;
   /** A commit's full SHA, so a longer prefix than the label still finds it. */
   sha?: string;
@@ -358,7 +359,7 @@ export function searchIndex(trace: Trace): SearchEntry[] {
     ...findingFiles,
   ];
   for (const path of new Set(paths)) {
-    if (typeof path === 'string' && path !== '') entries.push({ kind: 'path', label: path, detail: null, href: `#/files/${seg(path)}` });
+    if (typeof path === 'string' && path !== '') entries.push({ kind: 'path', label: path, detail: null, href: path });
   }
   return entries;
 }
