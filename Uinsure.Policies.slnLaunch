@@ -9,7 +9,8 @@
       },
       {
         "Path": "src\\web\\Docket.Web.esproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "localhost (Edge)"
       }
     ]
   }
