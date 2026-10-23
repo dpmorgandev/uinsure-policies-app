@@ -1,0 +1,1 @@
+HumanDecisionRow's external evidence links (GitHub blob and commit URLs) have no rel="noreferrer" (U4 security A1, S2). Every external link the kit draws carries rel="noreferrer" (web-security W2). Add it to each external link the row draws, and change nothing else; add no state.
