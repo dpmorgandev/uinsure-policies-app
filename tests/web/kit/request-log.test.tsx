@@ -37,7 +37,7 @@ describe('RequestLog', () => {
       'Duration',
     ]);
     const heads = rows().map((row) => within(row).getByRole('rowheader').textContent);
-    expect(heads).toEqual(['#3', '#2', '#1']);
+    expect(heads).toEqual(['#4', '#3', '#2', '#1']);
   });
 
   it('shows method, path, status as a word, a glyph and a colour, and duration', () => {
@@ -56,6 +56,41 @@ describe('RequestLog', () => {
     expect(screen.getByText('422').closest('[data-status]')?.getAttribute('data-status')).toBe('fail');
   });
 
+  it('draws a request with no answer yet as pending, never as 0 (WB-7, HONEST-1)', () => {
+    render(
+      <RequestLog
+        entries={[
+          { n: 3, method: 'GET', path: '/a', status: null },
+          { n: 2, method: 'GET', path: '/b' },
+          { n: 1, method: 'GET', path: '/c', status: 0 },
+        ]}
+      />,
+    );
+    const tags = rows().map((row) => within(row).getByText(/pending/i).closest('[data-status]'));
+    expect(tags).toHaveLength(3);
+    for (const tag of tags) {
+      expect(tag?.getAttribute('data-status')).toBe('pending');
+      expect(tag?.textContent).toMatch(/pending/i);
+      expect(tag?.textContent).not.toMatch(/^\s*0\s*$/);
+    }
+    expect(screen.queryByText('0')).toBeNull();
+  });
+
+  it('the filter matches a pending request by the word pending, and not an answered one', async () => {
+    render(
+      <RequestLog
+        entries={[
+          { n: 2, method: 'GET', path: '/waiting', status: null },
+          { n: 1, method: 'GET', path: '/done', status: 200 },
+        ]}
+      />,
+    );
+    await userEvent.type(screen.getByRole('textbox', { name: 'Filter requests' }), 'pending');
+    expect(rows()).toHaveLength(1);
+    expect(within(rows()[0]!).getByRole('rowheader').textContent).toBe('#2');
+    expect(screen.getByRole('status').textContent).toBe('Showing 1 of 2');
+  });
+
   it('empty: says so, and offers no filter and no table', () => {
     render(examples[1]!.element);
     expect(screen.getByText(/No requests sent yet/)).toBeTruthy();
@@ -68,7 +103,7 @@ describe('RequestLog', () => {
     expect((screen.getByRole('textbox', { name: 'Filter requests' }) as HTMLInputElement).value).toBe('POST');
     expect(rows()).toHaveLength(1);
     expect(within(rows()[0]!).getByRole('rowheader').textContent).toBe('#2');
-    expect(screen.getByRole('status').textContent).toBe('Showing 1 of 3');
+    expect(screen.getByRole('status').textContent).toBe('Showing 1 of 4');
   });
 
   it('typing narrows the list and the count follows', async () => {

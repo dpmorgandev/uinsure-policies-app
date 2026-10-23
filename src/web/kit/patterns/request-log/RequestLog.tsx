@@ -11,7 +11,11 @@ export interface RequestLogEntry {
   method: string;
   /** The path and query as sent. */
   path: string;
-  status: number;
+  /**
+   * The HTTP status the API answered with. Leave it out, or pass `null`, while the request has no answer yet (in
+   * flight, or never answered): the table draws it as pending, never as 0.
+   */
+  status?: number | null;
   /** How long it took, in milliseconds. Leave out when it was not measured. */
   durationMs?: number;
 }
@@ -28,7 +32,14 @@ export interface RequestLogProps {
   headingLevel?: 2 | 3;
 }
 
-function tone(code: number): Status {
+/** The status the table draws: the code, or the word `pending` when the request has no answer yet. */
+function answered(entry: RequestLogEntry): number | null {
+  const code = entry.status;
+  return typeof code === 'number' && Number.isFinite(code) && code > 0 ? code : null;
+}
+
+function tone(code: number | null): Status {
+  if (code === null) return 'pending';
   if (code < 300) return 'pass';
   if (code < 400) return 'warn';
   return 'fail';
@@ -37,7 +48,8 @@ function tone(code: number): Status {
 function matches(entry: RequestLogEntry, filter: string): boolean {
   const needle = filter.trim().toLowerCase();
   if (needle === '') return true;
-  return `${entry.method} ${entry.path} ${entry.status}`.toLowerCase().includes(needle);
+  const code = answered(entry);
+  return `${entry.method} ${entry.path} ${code === null ? 'pending' : code}`.toLowerCase().includes(needle);
 }
 
 /** The requests this browser sent, newest first, with method, path, status and duration. Filterable. */
@@ -131,7 +143,9 @@ export function RequestLog({
                         )}
                       </td>
                       <td>
-                        <StatusTag status={tone(entry.status)}>{String(entry.status)}</StatusTag>
+                        <StatusTag status={tone(answered(entry))}>
+                          {answered(entry) === null ? 'Pending' : String(answered(entry))}
+                        </StatusTag>
                       </td>
                       <td className={styles.num}>
                         {entry.durationMs !== undefined ? (
