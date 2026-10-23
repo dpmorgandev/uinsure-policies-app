@@ -1,0 +1,99 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T12:08:00Z",
+  "plan": "ui",
+  "node": "U10",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "ad98b70029e2f6112",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U10",
+    "attempt": 2,
+    "base_sha": "c1a280dad9cbd61ca09aef6fe862a1ce13f63dfc",
+    "head_sha": "dbc81b2aa33b61300be5f48636f01e64d806c75d",
+    "diff_fingerprint": "2810a06e696b7788fbd4c3cbcd35def86276bf1d",
+    "verdict": "PASS",
+    "gate_refs": [
+      "docs/trace/ui/U10/loop.jsonl#3 gate.red@c314a61",
+      "docs/trace/ui/U10/loop.jsonl#4 gate.green@a0dd496",
+      "docs/trace/ui/U10/loop.jsonl#9 gate.web@f842db4",
+      "docs/trace/ui/U10/loop.jsonl#14 gate.e2e@f842db4",
+      "docs/trace/ui/U10/loop.jsonl#15 gate.integrate@f842db4"
+    ],
+    "rules_covered": [
+      "DAG-1",
+      "DATA-1",
+      "SEC-1",
+      "WB-5",
+      "WB-7",
+      "NAV-4",
+      "AGENT-2"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "WB-5",
+        "severity": "P2",
+        "file": "docs/trace/ui/U10/loop.jsonl",
+        "line": 14,
+        "what": "No --repeat-each receipt for the W3 wb-5 claim and renewal specs, U7's NAV-5 tour tests or STATS-1. The one full e2e pass needed 84 tests rerun with --last-failed.",
+        "why": "U8 carry acceptance: the wb-5 specs 'pass under --repeat-each and beside another session's run'; the NAV-5 tests 'pass under --repeat-each 5'; STATS-1 'within 5s every run'. gate.e2e is one run plus a rerun of 84 after an orchestrator-started API was stopped. freshReference makes the wb-5 fix correct by construction, which is why this is P2. The two timing fixes are shown by a single pass only. A scoped --grep run with --repeat-each 5 would close it.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "DAG-1",
+        "severity": "P2",
+        "file": "docs/plans/active/ui.dag.yaml",
+        "line": 605,
+        "what": "No receipt for a render-trace check of every ui node, and t9 (gates) is still pending at HEAD. Harness self-test last ran at a0dd496; later commits touch no harness file.",
+        "why": "U10 acceptance, last line: 'Every check passes on the renamed tree: ... the harness self-test, render-trace check for every ui node'. Not blocking, because t13 renders and checks the trail after review and the trail changes again at that step. The receipt should be in loop.jsonl before the PR comment.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "DATA-1",
+        "severity": "P2",
+        "file": "docs/trace/ui/U10/packet/trailers.txt",
+        "line": 159,
+        "what": "f842db4 'fix(ui/U10): README test count re-measured; QA script; attempt 2' has no Fixes-Finding trailer, though it fixes A1 R2 (I2). This is the same gap as A1 R8 on 78f52d2.",
+        "why": "requirements-trace, order and integrity: 'A fix(...) commit carries Fixes-Finding.' Without it, LOOP-2's retry ladder can't link this attempt-2 fix to the A1 finding it closes.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "DATA-1",
+        "severity": "P2",
+        "file": "docs/qa/ui-U9.md",
+        "line": 56,
+        "what": "Step 2 still expects 'A `web` solution folder holds Docket.Web'. Step 28 and note 1 still predict a failure on the infra README's 'run with npx', but infrastructure/README.md no longer contains 'npx'.",
+        "why": "A1 R6 is only partly fixed. U9 carry: 'docs/qa/ui-U9.md ... match the deploy steps'. The slnx now puts Docket.Web in /src/ (also its own diff, and ui-U10.md step 2), and a grep of infrastructure/README.md finds no 'npx'. The script still predicts two failures that can't happen.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R5",
+        "rule_id": "AGENT-2",
+        "severity": "P2",
+        "file": "tests/Uinsure.Policies.Web.Tests/e2e/U10/agent-2.spec.ts",
+        "line": 23,
+        "what": "The AGENT-2 test was red at c314a61 and became test.fixme in 8b467fb. SEC-1's red assertions were re-pointed in the same commit. Both are orchestrator rulings that change tests after their red commit.",
+        "why": "web-testing: 'No test is weakened, skipped or deleted after its red commit.' This is P2 under the delegated ruling: the carry is now in ui.plan.md (A1 R4 is closed), the SEC-1 re-point is the acceptance's own stated alternative, and ui-U10.md notes 1 and 2 plus the sign-off checkbox put both to David. If he rejects either at sign-off, it becomes a defect.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "A1 R1 (P1) is resolved on receipts at f842db4. gate.web: typecheck 0, lint 0, lint:css 0, full dev-inclusive audit 0 vulnerabilities, regression plus U10 127 passed with 1 fixme. gate.e2e: U0b..W3, 697 passed and 1 skipped. gate.integrate: origin/ui unchanged, dotnet 649, unit 389, kit 1448. That proves the DAG-1 e2e, the re-derived shell parity tests, the re-pointed earlier-node specs and the regression suite. What's left is R1 (repeat-each) and R2 (render-trace check), both P2.",
+      "A1 R2 (P1) is resolved. README.md now reads 2026-10-23: 649 tests (173/65/332/79). 173+65+332+79 = 649, which matches the dotnet total in gate.green and gate.integrate. The 79 architecture tests match gate.red's '10/79'. The per-project split isn't in any receipt, but the domain, services and API counts are unchanged and this node touched none of those projects.",
+      "The gates ran at f842db4, and HEAD dbc81b2 is a chore(trace) commit. I take it on the subject and on the hook-recomputed fingerprint, which excludes docs/trace and docs/plans, that dbc81b2 changes no code. That inference is the reason I accept the f842db4 receipts as HEAD's.",
+      "A1 R4 is resolved: ui.plan.md 'Carried past the demo' now has the AGENT-2 / s-events-note line naming U4 A2 R2, /kit-gap and the fixme spec. A1 R9's receipt half is resolved: lint:css passes on stylelint 18.0.0-next.0 and the dev-inclusive audit is clean. The prerelease-major approval is still David's call.",
+      "These A1 P2s are carried unchanged and disclosed in the PR under David's delegation: R3 (Plan nav still opens build first; tabs on the plan page, ui-U10.md note 3 asks David), R5 (random reference tails in fresh.ts), R7 (trace-on-start silent under vite preview), R9 (the prerelease ruling), R10 (the harness PR into main from a0dd496 isn't in the packet's evidence; it should be linked once opened).",
+      "AGENT-2 counts as covered only under the orchestrator's cut-to-carry ruling (as in A1). The behaviour it asks for, a kit-drawn notice, is not built at HEAD.",
+      "docs/qa/ui-U10.md was written before both verdicts were PASS (web-testing step 6 puts it after). Every node rule appears in a row or in the covered-by-tests table, and its sign-off block names notes 1 to 3 for David's ruling.",
+      "Since A1 the only non-trail change is README.md, so A1's code-level checks still hold: no 'not implemented' throw in src/, no banned time or rounding API, and red (c9f8844, c314a61) before every green."
+    ]
+  }
+}
