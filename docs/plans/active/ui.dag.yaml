@@ -196,7 +196,7 @@ nodes:
     rules: [AGENT-1, AGENT-2, HITL-1, VERIFY-1, NAV-2, NAV-4, PERF-1]
     cuttable: false
     budget: null
-    status: hitl
+    status: done
     attempt: 2
     branch: feature/ui/U4
     worktree: .claude/worktrees/ui-U4
