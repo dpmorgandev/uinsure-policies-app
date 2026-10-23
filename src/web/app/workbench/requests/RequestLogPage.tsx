@@ -10,6 +10,15 @@ const plural = (count: number, one: string, many: string): string => `${count} $
 
 const toHeaders = (headers: Record<string, string>): ExchangeHeader[] => Object.entries(headers).map(([name, value]) => ({ name, value }));
 
+const quoted = (text: string): string => `'${text.replace(/'/g, `'\\''`)}'`;
+
+/** A curl that repeats the request as it went, against this page's own origin. */
+function curlOf(entry: LoggedExchange): string {
+  const headers = Object.entries(entry.requestHeaders).map(([name, value]) => ` -H ${quoted(`${name}: ${value}`)}`);
+  const body = entry.requestBody !== null ? ` -d ${quoted(entry.requestBody)}` : '';
+  return `curl -X ${entry.method}${headers.join('')}${body} ${quoted(`${window.location.origin}${entry.path}`)}`;
+}
+
 /** WB-7: every request this page sent to the API, newest first; pick one to read it exactly as it went. */
 export function RequestLogPage() {
   const log = useRequestLog();
@@ -17,7 +26,7 @@ export function RequestLogPage() {
 
   const numbered = log.map((entry, index) => ({ n: index + 1, entry }));
   const entries: RequestLogEntry[] = numbered
-    .map(({ n, entry }) => ({ n, method: entry.method, path: apiPathOf(entry.path), status: entry.status ?? 0 }))
+    .map(({ n, entry }) => ({ n, method: entry.method, path: apiPathOf(entry.path), status: entry.status }))
     .reverse();
   const open: { n: number; entry: LoggedExchange } | undefined =
     numbered.find(({ n }) => n === picked) ?? numbered[numbered.length - 1];
@@ -61,6 +70,7 @@ export function RequestLogPage() {
                   : undefined
               }
               failure={open.entry.status === null ? 'No response was read.' : undefined}
+              curl={curlOf(open.entry)}
             />
             {open.entry.responseBody ? <JsonViewer label={`response to request #${open.n}`} json={open.entry.responseBody} defaultOpen /> : null}
           </>

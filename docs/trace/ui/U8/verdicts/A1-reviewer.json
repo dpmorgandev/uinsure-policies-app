@@ -1,0 +1,93 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T03:47:41Z",
+  "plan": "ui",
+  "node": "U8",
+  "attempt": 1,
+  "agent": "reviewer",
+  "agent_id": "ae2fb9e2fa5ac6eff",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U8",
+    "attempt": 1,
+    "base_sha": "a3420f104aebf4aaa532ee57de83ab3c67e5146e",
+    "head_sha": "c67ff72858ddc8138a62be9c7f71fa7011e9b0bb",
+    "diff_fingerprint": "2d2e0249bc965211ede84e0e9a2f3d15eade0dc4",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "loop.jsonl:3 gate.red",
+      "loop.jsonl:5 gate.kit-typecheck",
+      "loop.jsonl:6 gate.kit-tests",
+      "loop.jsonl:7 gate.kit-css",
+      "loop.jsonl:8 gate.kit-audit",
+      "loop.jsonl:9 gate.stylekit",
+      "loop.jsonl:10 gate.screens-audit",
+      "loop.jsonl:11 gate.frames-audit",
+      "loop.jsonl:12 gate.green",
+      "loop.jsonl:13 gate.typecheck",
+      "loop.jsonl:14 gate.lint",
+      "loop.jsonl:15 gate.lint-css",
+      "loop.jsonl:16 gate.test",
+      "loop.jsonl:17 gate.build",
+      "loop.jsonl:18 gate.e2e",
+      "loop.jsonl:19 gate.e2e-regression",
+      "loop.jsonl:22 gate.coverage",
+      "loop.jsonl:23 gate.scope (not ok)",
+      "loop.jsonl:24 gate.no-stubs",
+      "loop.jsonl:25 gate.scope"
+    ],
+    "rules_covered": [],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "WB-7",
+        "severity": "P1",
+        "file": "src/web/app/workbench/browser.ts",
+        "line": 25,
+        "what": "publish() freezes an entry once status is set, but loggingFetch sets status before it reads the body. A publish in that gap leaves responseBody null in every later snapshot.",
+        "why": "In src/web/app/data/api.ts:440-442, loggingFetch sets entry.status, then awaits response.clone().text(), then sets responseBody. publish() keeps a shallow copy taken at the first publish where status was non-null (browser.ts:25). If another request starts or settles while this body is still being read, the copy holds status and headers but responseBody null, and the final publish keeps that stale copy for good. Two things break. The request log then shows no response body for an exchange that had one, which breaks WB-7 ('the exact request and response') and HONEST-1. The policy view's sale match, responseBody.includes(reference) at PolicyView.tsx:340, also drops the POST that created the policy. This node introduced the regression for acceptance line 12. wb-7-log-growth.test.tsx only sends requests one after another, so it can't see the race. A settled exchange has to be one whose body has also been read, and a test should cover two exchanges in flight at once.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "WB-5",
+        "severity": "P1",
+        "file": "src/web/app/workbench/renew/RenewPolicy.tsx",
+        "line": 91,
+        "what": "Acceptance 9b isn't met: the 'amount null' renewal is neither explained nor fixed. submit still sends Number(amount) unchecked, so a non-numeric amount goes out as null.",
+        "why": "ui.dag.yaml:462 requires the 'amount null' renewal to be 'explained or fixed in RenewPolicy'. W3 A4 I6 (docs/trace/ui/W3/findings/A4.md) traces the null to RenewPolicy sending Number(amount) unchecked (NaN becomes null), and points the fix at whether submit should refuse a non-numeric amount. gate.red (loop.jsonl:3) records only '9b amount-null not reproducible'. The trail holds no explanation, and the U8 diff doesn't touch the amount path. Waiting for the read in the W3 test (wb-5.spec.ts) covers only the test half of the line.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "A11Y-1",
+        "severity": "P2",
+        "file": "docs/trace/ui/U8/loop.jsonl",
+        "line": 18,
+        "what": "Acceptance line 3 names a gate.axe receipt, but loop.jsonl has no gate.axe event. The 7 A11Y-1 axe tests are evidenced only inside gate.e2e ('14 passed').",
+        "why": "ui.dag.yaml:456 asks for axe tests on wb-claim, wb-renew and wb-requests 'and a gate.axe receipt', and t6 lists axe as a separate gate. The tests exist (tests/web/e2e/U8/a11y-1.spec.ts) and pass at 8148181 under gate.e2e, so in substance the line is met. But the receipt the line names, the one W3 A4 R3 found missing, still doesn't exist under any node. The orchestrator records receipts; this finding is routed to tester only because the axe spec is the tester's.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R4",
+        "rule_id": "WB-5",
+        "severity": "P2",
+        "file": "src/web/app/workbench/renew/RenewPolicy.tsx",
+        "line": 19,
+        "what": "termMethod has two consecutive JSDoc blocks. The old 'The method the current term was paid by' block is now orphaned above the new one; they should be merged into one.",
+        "why": "code-quality slop list: dead or stale comments. Only the last JSDoc block attaches to the function, so line 19 documents nothing. A related minor point: the field's hint still says 'Defaults from term N' when the select shows 'None returned for the term'.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Rules-less node, so rules_covered and rules_missing are empty. I judged it on the 13 acceptance lines in docs/plans/active/ui.dag.yaml:454-466. Met: 1 (three kit Buttons in the reference order, primary with the Receipt icon, matching docs/ui/derived/U8/wb-policy/populated.html:78-80, and a W3 parity test on the region's comps); 2 (namesPolicy matches on a path segment, and the U8ABC/U8ABC-2 test failed at red per gate.red); 3, except the receipt (R3); 4 (no Card fallback, Select placeholder, paymentMethod omitted when there is none); 5 and 7 (the kit request-log pending state through the in-node kit gap, and both sites pass status through without '?? 0'); 6 (literal references; W1/support/api.ts gives each run a fresh database and the config has no retries, so the literals don't collide); 8 (the curl part; the reference targets the API URL directly, the build targets the app origin's /api proxy, which is acceptable); 9a; 10; 11; 13 (the NAV-5 tests wait for the Rule and Commit stop hrefs). Not met: 9b (R2). Line 12 is met by the test, but its implementation introduced R1.",
+      "TDD order: red commits 77b374c, 0cd1e80, 726215b, 95c2c3d and d1b3fae all come before green 8148181. activity.jsonl shows no edit by web-builder under tests/, so no assertion was weakened after red. The kit-builder's change to tests/web/kit/request-log.test.tsx follows the new pending example (#4, 'of 4') under the A5 in-node kit gap. The A11Y-1 specs passed at red, which gate.red records as coverage of built screens; that's acceptable for a tech-debt node.",
+      "Plan state: at HEAD, t2 (stub) and t3 (pause 1) are still 'pending' in ui.dag.yaml:469-470, while t4 and t6 are 'done' and there is no stub commit. Under the lean loop they were skipped in practice. The DAG should say so.",
+      "Receipt consistency: gate.green (loop.jsonl:12) records exit 0 and also says 20 regression screenshot tests failed. With David's ruling deferring the regression to U10 (loop.jsonl:19) this doesn't block, but the receipt's exit code doesn't match its detail.",
+      "gate.no-stubs at 8148181: no 'not implemented' left in src/web. The diff uses no banned time or rounding API."
+    ]
+  }
+}

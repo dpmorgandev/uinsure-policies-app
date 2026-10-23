@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { Link, useParams } from 'react-router';
-import { DataTable, KeyValueList,PageHeader, ProblemBanner, RequestLog, StatusTag, TermTimeline } from '../../../kit';
+import { Receipt } from 'lucide-react';
+import { Link, useNavigate, useParams } from 'react-router';
+import { Button, DataTable, KeyValueList, PageHeader, ProblemBanner, RequestLog, StatusTag, TermTimeline } from '../../../kit';
 import type { DataTableColumn, KeyValueItem, RequestLogEntry, Status, TermTimelineProps } from '../../../kit';
 import { getPolicy } from '../../data/api';
 import type { ApiAnswer, Policy, Problem } from '../../data/api';
@@ -48,6 +49,12 @@ const plural = (count: number, one: string, many: string): string => `${count} $
 /** The cancel screen for one policy (W2). */
 function cancelRoute(reference: string): string {
   return `/workbench/policies/${encodeURIComponent(reference)}/cancel`;
+}
+
+/** WB-7: a path names this policy when its reference is a whole path segment: ABC never matches ABC-2. */
+function namesPolicy(path: string, reference: string): boolean {
+  const own = `/policies/${encodeURIComponent(reference)}`;
+  return path === own || path.startsWith(`${own}/`) || path.startsWith(`${own}?`);
 }
 
 function Region({ slug, req, heading, children }: { slug: string; req: string; heading: string; children: ReactNode }) {
@@ -318,6 +325,7 @@ function headerOf(reference: string, answer: ApiAnswer<Policy> | null): ReactNod
 export function PolicyView() {
   const { reference = '' } = useParams();
   const cancelPath = cancelRoute(reference);
+  const navigate = useNavigate();
   const [attempt, setAttempt] = useState(0);
   const key = `${reference}#${attempt}`;
   const [settled, setSettled] = useState<{ key: string; answer: ApiAnswer<Policy> } | null>(null);
@@ -328,10 +336,10 @@ export function PolicyView() {
     .map((entry, index) => ({ n: index + 1, entry }))
     .filter(
       ({ entry }) =>
-        entry.path.includes(`/policies/${reference}`) ||
+        namesPolicy(apiPathOf(entry.path), reference) ||
         (entry.method === 'POST' && apiPathOf(entry.path) === '/policies' && (entry.responseBody ?? '').includes(`"${reference}"`)),
     )
-    .map(({ n, entry }) => ({ n, method: entry.method, path: apiPathOf(entry.path), status: entry.status ?? 0 }))
+    .map(({ n, entry }) => ({ n, method: entry.method, path: apiPathOf(entry.path), status: entry.status }))
     .reverse();
 
   useEffect(() => {
@@ -404,6 +412,13 @@ export function PolicyView() {
 
       <section className="s-wb-region" data-region="actions-quote-and-cancel-record-a-claim-renew" data-req="WB-4 WB-5">
         <h2 className="s-wb-heading">Actions</h2>
+        <div className="s-wb-actions">
+          <Button variant="primary" icon={<Receipt aria-hidden="true" />} onClick={() => void navigate(cancelPath)}>
+            Quote and cancel
+          </Button>
+          <Button onClick={() => void navigate(`/workbench/policies/${encodeURIComponent(reference)}/claims/new`)}>Record a claim</Button>
+          <Button onClick={() => void navigate(`/workbench/policies/${encodeURIComponent(reference)}/renew`)}>Renew</Button>
+        </div>
         <ul className="s-wb-list">
           <li>
             <Link to={cancelPath}>Quote and cancel</Link>

@@ -222,13 +222,11 @@ export async function expectRegionComponents(page: Page, s: Screen, slug: string
     .toEqual({ req: wanted?.req, comps: wanted?.comps });
 }
 
-/*
- * A nav entry a later node builds (in transit against W1's own derived.json, ../../U0b/support/built.ts) is left out
- * of the shell comparison: whether it is a link yet is that node's to prove. Every entry W1 settled is still
- * compared exactly.
+/**
+ * The shell as parity compares it: the nav's links and not-built entries are every entry but those in transit. A nav
+ * entry a later node builds (in transit against W1's own derived.json, ../../U0b/support/built.ts) is left out of the
+ * shell comparison: whether it is a link yet is that node's to prove. Every entry W1 settled is still compared exactly.
  */
-
-/** The shell as parity compares it: the nav's links and not-built entries are every entry but those in transit. */
 function shellOf(s: Structure): Record<string, unknown> {
   return {
     title: s.title,

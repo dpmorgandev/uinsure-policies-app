@@ -1,0 +1,62 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T03:44:34Z",
+  "plan": "ui",
+  "node": "U8",
+  "attempt": 1,
+  "agent": "security",
+  "agent_id": "a732b5ebbbb880e82",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U8",
+    "attempt": 1,
+    "base_sha": "a3420f104aebf4aaa532ee57de83ab3c67e5146e",
+    "head_sha": "c67ff72858ddc8138a62be9c7f71fa7011e9b0bb",
+    "diff_fingerprint": "2d2e0249bc965211ede84e0e9a2f3d15eade0dc4",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.scope",
+      "gate.no-stubs",
+      "gate.lint",
+      "gate.typecheck",
+      "gate.green",
+      "gate.e2e",
+      "gate.build"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "No findings. Walked the web-security checklist W1-W8 over the src/web and tests/web diff (browser.ts, PolicyView.tsx, RenewPolicy.tsx, RequestLogPage.tsx, routes.tsx, the request-log kit change and the U8, U7, W1 and W3 test edits).",
+      "W1 met: no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval, new Function or javascript: anywhere in the diff. The new curl string is passed to the kit HttpExchange, which renders it as text in a CodeBlock. Its single quotes are escaped with the '\\'' idiom, so pasting it into a shell can't be broken out of.",
+      "W2 met: the only links added are the in-app hash routes navigate(`/workbench/policies/${encodeURIComponent(reference)}/...`). No href comes from data.",
+      "W3 met: src/web/index.html is not in the diff. No third-party origin, font or script was added. lucide-react is an existing dependency (src/web/package.json, 1.59.0), imported as an icon component.",
+      "W4 met: the workbench still calls only /api/... through its logging fetch. The curl is built from window.location.origin plus the logged path. Nothing new reads cookies or storage.",
+      "W5 n/a: src/web/compiler is not in the diff.",
+      "W6 met: grep over the whole diff found no local absolute path, personal email, key or token. The one 'secret' hit is the sentence 'A concurrent write -> 409 via the Version token' in a docs/trace line. The tests use literal references such as W3CLAIMPOST0001.",
+      "W7 met: package.json and the lockfile are untouched. gate.audit (runtime, high) found 0 vulnerabilities. gate.audit-dev reports only the known dev-only braces/stylelint item (GHSA-vfj7-8cjw-p6xm) from W7, which is not gated.",
+      "W8 met: no error-boundary or error-rendering code changed. RenewPolicy and RequestLogPage keep rendering the API's problem details or 'No response was read.', with nothing from server internals.",
+      "API8:2023 met through W3 and W4. API10:2023 met through W1 and W8: the API's answers (bodies, status, headers) still render as text, and a null status is drawn as 'Pending', not 0.",
+      "API1, API2, API3, API4, API5, API6, API7, API9: n/a, ui node, no server code. API1 and API2 are also out of scope (no auth or tenancy).",
+      ".NET extras n/a for a ui node: the web-security checklist replaces them. Nothing under src/ or tests/ outside web/ is in the diff.",
+      "gate.scope failed once on the kit shots and stylekit files, then passed on the re-run (296 files, in scope under the in-node kit gap, ui.md A5). It is a scope receipt, not a security signal. docs/ui/stylekit and _shots are static design artefacts that don't ship.",
+      "Observation outside the security rubric, for the reviewer or builder (P2, not blocking). In src/web/app/workbench/browser.ts (publish, lines 20-28) a snapshot entry is kept as the same object once its status is non-null. In src/web/app/data/api.ts (loggingFetch, lines 440-442) status is set before responseHeaders and responseBody are read. If another request's publish() runs in that window, the first request's snapshot is frozen with a status but a null responseBody, and is never refreshed. The log could then show a settled exchange with no body (HONEST-1). The wb-7-log-growth test can't see this. Consider keeping an entry as settled only once responseBody is non-null.",
+      "Remaining hygiene (P2, not raised): the request log is still uncapped for the life of the page. publish() is O(n) per exchange but no longer allocates for settled entries. It is a local debug log in the user's own browser, so the exposure is negligible."
+    ]
+  }
+}
