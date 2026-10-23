@@ -92,3 +92,6 @@
 {"v":1,"ts":"2026-10-23T05:53:02Z","plan":"ui","node":"U4","attempt":2,"source":"orchestrator","event":"verdict(reviewer,PASS,verdicts/A2.2-reviewer.json)","detail":"delta re-review after the U7/W3/U8 integrate: generated output only; R1-R3 P2 carried to U10"}
 {"v":1,"ts":"2026-10-23T05:53:02Z","plan":"ui","node":"U4","attempt":2,"source":"orchestrator","event":"verdict(security,PASS,verdicts/A2.2-security.json)","detail":"delta re-review after the integrate; S3 P2 carried to U10"}
 {"v":1,"ts":"2026-10-23T05:56:24Z","plan":"ui","node":"U4","attempt":2,"source":"orchestrator","event":"pr(113)"}
+{"v":1,"ts":"2026-10-23T05:58:11Z","plan":"ui","node":"U4","attempt":2,"source":"orchestrator","event":"pr.comment(reviewer,6358506983)"}
+{"v":1,"ts":"2026-10-23T05:58:13Z","plan":"ui","node":"U4","attempt":2,"source":"orchestrator","event":"pr.comment(security,6358507353)"}
+{"v":1,"ts":"2026-10-23T05:58:15Z","plan":"ui","node":"U4","attempt":2,"source":"orchestrator","event":"pr.comment(integrate,6358507796)"}
