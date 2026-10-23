@@ -403,8 +403,8 @@ nodes:
     tasks:
       - {id: t1, role: builder, step: write, layer: null, rules: [], title: "docs/specs/guide-format.spec.md, and docs/guides/assets (Docket tokens, fonts, guide.css), the template and print.mjs, proven on a test page", status: done}
       - {id: t2, role: builder, step: write, layer: null, rules: [], title: "docs/specs/api-guide.spec.md: the reader question bank first, then research with path:line citations and receipts, outline and acceptance", status: done}
-      - {id: t3, role: builder, step: write, layer: null, rules: [], title: "docs/guides/api/index.html built from the spec; every command run and its output captured; API_UserGuide.pdf printed", status: pending}
-      - {id: t4, role: orchestrator, step: gates, layer: null, rules: [], title: "Links resolve, privacy scan, the PDF reprints from its HTML, question bank fully answered, full suite green", status: pending}
+      - {id: t3, role: builder, step: write, layer: null, rules: [], title: "docs/guides/api/index.html built from the spec; every command run and its output captured; API_UserGuide.pdf printed", status: done}
+      - {id: t4, role: orchestrator, step: gates, layer: null, rules: [], title: "Links resolve, privacy scan, the PDF reprints from its HTML, question bank fully answered, full suite green", status: done}
       - {id: t5, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
       - {id: t6, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/build-F7.md: David follows the guide's steps from a clean checkout", status: pending}
       - {id: t7, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: pending}
