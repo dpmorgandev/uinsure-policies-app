@@ -1,7 +1,7 @@
 // web-architecture C1: the kitchen sink is its own entry; the app never imports it. Tests live in
 // tests/Uinsure.Policies.Web.Tests (W3), outside this package, so every bare import resolves to this package's node_modules.
 import { spawn } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readFileSync, statSync } from 'node:fs';
 import { resolve, sep } from 'node:path';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
@@ -50,15 +50,28 @@ function traceOnStart(): Plugin {
       server.printUrls = () => void compiled.then(printUrls);
       server.httpServer?.on('close', () => compiler.kill());
       server.middlewares.use((request, response, next) => {
-        const path = decodeURIComponent((request.url ?? '').split('?')[0] ?? '');
-        if (path !== '/trace.json' && !path.startsWith('/trace/')) return next();
-        const file = resolve(publicDir, '.' + path);
-        if (state === 'ready' && file.startsWith(publicDir + sep) && existsSync(file)) {
-          response.setHeader('content-type', 'application/json');
-          return response.end(readFileSync(file));
-        }
-        response.statusCode = state === 'ready' ? 404 : 503;
+        const raw = (request.url ?? '').split('?')[0] ?? '';
+        if (raw !== '/trace.json' && !raw.startsWith('/trace/')) return next();
         response.setHeader('content-type', 'text/plain');
+        let path: string;
+        try {
+          path = decodeURIComponent(raw);
+        } catch {
+          response.statusCode = 400;
+          return response.end('Malformed path.');
+        }
+        const file = resolve(publicDir, '.' + path);
+        if (state === 'ready') {
+          if (file.startsWith(publicDir + sep) && existsSync(file) && statSync(file).isFile()) {
+            response.setHeader('content-type', 'application/json');
+            return response.end(readFileSync(file));
+          }
+          response.statusCode = 404;
+          return response.end('Not found.');
+        }
+        // The marker is what the loader keys on: it asks again only while the trail is compiling.
+        response.statusCode = 503;
+        response.setHeader('X-Docket-Trace', state);
         response.end(state === 'compiling' ? 'The trail is compiling; try again in a moment.' : 'The trail did not compile; see the console of the dev server.');
       });
     },
