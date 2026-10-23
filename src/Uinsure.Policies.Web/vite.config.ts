@@ -1,13 +1,11 @@
 // web-architecture C1: the kitchen sink is its own entry; the app never imports it. Tests live in
 // tests/Uinsure.Policies.Web.Tests (W3), outside this package, so every bare import resolves to this package's node_modules.
-import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { spawn } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
+import { resolve, sep } from 'node:path';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import type { Plugin } from 'vite';
-import { compile } from './compiler/index.ts';
-import type { CompileFailure } from './compiler/index.ts';
 
 // Only what kit code and tests import; never the build tools (aliasing vite breaks its virtual modules).
 const pkg = JSON.parse(readFileSync(resolve(import.meta.dirname, 'package.json'), 'utf8'));
@@ -25,38 +23,43 @@ const proxy = {
   },
 };
 
-// DATA-1: the dev server compiles the trail before it serves, so a fresh clone (trace.json is git-ignored) opens on a
-// trail, whether F5, the esproj StartupCommand or npx vite started it. A failed compile is printed problem by problem
-// and /trace.json answers 503, so the page says it could not load; an older file is never served in its place.
+// DATA-1: the dev server listens first and compiles the trail beside it. Until the compile ends /trace.json answers 503
+// "compiling"; then it serves the compiled file. A failed compile is printed problem by problem and /trace.json keeps
+// answering 503, so the page says it could not load. Preview compiles nothing: it serves the dist/ the build made.
 function traceOnStart(): Plugin {
-  // The compile runs in the config hook, before Vite lists public/: a file written later is not served.
-  let failed: string[] | null = null;
+  const publicDir = resolve(import.meta.dirname, 'public');
+  let state: 'compiling' | 'ready' | 'failed' = 'compiling';
   return {
     name: 'docket-trace-on-start',
-    apply: 'serve',
-    config(_config, { mode }) {
-      // Vitest reads this config in serve mode too, as mode 'test'; a unit run compiles nothing.
-      if (mode === 'test') return;
-      try {
-        const root = execFileSync('git', ['rev-parse', '--show-toplevel'], { cwd: import.meta.dirname, encoding: 'utf8' }).trim();
-        compile({ root, ref: 'HEAD' });
-      } catch (caught) {
-        const problems = (caught as Partial<CompileFailure>).problems;
-        failed =
-          problems === undefined
-            ? [caught instanceof Error ? caught.message : String(caught)]
-            : problems.map((p) => `${p.file ?? '-'}:${p.line ?? '-'} ${p.reason}`);
-      }
-    },
+    // Vitest reads this config in serve mode too, as mode 'test'; a unit run compiles nothing.
+    apply: (_config, { command, mode, isPreview }) => command === 'serve' && mode !== 'test' && isPreview !== true,
     configureServer(server) {
-      if (failed === null) return;
-      for (const problem of failed) server.config.logger.error(`trace compile failed: ${problem}`);
+      const log = server.config.logger;
+      let problems = '';
+      const compiler = spawn(process.execPath, [resolve(import.meta.dirname, 'compiler/index.ts'), '--ref', 'HEAD'], { cwd: import.meta.dirname });
+      compiler.stderr.on('data', (chunk: Buffer) => (problems += chunk.toString()));
+      const compiled = new Promise<void>((done) =>
+        compiler.on('close', (code) => {
+          state = code === 0 ? 'ready' : 'failed';
+          if (state === 'failed') for (const line of problems.split('\n').filter((l) => l.trim() !== '')) log.error(`trace compile failed: ${line}`);
+          done();
+        }),
+      );
+      // The port answers at once, but the "Local:" line waits for the compile: it means the trail is ready or has said why not.
+      const printUrls = server.printUrls.bind(server);
+      server.printUrls = () => void compiled.then(printUrls);
+      server.httpServer?.on('close', () => compiler.kill());
       server.middlewares.use((request, response, next) => {
-        const path = (request.url ?? '').split('?')[0] ?? '';
+        const path = decodeURIComponent((request.url ?? '').split('?')[0] ?? '');
         if (path !== '/trace.json' && !path.startsWith('/trace/')) return next();
-        response.statusCode = 503;
+        const file = resolve(publicDir, '.' + path);
+        if (state === 'ready' && file.startsWith(publicDir + sep) && existsSync(file)) {
+          response.setHeader('content-type', 'application/json');
+          return response.end(readFileSync(file));
+        }
+        response.statusCode = state === 'ready' ? 404 : 503;
         response.setHeader('content-type', 'text/plain');
-        response.end('The trail did not compile; see the console of the dev server.');
+        response.end(state === 'compiling' ? 'The trail is compiling; try again in a moment.' : 'The trail did not compile; see the console of the dev server.');
       });
     },
   };
