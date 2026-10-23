@@ -443,7 +443,7 @@ nodes:
     rules: []
     cuttable: true
     budget: null
-    status: in_progress
+    status: hitl
     attempt: 2
     branch: feature/ui/U8
     worktree: .claude/worktrees/ui-U8
