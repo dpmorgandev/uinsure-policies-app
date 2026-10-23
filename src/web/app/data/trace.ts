@@ -184,6 +184,12 @@ export interface TraceDecision {
   node: string | null;
   sha?: string | null;
   evidence?: SourceLine | null;
+  /** A steer's finding round ("D1") and the pause it was given at ("pause1"); null for any other kind. */
+  round?: string | null;
+  at?: string | null;
+  /** The loop line's own time and the words David wrote, as the line holds them. */
+  when?: string | null;
+  what?: string | null;
 }
 
 export interface Trace {

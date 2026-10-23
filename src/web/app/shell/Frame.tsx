@@ -15,7 +15,7 @@ const navFor = (buildPlanId: string): NavItem[] => [
   { key: 'overview', label: 'Overview', href: '#/', scope: 'explorer' },
   { key: 'matrix', label: 'Requirements matrix', href: '#/rules', scope: 'explorer' },
   { key: 'plan', label: 'Plan', href: `#/plans/${buildPlanId}`, scope: 'explorer' },
-  { key: 'decisions', label: 'Human decisions', notBuilt: true, scope: 'explorer' },
+  { key: 'decisions', label: 'Human decisions', href: '#/decisions', scope: 'explorer' },
   { key: 'about', label: 'How to read this', href: '#/about', scope: 'explorer' },
   { key: 'workbench', label: 'Workbench', href: '#/workbench', scope: 'workbench' },
 ];
@@ -71,6 +71,7 @@ export function Frame() {
   const finding = useMatch('/plans/:planId/:nodeId/findings/:round');
   const planPage = useMatch('/plans/:planId');
   const sessions = useMatch('/sessions');
+  const decisions = useMatch('/decisions');
   const harness = useMatch('/harness');
   const stats = useMatch('/stats');
   const commit = useMatch('/commits/:sha');
@@ -86,6 +87,7 @@ export function Frame() {
     [matrix !== null, 'Requirements matrix'],
     [about !== null, 'How to read this'],
     [sessions !== null, 'Sessions'],
+    [decisions !== null, 'Human decisions'],
     [harness !== null, 'Harness'],
     [stats !== null, 'Delivery stats'],
     [overview !== null, 'Overview'],
@@ -96,7 +98,9 @@ export function Frame() {
   const current =
     about || sessions || harness
       ? 'about'
-      : overview || stats
+      : decisions
+        ? 'decisions'
+        : overview || stats
         ? 'overview'
         : planPage || nodePage || walkthrough || activity || commit || loop || verdict || finding
           ? 'plan'

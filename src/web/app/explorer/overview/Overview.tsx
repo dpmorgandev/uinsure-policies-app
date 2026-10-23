@@ -10,8 +10,9 @@ import {
 } from '../../../kit';
 import type { Snapshot, Trace, TraceNode } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
-import { NotBuiltRegion, Rung } from '../../shell/Rung';
+import { Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
+import { LatestDecisions } from '../decisions/LatestDecisions';
 import { PlanGraph } from '../plan/PlanGraph';
 import { buildRules, rulesSummary } from '../ruleFacts';
 import { buildPlan, checkedRule, headlineAnswer, nodesOf, receiptFigures } from './figures';
@@ -165,7 +166,9 @@ export function Overview() {
           <a href={`#/plans/${plan?.id ?? 'build'}`}>Open the full plan</a>
         </p>
       </Rung>
-      <NotBuiltRegion region="latest-human-decisions" name="latest human decisions" />
+      <Rung region="latest-human-decisions" req="HITL-1" ordinal="Step 4" heading="See who decided">
+        <LatestDecisions trace={trace} planId={plan?.id} />
+      </Rung>
       <Rung region="compiled-at-stamp" req="DATA-3" ordinal="Step 5" heading="Check the snapshot">
         <p className="s-text">
           This page is a snapshot, not live. It was compiled from <code>{snapshot.ref}</code> at <code>{snapshot.short}</code>, on{' '}
