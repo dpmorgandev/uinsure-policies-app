@@ -159,3 +159,15 @@ test("LRN-5 A1/I4: every non-curl command in the guide is exactly a receipted co
   const unreceipted = commands.filter((c) => !isReceipted(c.text, receipted)).map((c) => `index.html:${c.line} ${c.text}`);
   assert.deepEqual(unreceipted, [], "every command shown must be the command that was run, as receipts.md records it");
 });
+
+test("LRN-3 A1/I7: no list outside the front sheet has more than four items", () => {
+  const elements = scan(read(guidePath));
+  const lists = elements.filter((el) => (el.name === "ol" || el.name === "ul") && !within(el, "section", "front"));
+  assert.ok(lists.length > 0, "the guide has lists");
+
+  const long = lists
+    .map((list) => ({ list, items: elements.filter((el) => el.name === "li" && el.ancestors.at(-1) === list).length }))
+    .filter(({ items }) => items > 4)
+    .map(({ list, items }) => `index.html:${list.line} ${list.name}.${classes(list).join(".")} has ${items} items`);
+  assert.deepEqual(long, [], "lists have three items, or four at most; longer ones are grouped under labels");
+});
