@@ -1,0 +1,117 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T11:45:12Z",
+  "plan": "build",
+  "node": "F7",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a030ddb48dab10e7b",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "build",
+    "node_id": "F7",
+    "attempt": 2,
+    "base_sha": "f041f019e9a55ae31055c71adf589c9a2db56d81",
+    "head_sha": "282ec25c1b8492a7506e327ab16c32770a142703",
+    "diff_fingerprint": "33c93bb1b772e9ad6a41b67d8bb0b133d686099d",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "loop.jsonl:4 gate.write",
+      "loop.jsonl:5 gate.write",
+      "loop.jsonl:6 gate.write",
+      "loop.jsonl:7 gate.build",
+      "loop.jsonl:8 gate.build",
+      "loop.jsonl:9 gate.test",
+      "loop.jsonl:10 gate.guide",
+      "loop.jsonl:15 gate.finding-red",
+      "loop.jsonl:16 gate.green",
+      "loop.jsonl:17 gate.build",
+      "loop.jsonl:18 gate.test",
+      "loop.jsonl:19 gate.guide"
+    ],
+    "rules_covered": [],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "§9",
+        "severity": "P1",
+        "file": "tests/guides/api-guide.test.mjs",
+        "line": 20,
+        "what": "The A1 guide checks are in tests/ and read docs/guides/ (index.html, receipts.md, guide.css, print.mjs). §9 forbids anything in tests/ referencing docs/guides/.",
+        "why": "docs/documentation-requirements.md §9 says the guides 'never change src/ or tests/, and nothing in src/ or tests/ references docs/guides/'. This file adds a tests/ tree that CLAUDE.md's layout does not list, and it reads guide files at lines 20-21, 222 and 284. The placement came from the orchestrator (loop.jsonl:14). The approved requirement still applies, so moving the check or getting David's ruling is needed before merge. Also, no suite runs this file (dotnet test, pre-push or the harness self-test), so after merge nothing guards the A1 fixes against regression.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "§8.3",
+        "severity": "P2",
+        "file": "docs/plans/active/build.dag.yaml",
+        "line": 402,
+        "what": "Acceptance 3 says the run is recorded in docs/trace/build/F7/. The receipts are only in docs/guides/api/receipts.md: I8 changed the spec's path instead of moving the record.",
+        "why": "§8.3 says the run 'is recorded in the node's trace', and DAG acceptance line 3 names docs/trace/build/F7/. receipts.md:8-9 says the orchestrator can move them, and nothing has moved them yet. The evidence itself is committed and receipted, so this is only about where it lives. It needs the orchestrator's move at t8 or a reworded acceptance line.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "§8.3",
+        "severity": "P2",
+        "file": "docs/guides/api/index.html",
+        "line": 195,
+        "what": "The EF tools warning is cut short with no '…'. The receipt R8 line goes on with 'Update the tools for the latest features and bug fixes. See https://aka.ms/AAc1fbw ...'",
+        "why": "index.html:240 says a '…' marks text left out, and §8.3 says each output is copied from the run. The I2 check passes this line only because it matches by substring (api-guide.test.mjs:128), so a shortened line looks like a copied one.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "LRN-5",
+        "severity": "P2",
+        "file": "docs/guides/api/index.html",
+        "line": 280,
+        "what": "The text says 'starts today. Sell it now', but the command fixes startDate 2026-10-23. On any later day the GUIDE-002 sale gets 422 SELL-2, and the claim, quote and renew steps no longer match.",
+        "why": "LRN-5 says each step gives the exact command and what you should see. §8.2 says a reader can follow the guide alone. The capture date is stated at :240, and troubleshooting :1061 names the symptom. But no step tells the reader to move the dates to their own today, so an assessor running section 3 after 2026-10-23 sees failures the guide says won't happen (GUIDE-001's 2026-11-01 start also leaves the sale window after 2026-11-01).",
+        "route_to": "builder"
+      },
+      {
+        "id": "R5",
+        "rule_id": "LRN-9",
+        "severity": "P2",
+        "file": "docs/guides/test/index.html",
+        "line": 52,
+        "what": "The test page keeps the old href form that doesn't resolve ('src/…/Money.cs:1'). template.html:52 uses '../../', which breaks once the template is copied into a guide folder.",
+        "why": "guide-format.spec.md:29 now says an a.ref href is relative to the guide's folder, with the line as a fragment (example '../../../src/X.cs#L13'). The I12 fix reached index.html and the template, but not the test page that 'proves the pipeline' (guide-format.spec.md:13). The template's '../../' is right only where the template sits, not in docs/guides/<guide>/ where F8 will reuse it.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R6",
+        "rule_id": "MAN-3",
+        "severity": "P2",
+        "file": "docs/guides/api/index.html",
+        "line": 222,
+        "what": "A1/I5 is still open: the U9 launch for the API and web app together (§6, MAN-3) and the web test suites (§6) are disclosed as not on this branch. They await David's ruling at Pause 2.",
+        "why": "documentation-requirements.md:86, :121 and :132. DAG acceptance line 2 needs every §6 item. The gap is disclosed and comes from outside the node (F7 was stacked before the ui plan, loop.jsonl:1), so only a ruling closes it. It is recorded here so the PASS doesn't hide it.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R7",
+        "rule_id": "LRN-4",
+        "severity": "P2",
+        "file": "docs/specs/api-guide.spec.md",
+        "line": 116,
+        "what": "A1/I6 is still open: the spec still says 'at most one diagram' per section. The front sheet has seven big ideas, and only three real diagrams are drawn. This awaits David's ruling at Pause 2.",
+        "why": "LRN-4 (documentation-requirements.md:66) asks for one diagram per big idea. The spec line conflicts with it, and A1 left it unchanged as a held deferral (loop.jsonl:14).",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "I checked the A1 fixes against HEAD. I1: all curl commands have '-i ' and each matches a 'Command:' line in receipts.md. I2: R2 was re-run and now holds the build summary; H1 and H2 receipt the health calls. I3: each C, F, H and O entry has its own verbatim command. I4: '--no-build' is gone from both the guide and the receipts, consistently, including R4c and the RENEW-4 callout. I7: the steps are split into 3+2 (Run it / Check that it is up) and 2+3 (Quote / Cancel). I8: the spec says 30 questions and the receipts path exists. I9: R10 runs with --no-launch-profile only, and 'Observed while capturing' explains it. I10: index.html:149 names the POSIX shell, and /scalar/v1 is the same in the prose, the command, the U8 row and O2. I11: guide.css uses var(--color-background) on the filled primary and error backgrounds (contrast is fine in both token themes). I12: index.html's a.ref hrefs resolve; I spot-checked Program.cs:83 and :116, RefundCalculator.cs:40 and the launchSettings launchUrl. I13: every figure 6 connector has marker-end. I14: the hint names src/web.",
+      "TDD order: the 12 red commits (2b37117..8dbfdef, each with Fixes-Finding) come before green 64eb680. gate.finding-red (loop.jsonl:15) shows 12 of 12 failing at 8dbfdef, and gate.green (loop.jsonl:16) shows 12 of 12 passing. delta.patch (8dbfdef..64eb680) doesn't touch tests/, so no assertion was weakened after red. The full suite is 637/637 at 64eb680 (loop.jsonl:18). HEAD 282ec25 is a chore(trace) commit.",
+      "No NotImplementedException or src/ change is in the diff scope (gate.guide, loop.jsonl:10 and :19). This node has no product code to judge for SOLID or banned APIs.",
+      "I could not open API_UserGuide.pdf (no renderer here). That the PDF carries the fixed text rests on gate.guide (loop.jsonl:19): the reprint at 64eb680 is 379776 bytes.",
+      "docs/qa/build-F7.md:43, :46 and :88-90 still describe the I1 defect as present. It dates from attempt 1, before review, so the t6 rewrite after both PASS must replace it.",
+      "The I2 check (api-guide.test.mjs:115-133) matches each output line by substring anywhere in receipts.md. That proves the line exists somewhere in the receipts, not which receipt it came from, which is how R3 got through.",
+      "R10 records exit code 127 under 'timeout 60', which for GNU timeout means the command was not found. Yet its output shows dotnet ran and threw. The guide doesn't show the code, so this isn't a finding, but the receipt's exit code looks wrong."
+    ]
+  }
+}
