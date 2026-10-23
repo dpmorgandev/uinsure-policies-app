@@ -1,0 +1,2 @@
+kit: data-comp "top-bar · layout · pop, with the Search combobox in the search slot" matches no catalog row and state
+kit audit: 1 problem(s)
