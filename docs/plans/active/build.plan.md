@@ -9,7 +9,7 @@ parent: null
 # build: Uinsure Policies API build
 
 ## Why
-Deliver the Uinsure Policies API: Sell, Retrieve, Cancel and Renew plus the could-haves. Ship it with its evidence: tests traced to rule ids, IaC and a pipeline, the README and a pitch deck.
+Deliver the Uinsure Policies API: Sell, Retrieve, Cancel and Renew plus the could-haves. Ship it with its evidence: tests traced to rule ids, IaC and a pipeline, the README, and two user guides (API and UI) as PDFs.
 Submission is due Monday 2026-10-19.
 This plan runs once and closes when the system exists. Later changes go through /plan-feature and /plan-bug.
 
@@ -29,6 +29,7 @@ This plan runs once and closes when the system exists. Later changes go through 
 - **Amendment (David, 2026-10-18, after F1): node F1b, "Layered models and interfaces", before F2.** Reviewing F1, David asked for a model per layer (Api DTOs ↔ Domain ↔ Persistence records) and interfaces at the layer seams (`IPolicyService`, `IReferenceGenerator`, plus `IPolicyRepository`). Doing it now keeps F2–F4 from building on the old shape. It's a refactor: red is the new architecture tests A12–A15, the F1 suite is the safety net, and there's no new endpoint, so stub and Pause 1 are skipped. F2 now depends on F1b. Contract: architecture.spec.md, D1 amendment.
 - Budgets: F5 is time-boxed at 3h, and every other node is unset.
 - Cut order: F7, then F5. If F7 hasn't started by 12:00 on Monday 2026-10-19, it's cut; if F5 hasn't started by 14:00, it's cut. F0a to F4 and F6 are never cut. A cut is David's decision and needs a lesson.
+- **Amendment (David, 2026-10-23): F7 is the API user guide, not the pitch deck; F8, the UI user guide, is added; F6b gates both on the ui plan.** David: "instead create a full documentation and walkthrough for the API including how to run the tests, and another for a full user guide with screenshots, steps and screen highlights for the UI … hold this off to be the last tasks." Both guides follow `docs/documentation-requirements.md` (requirements → `docs/specs/` → guide → `API_UserGuide.pdf` and `UI_UserGuide.pdf` at the root). The DAG resolves `depends_on` inside one plan only, so F6b is an `owner: david` node that David marks done once U4, U7, U8, U9 and U10 are on main; F7 and F8 are no longer cuttable, and the cut order above now names F5 only.
 
 ## Rejected alternatives
 - **One F0 node (C1):** the harness can't be built by the loop it builds, so harness and walking skeleton are split.
