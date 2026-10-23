@@ -391,7 +391,8 @@ export async function cancelPolicy(deps: ApiDeps, reference: string, cancellatio
 }
 
 export interface RenewalRequest {
-  amount: number;
+  /** A number when the typed text is one; otherwise the text as typed, so the API's 400 answers it. */
+  amount: number | string;
   paymentMethod?: PaymentMethod;
 }
 
@@ -437,9 +438,11 @@ export function loggingFetch(fetch: Fetch, log: LoggedExchange[]): Fetch {
     };
     log.push(entry);
     const response = await fetch(input, init);
+    // The entry is completed in one step after the body is read, so a snapshot never holds a status without its body.
+    const body = await response.clone().text();
     entry.status = response.status;
     entry.responseHeaders = headersOf(response.headers);
-    entry.responseBody = await response.clone().text();
+    entry.responseBody = body;
     return response;
   };
 }

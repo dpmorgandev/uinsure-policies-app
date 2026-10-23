@@ -16,13 +16,18 @@ const PAYMENT_METHODS = [
   { value: 'Cheque', label: 'Cheque' },
 ];
 
-/** The method the current term was paid by, from the payment its term points at. */
-/** Null when the read names no payment for the term, or one the form has no option for (HONEST-1: no default). */
+/** The method the current term was paid by, from the payment its term points at; null when the read names no payment for the term, or one the form has no option for (HONEST-1: no default). */
 function termMethod(policy: Policy): PaymentMethod | null {
   const term = policy.terms.find((t) => t.termNumber === policy.currentTermNumber);
   const paid = policy.payments.find((p) => p.reference === term?.paymentReference)?.type;
   const method = PAYMENT_METHODS.find((m) => m.value === paid);
   return (method?.value as PaymentMethod | undefined) ?? null;
+}
+
+/** WB-5: a clean number goes as a number; anything else, empty included, goes as typed so the API's 400 answers it. */
+function amountToSend(typed: string): number | string {
+  const number = Number(typed);
+  return typed.trim() !== '' && Number.isFinite(number) ? number : typed;
 }
 
 function Timeline({ policy }: { policy: Policy }) {
@@ -88,7 +93,7 @@ export function RenewPolicy() {
     event.preventDefault();
     if (known === null) return;
     setBusy(true);
-    setRenewal(await renewPolicy(browserDeps(), reference, known.autoRenew && method !== '' ? { amount: Number(amount), paymentMethod: method } : { amount: Number(amount) }));
+    setRenewal(await renewPolicy(browserDeps(), reference, known.autoRenew && method !== '' ? { amount: amountToSend(amount), paymentMethod: method } : { amount: amountToSend(amount) }));
     setBusy(false);
   }
 
@@ -151,7 +156,7 @@ export function RenewPolicy() {
             <Field
               id="paymentMethod"
               label="Payment method"
-              hint={`Defaults from term ${known.currentTermNumber}. Cheque is refused for an auto-renewing renewal.`}
+              hint={`${termMethod(known) !== null ? `Defaults from term ${known.currentTermNumber}.` : `The read named no method for term ${known.currentTermNumber}.`} Cheque is refused for an auto-renewing renewal.`}
             >
               {(control) => <Select {...control} options={PAYMENT_METHODS} placeholder="None returned for the term" value={method} onChange={(e) => setMethod(e.target.value as PaymentMethod)} />}
             </Field>
