@@ -1,0 +1,63 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T23:17:38Z",
+  "plan": "bug-002",
+  "node": "N1",
+  "attempt": 3,
+  "agent": "security",
+  "agent_id": "a7e0eaf2e530390fa",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "bug-002",
+    "node_id": "N1",
+    "attempt": 3,
+    "base_sha": "6b6bdb529cf494ea5e3992988091f883e1b0dcaa",
+    "head_sha": "598cdc6bf8d3d418f44ab38d1fe734d5f578c8b4",
+    "diff_fingerprint": "161bc9a979cfae29cc229454002fc9578b378d8d",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.build",
+      "gate.test",
+      "gate.lint",
+      "gate.typecheck",
+      "gate.scope",
+      "gate.e2e-regression",
+      "gate.stubs",
+      "gate.green",
+      "gate.dotnet-vulnerable"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Scope: the code diff is src/Uinsure.Policies.Web/vite.config.ts, app/data/trace.ts, scripts/dev.mjs, package.json (engines only), .nvmrc, .vscode/launch.json, Docket.Web.esproj, the LaunchProfileTests.cs expectation and three unit tests. The rest is generated docs/ui/derived, docs/trace, docs/qa and plan files. I read these hunks from packet/diff.patch (docs/trace/bug-002/N1/packet/diff.patch, lines 20756-21050).",
+      "Attempt 2 S1 (P2) is fixed. vite.config.ts now wraps decodeURIComponent in try/catch and answers 400 'Malformed path.'. It checks existsSync and statSync(file).isFile() before readFileSync, so '/trace/' no longer gives EISDIR. Anything else answers 404.",
+      "W1 met: no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function in the code hunks. No rendered component changed. trace.ts only changes how a fetch is retried.",
+      "W2 met: no href is built or passed through in this diff.",
+      "W3 met: index.html is untouched. No third-party origin, script, font or style is added.",
+      "W4 met: the dev middleware serves only /trace.json and /trace/*, from the package's own public/ directory, and only once state is 'ready'. Traversal is blocked because resolve(publicDir, '.' + decodedPath) must start with publicDir + sep. Encoded '..' and backslashes are decoded first and then fail that prefix check. The plugin applies only to command serve, with mode not test and not preview, so it ships nothing in dist/. The loader's retry sends the same same-origin GET and reads the x-docket-trace response header. No cookie or storage access was added.",
+      "W5 met: compiler/** is untouched. vite.config spawns it with process.execPath, the fixed args ['compiler/index.ts','--ref','HEAD'] and no shell. No user input reaches the command line. Compiler stderr goes to the dev console only.",
+      "W6 met: no local absolute path, personal email, key or token in the src/ or tests/ hunks. The only email-like string is fixture@example.com in a test fixture. The 'ghp_' hits in docs/trace/bug-002/N1/activity.jsonl are pattern text in the generated activity log, not a token.",
+      "W7 met: package.json gains only an engines field (node >=22.22.0). No dependency is added or changed. gate.audit (omit=dev, high) exited 0 and reported 0 vulnerabilities. gate.dotnet-vulnerable reported no vulnerable package.",
+      "W8 met: the 503 and 400 bodies are fixed strings and the X-Docket-Trace header carries only 'compiling' or 'failed'. No exception message or stack trace reaches an HTTP response. The compile problems are logged to the dev console only. dev.mjs prints a fixed message when node_modules is missing.",
+      "API8:2023 and API10:2023 are covered through W3/W4 and W1/W8. In the loader, a 503 without the header, or with the 'failed' marker, stays final and shows the existing could-not-be-read reason.",
+      "Observation, not a finding: the loader's compiling retry (trace.ts, COMPILING_RETRY_MS 500) has no attempt cap. Only the dev middleware emits the marker, and production and preview never do. A server that stayed 'compiling' forever would be polled every 500 ms. The spawn is killed when the http server closes, and a compile that ends moves the state to ready or failed. Dev-only hygiene, not blocking.",
+      "n/a: API1, API2, API3, API4, API5, API6, API7, API9 (ui node, no server code). The only .NET change is the LaunchProfileTests.cs expectation (program path scripts/dev.mjs).",
+      "n/a: the .NET extras (SQL, money, packages, secrets, logging), replaced by W1-W8 for a ui node. No application .NET code is in the diff.",
+      "gate.e2e failures (64 regression screenshots, a subset of main's 65) are baseline drift carried to N6. They are not a security matter."
+    ]
+  }
+}
