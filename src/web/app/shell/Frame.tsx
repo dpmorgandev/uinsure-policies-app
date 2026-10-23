@@ -6,6 +6,7 @@ import { loadTrace, markInteractive } from '../data/trace';
 import { workbenchRoutes } from '../workbench/routes';
 import { NodeHeader } from './NodeHeader';
 import { REPO } from './repo';
+import { SiteSearch } from './SiteSearch';
 import { ShellProvider } from './ShellContext';
 import type { TraceState } from './ShellContext';
 import './notice.css';
@@ -132,7 +133,17 @@ export function Frame() {
       <Outlet />
     </ShellProvider>
   );
-  const topBar: TopBarProps = { appName: 'Docket', homeHref: '#/', theme, onThemeChange: setTheme };
+  const topBar: TopBarProps = {
+    appName: 'Docket',
+    homeHref: '#/',
+    theme,
+    onThemeChange: setTheme,
+    search: (
+      <ShellProvider value={{ trace, theme, setTheme }}>
+        <SiteSearch />
+      </ShellProvider>
+    ),
+  };
 
   // HONEST-1: until a snapshot is read the footer says so; it never shows a stamp.
   const footer: FooterProps =
