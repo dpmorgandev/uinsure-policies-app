@@ -19,7 +19,8 @@ describe('top-bar examples', () => {
   });
 
   it('pop shows the bar with the Search combobox in the slot and the bar with its own plain input', () => {
-    const [pop] = examples;
+    const pop = examples.find((e) => e.state === 'pop');
+    if (pop === undefined) throw new Error('top-bar has no pop example');
     const { container } = render(pop.element);
     expect(container.querySelectorAll('header')).toHaveLength(2);
     expect(screen.getByRole('combobox', { name: 'Jump to a rule, node, SHA or path' })).toBeTruthy();
