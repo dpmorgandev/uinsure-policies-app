@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Outlet, matchPath, useLocation, useMatch } from 'react-router';
-import { AppShell } from '../../kit';
+import { AppShell, Tabs } from '../../kit';
 import type { FooterProps, NavItem, ThemeChoice, TopBarProps } from '../../kit';
 import { loadTrace, markInteractive } from '../data/trace';
 import { workbenchRoutes } from '../workbench/routes';
@@ -125,8 +125,18 @@ export function Frame() {
 
   const buildPlanId = (trace.state === 'ready' ? trace.trace.plans.find((plan) => plan.kind === 'build')?.id : undefined) ?? 'build';
   const node = trace.state === 'ready' ? trace.trace.nodes.find((n) => n.plan === planId && n.id === nodeId) : undefined;
+  // DAG-1: every plan trace.json holds is one tab, each opening its own page, so the ui plan and the investigations
+  // are one click from the build plan (the Plan nav entry opens the build plan; both real DAGs say kind: build).
+  const plans = trace.state === 'ready' ? trace.trace.plans : [];
   const content = (
     <ShellProvider value={{ trace, theme, setTheme }}>
+      {planPage !== null && plans.length > 0 ? (
+        <Tabs
+          label="Plans"
+          current={planPage.params.planId ?? ''}
+          items={plans.map((plan) => ({ key: plan.id, label: plan.id, href: `#/plans/${plan.id}` }))}
+        />
+      ) : null}
       {node !== undefined && trace.state === 'ready' ? (
         <NodeHeader node={node} compiledAt={trace.snapshot.utc} current={activity ? 'activity' : walkthrough ? 'walkthrough' : loop ? 'loop' : 'node'} />
       ) : null}
