@@ -9,8 +9,6 @@ import { answerWith, exchangeAt } from '../W1/support/recorded';
 import { answered, apiToday, field, hashOf, hold, region, requestOf, route, sellForm, sellThroughApi, watchApi } from '../W1/support/workbench';
 import type { Policy } from '../W1/support/workbench';
 
-const unique = (tag: string): string => ('W3' + tag + Date.now().toString(36).toUpperCase()).slice(0, 20);
-
 const recordButton = (page: Page): Locator =>
   page.getByRole('main').getByRole('button', { name: /^(Record this claim|Recording…)$/ });
 const renewButton = (page: Page): Locator => page.getByRole('main').getByRole('button', { name: /^(Renew policy|Renewing…)$/ });
@@ -24,8 +22,8 @@ interface Quote {
 test.describe('a claim', () => {
   test('WB-5 · recording a claim posts the claim date and description the person typed', async ({ page, api }) => {
     void api;
-    const reference = unique('C');
-    const today = await apiToday(unique('P'));
+    const reference = 'W3CLAIMPOST0001';
+    const today = await apiToday('W3CLAIMPOSTP001');
     await sellThroughApi(requestOf(sellForm(reference, { startDate: today })));
     const seen = watchApi(page);
     await page.goto(route.claim(reference));
@@ -39,8 +37,8 @@ test.describe('a claim', () => {
 
   test('WB-5 · the quote before the claim and the quote after it are both shown, and the one after is £0.00 under COULD-2', async ({ page, api }) => {
     void api;
-    const reference = unique('Q');
-    const today = await apiToday(unique('P'));
+    const reference = 'W3CLAIMQUOTE0001';
+    const today = await apiToday('W3CLAIMQUOTEP001');
     await sellThroughApi(requestOf(sellForm(reference, { startDate: today })));
     const seen = watchApi(page);
     await page.goto(route.claim(reference));
@@ -67,8 +65,8 @@ test.describe('a claim', () => {
 
   test('WB-5 · a claim dated tomorrow is refused, and the page shows the rule the API answered as a chip', async ({ page, api }) => {
     void api;
-    const reference = unique('T');
-    const today = await apiToday(unique('P'));
+    const reference = 'W3CLAIMTMRW0001';
+    const today = await apiToday('W3CLAIMTMRWP001');
     await sellThroughApi(requestOf(sellForm(reference, { startDate: today })));
     const tomorrow = new Date(today + 'T00:00:00Z');
     tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
@@ -155,7 +153,7 @@ test.describe('a renewal', () => {
 
   test('WB-5 · a policy not on auto-renew has no payment method field, and its renewal sends none', async ({ page, api }) => {
     void api;
-    const reference = unique('O');
+    const reference = 'W3RENEWOFF0001';
     await sellThroughApi(requestOf(sellForm(reference, { autoRenew: false })));
     const seen = watchApi(page);
     await page.goto(route.renew(reference));
@@ -169,7 +167,7 @@ test.describe('a renewal', () => {
 
   test('WB-5 · an amount typed before the policy read answers is kept, and the renewal sends it, not the term default', async ({ page, api }) => {
     void api;
-    const reference = unique('H');
+    const reference = 'W3RENEWHELD0001';
     const policy = await sellThroughApi(requestOf(sellForm(reference, { autoRenew: false, amount: '527.18' })));
     expect(policy.amount.toFixed(2), 'setup: the default differs from what the person types').not.toBe('472.30');
     const readPath = `/api/policies/${reference}`;
@@ -193,10 +191,14 @@ test.describe('a renewal', () => {
 
   test('WB-5 · cheque on an auto-renewing policy is refused, and the page shows the COULD-3 violation as a rule chip', async ({ page, api }) => {
     void api;
-    const reference = unique('K');
+    const reference = 'W3RENEWCHQ0001';
     await sellThroughApi(requestOf(sellForm(reference, { autoRenew: true })));
     const seen = watchApi(page);
     await page.goto(route.renew(reference));
+    // U8 (W3 review A4 R6): the person types once the policy read has landed, so the read's term amount can't race
+    // what is typed.
+    await answered(seen, 'GET', `/api/policies/${reference}`);
+    await expect(renewButton(page), 'the read has landed on the screen').toBeEnabled(live);
     await field(page, 'Renewal amount').fill('472.30');
     await field(page, 'Payment method').selectOption('Cheque');
     await renewButton(page).click();
@@ -212,7 +214,7 @@ test.describe('a renewal', () => {
 
   test("WB-5 · a renewal outside the window shows RENEW-1/2 with the window the API's detail names", async ({ page, api }) => {
     void api;
-    const reference = unique('W');
+    const reference = 'W3RENEWWIN0001';
     await sellThroughApi(requestOf(sellForm(reference)));
     const seen = watchApi(page);
     await page.goto(route.renew(reference));

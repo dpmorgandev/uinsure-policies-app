@@ -15,7 +15,7 @@ export interface WorkbenchRoute {
   element: ReactElement;
 }
 
-/** The workbench's routes, registered by the router root. Cancel is W2's: until then it falls to the not-built page. */
+/** The workbench's routes, registered by the router root. */
 export const workbenchRoutes: WorkbenchRoute[] = [
   { path: 'workbench', title: 'Workbench', element: <WorkbenchHome /> },
   { path: 'workbench/sell', title: 'Sell a policy', element: <SellPolicy /> },

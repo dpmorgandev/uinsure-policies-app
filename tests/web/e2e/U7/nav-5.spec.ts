@@ -30,9 +30,10 @@ async function openTour(page: Page): Promise<Locator> {
   return tour;
 }
 
-/** The rule the tour's Rule stop opens, read from its href. */
+/** The rule the tour's Rule stop opens, read from its href once it names a rule (before the trace loads it is #/rules). */
 async function ruleOfTour(tour: Locator): Promise<string> {
   await expect(stop(tour, 'Rule')).toHaveCount(1);
+  await expect(stop(tour, 'Rule'), 'the Rule stop names a rule').toHaveAttribute('href', /^#\/rules\/.+$/);
   const href = (await stop(tour, 'Rule').getAttribute('href')) ?? '';
   return decodeURIComponent(/^#\/rules\/(.+)$/.exec(href)?.[1] ?? href);
 }
@@ -69,6 +70,7 @@ test("NAV-5 · the tour's Commit stop opens one of the red or green commits of t
   const built = BUILT[ruleId];
   expect(built, `the Rule stop opens a built rule (${ruleId})`).toBeDefined();
   const own = (built?.commits ?? []).map((id) => shaOf(rules, id));
+  await expect(stop(tour, 'Commit'), 'the Commit stop names a commit').toHaveAttribute('href', /^#\/commits\/.+$/);
   const href = (await stop(tour, 'Commit').getAttribute('href')) ?? '';
   const sha = /^#\/commits\/([0-9a-f]{7,40})$/.exec(href)?.[1] ?? '';
   expect(
