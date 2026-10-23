@@ -8,6 +8,7 @@ import { chipStatus, ruleHref } from '../../shell/ruleLinks';
 import { useShell } from '../../shell/ShellContext';
 import { CommitDiff } from '../diff/CommitDiff';
 import { useDiffs } from '../diff/useDiffs';
+import { TrailerVsHook } from './TrailerVsHook';
 import '../explorer.css';
 
 const linkOut = (sha: string) => <ShaLink sha={sha.slice(0, 7)} fullSha={sha} githubHref={commitUrl(sha)} />;
@@ -19,7 +20,7 @@ function CommitPage({ trace, commit }: { trace: Trace; commit: TraceCommit }) {
   return (
     <>
       <NotBuiltRegion region="commit-header-and-trailers" name="commit header and trailers" />
-      <NotBuiltRegion region="trailer-agent-vs-hook-agent" name="trailer agent vs hook agent" />
+      <TrailerVsHook commit={commit} />
       <Rung region="diff-lazy" req="RULE-3" ordinal="Step 3" heading="Diff">
         <CommitDiff commit={commit} state={diff} onLoad={diffs.load} />
         <KeyValueList

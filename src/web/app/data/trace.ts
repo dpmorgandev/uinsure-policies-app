@@ -141,6 +141,8 @@ export interface TraceCommit {
   /** The commit date, an ISO instant. */
   date?: string | null;
   parents?: string[];
+  /** AGENT-1: the agent of the activity line that logged this commit; null when no line did. */
+  hookAgent?: string | null;
 }
 
 export interface TraceVerdict {
