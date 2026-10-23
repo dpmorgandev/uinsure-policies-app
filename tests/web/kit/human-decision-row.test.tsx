@@ -81,6 +81,22 @@ describe('HumanDecisionRow', () => {
     expect(link.textContent).toContain('opens GitHub');
   });
 
+  it('gives every external evidence link rel="noreferrer"', () => {
+    render(
+      <HumanDecisionRow
+        kind="merge"
+        who="david"
+        what="Placeholder merge for this test"
+        evidence={[
+          { label: 'Placeholder external', href: 'https://github.com/example/repo/pull/1', external: true },
+          { label: 'Placeholder internal', href: '/decisions' },
+        ]}
+      />,
+    );
+    expect(screen.getByRole('link', { name: /Placeholder external/ }).getAttribute('rel')).toContain('noreferrer');
+    expect(screen.getByRole('link', { name: /Placeholder internal/ }).getAttribute('rel')).toBeNull();
+  });
+
   it('says where it happened, and says so when that is not recorded', () => {
     render(<HumanDecisionRow kind="ruling" who="david" what="Placeholder ruling for this test" />);
     expect(screen.getByText('not recorded')).toBeTruthy();
