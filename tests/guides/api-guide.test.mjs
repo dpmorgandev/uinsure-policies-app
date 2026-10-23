@@ -129,3 +129,24 @@ test("LRN-5 A1/I2: every line of every captured output in the guide appears in r
   );
   assert.deepEqual(missing, [], "every output line shown must be copied from a receipts.md entry");
 });
+
+// A recorded HTTP response: a status line, or a `-w` line such as "openapi status 200".
+const isResponseLine = (line) => /^HTTP\/\d(\.\d)? \d{3}\b/.test(line) || /^\w+ status \d{3}$/.test(line);
+
+test("LRN-5 A1/I3: every response recorded in receipts.md has its own curl command, verbatim", () => {
+  const lines = read(receiptsPath).split("\n").map((l) => l.trim());
+  const vague = lines.filter((l) => /^Command:\s*`curl against\b/.test(l));
+  assert.deepEqual(vague, [], "a receipt names the exact command run, not 'curl against <host>'");
+
+  const responses = lines.map((l, i) => ({ l, i })).filter(({ l }) => isResponseLine(l));
+  assert.ok(responses.length > 0, "receipts.md records HTTP responses");
+
+  const orphans = [];
+  for (const { l, i } of responses) {
+    let j = i - 1;
+    while (j >= 0 && !lines[j].startsWith("Command:") && !isResponseLine(lines[j])) j--;
+    const command = j >= 0 && lines[j].match(/^Command:\s*`(.+)`\s*$/);
+    if (!command || !/^curl\s.*https?:\/\/\S+/.test(command[1])) orphans.push(`receipts.md:${i + 1} ${l}`);
+  }
+  assert.deepEqual(orphans, [], "each recorded response is preceded by its own `Command: \\`curl … <url>\\`` line");
+});
