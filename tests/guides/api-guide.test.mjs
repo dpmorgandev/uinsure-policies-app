@@ -9,8 +9,8 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { existsSync, readFileSync } from "node:fs";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { dirname, isAbsolute, relative, resolve } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const read = (path) => readFileSync(resolve(root, path), "utf8").replace(/\r\n/g, "\n");
@@ -231,4 +231,22 @@ test("STY-1 A1/I11: guide.css takes every colour from a design token, never a li
     }
   });
   assert.deepEqual(literals, [], "a colour outside var(--color-*) is a raw value; a missing token is a kit gap");
+});
+
+test("LRN-9 A1/I12: every code-reference link in the guide opens an existing repository file", () => {
+  const pageUrl = pathToFileURL(resolve(root, guidePath));
+  const refs = scan(read(guidePath)).filter((el) => el.name === "a" && hasClass(el, "ref") && el.attrs.href !== undefined);
+
+  const broken = refs
+    .filter((el) => {
+      const url = new URL(decode(el.attrs.href), pageUrl);
+      if (url.protocol !== "file:") return true;
+      url.hash = "";
+      url.search = "";
+      const target = fileURLToPath(url);
+      const rel = relative(root, target);
+      return rel.startsWith("..") || isAbsolute(rel) || !existsSync(target);
+    })
+    .map((el) => `index.html:${el.line} href="${el.attrs.href}"`);
+  assert.deepEqual(broken, [], "an a.ref href, resolved against the page's own URL, reaches a file in the repository (the line goes in the fragment or the text, not the file name)");
 });
