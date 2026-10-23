@@ -506,7 +506,7 @@ nodes:
       - "The stale matrix rows are re-rendered: no cell reads undefined (build/F4, ui/U0b), and U0b's sign-off cells match its trail; a chore(trace) commit"
       - "Diff scope: infrastructure/**, the .esproj and launch settings under src/web/, src/web/vite.config.ts, Uinsure.Policies.slnx, Uinsure.Policies.slnx.slnLaunch, README.md, docs/trace/**, docs/qa/ui-U9.md, the plan files"
     tasks:
-      - {id: t1, role: builder, step: write, layer: null, rules: [], title: "staticwebapp.bicep, main.bicep wiring, three param files; the web build, test and deploy stages; the static build settings; the .esproj, web solution folder and API + web launch; infrastructure/README.md and README.md", status: pending}
+      - {id: t1, role: builder, step: write, layer: null, rules: [], title: "staticwebapp.bicep, main.bicep wiring, three param files; the web build, test and deploy stages; the static build settings; the .esproj, web solution folder and API + web launch; infrastructure/README.md and README.md", status: done}
       - {id: t2, role: orchestrator, step: gates, layer: null, rules: [], title: "Scoped (David 2026-10-23): bicep build and build-params for dev, test and prod; pipeline schema check; dotnet build of the slnx runs no npm; typecheck, lint, unit and build; render-trace check; no matrix cell reads undefined; diff scope. No app runtime file changed, so no full e2e; the visual regression is deferred to U10", status: pending}
       - {id: t3, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
       - {id: t4, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U9.md", status: pending}
