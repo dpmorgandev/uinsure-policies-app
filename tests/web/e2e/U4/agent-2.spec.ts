@@ -47,6 +47,24 @@ test("AGENT-2 · build/F3's ui-plan agents get lanes, in first-seen order: web-t
   await expect.poll(async () => [await ticksOf(lanes, 'web-tester'), await ticksOf(lanes, 'web-builder')]).toEqual([2, 1]);
 });
 
+test("AGENT-2 · build/F3's lines no lane draws are named: 2 lines, design-auditor and no agent, and the ticks plus those equal the filter's total", async ({ page }) => {
+  // A3 I3: a line whose agent is outside the kit's list, or absent, is accounted for, never silently dropped.
+  const lanes = await openRegion(page, fixture, F3, LANES);
+  await expect(lanes.locator('fieldset')).toContainText(/Showing\s*5\s*of\s*5\s*lines/);
+  // The filter bar lists design-auditor among its options, so the notice is read from the region without it.
+  const notice = async (): Promise<string> =>
+    lanes.evaluate((el) => {
+      const copy = el.cloneNode(true) as HTMLElement;
+      copy.querySelectorAll('fieldset').forEach((f) => f.remove());
+      return (copy.textContent ?? '').replace(/\s+/g, ' ');
+    });
+  await expect.poll(notice).toMatch(/\b2 lines\b/);
+  await expect.poll(notice).toContain('design-auditor');
+  await expect.poll(notice).toMatch(/no agent(?! activity)/i);
+  const ticks = await lanes.locator('ol[aria-label$=" rungs"] > li').count();
+  expect(ticks + 2, 'the lane ticks plus the 2 noted lines equal the filter bar total').toBe(5);
+});
+
 test('AGENT-2 · the activity page has no axe violation, light and dark, 1440 and 390', async ({ page }) => {
   await openRegion(page, fixture, F1, LANES);
   await auditEverywhere(page, F1, async (p) => {
