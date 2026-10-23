@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Outlet, matchPath, useLocation, useMatch } from 'react-router';
 import { AppShell } from '../../kit';
 import type { FooterProps, NavItem, ThemeChoice, TopBarProps } from '../../kit';
-import { loadTrace } from '../data/trace';
+import { loadTrace, markInteractive } from '../data/trace';
 import { workbenchRoutes } from '../workbench/routes';
 import { NodeHeader } from './NodeHeader';
 import { REPO } from './repo';
@@ -56,6 +56,12 @@ export function Frame() {
   const trace = useTraceFile();
   const [theme, setTheme] = useState<ThemeChoice>('system');
   useAppliedTheme(theme);
+
+  // PERF-1: the first screen is interactive once the trace has answered and its page is committed. Marked once.
+  useEffect(() => {
+    if (trace.state === 'loading' || performance.getEntriesByName('docket:interactive', 'mark').length > 0) return;
+    markInteractive(performance);
+  }, [trace.state]);
 
   const about = useMatch('/about');
   const activity = useMatch('/plans/:planId/:nodeId/activity');
