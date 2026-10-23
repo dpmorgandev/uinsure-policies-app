@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useParams } from 'react-router';
-import { DataTable, RedactionToken, ShaLink } from '../../../kit';
-import type { DataTableColumn } from '../../../kit';
+import { AgentLanes, DataTable, FilterBar, RedactionToken, ShaLink } from '../../../kit';
+import type { AgentName, DataTableColumn, FilterDefinition, Lane, LaneEvent, SelectOption } from '../../../kit';
 import { loadActivity } from '../../data/trace';
 import type { ActivityRecord, ChunkLoad, Trace } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
 import { REPO } from '../../shell/repo';
-import { NotBuiltRegion } from '../../shell/Rung';
+import { agentOf } from '../../shell/agents';
 import { useShell } from '../../shell/ShellContext';
 import './activity.css';
 
@@ -60,8 +60,8 @@ const COLUMNS: DataTableColumn<EventRow>[] = [
   { id: 'tdd', header: 'TDD trailer', cell: (row) => (row.commit === null ? GAP : (row.commit.tdd ?? 'none')), mono: true },
 ];
 
-/** The node's activity chunk as a table: read when the node is shown, and again when another is. */
-function EventTable({ trace, plan, node }: { trace: Trace; plan: string; node: string }) {
+/** The node's activity chunk: read when the node is shown, and again when another is. Null while it loads. */
+function useActivityChunk(trace: Trace, plan: string, node: string): ChunkLoad<ActivityRecord> | null {
   const key = `${plan}/${node}`;
   const [loaded, setLoaded] = useState<{ key: string; result: ChunkLoad<ActivityRecord> } | null>(null);
 
@@ -75,7 +75,34 @@ function EventTable({ trace, plan, node }: { trace: Trace; plan: string; node: s
     };
   }, [trace, plan, node, key]);
 
-  const result = loaded?.key === key ? loaded.result : null;
+  return loaded?.key === key ? loaded.result : null;
+}
+
+/** AGENT-2: one lane per agent in first-seen order; each tick is one log line, placed by its line number. */
+function lanesOf(trace: Trace, records: ActivityRecord[]): Lane[] {
+  const lanes = new Map<AgentName, LaneEvent[]>();
+  for (const record of records) {
+    const agent = agentOf(record.agent);
+    if (agent === null) continue;
+    const commit = commitOf(trace, record);
+    const touched = record.command ?? record.file ?? '';
+    const label = [record.tool, touched].filter((part) => part !== null && part !== undefined && part !== '').join(' ');
+    const event: LaneEvent = { n: record.line, label: label === '' ? `line ${record.line}` : label, tool: record.tool ?? null, file: touched === '' ? null : touched, tdd: commit?.tdd ?? null, sha: commit?.sha.slice(0, 7) ?? null };
+    lanes.set(agent, [...(lanes.get(agent) ?? []), event]);
+  }
+  return [...lanes].map(([agent, events]) => ({ agent, events }));
+}
+
+/** AGENT-2: the lines no lane draws (an agent outside the kit's list, or none), counted by what the log says. */
+function undrawnNotice(records: ActivityRecord[]): string | null {
+  const undrawn = records.filter((record) => agentOf(record.agent) === null);
+  if (undrawn.length === 0) return null;
+  const names = [...new Set(undrawn.map((record) => record.agent ?? 'no agent'))];
+  return `${undrawn.length} ${undrawn.length === 1 ? 'line is' : 'lines are'} not drawn as lanes: ${names.join(', ')}. They are in the table below.`;
+}
+
+function EventTable({ trace, plan, node, result }: { trace: Trace; plan: string; node: string; result: ChunkLoad<ActivityRecord> | null }) {
+  const key = `${plan}/${node}`;
   const rows: EventRow[] =
     result?.state === 'ready'
       ? result.records.map((record) => ({ id: String(record.line), record, commit: commitOf(trace, record) }))
@@ -96,10 +123,60 @@ function EventTable({ trace, plan, node }: { trace: Trace; plan: string; node: s
 export function Activity() {
   const { trace } = useShell();
   const { planId, nodeId } = useParams();
+  if (trace.state !== 'ready') return <DataNotice trace={trace} />;
+  if (planId === undefined || nodeId === undefined) return null;
+  return <ActivityBody trace={trace.trace} plan={planId} node={nodeId} />;
+}
+
+type Filters = Record<'agent' | 'tool' | 'attempt' | 'redaction', string>;
+const NO_FILTERS: Filters = { agent: '', tool: '', attempt: '', redaction: '' };
+
+const redactionOf = (record: ActivityRecord): string => REDACTIONS.find((token) => record.file === `<${token}>`) ?? '';
+
+const distinct = (values: (string | null | undefined)[]): SelectOption[] =>
+  [...new Set(values.filter((value): value is string => value !== null && value !== undefined && value !== ''))]
+    .sort()
+    .map((value) => ({ value, label: value }));
+
+const passes = (record: ActivityRecord, filters: Filters): boolean =>
+  (filters.agent === '' || record.agent === filters.agent) &&
+  (filters.tool === '' || record.tool === filters.tool) &&
+  (filters.attempt === '' || String(record.attempt ?? '') === filters.attempt) &&
+  (filters.redaction === '' || redactionOf(record) === filters.redaction);
+
+function ActivityBody({ trace, plan, node }: { trace: Trace; plan: string; node: string }) {
+  const result = useActivityChunk(trace, plan, node);
+  const [filters, setFilters] = useState<Filters>(NO_FILTERS);
+  const gitOnly = trace.nodes.find((n) => n.plan === plan && n.id === node)?.completeness?.includes('git-only') ?? false;
+  const records = result?.state === 'ready' ? result.records : [];
+  const shown = records.filter((record) => passes(record, filters));
+  const undrawn = undrawnNotice(shown);
+  const definitions: FilterDefinition[] = [
+    { id: 'agent', label: 'Agent', options: distinct(records.map((r) => r.agent)), value: filters.agent },
+    { id: 'tool', label: 'Tool', options: distinct(records.map((r) => r.tool)), value: filters.tool },
+    { id: 'attempt', label: 'Attempt', options: distinct(records.map((r) => (r.attempt === null || r.attempt === undefined ? null : String(r.attempt)))), value: filters.attempt },
+    { id: 'redaction', label: 'Redaction', options: distinct(records.map(redactionOf)), value: filters.redaction },
+  ];
   return (
     <>
-      {trace.state === 'ready' ? null : <DataNotice trace={trace} />}
-      <NotBuiltRegion region="agent-lanes" name="agent lanes" />
+      <section className="s-lanes" data-region="agent-lanes" data-req="AGENT-2" aria-label="Agent lanes">
+        {result === null ? (
+          <p className="s-events-note">Loading the activity log.</p>
+        ) : (
+          <>
+            <FilterBar
+              filters={definitions}
+              onChange={(id, value) => setFilters((current) => ({ ...current, [id]: value }))}
+              onClear={() => setFilters(NO_FILTERS)}
+              matchCount={shown.length}
+              totalCount={records.length}
+              noun="lines"
+            />
+            {undrawn === null ? null : <p className="s-events-note">{undrawn}</p>}
+            <AgentLanes lanes={lanesOf(trace, shown)} gitOnly={gitOnly} />
+          </>
+        )}
+      </section>
       <section className="s-events" data-region="event-table-text-equivalent" data-req="AGENT-2 A11Y-1">
         <div className="s-events-head">
           <h2 className="s-events-title">Every line as text</h2>
@@ -108,9 +185,7 @@ export function Activity() {
             token. Clock times are left out on purpose: position here is the log line.
           </p>
         </div>
-        {trace.state === 'ready' && planId !== undefined && nodeId !== undefined ? (
-          <EventTable trace={trace.trace} plan={planId} node={nodeId} />
-        ) : null}
+        <EventTable trace={trace} plan={plan} node={node} result={result} />
       </section>
     </>
   );

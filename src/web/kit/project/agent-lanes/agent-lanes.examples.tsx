@@ -39,6 +39,10 @@ const both: Lane[] = [
   { agent: 'builder', events: builder },
 ];
 
+// The reviewer's one line in build/F1 on the `agents` fixture trail: line 7, a Read of src/sell.txt (AGENT-2, e2e
+// tests/web/e2e/U4/agent-2.spec.ts). It is an activity-log line, not a commit, so it carries no TDD trailer and no SHA.
+const reviewer: LaneEvent[] = [{ n: 7, tdd: null, tool: 'Read', file: 'src/sell.txt', label: 'Read src/sell.txt' }];
+
 const note = {
   margin: 'var(--space-2) 0 0',
   fontSize: 'var(--text-14)',
@@ -59,8 +63,11 @@ export const examples: { state: string; element: JSX.Element }[] = [
     state: 'one agent',
     element: (
       <div>
-        <AgentLanes lanes={[{ agent: 'tester', events: tester }]} />
-        <p style={note}>Only the tester's rows from the same walkthrough, to show a single lane.</p>
+        <AgentLanes lanes={[{ agent: 'reviewer', events: reviewer }]} tableOpen />
+        <p style={note}>
+          A single lane, with its tool and file named on the tick and in the table: the reviewer's one line in build/F1
+          on the agents fixture.
+        </p>
       </div>
     ),
   },

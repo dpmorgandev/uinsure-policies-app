@@ -153,6 +153,9 @@ function VerdictPage({ verdict, snapshot }: { verdict: LoopVerdict; snapshot: Sn
           <p className="s-text">This verdict lists no findings.</p>
         ) : (
           <div className="s-findings">
+            <p className="s-text">
+              <a href={`#/plans/${plan}/${node}/findings/${round}`}>{`Open the findings round ${round} and the commits that fixed it`}</a>
+            </p>
             {verdict.findings.map((finding, at) => (
               <Finding key={`${finding.id ?? ''}-${at}`} finding={finding} verdict={verdict} />
             ))}

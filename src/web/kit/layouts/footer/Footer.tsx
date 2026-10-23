@@ -50,7 +50,7 @@ export function Footer({
             </a>
           </li>
           <li>
-            <a className={styles.link} href={repoHref}>
+            <a className={styles.link} href={repoHref} rel="noreferrer">
               <ExternalLink className={styles.icon} aria-hidden="true" focusable="false" />
               <span>{repoLabel}</span>
             </a>

@@ -1,0 +1,3 @@
+Attempts 1 to 3 closed the gap above: TopBar's search slot and AgentLanes' tool and file are done and pass every kit gate. Leave them as they are.
+
+One more change in this batch, by David's override of the 3-attempt cap (2026-10-23, "Allow layout attempt 4"): Footer's repository link (https://github.com/<owner>/<repo>, drawn from repoHref) has no rel="noreferrer" (U4 review A3, I9; react-web SEC-1, web-security W2). Every external link the kit draws carries rel="noreferrer". Add it to Footer's repository link, and to any other external link Footer draws, and change nothing else. Add no state and no example.

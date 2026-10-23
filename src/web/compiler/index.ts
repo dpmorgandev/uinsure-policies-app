@@ -231,6 +231,8 @@ export function compile(options: CompileOptions): void {
   // A commit's row in its node's walkthrough (RULE-2), by short SHA.
   const places = new Map<string, number>();
   const chunks = new Map<string, unknown>();
+  // AGENT-1: the agent of the activity line that logged a commit, by commit SHA.
+  const hookAgents = new Map<string, string | null>();
   for (const { path, dag } of dags) {
     if (dag.id === null) {
       // A path from git is scanned before it is said; a hit fails the compile without naming the path.
@@ -244,6 +246,13 @@ export function compile(options: CompileOptions): void {
     });
     for (const node of dag.nodes) {
       const dir = `docs/trace/${dag.id}/${node.id}`;
+      // AGENT-2: a logged commit carries its own TDD trailer (null when it has none); AGENT-1 notes who logged it.
+      const withTdd = (logged: unknown, agent: unknown): unknown => {
+        if (typeof logged !== 'object' || logged === null) return null;
+        const loggedSha = str((logged as Json)['sha']);
+        if (loggedSha !== null && !hookAgents.has(loggedSha)) hookAgents.set(loggedSha, str(agent));
+        return { ...(logged as Json), tdd: commits.find((c) => c.sha === loggedSha)?.tdd ?? null };
+      };
       const activityPath = `${dir}/activity.jsonl`;
       const activityText = read(activityPath);
       const activityChunk = activityText === null ? null : `trace/${dag.id}/${node.id}/activity.json`;
@@ -253,7 +262,7 @@ export function compile(options: CompileOptions): void {
           readLines(activityPath, activityText, problems).map(({ line, record, raw }) =>
             record === null
               ? { line, raw }
-              : { line, ts: str(record['ts']), attempt: num(record['attempt']), agent: str(record['agent']), tool: str(record['tool']), file: str(record['file']), command: str(record['command']), commit: record['commit'] ?? null },
+              : { line, ts: str(record['ts']), attempt: num(record['attempt']), agent: str(record['agent']), tool: str(record['tool']), file: str(record['file']), command: str(record['command']), commit: withTdd(record['commit'], record['agent']) },
           ),
         );
       }
@@ -264,11 +273,16 @@ export function compile(options: CompileOptions): void {
         events.push(eventOf(dag.id, node.id, line, record, raw));
         // The human decisions are taken from the same lines (NAV-1).
         // signoff(<sha>) and merged(<sha>) name the commit signed off and the merge commit.
-        const event = /^(pause1|pause2|signoff|merged)(?:\(([^)]*)\))?$/.exec(str(record?.['event']) ?? '');
+        // steer(<round>,<pause>) names the finding round and the pause it was given at (HITL-1).
+        const event = /^(pause1|pause2|signoff|merged|steer)(?:\(([^)]*)\))?$/.exec(str(record?.['event']) ?? '');
         if (record !== null && event !== null) {
+          const steer = event[1] === 'steer' ? (event[2] ?? '').split(',') : null;
           decisions.push({
-            kind: event[1] === 'merged' ? 'merge' : event[1], sha: event[2] ?? null, who: null, what: str(record['detail']), when: str(record['ts']),
-            plan: dag.id, node: node.id, evidence: { file: loopPath, line },
+            kind: event[1] === 'merged' ? 'merge' : event[1],
+            round: steer?.[0] ?? null, at: steer?.[1] ?? null,
+            plan: dag.id, node: node.id, when: str(record['ts']), what: str(record['detail']),
+            sha: steer === null ? (event[2] ?? null) : null,
+            evidence: { file: loopPath, line },
           });
         }
       }
@@ -393,6 +407,7 @@ export function compile(options: CompileOptions): void {
     });
   const placed = commits.map((commit) => ({
     ...commit,
+    hookAgent: hookAgents.get(commit.sha) ?? null,
     order: [...places].find(([short]) => commit.sha.startsWith(short))?.[1] ?? null,
   }));
 

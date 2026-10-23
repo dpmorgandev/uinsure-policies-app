@@ -144,6 +144,45 @@
   white-space: nowrap;
 }
 
+/* The tool and the file (or command) a tick names, as text: "Read · src/sell.txt". */
+.touched {
+  grid-column: 1 / -1;
+  max-width: 100%;
+  font-weight: 400;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+/*
+ * A lane whose ticks name a tool and a file wraps them in rung order, left to right and top to bottom. The ticks are too
+ * wide to share narrow columns, and the text is read whole, never clipped.
+ */
+.wrapped {
+  min-width: 0;
+}
+
+.wrapped .ticks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3) var(--space-3);
+  background: none;
+}
+
+.wrapped .tick {
+  flex: none;
+  grid-column: auto;
+  display: grid;
+  grid-template-columns: auto auto;
+  justify-content: start;
+  align-items: center;
+  column-gap: var(--space-1);
+  row-gap: var(--space-1);
+  max-width: min(100%, 18rem);
+  padding: var(--space-1) var(--space-2);
+}
+
 .equivalent {
   margin-top: var(--space-3);
 }
@@ -195,6 +234,12 @@
 
 .cellTdd {
   white-space: nowrap;
+}
+
+.cellFile {
+  min-width: 8rem;
+  font-family: var(--font-mono);
+  overflow-wrap: anywhere;
 }
 
 .cellWhat {

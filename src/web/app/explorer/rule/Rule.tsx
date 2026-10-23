@@ -11,13 +11,15 @@ import {
   RuleEvidence,
   ShaLink,
   StatusTag,
+  VerifyCommand,
 } from '../../../kit';
 import type { EvidenceCommit, EvidenceOrder, EvidenceStep } from '../../../kit';
 import type { Snapshot, Trace, TraceCommit, TraceRule } from '../../data/trace';
 import { agentOf } from '../../shell/agents';
 import { DataNotice } from '../../shell/DataNotice';
 import { blobUrl, commitUrl, pullUrl } from '../../shell/repo';
-import { NotBuiltRegion, Rung } from '../../shell/Rung';
+import { NotFound } from '../../shell/NotFound';
+import { Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
 import { commitOfShort, fullShaOf, ruleCommits, ruleStatusTag, testsText } from '../ruleFacts';
 import { CommitDiff } from '../diff/CommitDiff';
@@ -223,7 +225,33 @@ function RulePage({ trace, snapshot, rule }: { trace: Trace; snapshot: Snapshot;
           </div>
         )}
       </Rung>
-      <NotBuiltRegion region="verify-it-yourself" name="verify it yourself" />
+      <Rung region="verify-it-yourself" req="VERIFY-1" ordinal="Step 5" heading="Verify it yourself">
+        {matrix?.red && matrix.green ? (
+          <VerifyCommand
+            command={`git log --reverse --first-parent --format="%h %(trailers:key=TDD,valueonly) %s" ${matrix.red}^..${matrix.green}`}
+            intro={`Run this in a clone. It lists ${rule.id}'s commits from its red SHA to its green SHA in the order they were made, with each one's TDD trailer. It follows the branch's own line, so a branch merged in between adds its merge commit and not the commits it carried.`}
+            expect={
+              <>
+                Expect <code>{matrix.red}</code> first with trailer red and <code>{matrix.green}</code> last with trailer green.
+              </>
+            }
+            note="The command is filled in from the SHAs in the requirements matrix; the page has no recorded output for it."
+          />
+        ) : (
+          <NotBuiltYet kind="region" name={`the red and green commits of ${rule.id}`} />
+        )}
+        {matrix?.green && matrix.refactor ? (
+          <VerifyCommand
+            command={`git log --reverse --format="%h %(trailers:key=TDD,valueonly) %s" ${matrix.green}..${matrix.refactor}`}
+            intro={`This lists the commits after ${rule.id}'s green, up to its refactor.`}
+            expect={
+              <>
+                Expect <code>{matrix.refactor}</code> last with trailer refactor.
+              </>
+            }
+          />
+        ) : null}
+      </Rung>
       <Rung region="load-diff-busy-while-the-diff-chunk-loads" req="BUSY-1" ordinal="Step 6" heading="Loading a diff">
         <p className="s-text">
           {busy.length === 0
@@ -283,12 +311,6 @@ export function Rule() {
   const { trace } = useShell();
   if (trace.state !== 'ready') return <DataNotice trace={trace} />;
   const rule = trace.trace.rules.find((candidate) => candidate.id === ruleId);
-  if (rule === undefined) {
-    return (
-      <NotBuiltYet kind="region" name={`rule ${ruleId}`} back={{ href: '#/rules', label: 'Back to the requirements matrix' }}>
-        requirements.md in this snapshot has no rule with that ID.
-      </NotBuiltYet>
-    );
-  }
+  if (rule === undefined) return <NotFound asked={`/rules/${ruleId}`} />;
   return <RulePage trace={trace.trace} snapshot={trace.snapshot} rule={rule} />;
 }

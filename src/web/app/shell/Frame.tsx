@@ -2,10 +2,11 @@ import { useEffect, useState } from 'react';
 import { Outlet, matchPath, useLocation, useMatch } from 'react-router';
 import { AppShell } from '../../kit';
 import type { FooterProps, NavItem, ThemeChoice, TopBarProps } from '../../kit';
-import { loadTrace } from '../data/trace';
+import { loadTrace, markInteractive } from '../data/trace';
 import { workbenchRoutes } from '../workbench/routes';
 import { NodeHeader } from './NodeHeader';
 import { REPO } from './repo';
+import { SiteSearch } from './SiteSearch';
 import { ShellProvider } from './ShellContext';
 import type { TraceState } from './ShellContext';
 import './notice.css';
@@ -15,7 +16,7 @@ const navFor = (buildPlanId: string): NavItem[] => [
   { key: 'overview', label: 'Overview', href: '#/', scope: 'explorer' },
   { key: 'matrix', label: 'Requirements matrix', href: '#/rules', scope: 'explorer' },
   { key: 'plan', label: 'Plan', href: `#/plans/${buildPlanId}`, scope: 'explorer' },
-  { key: 'decisions', label: 'Human decisions', notBuilt: true, scope: 'explorer' },
+  { key: 'decisions', label: 'Human decisions', href: '#/decisions', scope: 'explorer' },
   { key: 'about', label: 'How to read this', href: '#/about', scope: 'explorer' },
   { key: 'workbench', label: 'Workbench', href: '#/workbench', scope: 'workbench' },
 ];
@@ -57,6 +58,12 @@ export function Frame() {
   const [theme, setTheme] = useState<ThemeChoice>('system');
   useAppliedTheme(theme);
 
+  // PERF-1: the first screen is interactive once the trace has answered and its page is committed. Marked once.
+  useEffect(() => {
+    if (trace.state === 'loading' || performance.getEntriesByName('docket:interactive', 'mark').length > 0) return;
+    markInteractive(performance);
+  }, [trace.state]);
+
   const about = useMatch('/about');
   const activity = useMatch('/plans/:planId/:nodeId/activity');
   const overview = useMatch('/');
@@ -70,7 +77,10 @@ export function Frame() {
   const verdict = useMatch('/plans/:planId/:nodeId/verdicts/:round/:agent');
   const finding = useMatch('/plans/:planId/:nodeId/findings/:round');
   const planPage = useMatch('/plans/:planId');
-  const sessions = useMatch('/sessions');
+  const sessionList = useMatch('/sessions');
+  const sessionOpen = useMatch('/sessions/:file');
+  const sessions = sessionList ?? sessionOpen;
+  const decisions = useMatch('/decisions');
   const harness = useMatch('/harness');
   const stats = useMatch('/stats');
   const commit = useMatch('/commits/:sha');
@@ -86,17 +96,20 @@ export function Frame() {
     [matrix !== null, 'Requirements matrix'],
     [about !== null, 'How to read this'],
     [sessions !== null, 'Sessions'],
+    [decisions !== null, 'Human decisions'],
     [harness !== null, 'Harness'],
     [stats !== null, 'Delivery stats'],
     [overview !== null, 'Overview'],
     [workbench !== undefined, workbench?.title ?? ''],
   ];
-  const title = titles.find(([matched]) => matched)?.[1] ?? 'Not built yet';
+  const title = titles.find(([matched]) => matched)?.[1] ?? 'Not found';
   // Sessions and the harness are read as "about" the project; the delivery stats sit under the overview.
   const current =
     about || sessions || harness
       ? 'about'
-      : overview || stats
+      : decisions
+        ? 'decisions'
+        : overview || stats
         ? 'overview'
         : planPage || nodePage || walkthrough || activity || commit || loop || verdict || finding
           ? 'plan'
@@ -120,7 +133,17 @@ export function Frame() {
       <Outlet />
     </ShellProvider>
   );
-  const topBar: TopBarProps = { appName: 'Docket', homeHref: '#/', theme, onThemeChange: setTheme };
+  const topBar: TopBarProps = {
+    appName: 'Docket',
+    homeHref: '#/',
+    theme,
+    onThemeChange: setTheme,
+    search: (
+      <ShellProvider value={{ trace, theme, setTheme }}>
+        <SiteSearch />
+      </ShellProvider>
+    ),
+  };
 
   // HONEST-1: until a snapshot is read the footer says so; it never shows a stamp.
   const footer: FooterProps =

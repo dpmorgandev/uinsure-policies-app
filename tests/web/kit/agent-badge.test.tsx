@@ -6,7 +6,21 @@ import { examples } from '../../../src/web/kit/primitives/agent-badge/agent-badg
 
 afterEach(cleanup);
 
-const AGENTS: AgentName[] = ['main', 'tester', 'builder', 'reviewer', 'security', 'investigator', 'git', 'david'];
+const AGENTS: AgentName[] = [
+  'main',
+  'tester',
+  'builder',
+  'reviewer',
+  'security',
+  'investigator',
+  'git',
+  'web-tester',
+  'web-builder',
+  'kit-builder',
+  'ui-designer',
+  'creative-director',
+  'david',
+];
 
 describe('agent-badge examples', () => {
   it('has exactly the catalogued states', () => {

@@ -139,7 +139,11 @@ export function HumanDecisionRow({
           <ul className={styles.evidence} aria-label="Evidence">
             {evidence.map((item) => (
               <li key={item.href}>
-                <a className={styles.link} href={item.href}>
+                <a
+                  className={styles.link}
+                  href={item.href}
+                  rel={item.external || /^https?:\/\//i.test(item.href) ? 'noreferrer' : undefined}
+                >
                   <FileText className={styles.icon} aria-hidden="true" focusable="false" />
                   <span>{item.label}</span>
                   {item.external ? (

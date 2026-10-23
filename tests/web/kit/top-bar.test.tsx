@@ -2,6 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TopBar } from '../../../src/web/kit/layouts/top-bar/TopBar';
+import { Search } from '../../../src/web/kit/patterns/search/Search';
 import { examples } from '../../../src/web/kit/layouts/top-bar/top-bar.examples';
 
 afterEach(cleanup);
@@ -14,7 +15,16 @@ describe('top-bar examples', () => {
   it.each(examples)('renders the example: $state', ({ element }) => {
     const { container } = render(element);
     expect(container.querySelector('header')).not.toBeNull();
-    expect(screen.getByRole('link', { name: 'Docket' })).toBeTruthy();
+    expect(screen.getAllByRole('link', { name: 'Docket' }).length).toBeGreaterThan(0);
+  });
+
+  it('pop shows the bar with the Search combobox in the slot and the bar with its own plain input', () => {
+    const pop = examples.find((e) => e.state === 'pop');
+    if (pop === undefined) throw new Error('top-bar has no pop example');
+    const { container } = render(pop.element);
+    expect(container.querySelectorAll('header')).toHaveLength(2);
+    expect(screen.getByRole('combobox', { name: 'Jump to a rule, node, SHA or path' })).toBeTruthy();
+    expect(screen.getByRole('searchbox')).toBeTruthy();
   });
 });
 
@@ -28,6 +38,38 @@ describe('TopBar', () => {
     expect(screen.getByRole('button', { name: 'Search' }).getAttribute('type')).toBe('submit');
     expect(screen.getByRole('radiogroup')).toBeTruthy();
     expect(screen.getAllByRole('radio')).toHaveLength(3);
+  });
+
+  it('draws a search given in the slot where its own box sits, and drops the plain one', () => {
+    render(<TopBar appName="Docket" search={<Search shortcut={null} defaultValue="F2" results={[]} />} />);
+    expect(screen.getByRole('combobox', { name: 'Jump to a rule, node, SHA or path' })).toBeTruthy();
+    expect(screen.getAllByRole('search')).toHaveLength(1);
+    expect(screen.queryByRole('searchbox')).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Search' })).toBeNull();
+    expect(screen.getByRole('radiogroup')).toBeTruthy();
+  });
+
+  it('shows the slotted combobox results and keeps the name, then the search, then the theme in tab order', async () => {
+    render(
+      <TopBar
+        appName="Docket"
+        defaultTheme="light"
+        search={
+          <Search
+            shortcut={null}
+            defaultValue="F2"
+            results={[{ id: 'node-build-f2', kind: 'node', label: 'build/F2', href: '#' }]}
+          />
+        }
+      />,
+    );
+    expect(screen.getByRole('option', { name: /build\/F2/ })).toBeTruthy();
+    await userEvent.tab();
+    expect(document.activeElement).toBe(screen.getByRole('link', { name: 'Docket' }));
+    await userEvent.tab();
+    expect(document.activeElement).toBe(screen.getByRole('combobox'));
+    await userEvent.tab();
+    expect(document.activeElement).toBe(screen.getByRole('radio', { name: /Light/ }));
   });
 
   it('starts the box with the given query and reports what was typed on submit', async () => {

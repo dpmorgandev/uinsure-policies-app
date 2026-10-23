@@ -56,6 +56,14 @@
   min-width: 0;
 }
 
+/* The caller's own search (the kit Search combobox) sits where the plain box would. */
+.slot {
+  grid-area: search;
+  width: 100%;
+  max-width: 36rem;
+  min-width: 0;
+}
+
 .theme {
   grid-area: theme;
   justify-self: end;
@@ -84,7 +92,8 @@
     padding: var(--space-3) var(--space-4);
   }
 
-  .search {
+  .search,
+  .slot {
     max-width: none;
   }
 }

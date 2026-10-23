@@ -1,0 +1,90 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T04:46:17Z",
+  "plan": "ui",
+  "node": "U4",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "aa3007b804e801653",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U4",
+    "attempt": 2,
+    "base_sha": "f2c39dde0113bade996ef54c8bce55ca78f2557f",
+    "head_sha": "d7888d152c46fa9751aa11f713826413b6656637",
+    "diff_fingerprint": "0f89c6936a80c335d848d73eb6a03af878a319bf",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.finding-red@cd7b589ecb257a (2026-10-23T03:49:37Z)",
+      "gate.kit-typecheck/kit-tests/kit-css/kit-audit@7fc43d7 (primitives-a)",
+      "gate.stylekit@e25b527",
+      "gate.screens-audit/frames-audit@4466a37",
+      "gate.kit-typecheck/kit-tests/kit-css/kit-audit@8263651 (project-b)",
+      "gate.stylekit@972a9a3",
+      "gate.screens-audit/frames-audit@a1fb85f",
+      "gate.kit-typecheck/kit-tests/kit-css/kit-audit@aa5456a (layout attempt 4)",
+      "gate.stylekit@65edf79",
+      "gate.screens-audit/frames-audit@a22a72d",
+      "gate.typecheck@62cf910",
+      "gate.lint@62cf910",
+      "gate.lint-css@62cf910",
+      "gate.test@62cf910",
+      "gate.build@62cf910",
+      "gate.audit@62cf910",
+      "gate.e2e@62cf910",
+      "gate.e2e-regression@62cf910",
+      "attempt++ (reviewer FAIL at acf9a9b)"
+    ],
+    "rules_covered": [
+      "AGENT-1",
+      "AGENT-2",
+      "HITL-1",
+      "VERIFY-1",
+      "NAV-2",
+      "NAV-4",
+      "PERF-1"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "NAV-4",
+        "severity": "P2",
+        "file": "tests/web/e2e/U4/nav-4.spec.ts",
+        "line": 40,
+        "what": "The old test is still titled 'Enter on it opens the node page' but presses ArrowDown and clicks. The new keyboard test at :62 proves Enter, but this title still claims something the test doesn't do.",
+        "why": "web-testing: a test asserts the behaviour its title claims. The I5 fix added a correct test and left the misleading title. Renaming the title wouldn't weaken an assertion.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "AGENT-2",
+        "severity": "P2",
+        "file": "src/web/app/explorer/activity/Activity.tsx",
+        "line": 175,
+        "what": "The I3 undrawn-lines notice is a <p className=\"s-events-note\"> written by the screen. The investigator's fix direction put this notice in agent-lanes' kit state or slot.",
+        "why": "react-web 'screens are composed, not designed': a notice the reference lacks belongs to the kit. It reuses the screen's existing note pattern and the parity gates pass, so it doesn't block.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "NAV-4",
+        "severity": "P2",
+        "file": "src/web/app/data/trace.ts",
+        "line": 342,
+        "what": "SearchEntry.href still means two things: an in-app route for most kinds, a repo-relative path for kind 'path'. Only a doc comment tells them apart.",
+        "why": "I1 named 'one field is used for two things' as the cause. The fix is correct (SiteSearch.tsx:21 turns a path into blobUrl), but the overloaded field stays as a trap for the next consumer.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Delta review against A3 I1-I9. Every red commit (ecb257a, fcaeeb8, 73dfb98, 058f0b6, c0a281c, cf2453b, b05a9d7, cd7b589) comes before its Fixes-Finding green (dce9ff9 I1, 64b9272 I2, bf2e2d5 I3, cae1584 I6, 962e1d2 I7, 1f08c91 I8, aa5456a Footer for I9). gate.finding-red at cd7b589 records I1/I4, I2, I3, I6, I7, I8 and I9 failing. I5 passes by design, because its cause was in the test.",
+      "I1/I4: the path entry's href is now the repo path. The unit test pins the href, and the e2e test pins the popup URL REPO/blob/<snapshot>/src/sell.txt with github.com intercepted. I2: agents.ts is now a Record<AgentName,true>, so the compiler catches drift from the kit union. I6: --first-parent fixes red-first, and the test runs the printed command in a real merged repo. I7: the about page now names scaffold. I8: the dead 'ruling' kind is removed and the page states the gap. I9: rel=noreferrer is set in ShaLink, HumanDecisionRow and Footer, with kit tests and an e2e sweep of GitHub anchors.",
+      "Order caveat: the ShaLink and HumanDecisionRow rel fixes (7fc43d7, 8263651) landed through the kit-gap route before the I9 e2e red (cd7b589). That red still failed, on the Footer link fixed later at aa5456a. The I9 test is titled SEC-1 but its commit trailer is Rule: W2.",
+      "No 'not implemented' throws in src/web. Post-fix unit 351/351. gate.e2e records no failure in e2e/U4.",
+      "U10 debt, not judged: gate.e2e attributes the DATA-1 '5 vs 10' failure to U4's new F3 fixture lines. But tests/web/e2e/U0b/data-1.spec.ts:46 runs on the 'complete' fixture, not 'agents', so the F3 fixture can't explain it. Ten tbody rows on the activity page suggests a second table on that page. Diagnose it in U10 as a possible real U4 regression, together with RESP-1 and WB-3."
+    ]
+  }
+}
