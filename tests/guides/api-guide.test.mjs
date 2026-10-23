@@ -190,3 +190,14 @@ test("A1/I8: the API guide spec states its real question count and a receipts pa
   const absent = paths.filter((p) => !existsSync(resolve(root, p)));
   assert.deepEqual(absent, [], "every receipts path the spec names exists");
 });
+
+test("A1/I9: no receipted command passes both --launch-profile and --no-launch-profile", () => {
+  const md = read(receiptsPath);
+  const commands = [...md.matchAll(/^Command:\s*`(.+)`\s*$/gm)].map((m) => ({ text: m[1], line: lineAt(md, m.index) }));
+  assert.ok(commands.length > 0, "receipts.md records commands");
+
+  const contradictory = commands
+    .filter((c) => /(^|\s)--launch-profile(\s|$)/.test(c.text) && /(^|\s)--no-launch-profile(\s|$)/.test(c.text))
+    .map((c) => `receipts.md:${c.line} ${c.text}`);
+  assert.deepEqual(contradictory, [], "a receipt runs with a launch profile or without one, never both");
+});
