@@ -31,7 +31,7 @@ nodes:
       - "The reproduction test fails on the merge base and passes at the PR head"
       - "The full suite and the rule-coverage check pass"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [DATA-1], title: "Reproduction: a fresh clone has no restore in the launch path, the port refuses connections during the compile, and preview hides a failed compile; fails on main (unit/toolchain)", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [DATA-1], title: "Reproduction: a fresh clone has no restore in the launch path, the port refuses connections during the compile, and preview hides a failed compile; fails on main (unit/toolchain)", status: done}
       - {id: t2, role: builder, step: stub, layer: compiler, rules: [], title: "No stub: every route this node touches already exists", status: skipped}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the reproduction tests red against main; go or change", status: skipped}
       - {id: t4, role: builder, step: green, layer: compiler, rules: [DATA-1], title: "Launch path restore or named stop, listen-first trace-on-start, preview report or skip, engines and .nvmrc", status: pending}
