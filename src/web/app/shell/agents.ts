@@ -1,6 +1,22 @@
 import type { AgentName } from '../../kit';
 
-const AGENTS: readonly AgentName[] = ['main', 'tester', 'builder', 'reviewer', 'security', 'investigator', 'git', 'david'];
+// A Record over the kit's AgentName, so the compiler refuses this list the day it differs from the kit's.
+const KNOWN: Record<AgentName, true> = {
+  main: true,
+  tester: true,
+  builder: true,
+  reviewer: true,
+  security: true,
+  investigator: true,
+  git: true,
+  'web-tester': true,
+  'web-builder': true,
+  'kit-builder': true,
+  'ui-designer': true,
+  'creative-director': true,
+  david: true,
+};
+const AGENTS = Object.keys(KNOWN) as AgentName[];
 
 /** The badge name for an agent or owner the trail wrote, or null when it is not one the kit draws (the loop, say). */
 export function agentOf(value: string | null | undefined): AgentName | null {
