@@ -443,11 +443,11 @@ nodes:
     rules: []
     cuttable: true
     budget: null
-    status: hitl
+    status: done
     attempt: 2
     branch: feature/ui/U8
     worktree: .claude/worktrees/ui-U8
-    pr: null
+    pr: 112
     qa: docs/qa/ui-U8.md
     trace: docs/trace/ui/U8/
     acceptance:
@@ -475,6 +475,6 @@ nodes:
       - {id: t8, role: tester, step: qa, layer: null, rules: [], after: [t6], title: "QA script docs/qa/ui-U8.md, beside review", status: done}
       - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: skipped}
       - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: done}
-      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
-      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: check the fixes from the QA script, then sign off", status: pending}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: check the fixes from the QA script, then sign off", status: done}
       - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
