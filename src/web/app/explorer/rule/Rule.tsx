@@ -228,8 +228,8 @@ function RulePage({ trace, snapshot, rule }: { trace: Trace; snapshot: Snapshot;
       <Rung region="verify-it-yourself" req="VERIFY-1" ordinal="Step 5" heading="Verify it yourself">
         {matrix?.red && matrix.green ? (
           <VerifyCommand
-            command={`git log --reverse --format="%h %(trailers:key=TDD,valueonly) %s" ${matrix.red}^..${matrix.green}`}
-            intro={`Run this in a clone. It lists ${rule.id}'s commits from its red SHA to its green SHA in the order they were made, with each one's TDD trailer.`}
+            command={`git log --reverse --first-parent --format="%h %(trailers:key=TDD,valueonly) %s" ${matrix.red}^..${matrix.green}`}
+            intro={`Run this in a clone. It lists ${rule.id}'s commits from its red SHA to its green SHA in the order they were made, with each one's TDD trailer. It follows the branch's own line, so a branch merged in between adds its merge commit and not the commits it carried.`}
             expect={
               <>
                 Expect <code>{matrix.red}</code> first with trailer red and <code>{matrix.green}</code> last with trailer green.
