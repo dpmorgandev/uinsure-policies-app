@@ -25,7 +25,6 @@ if (!app) {
 const candidates = [
   process.env.PLAYWRIGHT_MODULE && resolve(process.env.PLAYWRIGHT_MODULE),
   join(root, "src/Uinsure.Policies.Web/node_modules/playwright"),
-  join(root, "src/web/node_modules/playwright"),
 ].filter(Boolean);
 const found = candidates.find((dir) => existsSync(join(dir, "package.json")));
 if (!found) {

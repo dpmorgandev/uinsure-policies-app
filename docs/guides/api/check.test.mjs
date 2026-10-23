@@ -273,9 +273,8 @@ test("LRN-4 A1/I13: a figure whose caption speaks of arrows draws every connecto
   assert.deepEqual(problems, [], "the direction a caption claims is drawn");
 });
 
-// The web project's directory on this branch's layout: CLAUDE.md's Docket commands run `npm --prefix src/web ci`.
-// src/Uinsure.Policies.Web is the name after the ui plan's U10 rename, which has not landed here.
-test("STY-5 A1/I14: with no Playwright, print.mjs exits 2 and its hint names the web directory of this branch's layout", () => {
+// The web project's directory after the ui plan's U10 rename, now on main.
+test("STY-5 A1/I14: with no Playwright, print.mjs exits 2 and its hint names the web directory", () => {
   // A copy in an empty tree, so no installed Playwright anywhere can be found.
   const sandbox = mkdtempSync(join(tmpdir(), "guide-print-"));
   try {
@@ -289,7 +288,7 @@ test("STY-5 A1/I14: with no Playwright, print.mjs exits 2 and its hint names the
       env: { ...process.env, PLAYWRIGHT_MODULE: join(sandbox, "no-playwright") },
     });
     assert.equal(run.status, 2, `print.mjs exits 2 when Playwright is missing (stderr: ${run.stderr.trim()})`);
-    assert.match(run.stderr, /npm --prefix src\/web ci/, "the hint names src/web, the web directory of this branch's layout, not only the post-U10 name");
+    assert.match(run.stderr, /npm --prefix src\/Uinsure\.Policies\.Web ci/, "the hint names the web directory");
   } finally {
     rmSync(sandbox, { recursive: true, force: true });
   }
