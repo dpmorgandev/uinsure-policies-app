@@ -443,10 +443,10 @@ nodes:
     rules: []
     cuttable: true
     budget: null
-    status: pending
-    attempt: 0
-    branch: null
-    worktree: null
+    status: in_progress
+    attempt: 1
+    branch: feature/ui/U8
+    worktree: .claude/worktrees/ui-U8
     pr: null
     qa: docs/qa/ui-U8.md
     trace: docs/trace/ui/U8/
