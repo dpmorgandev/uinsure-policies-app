@@ -17,11 +17,12 @@ const PAYMENT_METHODS = [
 ];
 
 /** The method the current term was paid by, from the payment its term points at. */
-function termMethod(policy: Policy): PaymentMethod {
+/** Null when the read names no payment for the term, or one the form has no option for (HONEST-1: no default). */
+function termMethod(policy: Policy): PaymentMethod | null {
   const term = policy.terms.find((t) => t.termNumber === policy.currentTermNumber);
   const paid = policy.payments.find((p) => p.reference === term?.paymentReference)?.type;
   const method = PAYMENT_METHODS.find((m) => m.value === paid);
-  return (method?.value ?? 'Card') as PaymentMethod;
+  return (method?.value as PaymentMethod | undefined) ?? null;
 }
 
 function Timeline({ policy }: { policy: Policy }) {
@@ -60,7 +61,7 @@ export function RenewPolicy() {
   const [amount, setAmount] = useState('');
   // WB-5: the term amount is only a starting value; it never replaces what the person typed first.
   const typedAmount = useRef(false);
-  const [method, setMethod] = useState<PaymentMethod>('Card');
+  const [method, setMethod] = useState<PaymentMethod | ''>('');
   const [renewal, setRenewal] = useState<ApiAnswer<Policy> | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -71,7 +72,7 @@ export function RenewPolicy() {
       setPolicy(got);
       if (got.kind === 'ok') {
         if (!typedAmount.current) setAmount(got.value.amount.toFixed(2));
-        setMethod(termMethod(got.value));
+        setMethod(termMethod(got.value) ?? '');
       }
     });
     return () => {
@@ -87,7 +88,7 @@ export function RenewPolicy() {
     event.preventDefault();
     if (known === null) return;
     setBusy(true);
-    setRenewal(await renewPolicy(browserDeps(), reference, known.autoRenew ? { amount: Number(amount), paymentMethod: method } : { amount: Number(amount) }));
+    setRenewal(await renewPolicy(browserDeps(), reference, known.autoRenew && method !== '' ? { amount: Number(amount), paymentMethod: method } : { amount: Number(amount) }));
     setBusy(false);
   }
 
@@ -152,7 +153,7 @@ export function RenewPolicy() {
               label="Payment method"
               hint={`Defaults from term ${known.currentTermNumber}. Cheque is refused for an auto-renewing renewal.`}
             >
-              {(control) => <Select {...control} options={PAYMENT_METHODS} value={method} onChange={(e) => setMethod(e.target.value as PaymentMethod)} />}
+              {(control) => <Select {...control} options={PAYMENT_METHODS} placeholder="None returned for the term" value={method} onChange={(e) => setMethod(e.target.value as PaymentMethod)} />}
             </Field>
           ) : null}
         </div>
