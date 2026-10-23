@@ -53,7 +53,7 @@ The Actual and Pass/Fail columns are empty. I wrote the steps from the files at 
 | # | Rule | Where | Action | Expected | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|
 | 15 | — | Visual Studio | Shift+F5 | The API and the Vite console both stop. Nothing listens on 5080 or 4170 | | |
-| 16 | — | worktree root | `git ls-files src/web tests/web`; `dotnet build Uinsure.Policies.slnx -warnaserror`; `dotnet test --solution Uinsure.Policies.slnx` | `git ls-files` prints nothing. The build ends with 0 warnings and 0 errors and no `npm` or `Docket.Web` line. Every test passes, including `WebProjectLocationTests` and `LaunchProfileTests` (passed / failed / skipped: __ / __ / __) | | |
+| 16 | — | worktree root | `dotnet build Uinsure.Policies.slnx -warnaserror`; `dotnet test --solution Uinsure.Policies.slnx` | The build ends with 0 warnings and 0 errors and no `npm` or `Docket.Web` line. Every test passes, including `LaunchProfileTests` and `WebProjectLocationTests`. Those prove the rename: `No_tracked_file_remains_in_the_old_web_project_folder` and `No_tracked_file_remains_in_the_old_web_tests_folder` find no tracked file under the old folders, and `No_live_tracked_file_names_the_old_web_paths` finds no live file naming them (passed / failed / skipped: __ / __ / __) | | |
 
 ## Covered by tests, not by a step
 
