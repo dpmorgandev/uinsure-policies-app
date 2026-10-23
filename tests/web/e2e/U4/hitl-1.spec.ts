@@ -72,6 +72,15 @@ test.describe('the decisions page', () => {
     await expect(filters).not.toContainText(/\bpause1\b|\bpause2\b|\bsignoff\b|\bmerged\b/);
   });
 
+  test("HITL-1 · it says rulings aren't recorded as loop events and so aren't listed, and its kind filter offers no Ruling", async ({ page }) => {
+    // A3 I8: the compiler can't list what the loop never records; the page says so instead of implying it is complete.
+    const list = await openRegion(page, fixture, route.decisions, DECISION_LIST);
+    await expect(decisionRows(list)).toHaveCount(5);
+    await expect(list).toContainText(/rulings?\b[^.]*\b(aren't|are not|isn't|is not|not) recorded as (a )?loop events?/i);
+    await expect(list).toContainText(/rulings?\b[^.]*\b(aren't|are not|isn't|is not|not) listed/i);
+    await expect(list.locator('option').filter({ hasText: /^\s*Ruling\s*$/ })).toHaveCount(0);
+  });
+
   test('HITL-1 · the decisions page has no axe violation, light and dark, 1440 and 390', async ({ page }) => {
     await openRegion(page, fixture, route.decisions, DECISION_LIST);
     await auditEverywhere(page, route.decisions, async (p) => {
