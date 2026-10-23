@@ -43,7 +43,9 @@ test('DATA-1 · the app shows the trail it is served as trace.json, and fetches 
   await page.goto(route.about);
   await expect(page.getByRole('main')).toContainText('Fixture build');
   await page.goto(route.activity(fixtureNode.plan, fixtureNode.node));
-  await expect(page.getByRole('main').locator('tbody tr')).toHaveCount(5);
+  // U10 diagnosis: the fixture still has 5 activity lines (complete/README.md, c0 to c4). The page draws them twice: in
+  // the event table and in the AgentLanes kit table U4's lanes added, so main held 10 rows. The count reads the table.
+  await expect(page.getByRole('main').locator('[data-region="event-table-text-equivalent"] tbody tr')).toHaveCount(5);
 
   const origin = new URL(page.url()).origin;
   expect(seen.filter((u) => u.origin !== origin).map(String), 'no request leaves the app').toEqual([]);

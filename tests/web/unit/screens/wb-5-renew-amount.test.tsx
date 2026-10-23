@@ -82,3 +82,21 @@ test('WB-5 · a cleared amount is sent as the empty text typed, never as null or
   const renewal = await renewWithAmountTyped('');
   expect(amountAsSent(renewal.body), `the renewal body ${renewal.body} carries the empty amount as typed`).toBe('');
 });
+
+// U8 review A2 R1, carried to U10: what goes as a number is decided by a decimal pattern, not Number(), which reads
+// '0x10' as 16 and '1e2' as 100. Each is typed text the API must answer, so it goes as typed.
+test("WB-5 · an amount typed as '0x10' is sent as typed, never as the number 16", async () => {
+  const renewal = await renewWithAmountTyped('0x10');
+  expect(amountAsSent(renewal.body), `the renewal body ${renewal.body} carries the amount as typed`).toBe('0x10');
+});
+
+test("WB-5 · an amount typed as '1e2' is sent as typed, never as the number 100", async () => {
+  const renewal = await renewWithAmountTyped('1e2');
+  expect(amountAsSent(renewal.body), `the renewal body ${renewal.body} carries the amount as typed`).toBe('1e2');
+});
+
+test("WB-5 · a decimal amount typed as '527.18' is sent as the number 527.18", async () => {
+  const renewal = await renewWithAmountTyped('527.18');
+  const sent = JSON.parse(renewal.body ?? '{}') as { amount?: unknown };
+  expect(sent.amount, `the renewal body ${renewal.body} carries the amount as a JSON number`).toBe(527.18);
+});

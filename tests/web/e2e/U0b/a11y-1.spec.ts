@@ -67,15 +67,15 @@ test.describe('axe', () => {
     });
   });
 
-  test("A11Y-1 · an unbuilt screen's page has no axe violation, light and dark, at 1440 and 390", async ({ page }) => {
+  // U10: re-pointed. U4 built the last unbuilt screens, so the newest derived reference lists none and this test had no
+  // page to audit. The page a reader meets at a route the app has no screen for is now the not-found page.
+  test("A11Y-1 · the not-found page, shown at a route with no screen, has no axe violation, light and dark, at 1440 and 390", async ({ page }) => {
     await serveTrace(page, fixture.compiled.publicDir);
-    // The first screen, in docs/ui/screens.json's order, that the newest derived reference on the branch lists as
-    // not built (support/built.ts), a real screen rather than the catch-all: with U1's reference, the plan page.
-    const unbuilt = screenIds.find((id) => newest.notBuiltScreens.includes(id) && id !== 'not-found');
-    const path = unbuilt === undefined ? undefined : screenPaths(fixture.trail.shas['c1'] ?? 'c1')[unbuilt];
-    expect(path, `a route for the first screen ${newest.node}'s derived reference lists as not built`).toBeDefined();
-    await auditEverywhere(page, path ?? '', async (p) => {
-      await expect(p.getByRole('main')).toContainText('not built yet');
+    expect(screenIds, 'not-found is a screen in docs/ui/screens.json').toContain('not-found');
+    expect(newest.notBuiltScreens, `${newest.node}'s derived reference lists no unbuilt screen`).toEqual([]);
+    const path = screenPaths(fixture.trail.shas['c1'] ?? 'c1')['not-found'] ?? '';
+    await auditEverywhere(page, path, async (p) => {
+      await expect(p.getByRole('heading', { level: 1 })).toHaveText('Nothing at /no-such-page');
     });
   });
 });

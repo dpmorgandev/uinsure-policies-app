@@ -6,6 +6,7 @@ import type { Locator, Page } from '@playwright/test';
 import { expect, live, test } from '../W1/support/api';
 import { answered, apiToday, field, requestOf, route, sellForm, sellThroughApi, watchApi } from '../W1/support/workbench';
 import type { Exchange } from '../W1/support/workbench';
+import { freshReference } from './support/fresh';
 import { requestsStates } from './support/states';
 
 const requestsRoute = '/#/workbench/requests';
@@ -41,7 +42,7 @@ const logRow = (page: Page, e: Exchange): Locator =>
 
 test('WB-7 · the request log lists the claim the page sent, with its method, path and status', async ({ page, api }) => {
   void api;
-  const claim = await recordClaim(page, 'W3LOGLIST0001', 'W3LOGLISTP001');
+  const claim = await recordClaim(page, freshReference('W3LL'), freshReference('W3LLP'));
   await page.goto(requestsRoute);
   const entry = logRow(page, claim);
   await expect(entry).toBeVisible(live);
@@ -51,7 +52,7 @@ test('WB-7 · the request log lists the claim the page sent, with its method, pa
 
 test('WB-7 · the request log shows the exact request body and response body of the claim', async ({ page, api }) => {
   void api;
-  const claim = await recordClaim(page, 'W3LOGBODY0001', 'W3LOGBODYP001');
+  const claim = await recordClaim(page, freshReference('W3LB'), freshReference('W3LBP'));
   await page.goto(requestsRoute);
   await logRow(page, claim).getByRole('button', { name: /^Open request #\d+, POST / }).click(live);
   const main = page.getByRole('main');
@@ -64,8 +65,8 @@ test('WB-7 · the request log shows the exact request body and response body of 
 // compared with a Postman recording here.
 test("WB-7 · the request log's opened claim shows its response headers, holding the content type the API served", async ({ page, api }) => {
   void api;
-  const reference = 'W3HDRCLAIM0001';
-  const today = await apiToday('W3HDRPROBE0001');
+  const reference = freshReference('W3HC');
+  const today = await apiToday(freshReference('W3HCP'));
   await sellThroughApi(requestOf(sellForm(reference, { startDate: today })));
   const seen = watchApi(page);
   await page.goto(route.claim(reference));
@@ -88,7 +89,7 @@ test("WB-7 · the request log's opened claim shows its response headers, holding
 
 test("WB-7 · the claim page's Show requests drawer holds the claim exchange", async ({ page, api }) => {
   void api;
-  const claim = await recordClaim(page, 'W3DRAWER0001', 'W3DRAWERP001');
+  const claim = await recordClaim(page, freshReference('W3DR'), freshReference('W3DRP'));
   await page.getByRole('button', { name: 'Show requests' }).click();
   const drawer = page.getByRole('dialog').or(page.getByRole('complementary', { name: /requests/i }));
   await expect(drawer.first()).toContainText(apiPath(claim), live);

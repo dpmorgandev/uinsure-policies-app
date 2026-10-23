@@ -9,7 +9,7 @@ import { expect, test } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
 import { compileFixture } from '../U0b/support/trail';
 import type { CompiledTrail } from '../U0b/support/trail';
-import { TOUR, openOnFixture, region, route } from '../U5/support/app';
+import { TOUR, openOnFixture, region, route, traceAnswered } from '../U5/support/app';
 import { shaOf, short } from '../U1/support/app';
 
 let rules: CompiledTrail;
@@ -25,6 +25,9 @@ const stop = (tour: Locator, label: string): Locator => tour.locator('ol > li > 
 
 async function openTour(page: Page): Promise<Locator> {
   await openOnFixture(page, rules, route.about);
+  // U10 (U7 carry): the tour's stops are read once trace.json has answered. Before it, the Rule stop is #/rules, so a
+  // pinned href checked inside a slow answer read the placeholder stop; the wait for the answer is setup.
+  await traceAnswered(page);
   const tour = region(page, TOUR);
   await expect(tour.locator('ol > li > a'), 'the tour draws its five stops').toHaveCount(5);
   return tour;

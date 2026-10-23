@@ -10,7 +10,7 @@ import { expect } from '@playwright/test';
 import type { BrowserContext, Page } from '@playwright/test';
 import { route, serveTrace, setTheme, themes, viewports } from './app';
 import { regionSettled, settledNav } from './built';
-import { literalColours, readBuilt, readReference, regionNamed } from './reference';
+import { literalColours, readBuilt, readNewestReference, readReference, regionNamed } from './reference';
 import type { Structure } from './reference';
 import { derivedDir, designFixtureDir } from './trail';
 
@@ -129,7 +129,8 @@ export async function expectRegionControlsInTopBar(page: Page, s: Screen, slug: 
 
 /** The shell's components, the primary nav (links, not-built entries, the current one), the current tab, the title. */
 export async function expectShell(page: Page, s: Screen, withTitle: boolean): Promise<void> {
-  const reference = await readReference(page.context(), s.screen, s.state);
+  // U10: the shell is global, so it is compared with the newest derived reference (U4's shell), not U0b's own.
+  const reference = await readNewestReference(page.context(), s.screen, s.state);
   await open(page, s);
   await expect.poll(async () => shellOf(await readBuilt(page, reference), withTitle)).toEqual(shellOf(reference, withTitle));
 }

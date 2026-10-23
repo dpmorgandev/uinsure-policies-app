@@ -3,6 +3,7 @@
 // the navigation. The reference names a component by its data-comp root ("<id> · <tier> · <state>"); the built
 // page may carry the same data-comp root, or the kit's own class for it (kit-<id>__<part>, the stylekit's
 // CSS-module name), and either counts.
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import type { BrowserContext, Page } from '@playwright/test';
@@ -80,6 +81,26 @@ export async function readReference(context: BrowserContext, screen: string, sta
   } finally {
     await page.close();
   }
+}
+
+/**
+ * The shell as every page draws it today: docs/ui/derived/<newest>/<screen>/<state>.html, the newest derived reference
+ * on the branch (./built.ts). The shell is global, so a node's own reference goes stale when a later node changes it:
+ * U4 built the top bar's Search and the last unbuilt nav entry (Human decisions), so the shells derived before U4
+ * still drew a not-built-yet entry the app no longer has. U10 re-derives every node's shell parity against this one.
+ */
+export function readNewestReference(context: BrowserContext, screen: string, state: string): Promise<Structure> {
+  return readReference(context, `../${newestNode()}/${screen}`, state);
+}
+
+/** The node of the newest derived reference: the derived.json naming the most built nodes (ties go to the later id). */
+export function newestNode(): string {
+  const root = join(derivedDir, '..');
+  return readdirSync(root)
+    .filter((node) => existsSync(join(root, node, 'derived.json')))
+    .sort()
+    .map((node) => ({ node, built: (JSON.parse(readFileSync(join(root, node, 'derived.json'), 'utf8')) as { builtNodes: string[] }).builtNodes.length }))
+    .reduce((best, d) => (d.built >= best.built ? d : best)).node;
 }
 
 export async function readBuilt(page: Page, reference: Structure): Promise<Structure> {

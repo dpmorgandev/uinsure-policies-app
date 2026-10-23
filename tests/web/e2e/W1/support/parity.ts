@@ -16,7 +16,7 @@ import { expect } from '@playwright/test';
 import type { Page, Route } from '@playwright/test';
 import { serveTrace, setTheme, themes, viewports } from '../../U0b/support/app';
 import { builtAt } from '../../U0b/support/built';
-import { literalColours } from '../../U0b/support/reference';
+import { literalColours, newestNode } from '../../U0b/support/reference';
 import { REC, answerWith, exchangeAt } from './recorded';
 import type { RecordedExchange } from './recorded';
 import { designFixtureDir, readBuilt, readReference, regionNamed } from './reference';
@@ -239,7 +239,8 @@ function shellOf(s: Structure): Record<string, unknown> {
 
 /** The title, the shell's components and the primary nav (links, not-built entries, the current one). */
 export async function expectShell(page: Page, s: Screen): Promise<void> {
-  const reference = await readReference(page.context(), s.screen, s.state);
+  // U10: the shell is global, so it is compared with the newest derived reference (U4's shell), not W1's own.
+  const reference = await readReference(page.context(), `../${newestNode()}/${s.screen}`, s.state);
   await prepare(page, s);
   await expect.poll(async () => shellOf(await readBuilt(page, reference))).toEqual(shellOf(reference));
 }

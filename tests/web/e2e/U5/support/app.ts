@@ -3,6 +3,7 @@
 // three dated context snapshots and one undated, and a generated harness file of two agents, two skills, two hooks.
 import { cpSync } from 'node:fs';
 import { join } from 'node:path';
+import { expect } from '@playwright/test';
 import type { Locator, Page } from '@playwright/test';
 import { compileFixture, repoRoot } from '../../U0b/support/trail';
 import type { CompiledTrail } from '../../U0b/support/trail';
@@ -22,6 +23,19 @@ export const route = {
   matrix: '/#/rules',
   plan: (plan: string): string => `/#/plans/${plan}`,
 };
+
+/**
+ * How long trace.json may take to answer: setup, not the behaviour. Under a loaded machine (other workers compiling
+ * their fixtures) its answer can take longer than expect's 5s default; what a screen draws after it keeps that 5s.
+ */
+export const TRACE_ANSWER_TIMEOUT = 20_000;
+
+/** Waits until trace.json has answered: the footer links the snapshot's commit only once the trace is read. */
+export async function traceAnswered(page: Page): Promise<void> {
+  await expect(page.getByRole('contentinfo').locator('a[href*="/commit/"]').first(), 'setup: trace.json has answered').toBeVisible({
+    timeout: TRACE_ANSWER_TIMEOUT,
+  });
+}
 
 /** The `complete` trail with U5's overlay, compiled once for a spec file. */
 export function compileU5(): CompiledTrail {

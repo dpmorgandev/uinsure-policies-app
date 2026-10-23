@@ -5,7 +5,7 @@
 // attempt 1, A1 reviewer PASS and A1 security PASS, both stamped 2026-10-18T16:00:00Z. Parity on the design fixture.
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { FACTS, auditEverywhere, compileU5, heading, openOnFixture, region, route } from './support/app';
+import { FACTS, auditEverywhere, compileU5, heading, openOnFixture, region, route, traceAnswered } from './support/app';
 import type { CompiledTrail } from './support/app';
 import { expectRegionComponents, expectRegionsInOrder, expectShell, expectTokensOnly, stats } from './support/parity';
 
@@ -19,8 +19,11 @@ test.afterAll(() => {
 
 async function f1Row(page: Page) {
   await openOnFixture(page, fixture, route.stats);
+  // U10 (U5 carry): the facts region is drawn within 5s of trace.json's answer, every run. The wait for the answer is
+  // setup (traceAnswered); a run that missed 5s had been timing trace.json under load, not the stats page.
+  await traceAnswered(page);
   const facts = region(page, FACTS);
-  await expect(facts, 'the facts region is drawn').toBeVisible();
+  await expect(facts, 'the facts region is drawn within 5s of the trace').toBeVisible({ timeout: 5_000 });
   return facts.locator('table').first().locator('tbody tr').filter({ has: page.locator('th', { hasText: 'F1' }) });
 }
 

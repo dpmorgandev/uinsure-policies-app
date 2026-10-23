@@ -10,7 +10,7 @@ import { expect } from '@playwright/test';
 import type { BrowserContext, Page } from '@playwright/test';
 import { serveTrace, setTheme, themes, viewports } from '../../U0b/support/app';
 import { builtAt } from '../../U0b/support/built';
-import { literalColours, readBuilt, readReference as readFromU0b, regionNamed } from '../../U0b/support/reference';
+import { literalColours, readBuilt, readNewestReference, readReference as readFromU0b, regionNamed } from '../../U0b/support/reference';
 import type { Structure } from '../../U0b/support/reference';
 import { designFixtureDir } from '../../U0b/support/trail';
 import { route } from './app';
@@ -90,7 +90,8 @@ export async function expectRegionComponents(page: Page, s: Screen, slug: string
 
 /** The shell's components, the primary nav (links, not-built entries, the current one), the current tab, the title. */
 export async function expectShell(page: Page, s: Screen, withTitle: boolean): Promise<void> {
-  const reference = await readReference(page.context(), s.screen, s.state);
+  // U10: the shell is global, so it is compared with the newest derived reference (U4's shell), not U5's own.
+  const reference = await readNewestReference(page.context(), s.screen, s.state);
   await open(page, s);
   await expect.poll(async () => shellOf(await readBuilt(page, reference), withTitle)).toEqual(shellOf(reference, withTitle));
 }

@@ -34,7 +34,10 @@ const trace = {
   harness: null,
 } as unknown as Trace;
 
-const pick = (entries: SearchEntry[]): [string, string, string][] => entries.map((e) => [e.kind, e.label, e.href]);
+// U10 (U4 review A2 R3): SearchEntry.href is split into `route` (in-app) and `repoPath` (a file); each entry is read by
+// the field its kind fills.
+const pick = (entries: SearchEntry[]): [string, string, string][] =>
+  entries.map((e) => [e.kind, e.label, (e.kind === 'path' ? e.repoPath : e.route) ?? '(none)']);
 
 describe('the index', () => {
   test('NAV-4 · the index holds each rule, node and commit once, with the URL each opens', () => {
@@ -65,8 +68,16 @@ describe('the index', () => {
     // so it ends in the path as trace.json names it, unencoded, and holds no hash route the app doesn't serve.
     const entry = searchIndex(trace).find((e) => e.kind === 'path' && e.label === 'src/Uinsure.Policies.Domain/StartDate.cs');
     expect(entry, 'the finding file is in the index').toBeDefined();
-    expect(entry?.href).not.toContain('#');
-    expect(entry?.href.endsWith('src/Uinsure.Policies.Domain/StartDate.cs'), `the link ends in the file's path: ${entry?.href}`).toBe(true);
+    expect(entry?.repoPath).toBe('src/Uinsure.Policies.Domain/StartDate.cs');
+    expect(entry?.repoPath ?? '#', 'the repo path holds no hash route').not.toContain('#');
+  });
+
+  test('NAV-4 · a path entry names its repo path and no route; a rule, node or commit names its route and no repo path', () => {
+    const entries = searchIndex(trace);
+    const path = entries.find((e) => e.kind === 'path' && e.label === 'docs/qa/build-F1.md');
+    const rule = entries.find((e) => e.kind === 'rule' && e.label === 'SELL-2');
+    expect({ route: path?.route ?? null, repoPath: path?.repoPath ?? null }).toEqual({ route: null, repoPath: 'docs/qa/build-F1.md' });
+    expect({ route: rule?.route ?? null, repoPath: rule?.repoPath ?? null }).toEqual({ route: '#/rules/SELL-2', repoPath: null });
   });
 });
 

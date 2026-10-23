@@ -8,6 +8,7 @@ import { expect, live, test } from '../W1/support/api';
 import { answerWith, exchangeAt } from '../W1/support/recorded';
 import { answered, apiToday, field, hashOf, hold, region, requestOf, route, sellForm, sellThroughApi, watchApi } from '../W1/support/workbench';
 import type { Policy } from '../W1/support/workbench';
+import { freshReference } from './support/fresh';
 
 const recordButton = (page: Page): Locator =>
   page.getByRole('main').getByRole('button', { name: /^(Record this claim|Recording…)$/ });
@@ -22,8 +23,8 @@ interface Quote {
 test.describe('a claim', () => {
   test('WB-5 · recording a claim posts the claim date and description the person typed', async ({ page, api }) => {
     void api;
-    const reference = 'W3CLAIMPOST0001';
-    const today = await apiToday('W3CLAIMPOSTP001');
+    const reference = freshReference('W3CP');
+    const today = await apiToday(freshReference('W3CPP'));
     await sellThroughApi(requestOf(sellForm(reference, { startDate: today })));
     const seen = watchApi(page);
     await page.goto(route.claim(reference));
@@ -37,8 +38,8 @@ test.describe('a claim', () => {
 
   test('WB-5 · the quote before the claim and the quote after it are both shown, and the one after is £0.00 under COULD-2', async ({ page, api }) => {
     void api;
-    const reference = 'W3CLAIMQUOTE0001';
-    const today = await apiToday('W3CLAIMQUOTEP001');
+    const reference = freshReference('W3CQ');
+    const today = await apiToday(freshReference('W3CQP'));
     await sellThroughApi(requestOf(sellForm(reference, { startDate: today })));
     const seen = watchApi(page);
     await page.goto(route.claim(reference));
@@ -65,8 +66,8 @@ test.describe('a claim', () => {
 
   test('WB-5 · a claim dated tomorrow is refused, and the page shows the rule the API answered as a chip', async ({ page, api }) => {
     void api;
-    const reference = 'W3CLAIMTMRW0001';
-    const today = await apiToday('W3CLAIMTMRWP001');
+    const reference = freshReference('W3CT');
+    const today = await apiToday(freshReference('W3CTP'));
     await sellThroughApi(requestOf(sellForm(reference, { startDate: today })));
     const tomorrow = new Date(today + 'T00:00:00Z');
     tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
@@ -136,8 +137,8 @@ test.describe('a renewal', () => {
   test('WB-5 · the renew form shows the current term amount and payment method as its defaults', async ({ page, api }) => {
     void api;
     // A2/I2: DirectDebit is neither the form's first-paint value nor any fallback, so only a screen that reads the
-    // current term's payment can show it. A literal reference: the e2e API starts on a fresh database each run.
-    const reference = 'W3RENEWDD0001';
+    // current term's payment can show it. A fresh reference (U10): no other test, repeat or run sells it.
+    const reference = freshReference('W3RDD');
     const policy = await sellThroughApi(requestOf(sellForm(reference, { paymentMethod: 'DirectDebit', autoRenew: true, amount: '611.42' })));
     expect(policy.payments.map((p) => p.type), 'setup: the API took the sale paid by DirectDebit').toEqual(['DirectDebit']);
     const seen = watchApi(page);
@@ -153,7 +154,7 @@ test.describe('a renewal', () => {
 
   test('WB-5 · a policy not on auto-renew has no payment method field, and its renewal sends none', async ({ page, api }) => {
     void api;
-    const reference = 'W3RENEWOFF0001';
+    const reference = freshReference('W3ROFF');
     await sellThroughApi(requestOf(sellForm(reference, { autoRenew: false })));
     const seen = watchApi(page);
     await page.goto(route.renew(reference));
@@ -167,7 +168,7 @@ test.describe('a renewal', () => {
 
   test('WB-5 · an amount typed before the policy read answers is kept, and the renewal sends it, not the term default', async ({ page, api }) => {
     void api;
-    const reference = 'W3RENEWHELD0001';
+    const reference = freshReference('W3RHELD');
     const policy = await sellThroughApi(requestOf(sellForm(reference, { autoRenew: false, amount: '527.18' })));
     expect(policy.amount.toFixed(2), 'setup: the default differs from what the person types').not.toBe('472.30');
     const readPath = `/api/policies/${reference}`;
@@ -191,7 +192,7 @@ test.describe('a renewal', () => {
 
   test('WB-5 · cheque on an auto-renewing policy is refused, and the page shows the COULD-3 violation as a rule chip', async ({ page, api }) => {
     void api;
-    const reference = 'W3RENEWCHQ0001';
+    const reference = freshReference('W3RCHQ');
     await sellThroughApi(requestOf(sellForm(reference, { autoRenew: true })));
     const seen = watchApi(page);
     await page.goto(route.renew(reference));
@@ -214,7 +215,7 @@ test.describe('a renewal', () => {
 
   test("WB-5 · a renewal outside the window shows RENEW-1/2 with the window the API's detail names", async ({ page, api }) => {
     void api;
-    const reference = 'W3RENEWWIN0001';
+    const reference = freshReference('W3RWIN');
     await sellThroughApi(requestOf(sellForm(reference)));
     const seen = watchApi(page);
     await page.goto(route.renew(reference));

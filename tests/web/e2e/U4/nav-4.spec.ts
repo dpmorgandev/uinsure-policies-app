@@ -37,7 +37,7 @@ test('NAV-4 · typing a rule ID offers that rule, and choosing it opens the rule
   await expect(page.getByRole('heading', { level: 1 })).toContainText('SELL-2');
 });
 
-test('NAV-4 · typing a node ID offers that node, and Enter on it opens the node page', async ({ page }) => {
+test('NAV-4 · typing a node ID offers that node, and clicking it opens the node page', async ({ page }) => {
   await typeIn(page, route.overview, 'F2');
   const option = searchOptions(page).and(page.locator('[data-kind="node"]')).filter({ hasText: 'build/F2' });
   await expect(option).toHaveCount(1);

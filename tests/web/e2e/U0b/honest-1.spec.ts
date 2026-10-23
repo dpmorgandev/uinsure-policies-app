@@ -123,6 +123,22 @@ test.describe('only what the trail holds', () => {
 });
 
 test.describe('the not-built-yet pattern', () => {
+  // U10: re-pointed. U4 built the last unbuilt screens, so newest.notBuiltScreens is empty and the test below checks
+  // nothing on its own (it is kept: it holds again if a screen is ever listed unbuilt). This one takes its place: the
+  // page a route with no screen shows says nothing was found, names the path asked for, and invents no near match.
+  test('HONEST-1 · reachable: a route with no screen shows the not-found page, naming the path asked for, with no raw placeholder', async ({ page }) => {
+    await serveTrace(page, fixture.compiled.publicDir);
+    expect(newest.notBuiltScreens, `${newest.node}'s derived reference lists no unbuilt screen`).toEqual([]);
+    for (const path of ['/#/no-such-page', `/#/plans/${fixtureNode.plan}/${fixtureNode.node}/matrix`]) {
+      await page.goto('about:blank');
+      await page.goto(path);
+      const asked = path.replace(/^\/#/, '');
+      await expect(page.getByRole('heading', { level: 1 }), path).toHaveText(`Nothing at ${asked}`);
+      await expect(page.getByRole('main'), path).toContainText('no nearest match is offered');
+      expect(await page.locator('body').innerText(), path).not.toMatch(PLACEHOLDER);
+    }
+  });
+
   test("HONEST-1 · reachable: every unbuilt screen's route shows the not-built-yet pattern, with no raw placeholder", async ({ page }) => {
     await serveTrace(page, fixture.compiled.publicDir);
     const c1 = fixture.trail.shas['c1'] ?? 'c1';

@@ -340,6 +340,8 @@ export interface SearchEntry {
   detail: string | null;
   /** An in-app route; for a path, the repo-relative path itself, which the search opens on GitHub at the snapshot. */
   href: string;
+  route?: string | null;
+  repoPath?: string | null;
   /** A commit's full SHA, so a longer prefix than the label still finds it. */
   sha?: string;
 }

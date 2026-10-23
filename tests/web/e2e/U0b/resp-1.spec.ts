@@ -83,15 +83,20 @@ test('RESP-1 · on a short page the footer sits at the bottom of the window', as
     { name: 'an unknown route', path: '/#/no-such-page' },
     { name: "the node's matrix (not built yet)", path: `/#/plans/${fixtureNode.plan}/${fixtureNode.node}/matrix` },
   ];
+  // U10 diagnosis (no U4 regression in the frame): U4 built the not-found page, so these routes no longer fall to the
+  // short "not built yet" box. The not-found page is 953px tall at 1440 (983 with the longer path), more than a 900px
+  // window, so no route is shorter than the laptop windows now. The short page is made by the window instead: 1200px
+  // tall at each width, where the not-found page is shorter than the window and the footer must sit at its bottom.
+  const SHORT_PAGE_WINDOW = 1200;
   for (const width of [1440, 1280] as const) {
-    await page.setViewportSize(viewports[width]);
     for (const theme of ['light', 'dark'] as const) {
       await page.emulateMedia({ colorScheme: theme });
+      await page.setViewportSize({ width, height: SHORT_PAGE_WINDOW });
       for (const r of short) {
-        const at = `${r.name} at ${width}x${viewports[width].height}, ${theme}`;
+        const at = `${r.name} at ${width}x${SHORT_PAGE_WINDOW}, ${theme}`;
         await page.goto('about:blank');
         await page.goto(r.path);
-        await expect(page.getByRole('main'), `${at}: the not-built box`).toContainText('not built yet');
+        await expect(page.getByRole('heading', { level: 1 }), `${at}: the not-found page`).toHaveText(/^Nothing at /);
         await expect(page.getByRole('contentinfo'), `${at}: the footer`).toBeVisible();
         const box = await frameBoxes(page);
         expect.soft(box.document, `${at}: the document is no taller than the window`).toBeLessThanOrEqual(box.window);
@@ -100,6 +105,7 @@ test('RESP-1 · on a short page the footer sits at the bottom of the window', as
           .toBeLessThanOrEqual(1);
       }
       // The other side: on the overview, however tall, the footer still follows the content and ends the page.
+      await page.setViewportSize(viewports[width]);
       const at = `the overview at ${width}x${viewports[width].height}, ${theme}`;
       await page.goto('about:blank');
       await page.goto(route.overview);
