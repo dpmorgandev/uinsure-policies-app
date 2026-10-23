@@ -1,0 +1,60 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T03:10:33Z",
+  "plan": "ui",
+  "node": "U9",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a62e5cd0099f58c7c",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U9",
+    "attempt": 2,
+    "base_sha": "a3420f104aebf4aaa532ee57de83ab3c67e5146e",
+    "head_sha": "0bd7e57db9728bf974c85a18c6942dc2bfce9c06",
+    "diff_fingerprint": "f8d558ee3e0990a0ec0d3e38bef61ccd9c141b46",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.write@ec646d79448e43fc52934711f408667b47cd3c9b",
+      "gate.typecheck@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.lint@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.lint-css@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.test@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.build@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.audit@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.trace-check@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.e2e@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.e2e-regression@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.test-dotnet@2c71cdb097c279e48b40b1ba964bb5fee0648a68",
+      "gate.finding-red@b813ad192da97890d903e9c5f5da3483b8c9fb7f",
+      "gate.write@be687b6bb5cd778be30619d2e3b92fcd3b0a4aab"
+    ],
+    "rules_covered": [],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "U9-acceptance-9",
+        "severity": "P2",
+        "file": "infrastructure/pipelines/stage-template.yml",
+        "line": 59,
+        "what": "The deploy job's list of agent prerequisites still says 'az, jq, go-sqlcmd (sqlcmd) and curl'. The new 'Deploy web' step runs npx, which needs Node, as infrastructure/README.md line 96 says.",
+        "why": "The README and the template now disagree about what the self-hosted policies-<env>-vnet agent needs. Someone provisioning the agent from the template comment alone would find out at the first deploy that the SWA CLI step can't run. This doesn't block, because the README (the acceptance line 9 document) is correct.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "U9 is an evidence node with rules: [], so rules_covered and rules_missing are empty. It was judged against the 11 acceptance lines in docs/plans/active/ui.dag.yaml lines 496-506, with line 2 as amended at 7993e0f. All 11 are met at HEAD.",
+      "A1 R1 (P0) is closed. stage-template.yml lines 156-183 add three steps in order after the app deploy. The token step runs az staticwebapp secrets list on the ARM connection against $(webSiteName) and sets swaDeploymentToken with issecret=true. 'Deploy web' runs a pinned @azure/static-web-apps-cli@2.0.2 deploy of $(Pipeline.Workspace)/web, with the token passed only through env SWA_CLI_DEPLOYMENT_TOKEN. The site smoke test runs curl --fail https://$(webHostName)/. /health/ready is still the last step. The 'web' artifact is published at azure-pipelines.yml lines 122-124, and the runOnce deploy hook downloads current artifacts by default. That meets acceptance lines 4, 5 and 8.",
+      "A1 R2 (P1) is closed. infrastructure/README.md lines 72 and 83-96 name the exact steps, variable, CLI version, env var and command that exist in the template. The 'configured, not tested' note now says check-pipeline.py asserts the steps exist, which is true (check-pipeline.py lines 268-289).",
+      "A1 R3 (P0) is closed by David's amendment of acceptance line 2. infrastructure/README.md lines 97-99 document the /api prefix gap as the amended line requires.",
+      "A1 R4 (P1) is closed by gate.test-dotnet@2c71cdb (637/637, no npm or vitest run, with the .esproj in the slnx). gate.write@be687b6 shows that nothing under src/ or the slnx changed after it.",
+      "A1 R5 (P2) is closed. $(webSiteName) and $(webHostName) are now read by the token and smoke steps, and the script 'env' branch in pipeline.schema.json is used by 'Deploy web'. check-pipeline.py lines 291-295 now fail on any infra setvariable output that no later step reads.",
+      "TDD order: b813ad1 (TDD: red, Fixes-Finding A1/I1, I2) comes before be687b6 (TDD: green, Fixes-Finding A1/I1-I4). gate.finding-red@b813ad1 exited 1 for the right reasons (missing token, deploy and smoke steps, and unread variables), and gate.write@be687b6 exited 0. The base...head diff of check-pipeline.py deletes only the old dependsOn chain assertion. Its replacement (line 45) is stricter because it adds the Web stage, so nothing was loosened. The trailer log can't show whether be687b6 itself edited the checker. git diff 7993e0f..HEAD names check-pipeline.py, but that range also covers the red commit.",
+      "A1 R6 and R7 and security S2 are carried to U10 (ui.dag.yaml line 538) and are not raised again.",
+      "Minor and not raised: the check-pipeline.py docstring (lines 6-9) doesn't list the new Static Web App and web-stage checks. If the token or infra step's az call fails, the script still exits 0 because there's no set -e. The next step then fails, so a failure can't pass silently."
+    ]
+  }
+}

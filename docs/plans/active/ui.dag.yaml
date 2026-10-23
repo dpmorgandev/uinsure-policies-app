@@ -507,9 +507,9 @@ nodes:
     tasks:
       - {id: t1, role: builder, step: write, layer: null, rules: [], title: "staticwebapp.bicep, main.bicep wiring, three param files; the web build, test and deploy stages; the static build settings; the .esproj, web solution folder and API + web launch; infrastructure/README.md and README.md", status: done}
       - {id: t2, role: orchestrator, step: gates, layer: null, rules: [], title: "Scoped (David 2026-10-23): bicep build and build-params for dev, test and prod; pipeline schema check; dotnet build of the slnx runs no npm; typecheck, lint, unit and build; render-trace check; diff scope. No app runtime file changed, so no full e2e; the visual regression is deferred to U10", status: done}
-      - {id: t3, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
-      - {id: t4, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U9.md", status: pending}
-      - {id: t5, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: pending}
+      - {id: t3, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t4, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U9.md", status: done}
+      - {id: t5, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: done}
       - {id: t6, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; chore(trace) commit", status: pending}
       - {id: t7, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
       - {id: t8, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md and the QA script", status: pending}
@@ -535,7 +535,7 @@ nodes:
       - "Trail records already committed (docs/trace/**, packets, verdicts) keep src/web: they are receipts. The compiler, render-trace and the checks accept both paths"
       - "Runs last, after every other ui node has landed, so no node in flight conflicts with the move"
       - "The stale matrix rows are re-rendered (moved from U9, 2026-10-23: render-trace finds a node's commits as origin/<base>..HEAD, so a merged node can't be re-rendered; a harness change first gives render an explicit range): no cell reads undefined (build/F4, ui/U0b), and U0b's sign-off cells match its trail"
-      - "U9 carries (P2): check-pipeline.py asks the deploy template for the Static Web Apps deploy, and its run lint needle no longer matches lint:css alone (review A1 R6); the CI e2e wait is bounded and the regression specs are kept off the Linux agent or given per-platform baselines (R7); staticwebapp.config.json sets frame-ancestors and Referrer-Policy (security A1 S2); the solution lists staticwebapp.bicep and staticwebapp.config.json, and src/web/public/ is ignored (U9 QA note 3)"
+      - "U9 carries (P2): check-pipeline.py asks the deploy template for the Static Web Apps deploy, and its run lint needle no longer matches lint:css alone (review A1 R6); the CI e2e wait is bounded and the regression specs are kept off the Linux agent or given per-platform baselines (R7); staticwebapp.config.json sets frame-ancestors and Referrer-Policy (security A1 S2); the solution lists staticwebapp.bicep and staticwebapp.config.json, and src/web/public/ is ignored (U9 QA note 3); the deploy agent prerequisites name Node (review A2 R1); the SWA CLI is installed from a lockfile or with integrity, not npx --yes (security A2 S1)"
       - "Every check passes on the renamed tree: dotnet build and test, typecheck, unit, e2e, regression, the harness self-test, render-trace check for every ui node"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Architecture test that fails until the rename: the web project sits at src/Uinsure.Policies.Web and its tests at tests/Uinsure.Policies.Web.Tests, the slnx lists them there, and no live file outside the committed trail names src/web or tests/web", status: pending}
