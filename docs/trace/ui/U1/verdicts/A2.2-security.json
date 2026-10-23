@@ -1,0 +1,58 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T00:50:59Z",
+  "plan": "ui",
+  "node": "U1",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a6c4303e3b93ce988",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U1",
+    "attempt": 2,
+    "base_sha": "64809b4e83c531b4e80ef305ea74bcba2179ee71",
+    "head_sha": "ee0ac916ca51eeb749ceec200f2bad46d4221e97",
+    "diff_fingerprint": "41bf0ebd88d9d36570de950d73f9a1aa49952474",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.lint",
+      "gate.build",
+      "gate.test",
+      "gate.e2e",
+      "gate.scope",
+      "gate.no-stubs",
+      "gate.finding-green"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "W1 met: a grep of src/web (excluding node_modules, dist and test-results) for dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( and new Function found only two comments in the kit's MarkdownText.tsx. Neither is a call. Trail, rule and commit text renders as JSX text.",
+      "W2 met: every outbound href in the U1 screens goes through blobUrl, treeUrl, pullUrl or commitUrl in src/web/app/shell/repo.ts, which prefix a fixed REPO constant, or is an internal #/ hash route. Rule ids in routes are encodeURIComponent'd. External GitHub links carry rel=noreferrer, and there is no javascript: in the app or compiler. The kit's MarkdownText refuses non-http schemes (javascript:, data:, vbscript:, file:).",
+      "W3 met: src/web/index.html keeps a CSP meta tag with default-src 'self'; style-src 'self' 'unsafe-inline'. The diff has no cross-origin script, font, image or style. 'unsafe-inline' for styles was already in the base. It is not a finding for this diff, and no U1 change touched it.",
+      "W4 met: the only runtime fetches are in src/web/app/data/trace.ts. They request trace.json and the activity chunk. The activity chunk path is validated to equal trace/<plan>/<node>/activity.json before it is requested. No cookies, storage, XHR or WebSocket in src/web/app or src/web/compiler. The workbench is not in this node.",
+      "W5 met: src/web/compiler has no reference to .claude, no http(s) calls, no fetch( and no process.env. git.ts uses execFileSync with an argument array and no shell. Its calls are read-only (rev-parse, ls-tree, cat-file, log), and resolveRef rejects a ref starting with '-'. The privacy denylist runs over the ref, doc text, test names, commit subjects and trailers (including the D3 repeated-trailer values), and plan paths. A hit goes to the fatal list. The D3 changes (trailer arrays, slash-rule parts, dropping Rule: none) add no new I/O.",
+      "W6 met: a grep of src/web for local absolute paths, personal email, key and token patterns (ghp_, AKIA, private-key headers) found nothing. REPO is the public GitHub URL.",
+      "W7 met: the diff carries no change to src/web/package.json or its lockfile, so no new package. gate.audit (npm audit --omit=dev --audit-level=high) reports 0 vulnerabilities at 29cb62e. gate.audit-dev shows exit 1 with 5 high-severity items, the known dev-only braces/stylelint item (GHSA-vfj7-8cjw-p6xm). It does not gate and is not a finding.",
+      "W8 met: trace.ts turns load failures into a reason string for the kit's error state and never throws. The reasons name the static file and HTTP status only, with no server internals or stack traces. No stack output in src/web/app.",
+      "API8:2023 covered via W3 and W4. API10:2023 covered via W1 and W8. The API's own answers are not consumed in this node.",
+      "n/a: API1:2023, API2:2023, API3:2023, API4:2023, API5:2023, API6:2023, API7:2023 and API9:2023 are n/a (ui node, no server code). The .NET extras (SQL, money, packages, logging) are replaced by W1-W8 for a ui node. The diff changes no files under src/Uinsure.*. API1, API2 and API5 are also out of scope by design (no auth, no tenancy, no roles).",
+      "The D3 round (29cb62e, tests plus compiler only) adds no new attack surface. Gate receipts are at 29cb62e, and the head ee0ac91 is a trace-only commit (docs/trace), so the src/web content is identical. I read the head working tree for src/web directly and the receipts for the gates."
+    ]
+  }
+}

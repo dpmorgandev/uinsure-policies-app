@@ -1,0 +1,22 @@
+fake-clock test, not live: tests/Uinsure.Policies.Api.Tests/RenewWindowTests.cs:51-70
+
+    [Fact]
+    [Trait("Rule", "RENEW-1")]
+    public async Task Renewal_30_days_before_the_end_is_accepted()
+    {
+        const string reference = "RENEW1-END-MINUS-30";
+        var sold = Sale(reference, 418.07m, "Card");
+        using var client = _factory.CreateClient();
+        var sale = await client.SellAndReadBack(sold, reference);
+        _factory.MoveClockTo(new DateOnly(2027, 9, 28));
+
+        await client.RenewAndReadBack(
+            reference,
+            new RenewalRequestBuilder().WithAmount(446.83m).Build(),
+            sold,
+            new ExpectedRenewedPolicy(reference, "Active", 1, [
+                new ExpectedPolicyTerm(Start, End, "418.07", "Card"),
+                new ExpectedPolicyTerm(RenewedStart, RenewedEnd, "446.83", "Card"),
+            ]),
+            [sale.PaymentReference()]);
+    }

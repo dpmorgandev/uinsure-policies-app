@@ -1,0 +1,100 @@
+{
+ "item": "SELL-7 · amount decimal.MinValue → 422",
+ "folder": "F2 Retrieve / rule violations",
+ "rule": "SELL-7",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:47:00Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "454"
+   },
+   "requestBody": {
+    "reference": "F2-MVFJQUAT1Y",
+    "type": "Household",
+    "startDate": "2026-11-10",
+    "amount": -7.922816251426434e+28,
+    "autoRenew": true,
+    "paymentMethod": "DirectDebit",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 422,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:46:59 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/sell-7",
+    "title": "Policy amount must be greater than zero",
+    "status": 422,
+    "detail": "The policy amount must be greater than 0.",
+    "instance": "/policies",
+    "traceId": "00-6244a7c2586858920ecdd7705defdf65-fa04866df18adf04-00",
+    "ruleId": "SELL-7",
+    "amount": -7.922816251426434e+28,
+    "violations": [
+     {
+      "ruleId": "SELL-7",
+      "detail": "The policy amount must be greater than 0."
+     }
+    ]
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F2-MVFJQUAT1Y",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 404,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:46:59 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/get-1",
+    "title": "Policy not found",
+    "status": 404,
+    "detail": "No policy with reference 'F2-MVFJQUAT1Y'.",
+    "instance": "/policies/F2-MVFJQUAT1Y",
+    "traceId": "00-1ef2a88b6119bf546f3c8158e1e43f88-a62dfd5916a47156-00",
+    "ruleId": "GET-1",
+    "reference": "F2-MVFJQUAT1Y"
+   }
+  }
+ ]
+}

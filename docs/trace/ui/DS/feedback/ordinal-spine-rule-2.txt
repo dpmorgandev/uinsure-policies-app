@@ -1,0 +1,90 @@
+gate-design (guardrails A8), at your stop, verbatim:
+A8: you wrote docs/ui/screens/rule/populated.html before reading every line of your prompt .claude/scripts/design/.out/screens-rule-1.md: line(s) 948-1184, 1305-1803 of 2211 were unread at your first write
+
+audit-screens.mjs on your screen:
+screens: screens/rule/populated.html: <span.kit-sha-link__wrap> inside page-header is not in page-header's stylekit markup
+screens: screens/rule/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> inside page-header is not in page-header's stylekit markup
+screens: screens/rule/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside page-header is not in page-header's stylekit markup
+screens: screens/rule/populated.html: <span.kit-sha-link__srOnly> inside page-header is not in page-header's stylekit markup
+screens: screens/rule/populated.html: <section.kit-rung-spine__branch.kit-rung-spine__marked.kit-rung-spine__receipt> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/populated.html: <p.kit-rung-spine__markedLine> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/populated.html: <svg.kit-rung-spine__icon.lucide.lucide-flag> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/populated.html: <span.kit-rung-spine__mono> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/populated.html: <span.kit-rung-spine__muted> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/populated.html: <li.kit-rung-spine__bandItem.kit-rung-spine__item> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/populated.html: <div.kit-rung-spine__band.kit-rung-spine__receipt> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/populated.html: <span.kit-sha-link__wrap> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/populated.html: <span.kit-sha-link__srOnly> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/populated.html: <span.kit-sha-link__wrap> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/populated.html: <span.kit-sha-link__wrap> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/populated.html: <span.kit-sha-link__wrap> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/populated.html: <a.kit-sha-link__link.kit-sha-link__sha> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/populated.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/populated.html: "docs/requirements.md:69" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/rule/populated.html: "docs/trace/requirements-matrix.md:13" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/rule/error.html: <span.kit-status-tag__fail.kit-status-tag__tag> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <svg.kit-status-tag__icon.lucide.lucide-x> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <span.kit-status-tag__fail.kit-status-tag__tag> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <svg.kit-status-tag__icon.lucide.lucide-x> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <span.kit-status-tag__fail.kit-status-tag__tag> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <svg.kit-status-tag__icon.lucide.lucide-x> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <span.kit-status-tag__fail.kit-status-tag__tag> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <svg.kit-status-tag__icon.lucide.lucide-x> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <span.kit-status-tag__fail.kit-status-tag__tag> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <svg.kit-status-tag__icon.lucide.lucide-x> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <span.kit-status-tag__fail.kit-status-tag__tag> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <svg.kit-status-tag__icon.lucide.lucide-x> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <span.kit-status-tag__fail.kit-status-tag__tag> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <svg.kit-status-tag__icon.lucide.lucide-x> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <span.kit-status-tag__fail.kit-status-tag__tag> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/error.html: <svg.kit-status-tag__icon.lucide.lucide-x> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/rule/long-content.html: <span.kit-sha-link__wrap> inside page-header is not in page-header's stylekit markup
+screens: screens/rule/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> inside page-header is not in page-header's stylekit markup
+screens: screens/rule/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside page-header is not in page-header's stylekit markup
+screens: screens/rule/long-content.html: <span.kit-sha-link__srOnly> inside page-header is not in page-header's stylekit markup
+screens: screens/rule/long-content.html: <span.kit-sha-link__wrap> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/long-content.html: <span.kit-sha-link__wrap> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/long-content.html: <a.kit-sha-link__link.kit-sha-link__sha> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/long-content.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/long-content.html: "#63" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/rule/long-content.html: "#24" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/rule/long-content.html: "#57" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/rule/long-content.html: "#59" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/rule/long-content.html: "#62" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/rule/long-content.html: "#66" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/rule/long-content.html: "docs/trace/requirements-matrix.md:30" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/rule/long-content.html: "88b2e44^..ebbab99" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/rule/submitting.html: <span.kit-sha-link__wrap> inside page-header is not in page-header's stylekit markup
+screens: screens/rule/submitting.html: <a.kit-sha-link__link.kit-sha-link__sha> inside page-header is not in page-header's stylekit markup
+screens: screens/rule/submitting.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside page-header is not in page-header's stylekit markup
+screens: screens/rule/submitting.html: <span.kit-sha-link__srOnly> inside page-header is not in page-header's stylekit markup
+screens: screens/rule/submitting.html: <section.kit-rung-spine__branch.kit-rung-spine__marked.kit-rung-spine__receipt> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/submitting.html: <p.kit-rung-spine__markedLine> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/submitting.html: <svg.kit-rung-spine__icon.lucide.lucide-flag> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/submitting.html: <span.kit-rung-spine__mono> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/submitting.html: <span.kit-rung-spine__muted> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/submitting.html: <li.kit-rung-spine__bandItem.kit-rung-spine__item> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/submitting.html: <div.kit-rung-spine__band.kit-rung-spine__receipt> inside rule-evidence is not in rule-evidence's stylekit markup
+screens: screens/rule/submitting.html: <span.kit-sha-link__wrap> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/submitting.html: <a.kit-sha-link__link.kit-sha-link__sha> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/submitting.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/submitting.html: <span.kit-sha-link__srOnly> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/submitting.html: <span.kit-sha-link__wrap> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/submitting.html: <a.kit-sha-link__link.kit-sha-link__sha> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/submitting.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/submitting.html: <span.kit-sha-link__wrap> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/submitting.html: <a.kit-sha-link__link.kit-sha-link__sha> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/submitting.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/submitting.html: <span.kit-sha-link__wrap> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/submitting.html: <a.kit-sha-link__link.kit-sha-link__sha> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/submitting.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside key-value-list is not in key-value-list's stylekit markup
+screens: screens/rule/submitting.html: "docs/requirements.md:69" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/rule/submitting.html: "docs/trace/requirements-matrix.md:13" is not in the fixture, the stylekit or the brief (HONEST-1)

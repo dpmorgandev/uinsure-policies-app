@@ -6,6 +6,31 @@ SQL Server when deployed), problem-details errors (RFC 9457) and OpenAPI with Sc
 with TDD, one feature at a time. Every rule, its ID and the interpretation taken for it are in
 [docs/requirements.md](docs/requirements.md).
 
+## Docket (the web app)
+
+Docket lives in `src/Uinsure.Policies.Web`. It has two parts: the **trail explorer**, which reads the compiled build trail
+(`trace.json`: plans, nodes, rules, tests and verdicts) and shows how each rule was built, and the
+**workbench**, which calls this API (`/api/...`) so a policy can be sold, retrieved, cancelled, claimed on and
+renewed from a browser. It is React, TypeScript and Vite.
+
+**In Visual Studio:** open `Uinsure.Policies.slnx` and choose the **API and web** startup profile (it is in
+`Uinsure.Policies.slnLaunch`, beside the solution). F5 starts the API on port 5080, which opens its own browser
+tab on `/health/live`, and the web dev server on `http://localhost:4170`, which opens Docket in your default
+browser (Vite's `--open`; it is not a debugger-attached window). The dev server compiles `trace.json` from git
+history each time it starts, and proxies `/api` to the API. The web project is excluded from the solution
+build, so `dotnet build` never runs npm. Run `npm ci` in `src/Uinsure.Policies.Web` once first.
+
+**From the command line:**
+
+```sh
+dotnet run --project src/Uinsure.Policies.Api --launch-profile http   # the API, port 5080
+cd src/Uinsure.Policies.Web
+npm ci
+npm run trace      # compile trace.json from git history
+npm run build
+npm run preview    # http://localhost:4173, /api proxied to port 5080 (set DOCKET_API_PORT to change it)
+```
+
 ## The API
 
 | Route | What | Success |
@@ -81,7 +106,8 @@ document and the Scalar UI describe every route (see below).
 
 ## How to run it
 
-**Prerequisites:** the .NET 10 SDK (`global.json` pins 10.0.100 with `rollForward` set to `latestFeature`).
+**Prerequisites:** the .NET 10 SDK (`global.json` pins 10.0.100 with `rollForward` set to `latestFeature`), and
+Node 22.22 or later for Docket (jsdom, react-router and undici warn on older 22.x releases).
 The Postman CLI or the Postman app is only needed for the Postman collection. Visual Studio is optional.
 
 **On Windows, clone to a short path** such as `C:\src\uinsure-policies`. The SQLite native library is copied
@@ -105,8 +131,8 @@ Health checks are at `/health/live` and `/health/ready`.
 dotnet test --solution Uinsure.Policies.slnx
 ```
 
-Measured with that command on this branch on 2026-10-19: 637 tests (173 domain, 65 services, 332 API acceptance
-and 67 architecture), 0 failed, 0 skipped.
+Measured with that command on this branch on 2026-10-23: 649 tests (173 domain, 65 services, 332 API acceptance
+and 79 architecture), 0 failed, 0 skipped.
 
 **Run the Postman collection** (109 requests; start the API first):
 
@@ -122,7 +148,8 @@ postman collection run tests/postman/Uinsure.Policies.postman_collection.json \
    **Switch Views → Folder View**.
 2. **Run the API:** set **Uinsure.Policies.Api** as the startup project, pick the **http** launch profile and
    press **Ctrl+F5**. A browser opens on `/health/live` and shows `Healthy`. F5 also works, but a breakpoint
-   pauses every request behind it.
+   pauses every request behind it. To run the API and the Docket web app together, choose the **API and web**
+   profile instead (see the Docket section above).
 3. **Run the tests:** **Test → Test Explorer**, then **Run All Tests** (Ctrl+R, A). The tests group by project.
    Right-click a project, class or test to run just that. Tests for a rule carry a `Rule` trait with its ID,
    so **Group By → Traits** lists them per rule.

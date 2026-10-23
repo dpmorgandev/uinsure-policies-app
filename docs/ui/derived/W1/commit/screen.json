@@ -1,0 +1,176 @@
+{
+  "screen": "commit",
+  "route": "/commits/:sha",
+  "regions": [
+    {
+      "name": "commit header and trailers",
+      "req": [
+        "NAV-2"
+      ],
+      "components": [
+        "breadcrumbs",
+        "page-header",
+        "key-value-list",
+        "tdd-step-tag",
+        "agent-badge",
+        "rule-chip",
+        "sources-disagree"
+      ],
+      "fields": [
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].subject",
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].short",
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].order",
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].plan",
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].node",
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].agent",
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].tdd",
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].rule",
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].fixesFinding",
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].pr",
+        "build/F3/diffs.json[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].patch (file headers: the files touched)",
+        "commits[sha=949a082716abe6f49b64266f4abda6bf9f823d93].subject",
+        "commits[sha=949a082716abe6f49b64266f4abda6bf9f823d93].order",
+        "commits[sha=949a082716abe6f49b64266f4abda6bf9f823d93].rule",
+        "build/F3/diffs.json[sha=949a082716abe6f49b64266f4abda6bf9f823d93].patch (file headers: the files touched and how)",
+        "events[plan=build][node=F4][kind=signoff].head",
+        "events[plan=build][node=F4][kind=signoff].ts",
+        "events[plan=build][node=F4][kind=signoff].line",
+        "events[plan=build][node=F4][kind=signoff].attempt",
+        "events[plan=build][node=F4][kind=signoff].detail",
+        "docs/qa/build-F4.md: Date, Commit signed off, Signature",
+        "stamp.ref",
+        "stamp.sha",
+        "stamp.utc"
+      ],
+      "built": false
+    },
+    {
+      "name": "trailer agent vs hook agent",
+      "req": [
+        "AGENT-1"
+      ],
+      "components": [
+        "key-value-list",
+        "agent-badge"
+      ],
+      "fields": [
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].agent",
+        "commits[sha=949a082716abe6f49b64266f4abda6bf9f823d93].agent",
+        "events[plan=build][node=F4][kind=signoff].source",
+        "hook agent: not in the data, drawn as a gap"
+      ],
+      "built": false
+    },
+    {
+      "name": "diff (lazy)",
+      "req": [
+        "RULE-3"
+      ],
+      "components": [
+        "diff-viewer",
+        "key-value-list"
+      ],
+      "fields": [
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].order",
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].tdd",
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].agent",
+        "build/F3/diffs.json[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].patch (Money.cs hunk)",
+        "commits[sha=949a082716abe6f49b64266f4abda6bf9f823d93].order",
+        "commits[sha=949a082716abe6f49b64266f4abda6bf9f823d93].tdd",
+        "commits[sha=949a082716abe6f49b64266f4abda6bf9f823d93].agent",
+        "build/F3/diffs.json[sha=949a082716abe6f49b64266f4abda6bf9f823d93].patch (PolicyRepository.cs hunks)"
+      ],
+      "built": false
+    },
+    {
+      "name": "links out",
+      "req": [
+        "NAV-3"
+      ],
+      "components": [
+        "key-value-list",
+        "rule-chip",
+        "verify-command"
+      ],
+      "fields": [
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].sha",
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].parents",
+        "commits[sha=3a092b06f4691f5cb5ee8ed117d4e755e2095545].pr",
+        "commits[sha=949a082716abe6f49b64266f4abda6bf9f823d93].sha",
+        "commits[sha=949a082716abe6f49b64266f4abda6bf9f823d93].parents",
+        "events[plan=build][node=F4][kind=signoff].head",
+        "docs/qa/build-F4.md: Commit signed off"
+      ],
+      "built": true
+    }
+  ],
+  "states": [
+    {
+      "name": "populated",
+      "file": "populated.html",
+      "variant": "the ref's own data: build/F3 commit 3a092b0 (rung #42, CANCEL-1c green) from docs/ui/fixture/trace.json and its Money.cs hunk from trace/build/F3/diffs.json. Gaps drawn as gaps: the agent the hook saw, the pull request (pr is null), the other four files' diffs."
+    },
+    {
+      "name": "disagreement",
+      "file": "disagreement.html",
+      "variant": "build/F4 sign-off: the loop log's signoff event (head 4ea2ae8, line 51) against docs/qa/build-F4.md (43f38b6); only those two sources are in the data, so the commit's subject, trailers, agent and diff are gaps."
+    },
+    {
+      "name": "long-content",
+      "file": "long-content.html",
+      "variant": "build/F3 commit 949a082 (rung #51, CANCEL-2 green), whose patch touches many files and runs to tens of kilobytes; the viewer shows the two PolicyRepository.cs hunks in a scrolling frame."
+    }
+  ],
+  "actions": [
+    {
+      "label": "Open the walkthrough at this commit's rung (primary on populated and long-content)",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId/commits"
+    },
+    {
+      "label": "Open the loop log (primary on disagreement: line 51, the sign-off event)",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId/loop"
+    },
+    {
+      "label": "Open the commit on GitHub (header, diff head, links out)",
+      "kind": "link",
+      "to": "https://github.com/dpmorgandev/uinsure-policies-api/commit/:sha"
+    },
+    {
+      "label": "Open the parent commit on GitHub",
+      "kind": "link",
+      "to": "https://github.com/dpmorgandev/uinsure-policies-api/commit/:sha"
+    },
+    {
+      "label": "Open the QA file on GitHub",
+      "kind": "link",
+      "to": "https://github.com/dpmorgandev/uinsure-policies-api/blob/main/docs/qa/build-F4.md"
+    },
+    {
+      "label": "Open the node",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId"
+    },
+    {
+      "label": "Open the plan (breadcrumbs)",
+      "kind": "link",
+      "to": "/plans/:planId"
+    },
+    {
+      "label": "Open a rule (rule chip)",
+      "kind": "link",
+      "to": "/rules/:ruleId"
+    },
+    {
+      "label": "Load a diff (diff-viewer, lazy: each diff loads when asked)",
+      "kind": "control",
+      "to": "client-side fetch of the commit's diff chunk from the snapshot; sends no request to the API"
+    },
+    {
+      "label": "Copy command (verify-command)",
+      "kind": "control",
+      "to": "client-side clipboard copy; sends no request"
+    }
+  ]
+}

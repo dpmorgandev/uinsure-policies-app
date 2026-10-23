@@ -1,0 +1,135 @@
+{
+  "screen": "overview",
+  "route": "/",
+  "regions": [
+    {
+      "name": "headline answer",
+      "req": ["NAV-1"],
+      "components": ["page-header", "status-tag"],
+      "fields": [
+        "rules[*].matrix.red",
+        "rules[*].matrix.green",
+        "verdicts[*].verdict",
+        "verdicts[*].agent",
+        "verdicts[*].node",
+        "plans[id=build].approvedBy",
+        "plans[id=build].approvedOn",
+        "stamp.ref",
+        "stamp.sha",
+        "stamp.utc",
+        "events[plan=build][node=F6][line<=20].event (in-flight variant)",
+        "events[plan=build][node=F6][line<=20].attempt (in-flight variant)",
+        "events[plan=build][node=F6][line=20].ts (in-flight variant)"
+      ]
+    },
+    {
+      "name": "receipt figures (rules built/total, tests passing, nodes done, attempts and FAILs, human decisions)",
+      "req": ["NAV-1", "VERIFY-1"],
+      "components": ["receipt-figure", "verify-command"],
+      "fields": [
+        "rules[*].status",
+        "rules[*].matrix.tests.pass",
+        "rules[*].matrix.tests.total",
+        "rules[*].matrix.source",
+        "rules[id=GET-1].matrix.red",
+        "rules[id=GET-1].matrix.green",
+        "nodes[plan=build][*].status",
+        "nodes[plan=build][*].attempt",
+        "plans[id=build].source",
+        "verdicts[*].verdict",
+        "verdicts[*].agent",
+        "decisions[plan=build][*].kind",
+        "events[plan=build][node=F6][line<=20].gate (in-flight variant)",
+        "events[plan=build][node=F6][line<=20].exit (in-flight variant)",
+        "events[plan=build][node=F6][line<=20].ok (in-flight variant)",
+        "events[plan=build][node=F6][line=9].cmd (in-flight variant)",
+        "events[plan=build][node=F6][line=9].detail (in-flight variant)"
+      ]
+    },
+    {
+      "name": "build plan at a glance",
+      "req": ["DAG-1"],
+      "components": ["dag-graph", "dag-table", "status-tag", "rule-chip"],
+      "fields": [
+        "plans[id=build].nodes",
+        "plans[id=build].approvedBy",
+        "plans[id=build].approvedOn",
+        "nodes[plan=build][*].id",
+        "nodes[plan=build][*].title",
+        "nodes[plan=build][*].status",
+        "nodes[plan=build][*].dependsOn",
+        "nodes[plan=build][*].rules",
+        "nodes[plan=build][*].pr",
+        "events[plan=build][node=F6][line<=20].line (in-flight variant)",
+        "events[plan=build][node=F6][line<=20].event (in-flight variant)",
+        "events[plan=build][node=F6][line<=20].detail (in-flight variant)"
+      ]
+    },
+    {
+      "name": "latest human decisions",
+      "req": ["HITL-1"],
+      "components": ["human-decision-row", "status-tag", "not-built-yet"],
+      "fields": [
+        "decisions[plan=build][node=F6].kind",
+        "decisions[plan=build][node=F6].round",
+        "decisions[plan=build][node=F6].at",
+        "decisions[plan=build][node=F6].when",
+        "decisions[plan=build][node=F6].what",
+        "decisions[plan=build][node=F6].sha",
+        "decisions[plan=build][node=F6].evidence"
+      ]
+    },
+    {
+      "name": "compiled-at stamp",
+      "req": ["DATA-3"],
+      "components": [],
+      "fields": [
+        "stamp.ref",
+        "stamp.sha",
+        "stamp.uiRef",
+        "stamp.uiSha",
+        "stamp.utc",
+        "events[plan=build][node=F6][line=1].ts (in-flight variant)",
+        "events[plan=build][node=F6][line=20].ts (in-flight variant)"
+      ]
+    },
+    {
+      "name": "top bar: search and theme toggle (global; tagged here once)",
+      "req": ["NAV-4", "THEME-1"],
+      "components": ["search", "theme-toggle"],
+      "fields": []
+    },
+    {
+      "name": "trail completeness: TRAIL INCOMPLETE reasons verbatim, \"not built yet\", and F0a as git-only",
+      "req": ["DATA-4"],
+      "components": ["completeness-banner", "not-built-yet", "status-tag", "rule-chip"],
+      "fields": [
+        "nodes[plan=build][*].completeness",
+        "nodes[plan=build][*].completenessReasons",
+        "nodes[plan=build][*].trail",
+        "problems[*].file",
+        "problems[*].reason",
+        "rules[*].matrix.green",
+        "rules[*].matrix.refactor"
+      ]
+    }
+  ],
+  "states": [
+    { "name": "populated", "file": "populated.html", "variant": "the ref's own data (origin/main b394466)" },
+    { "name": "in-flight", "file": "in-flight.html", "variant": "build/F6 as it stood after its first 20 loop events (F6 is done at this ref), cut from its loop.jsonl; only those events are used" },
+    { "name": "not-built", "file": "not-built.html", "variant": "labelled placeholders attached to no real rule or node: every rule is built at this ref" }
+  ],
+  "actions": [
+    { "label": "Show me the proof: open the requirements matrix", "kind": "link", "to": "/rules" },
+    { "label": "Open the full plan", "kind": "link", "to": "/plans/:planId" },
+    { "label": "All human decisions", "kind": "link", "to": "/decisions" },
+    { "label": "Show me the proof: open F6's loop log (in-flight only)", "kind": "link", "to": "/plans/:planId/:nodeId/loop" },
+    { "label": "Rule chip (every rule chip on the page)", "kind": "link", "to": "/rules/:ruleId" },
+    { "label": "Back to the requirements matrix (not-built only)", "kind": "link", "to": "/rules" },
+    { "label": "Sources and provenance", "kind": "link", "to": "/about" },
+    { "label": "Open evidence on GitHub (receipt sources, decision evidence, commits, PR)", "kind": "link", "to": "https://github.com/dpmorgandev/uinsure-policies-api" },
+    { "label": "Copy command", "kind": "control", "to": "clipboard, no request" },
+    { "label": "Search", "kind": "control", "to": "/rules, /plans/:planId/:nodeId or /commits/:sha by what is typed" },
+    { "label": "Theme", "kind": "control", "to": "sets the theme, no request" }
+  ]
+}

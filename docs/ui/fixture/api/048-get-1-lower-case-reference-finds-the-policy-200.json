@@ -1,0 +1,161 @@
+{
+ "item": "GET-1 · lower-case reference finds the policy → 200",
+ "folder": "F2 Retrieve / happy path",
+ "rule": "GET-1",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:46:40Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "333"
+   },
+   "requestBody": {
+    "reference": "F2-MVFJQEYNMY",
+    "type": "Household",
+    "startDate": "2026-11-10",
+    "amount": 527.18,
+    "autoRenew": true,
+    "paymentMethod": "DirectDebit",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:46:40 GMT",
+    "server": "Kestrel",
+    "location": "/policies/F2-MVFJQEYNMY",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F2-MVFJQEYNMY",
+    "type": "Household",
+    "status": "Pending",
+    "currentTermNumber": 1,
+    "startDate": "2026-11-10",
+    "endDate": "2027-11-09",
+    "amount": 527.18,
+    "hasClaims": false,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-11-10",
+      "endDate": "2027-11-09",
+      "amount": 527.18,
+      "paymentReference": "PAY-b68c36845b9448438fe4cf8da7ee5919"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-b68c36845b9448438fe4cf8da7ee5919",
+      "type": "DirectDebit",
+      "amount": 527.18
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/f2-mvfjqeynmy",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 200,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:46:40 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F2-MVFJQEYNMY",
+    "type": "Household",
+    "status": "Pending",
+    "currentTermNumber": 1,
+    "startDate": "2026-11-10",
+    "endDate": "2027-11-09",
+    "amount": 527.18,
+    "hasClaims": false,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-11-10",
+      "endDate": "2027-11-09",
+      "amount": 527.18,
+      "paymentReference": "PAY-b68c36845b9448438fe4cf8da7ee5919"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-b68c36845b9448438fe4cf8da7ee5919",
+      "type": "DirectDebit",
+      "amount": 527.18
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  }
+ ]
+}

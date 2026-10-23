@@ -1,0 +1,54 @@
+.root {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-16);
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+.group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-5);
+  min-width: 0;
+}
+
+.term {
+  flex: 0 0 12rem;
+  max-width: 100%;
+  padding-top: 0.15rem;
+  font-size: var(--text-14);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.value {
+  flex: 1 1 14rem;
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.gap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-2);
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+  border: 1.5px dashed var(--color-text-secondary);
+  border-radius: var(--radius);
+}
+
+.icon {
+  flex: none;
+  width: 1em;
+  height: 1em;
+}

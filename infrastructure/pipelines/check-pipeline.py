@@ -42,8 +42,17 @@ for name, doc in (("azure-pipelines.yml", pipeline), ("stage-template.yml", temp
 uses = [s for s in pipeline["stages"] if "template" in s]
 check([u["parameters"]["environmentName"] for u in uses] == ["dev", "test", "prod"], "template must be used for dev, test, prod in order")
 check(all(u["template"] == "stage-template.yml" for u in uses), "every deploy stage must use stage-template.yml")
-check([u["parameters"]["dependsOn"] for u in uses] == ["Build", "Deploy_dev", "Deploy_test"], "stages must chain Build -> dev -> test -> prod")
+check([u["parameters"]["dependsOn"] for u in uses] == ["Web", "Deploy_dev", "Deploy_test"], "stages must chain Build -> Web -> dev -> test -> prod")
 check(any(s.get("stage") == "Build" for s in pipeline["stages"]), "missing Build stage")
+
+# Web stage: build and test run from the Build stage and before dev; the host settings ship with the artifact.
+web_stage = next((s for s in pipeline["stages"] if s.get("stage") == "Web"), None)
+web_text = json.dumps(web_stage) if web_stage else ""
+check(web_stage is not None and web_stage.get("dependsOn") == "Build", "Web stage must depend on Build")
+check(re.search(r"run lint(?!:)", web_text) is not None, "Web stage must run: run lint (not only lint:css)")
+check("timeout " in web_text, "The e2e wait for the API must be bounded")
+for needle in ("npm --prefix src/Uinsure.Policies.Web ci", "run typecheck", "run lint:css", "run test", "run trace", "run build", "run e2e", "staticwebapp.config.json"):
+    check(needle in web_text, f"Web stage must run: {needle}")
 
 # Build stage: build, test, idempotent script.
 build_stage = next((s for s in pipeline["stages"] if s.get("stage") == "Build"), None)
@@ -257,6 +266,35 @@ deny_prios = [int(field(r, "priority")) for r in denies]
 check(bool(allow_prios) and bool(deny_prios) and min(deny_prios) > max(allow_prios),
       "A2/S1: the SQL NSG's deny-all must have a higher priority number than the 1433 allow")
 # A2/R4 (comment wording about the leaked pipeline token) cannot be tested; the fix dispatch rewords it.
+
+# Review A1 round 2 (I1, I2). Added red.
+# I1: the deployment job reads the Static Web App token at run time into a secret variable, deploys the web artifact
+# with a version-pinned SWA CLI that takes the token only through env, and curl --fail's the site root.
+token_steps = [s for s in steps if runs(s, "az staticwebapp secrets list")]
+check(len(token_steps) == 1, "A1/I1: exactly one step must run 'az staticwebapp secrets list' to read the Static Web App token")
+token_script = token_steps[0].get("inputs", {}).get("inlineScript", "") if token_steps else ""
+token_var = re.search(r"##vso\[task\.setvariable variable=(\w+);issecret=true\]", token_script)
+check(token_var is not None, "A1/I1: the token step must set its variable with issecret=true")
+check("$(webSiteName)" in token_script, "A1/I1: the token must be read from the site named by $(webSiteName)")
+swa_steps = [s for s in steps if "swa-cli/node_modules/.bin/swa" in json.dumps(s)]
+check(len(swa_steps) == 1, "A1/I1: exactly one step must run the Static Web Apps CLI")
+swa = swa_steps[0] if swa_steps else {}
+swa_script = swa.get("script", "")
+check("npx --yes" not in swa_script and "npm ci --prefix $(Pipeline.Workspace)/swa-cli" in swa_script, "A2/S1: the SWA CLI must be installed by npm ci from its lockfile, never npx --yes")
+check("/web" in swa_script and " deploy " in swa_script, "A1/I1: the SWA CLI must deploy the 'web' artifact")
+token_ref = f"$({token_var.group(1)})" if token_var else None
+check(token_ref is not None and token_ref in swa.get("env", {}).values(), "A1/I1: the SWA CLI step must take the token through env")
+check(token_ref is not None and token_ref not in swa_script, "A1/I1: the token must not appear in the SWA CLI command line")
+site_smoke = [i for i, s in enumerate(steps) if "curl" in s.get("script", "") and "--fail" in s.get("script", "") and "https://$(webHostName)/" in s.get("script", "")]
+check(len(site_smoke) == 1, "A1/I1: a step must curl --fail https://$(webHostName)/")
+order = [next((i for i, s in enumerate(steps) if s is x), None) for x in (token_steps[0] if token_steps else None, swa or None)]
+check(None not in order and order[0] < order[1] and bool(site_smoke) and order[1] < site_smoke[0], "A1/I1: order must be token, SWA deploy, site smoke test")
+
+# I2: every output the infra step exports with setvariable is read as $(<name>) by a later step.
+exported = re.findall(r"##vso\[task\.setvariable variable=(\w+)\]", text)
+infra_at = next((i for i, s in enumerate(steps) if s.get("name") == "infra"), -1)
+for name in exported:
+    check(any(f"$({name})" in json.dumps(s) for s in steps[infra_at + 1:]), f"A1/I2: variable {name} is set but no later step reads $({name})")
 
 if errors:
     print("pipeline check FAILED")

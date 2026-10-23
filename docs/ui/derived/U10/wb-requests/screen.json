@@ -1,0 +1,94 @@
+{
+  "screen": "wb-requests",
+  "route": "/workbench/requests",
+  "regions": [
+    {
+      "name": "request log",
+      "req": [
+        "WB-7"
+      ],
+      "components": [
+        "page-header",
+        "filter-bar",
+        "request-log"
+      ],
+      "fields": [
+        "003-sell-1-new-reference-201.json exchanges[*].{method,path,status}",
+        "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[*].{method,path,status}",
+        "061-cancel-1b-cancel-on-start-14-201.json exchanges[*].{method,path,status}",
+        "069-could-1-quote-changes-nothing-200.json exchanges[*].{method,path,status}",
+        "059 to 065 and 073 to 075 cancel fixtures (long-content) exchanges[path~=/cancellation*].{method,path,status}",
+        "*.json recordedAt and postmanExit (provenance)",
+        "069-could-1-quote-changes-nothing-200.json exchanges[path=/policies/F3-MVFJRBS7C7].responseBody.{status,refunds}",
+        "duration: not in the recorded data (shown as not recorded)"
+      ],
+      "built": true
+    },
+    {
+      "name": "one exchange: request, response, status line, curl",
+      "req": [
+        "WB-7"
+      ],
+      "components": [
+        "http-exchange",
+        "json-viewer",
+        "code-block"
+      ],
+      "fields": [
+        "069-could-1-quote-changes-nothing-200.json exchanges[path=/policies/F3-MVFJRBS7C7/cancellation-quote?cancellationDate=2026-12-02].{method,path,status,requestHeaders,responseHeaders,responseBody}",
+        "075-cancel-3-unknown-field-in-the-cancellation-body-400.json exchanges[role=setup,path=/policies/F3-MVFJRLFQ3T/cancellation].{method,path,status,requestHeaders,requestBody,responseHeaders,responseBody}",
+        "response size: not in the recorded data (shown as size not recorded)"
+      ],
+      "built": true
+    }
+  ],
+  "states": [
+    {
+      "name": "populated",
+      "file": "populated.html",
+      "variant": "four recorded fixtures (003, 045, 061, 069, recorded 2026-10-19T17:45:08Z to 17:47:23Z): ten exchanges numbered in recorded order; #9, the quote on F3-MVFJRBS7C7, shown in full"
+    },
+    {
+      "name": "long-content",
+      "file": "long-content.html",
+      "variant": "ten recorded F3 cancel fixtures (059 to 065, 073 to 075, recorded 2026-10-19T17:47:02Z to 17:47:35Z): #10, the 400 with the long unknown-field error line, shown in full"
+    }
+  ],
+  "actions": [
+    {
+      "label": "Filter requests (text)",
+      "kind": "control",
+      "to": "narrows the request log rows; sends nothing"
+    },
+    {
+      "label": "Method and Status filters",
+      "kind": "control",
+      "to": "narrows the request log rows; sends nothing"
+    },
+    {
+      "label": "Request headers, Response headers, Raw JSON (disclosures)",
+      "kind": "control",
+      "to": "opens or closes the panel; sends nothing"
+    },
+    {
+      "label": "Copy curl",
+      "kind": "control",
+      "to": "copies the curl for the shown request; sends nothing"
+    },
+    {
+      "label": "Copy JSON",
+      "kind": "control",
+      "to": "copies the raw response JSON; sends nothing"
+    },
+    {
+      "label": "Show requests / Hide requests",
+      "kind": "control",
+      "to": "opens or closes the inspector drawer"
+    },
+    {
+      "label": "Open Quote and cancel",
+      "kind": "link",
+      "to": "/workbench/policies/:reference/cancel"
+    }
+  ]
+}

@@ -13,6 +13,8 @@ variables:
     value: Release
   - name: dotnetSdkVersion
     value: 10.0.x
+  - name: nodeVersion
+    value: 22.x
 
 stages:
   - stage: Build
@@ -58,12 +60,80 @@ stages:
             artifact: drop
             displayName: Publish drop artifact
 
+  # The web app (Docket) is built and tested here, before any deployment. Playwright runs against the real API,
+  # started on the agent with its development SQLite database. The static host's settings are copied into the build.
+  - stage: Web
+    displayName: Web build and test
+    dependsOn: Build
+    jobs:
+      - job: WebBuildTest
+        pool:
+          vmImage: ubuntu-latest
+        steps:
+          # The trace compiler reads git history, so the clone must be complete.
+          - checkout: self
+            fetchDepth: 0
+
+          - task: UseNode@1
+            displayName: Install Node
+            inputs:
+              version: $(nodeVersion)
+
+          - task: UseDotNet@2
+            displayName: Install .NET SDK
+            inputs:
+              packageType: sdk
+              version: $(dotnetSdkVersion)
+
+          - script: npm --prefix src/Uinsure.Policies.Web ci
+            displayName: Web install
+
+          - script: npm --prefix src/Uinsure.Policies.Web run typecheck
+            displayName: Web typecheck
+
+          - script: npm --prefix src/Uinsure.Policies.Web run lint
+            displayName: Web lint
+
+          - script: npm --prefix src/Uinsure.Policies.Web run lint:css
+            displayName: Web CSS lint
+
+          - script: npm --prefix src/Uinsure.Policies.Web run test
+            displayName: Web unit tests
+
+          - script: npm --prefix src/Uinsure.Policies.Web run trace
+            displayName: Compile trace.json
+
+          - script: npm --prefix src/Uinsure.Policies.Web run build
+            displayName: Web build
+
+          - script: |
+              npx --prefix src/Uinsure.Policies.Web playwright install --with-deps chromium
+              dotnet run --project src/Uinsure.Policies.Api --urls http://localhost:5080 &
+              timeout 120 bash -c 'until curl --fail --silent http://localhost:5080/health/live; do sleep 2; done'
+              npm --prefix src/Uinsure.Policies.Web run e2e
+            displayName: Web end-to-end tests against the API
+
+          - script: |
+              mkdir -p $(Build.ArtifactStagingDirectory)/web
+              cp -r src/Uinsure.Policies.Web/dist/. $(Build.ArtifactStagingDirectory)/web/
+              cp infrastructure/web/staticwebapp.config.json $(Build.ArtifactStagingDirectory)/web/
+            displayName: Package web build with the static host settings
+
+          # The deploy installs the Static Web Apps CLI from this lockfile (npm ci), never npx --yes.
+          - publish: infrastructure/pipelines/swa-cli
+            artifact: swa-cli
+            displayName: Publish the SWA CLI lockfile
+
+          - publish: $(Build.ArtifactStagingDirectory)/web
+            artifact: web
+            displayName: Publish web artifact
+
   - template: stage-template.yml
     parameters:
       environmentName: dev
       azureServiceConnection: sc-policies-dev
       sqlServiceConnection: sc-policies-dev-sql
-      dependsOn: Build
+      dependsOn: Web
 
   - template: stage-template.yml
     parameters:

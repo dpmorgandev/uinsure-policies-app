@@ -1,0 +1,69 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: 2.75rem;
+  color: var(--color-text-primary);
+  font-size: var(--text-16);
+  cursor: pointer;
+}
+
+.input {
+  position: relative;
+  flex: none;
+  width: 3rem;
+  height: 1.75rem;
+  margin: 0;
+  appearance: none;
+  background: var(--color-background);
+  border: 2px solid var(--color-text-secondary);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: background-color var(--duration-short);
+}
+
+.input::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 1.25rem;
+  height: 1.25rem;
+  background: var(--color-text-secondary);
+  border-radius: var(--radius);
+  transition:
+    transform var(--duration-short),
+    background-color var(--duration-short);
+}
+
+.input:checked {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.input:checked::before {
+  background: var(--color-background);
+  transform: translateX(1.25rem);
+}
+
+.input:focus-visible,
+.input[data-show-focus] {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.input:disabled {
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+.label {
+  font-weight: 700;
+}
+
+.state {
+  min-width: 2rem;
+  color: var(--color-text-secondary);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+}

@@ -1,0 +1,114 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T02:59:22Z",
+  "plan": "ui",
+  "node": "U9",
+  "attempt": 1,
+  "agent": "reviewer",
+  "agent_id": "a818b6d12d6f58a25",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U9",
+    "attempt": 1,
+    "base_sha": "a3420f104aebf4aaa532ee57de83ab3c67e5146e",
+    "head_sha": "a4da4458d667d3b14fe799645e5a56dfc21bbdce",
+    "diff_fingerprint": "f3a1476a62f9f33fc6e8e9ea00273f1b60c2d357",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "gate.write@ec646d79448e43fc52934711f408667b47cd3c9b",
+      "gate.typecheck@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.lint@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.lint-css@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.test@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.build@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.audit@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.trace-check@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.e2e@fe637d8742c2e1ff2d7338398175ad0901beb941",
+      "gate.e2e-regression@fe637d8742c2e1ff2d7338398175ad0901beb941"
+    ],
+    "rules_covered": [],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "U9-acceptance-4/5/8",
+        "severity": "P0",
+        "file": "infrastructure/pipelines/stage-template.yml",
+        "line": 143,
+        "what": "Deploy_<env> never deploys the web app: it does not download the web artifact, read the token, run the SWA CLI deploy or smoke-test the site. Only the app zip ships.",
+        "why": "U9 acceptance requires a Static Web Apps deploy after the web stage (line 8), a deploy stage (line 4) and a token read from the resource (line 5). The only deploy steps at HEAD are infra, migrations, the DB grant, az webapp deploy and /health/ready. A grep of infrastructure/ for 'artifact: web', 'secrets list' and 'swa ' finds them only in the README and the Web stage's publish step. gate.write notes that the builder stopped at its 25-minute time box.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "U9-acceptance-9",
+        "severity": "P1",
+        "file": "infrastructure/README.md",
+        "line": 84,
+        "what": "The README describes a token step (az staticwebapp secrets list, masked variable, pinned SWA CLI), a web-artifact deploy and a site-root smoke test that are not in any pipeline file.",
+        "why": "Acceptance line 9 asks for documentation of the Static Web App and the web stage. Lines 72 and 82-90 describe steps that do not exist, and the 'configured, not tested' note says these non-existent steps were 'schema-checked and read by eye'. This evidence node's README must match the files.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "U9-acceptance-2",
+        "severity": "P0",
+        "file": "infrastructure/modules/staticwebapp.bicep",
+        "line": 27,
+        "what": "The linked backend forwards /api/... unchanged, but the API has no /api prefix, so on the host /api does not reach the API. The README documents this gap without fixing it.",
+        "why": "Acceptance line 2 says '/api reaches the API from the same origin'. infrastructure/README.md line 92 admits it does not, and vite.config.ts line 20 shows the dev and preview proxies strip /api, which the linked backend does not do. The fix (an API path base) is outside the line 11 diff scope. Either David amends acceptance line 2 or the scope widens. As written, the acceptance line is not met.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "U9-acceptance-7",
+        "severity": "P1",
+        "file": "Uinsure.Policies.slnx",
+        "line": 45,
+        "what": "There is no gate receipt for 'dotnet test --solution' with the .esproj (JavaScriptTestFramework=Vitest) now in the slnx. Only the dotnet build was evidenced.",
+        "why": "Acceptance line 7 names both 'dotnet build ... -warnaserror and dotnet test --solution stay as they are'. gate.write covers only the build ('0 npm/vite lines'). The esproj declares a Vitest test root, so whether dotnet test leaves it alone is unproven. pre-push runs the full suite.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R5",
+        "rule_id": "code-quality",
+        "severity": "P2",
+        "file": "infrastructure/pipelines/stage-template.yml",
+        "line": 90,
+        "what": "webSiteName and webHostName are set as pipeline variables but never read. The new script 'env' branch in pipeline.schema.json is used by no step. Both are dead code left by the unfinished deploy.",
+        "why": "The code-quality slop list counts unused members as dead code. These are what is left of the missing SWA deploy step (R1).",
+        "route_to": "builder"
+      },
+      {
+        "id": "R6",
+        "rule_id": "U9-acceptance-4",
+        "severity": "P2",
+        "file": "infrastructure/pipelines/check-pipeline.py",
+        "line": 53,
+        "what": "The schema check never asks the deploy template for a Static Web Apps deploy step, which is how R1 passed. The 'run lint' needle is also met by 'run lint:css' alone.",
+        "why": "Acceptance line 4 relies on 'pipeline schema check passes' as evidence for the web build and deploy stage. A check that cannot detect the missing deploy, and has a needle that matches more than intended, is weak evidence.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R7",
+        "rule_id": "U9-acceptance-8",
+        "severity": "P2",
+        "file": "infrastructure/pipelines/azure-pipelines.yml",
+        "line": 109,
+        "what": "The CI e2e step loops 'until curl' with no limit, and 'npm run e2e' runs every spec, including the regression screenshots, on ubuntu-latest against baselines made locally.",
+        "why": "If the API never starts, the job hangs until its timeout. The regression specs compare toHaveScreenshot against docs/ui/baselines with no per-platform suffix (playwright.config.ts line 11), so Linux font rendering will probably fail them. Neither risk appears in the 'configured, not tested' notes.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "U9 is an evidence node with rules: [], so rules_covered and rules_missing are empty. It was judged against the 11 acceptance lines in docs/plans/active/ui.dag.yaml (lines 495-506).",
+      "Met: line 1 (staticwebapp.bicep wired into main.bicep beside the App Service); line 3 (navigationFallback to index.html, and npm run trace runs before npm run build in the Web stage); line 6 (the .esproj sits in a /web/ solution folder, and the slnLaunch 'API and web' profile starts both; F5 is unverified until Pause 2); line 10 (README.md covers Docket, F5 and the CLI); line 11 (every changed path is in scope).",
+      "The CSP header in staticwebapp.config.json matches the meta CSP in src/web/index.html exactly, so it does not loosen the policy.",
+      "No src/web app runtime file changed, so the scoped e2e skip (gate.e2e) and the regression deferral to U10 (gate.e2e-regression) match David's 2026-10-23 ruling.",
+      "Trailers: the docs(U9) commits carry Agent, Plan, Node and Rule: none but no TDD trailer, and the plan commits carry neither Rule nor TDD. No TDD step fits an evidence 'write' task, so this is not raised as a finding. It is flagged in case the commit-msg convention expects one.",
+      "The infrastructure README still says '16 resources' and appends the Static Web App and linked backend after it, so the true total is 18. The wording is awkward but not wrong."
+    ]
+  }
+}

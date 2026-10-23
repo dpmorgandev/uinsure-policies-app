@@ -1,0 +1,83 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T00:52:14Z",
+  "plan": "ui",
+  "node": "U1",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a8213490633f0b114",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U1",
+    "attempt": 2,
+    "base_sha": "64809b4e83c531b4e80ef305ea74bcba2179ee71",
+    "head_sha": "ee0ac916ca51eeb749ceec200f2bad46d4221e97",
+    "diff_fingerprint": "41bf0ebd88d9d36570de950d73f9a1aa49952474",
+    "verdict": "PASS",
+    "gate_refs": [
+      "docs/trace/ui/U1/loop.jsonl:6 gate.stub (82 failed / 32 passed, every pass reachable or parity)",
+      "docs/trace/ui/U1/loop.jsonl:57 verdict(reviewer,PASS) A2 at e8fdf4e, P2 R1-R3 carried to U7",
+      "docs/trace/ui/U1/loop.jsonl:58 gate.qa (t12, predicts the D3 defects)",
+      "docs/trace/ui/U1/loop.jsonl:59 steer(D3,pause2) David: 'Fix now as D3' and 'Collect the parts'",
+      "docs/trace/ui/U1/loop.jsonl:60 findings(D3.md) I1-I4, the orchestrator's scope call puts all four in D3",
+      "docs/trace/ui/U1/loop.jsonl:61 gate.finding-red at c1e298a (unit 6 failed, e2e 2 failed, tests/web only)",
+      "docs/trace/ui/U1/loop.jsonl:62 gate.typecheck at 29cb62e",
+      "docs/trace/ui/U1/loop.jsonl:63 gate.lint at 29cb62e",
+      "docs/trace/ui/U1/loop.jsonl:64 gate.lint-css at 29cb62e",
+      "docs/trace/ui/U1/loop.jsonl:65 gate.test (138/138)",
+      "docs/trace/ui/U1/loop.jsonl:66 gate.build",
+      "docs/trace/ui/U1/loop.jsonl:67 gate.e2e (U1 126/126, one worker)",
+      "docs/trace/ui/U1/loop.jsonl:69 gate.audit (0)",
+      "docs/trace/ui/U1/loop.jsonl:71 gate.coverage (OK)",
+      "docs/trace/ui/U1/loop.jsonl:72 gate.scope (160 files in scope)",
+      "docs/trace/ui/U1/loop.jsonl:73 gate.no-stubs (none)",
+      "docs/trace/ui/U1/loop.jsonl:74 gate.e2e-regression (U0b 65/65)",
+      "docs/trace/ui/U1/loop.jsonl:75 gate.finding-green (D3/I1-I4 at 29cb62e)"
+    ],
+    "rules_covered": [
+      "NAV-1",
+      "MATRIX-1",
+      "RULE-1",
+      "RULE-2",
+      "DATA-4",
+      "NAV-3"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "RULE-1",
+        "severity": "P2",
+        "file": "src/web/compiler/index.ts",
+        "line": 256,
+        "what": "The D3 green made a whitespace-only change to an existing line: 'const commitsOf = (short' became 'const commitsOf =(short'. The fix didn't need this change.",
+        "why": "code-quality, refactor step: change only what the fix needs and don't reformat other code. The earlier packet diff shows the line as 'commitsOf = (' (the nested diff.patch at :7542). The D3 diff shows it as 'commitsOf =(' (:17778), beside the added 'ids' line. Lint doesn't catch it. It is cosmetic and doesn't block.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "NAV-3",
+        "severity": "P2",
+        "file": "tests/web/unit/compiler/nav-3.test.ts",
+        "line": 158,
+        "what": "D3/I4 is proven only in the compiler (c4's rule is []). No screen test checks that #/commits/<c4> shows 'no Rule trailer' and has no #/rules/none link, which is the symptom David saw.",
+        "why": "D3.md I4 suggested_test asks for both the compiler assertion and the commit-page assertion. Commit.tsx:59-66 already shows the empty state for an empty list, so the fix holds through the compiler test. But the symptom a user sees isn't pinned, so a later screen change could bring back a 'none' chip without any test failing. It doesn't block.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "TDD order holds for D3. The red commits are 05cb7fc (RULE-2, D3/I1), 31717b8 (DATA-5, D3/I1), f08f7f3 (RULE-1, D3/I2), c94d044 (NAV-3, D3/I4) and c1e298a (RULE-1, D3/I3). All of them come before the single green, 29cb62e, which carries Fixes-Finding D3/I1 to D3/I4. The red was receipted at loop.jsonl:61: every new or changed test failed on an assertion, the diff touched tests/web only, and typecheck was clean. The green is receipted at :62-75. The earlier rounds' order is as recorded in the A2 verdict.",
+      "Only one assertion changed after its red commit: rule-1.test.ts:117-127, where RENEW-1/2 went from [] to its three tests by part. David's ruling 'Collect the parts' (loop.jsonl:59) authorises it, the red receipt (:61) records it, and the change makes the test stricter. No skip, only or todo was added.",
+      "D3/I1 fix: git.ts:42-50 keeps every value of a key, in order. index.ts:155 scans every value of every trailer, and data-5.test.ts:140 proves an address on the first of two Rule or Fixes-Finding lines fails the compile. Rule and Fixes-Finding are the union of all their lines, each line split on commas. Agent, Plan, Node and TDD keep their first line, as the comment at index.ts:158 says. No test pins first-wins, and no real trail is known to repeat those keys.",
+      "The real-trailers fixture and replay.mjs:48-51 (an array value is written as repeated lines) close the fixture-format gap that D3.md's previous_attempts named as the shared cause of D1/I1, D2/I1 and D3/I1-I2. Each new compiler test first reads the replayed body back with git log --format=%B, so it can't pass on the fixture's say-so.",
+      "D3/I2 and D3/I3: a slash rule's tests are those traited with the slash ID or with either part, de-duplicated by file and line (index.ts:255-268). A part on a commit maps to its slash rule (index.ts:152, :165), so RENEW-1/2's spine and the commit chips use the requirement row. This is the RuleCoverage reading that David's ruling adopts. The mapping is unconditional: a part that was also its own requirement row would be folded into the slash rule. Neither real requirements file has such a row today.",
+      "The green commit's Rule trailer includes DATA-5, which is not a U1 rule. That comes from the D3/I1 privacy companion test the investigator asked for, and it is in scope.",
+      "The visible I1 symptoms (SELL-1's spine missing rungs #52 and #64, and seven chips on 7d3f791) are proven in the compiler (rule-2.test.ts:126). ruleFacts.ts and Commit.tsx were unchanged and draw every entry. No screen test runs on real-trailers for SELL-1. David's QA re-run (steps 24, 29 and 38) is the end-to-end check.",
+      "Out of scope as the orchestrator recorded it (loop.jsonl:60): Fixes-Finding D<n>/I<n> compiles with round null (index.ts:78). It goes to U3.",
+      "The A2 P2s (R1 DATA-4 'no trail' from completeness, R2 MATRIX-1 TraceRule.status type, R3 NAV-3 matrix PR link) are still carried to U7 and not raised again.",
+      "Leftovers: gate.no-stubs found nothing at 29cb62e (loop.jsonl:73). HEAD ee0ac91 changes trace files only. No C#, time or rounding code was touched."
+    ]
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T13:15:53Z",
+  "plan": "ui",
+  "node": "U2",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a5779b69bd65ac008",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U2",
+    "attempt": 2,
+    "base_sha": "5da3f478c77a93d036aa6897dcf9193465e465ca",
+    "head_sha": "7c2eae4cf431e71942eb6df8f919499fdbd09e7a",
+    "diff_fingerprint": "f610fd68d25dba24779f38755cb0556c98f74a03",
+    "verdict": "PASS",
+    "gate_refs": [
+      "loop.jsonl:4-8 gate.red @ff867f1 (DAG-1 22, NODE-1 16+1 parity, TDD-1 15, RULE-3 17, DATA-8 9 failed)",
+      "loop.jsonl:9 gate.red-scope @ff867f1",
+      "loop.jsonl:10 gate.stub ok:false @0d639ef (3 illegal passes, attempt 1)",
+      "loop.jsonl:13 gate.finding-red @8bfeb52 (A1/I1)",
+      "loop.jsonl:14 gate.stub ok:true @8bfeb52 (53 failed, 27 passed, all parity/reachable)",
+      "loop.jsonl:17 gate.red t4 @7074d48",
+      "loop.jsonl:18 gate.red t5 @60e29ee",
+      "loop.jsonl:19 gate.green t6 @f84e68e",
+      "loop.jsonl:20 gate.green t7 @701a1b0 (e2e 380/380)",
+      "loop.jsonl:21 gate.refactor @3f4c829",
+      "loop.jsonl:24 gate.typecheck @0d62d5e",
+      "loop.jsonl:25 gate.lint @0d62d5e",
+      "loop.jsonl:26 gate.lint-css @0d62d5e",
+      "loop.jsonl:27 gate.test @0d62d5e (242/242)",
+      "loop.jsonl:28 gate.build @0d62d5e",
+      "loop.jsonl:29 gate.e2e @0d62d5e (80/80)",
+      "loop.jsonl:30 gate.e2e-regression ok:false @0d62d5e",
+      "loop.jsonl:31 gate.audit @0d62d5e",
+      "loop.jsonl:33 gate.coverage @0d62d5e",
+      "loop.jsonl:34 gate.scope @0d62d5e",
+      "loop.jsonl:35 gate.no-stubs @0d62d5e",
+      "loop.jsonl:36 setup ruling on gate.e2e-regression"
+    ],
+    "rules_covered": [
+      "DAG-1",
+      "NODE-1",
+      "TDD-1",
+      "RULE-3",
+      "DATA-8"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "DAG-1",
+        "severity": "P2",
+        "file": "src/web/app/explorer/plan/PlanGraph.tsx",
+        "line": 5,
+        "what": "PlanGraph has its own ruleHref without encodeURIComponent, beside the shared shell/ruleLinks.ts one. The 3f4c829 refactor merged three copies and missed this fourth.",
+        "why": "This is the code-quality rule of three: the copies change for the same reason, but this one builds the link differently from the shared helper. U7's carried acceptance line asks for one helper that encodes every rule link.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "DAG-1",
+        "severity": "P2",
+        "file": "src/web/app/explorer/plan/PlanGraph.tsx",
+        "line": 8,
+        "what": "statusOf draws a null status as 'pending' and any unknown status as 'in-progress', so the graph can show a status the plan file doesn't hold.",
+        "why": "HONEST-1 says no screen may show a status that isn't in the trail. DAG-1 says each node is coloured by its own status. NodeHeader and NodeTasks show an unknown status as written, marked as a warning. The graph should be consistent with them. The current plan files only use done, in_progress and pending, so nothing renders wrongly today.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "DAG-1",
+        "severity": "P2",
+        "file": "src/web/app/shell/Frame.tsx",
+        "line": 88,
+        "what": "The literal fallback `?? 'build'` points the nav's Plan link at a plan the trail may not hold. Overview.tsx:164 does the same with `plan?.id ?? 'build'`.",
+        "why": "react-web says a value the data doesn't hold renders as 'not built yet' or the empty state, never a default (HONEST-1). With no build plan in trace.json, these links lead to a missing plan. The Overview link sits right under its own NotBuiltYet. The investigator's A1/I2 side note flagged the same thing.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "NODE-1",
+        "severity": "P2",
+        "file": "src/web/compiler/plans.ts",
+        "line": 65,
+        "what": "NODE-1's compiler fields (pr, acceptance, tasks via flowMapping) came in 858783c with no Vitest red. The quoted-comma path, parsePatch and loadDiffs have no unit test.",
+        "why": "ui-requirements 'How it's built' says red means e2e plus compiler unit tests, with green layer by layer. Task t5 didn't name NODE-1, so this was never planned. The e2e pins the fixture's tasks, but no fixture task title contains a quoted comma, and every live ui.dag.yaml title does. This is P2, not P1: a test added now can't be red, so a fix round can't satisfy the finding-red gate. Carry it forward as characterisation tests.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R5",
+        "rule_id": "NODE-1",
+        "severity": "P2",
+        "file": "src/web/compiler/index.ts",
+        "line": 259,
+        "what": "nodes[*].qa is written into trace.json, but no TraceNode field or screen reads it. TraceTask.step is declared and never used.",
+        "why": "This is dead output from the code-quality slop list. The QA step belongs to a later node's region, so the field is speculative for U2.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Worktree: this session's cwd is .claude/worktrees/ui-U3. As the prompt directs, every file I read is under .claude/worktrees/ui-U2.",
+      "TDD order holds. Every node rule has an e2e red at t1 (36e6fe4, 702c1b7, 39809aa, d9fde69, 4f460bd) and compiler reds at t5 (364ecab, 0ceb78f, aa67a35, 60e29ee). All of them come before stub 0d639ef and greens f84e68e..701a1b0, and the refactor 3f4c829 comes after. gate.no-stubs at 0d62d5e finds no 'not implemented' in src/web.",
+      "Attempt-2 A1 test changes: I1 is stricter (it follows F5, which only the trail has, so it fails at the stub). I2 and I3 are retitled to '· reachable:' with their assertions unchanged. That is a reclassification, not a weakening. NODE-1 behaviour stays covered by the rules, acceptance, tasks, PR and depends-on tests, all of which failed at the stub.",
+      "t4 (U1 data-4 and parity) and 02038b9 (U0b parity), which the orchestrator asked me to judge: both are acceptable. The CANCEL-1 count is narrowed to U1's settled regions, but the loop that checks every chip's href still runs over all chips, U2's included. navCurrent goes through settledNav in the same way as navLinks and navNotBuilt. Neither change loosens what U1 or U0b settled.",
+      "gate.e2e-regression is ok:false at 0d62d5e, and the orchestrator ruled it an intended baseline change (loop.jsonl:36). I can't check from the packet that 'only the nav strip' differs. U2 also changes the content of U1's node, rule and commit screens (rules, tasks and diff regions), and plan and walkthrough have no baseline yet. The baselines for every affected screen must be committed and shown to David at pause 2. The packet diff has no docs/ui/baselines.",
+      "The stub gate after A1 (loop.jsonl:14) had 27 passes: 25 parity and 2 reachable, with no illegal pass. The final e2e was 80/80 and the unit suite 242/242.",
+      "Minor, not counted as findings: compiler/index.ts:217 still says loop events 'stay out of trace.json', but malformed loop lines now go into events (DATA-8). useDiffs keeps its request cache at module level, keyed by plan/node, not by snapshot."
+    ]
+  }
+}

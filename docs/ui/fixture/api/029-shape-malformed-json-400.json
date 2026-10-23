@@ -1,0 +1,79 @@
+{
+ "item": "SHAPE · malformed JSON → 400",
+ "folder": "F1 Sell / rule violations",
+ "rule": "SHAPE",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:46:02Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "52"
+   },
+   "requestBody": "{ \"reference\": \"F1-MVFJPL5Q5S\", \"type\": \"Household\",",
+   "status": 400,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:46:00 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+    "title": "One or more validation errors occurred.",
+    "status": 400,
+    "instance": "/policies",
+    "errors": {
+     "$": [
+      "Expected start of a property name or value, but instead reached end of data. Path: $ | LineNumber: 0 | BytePositionInLine: 51."
+     ],
+     "request": [
+      "The request field is required."
+     ]
+    },
+    "traceId": "00-8b524d82312926d060b71b3f560d812d-378b2e3acefbcca5-00"
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F1-MVFJPL5Q5S",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 404,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:46:01 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/get-1",
+    "title": "Policy not found",
+    "status": 404,
+    "detail": "No policy with reference 'F1-MVFJPL5Q5S'.",
+    "instance": "/policies/F1-MVFJPL5Q5S",
+    "traceId": "00-9a1f3c72d5afdfc18ddbbaf36bb5bd88-ad1a5f77db268a4f-00",
+    "ruleId": "GET-1",
+    "reference": "F1-MVFJPL5Q5S"
+   }
+  }
+ ]
+}

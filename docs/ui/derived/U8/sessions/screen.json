@@ -1,0 +1,68 @@
+{
+  "screen": "sessions",
+  "route": "/sessions/:file?",
+  "regions": [
+    {
+      "name": "snapshot timeline",
+      "req": [
+        "CTX-1"
+      ],
+      "components": [
+        "page-header",
+        "data-table",
+        "timestamp"
+      ],
+      "fields": [
+        "trace.json sessions[].file",
+        "trace.json sessions[].ts",
+        "trace.json sessions[].slug",
+        "trace.json sessions[].plan",
+        "trace.json sessions[].node",
+        "trace.json sessions[].status",
+        "trace.json sessions[].nextAction",
+        "fixture stamp ref, sha, utc"
+      ],
+      "built": true
+    },
+    {
+      "name": "one snapshot, open at its own URL (/sessions/:file)",
+      "req": [
+        "NAV-2"
+      ],
+      "components": [
+        "data-table",
+        "timestamp",
+        "markdown-text"
+      ],
+      "fields": [
+        "trace.json sessions[file=docs/context/20261019-151542-f6-done-merged.md].file",
+        "trace.json sessions[file=docs/context/20261019-151542-f6-done-merged.md].ts",
+        "trace.json sessions[file=docs/context/20261019-151542-f6-done-merged.md].slug",
+        "trace.json sessions[file=docs/context/20261019-151542-f6-done-merged.md].plan",
+        "trace.json sessions[file=docs/context/20261019-151542-f6-done-merged.md].node",
+        "trace.json sessions[file=docs/context/20261019-151542-f6-done-merged.md].status",
+        "trace.json sessions[file=docs/context/20261019-151542-f6-done-merged.md].nextAction"
+      ],
+      "built": false
+    }
+  ],
+  "states": [
+    {
+      "name": "populated",
+      "file": "populated.html",
+      "variant": "the fixture's sessions list as it stands; the open snapshot drawn is the last one, f6-done-merged. Snapshot bodies are not in the fixture, so the open view shows header fields and next action only."
+    }
+  ],
+  "actions": [
+    {
+      "label": "Read the latest hand-off, #18 f6-done-merged",
+      "kind": "link",
+      "to": "#open-snapshot"
+    },
+    {
+      "label": "Open a snapshot from its slug in the timeline",
+      "kind": "link",
+      "to": "/sessions/:file"
+    }
+  ]
+}

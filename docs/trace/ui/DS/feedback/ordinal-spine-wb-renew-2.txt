@@ -1,0 +1,23 @@
+screens: screens/wb-renew/populated.html: <div.kit-field__field> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/populated.html: <label.kit-field__label> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/populated.html: <div.kit-field__hint> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/populated.html: <div.kit-field__field> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/populated.html: <label.kit-field__label> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/populated.html: <div.kit-field__hint> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/populated.html: 433 wide at 390 light (horizontal overflow from app-shell · layout · 1440)
+screens: screens/wb-renew/populated.html: 433 wide at 390 dark (horizontal overflow from app-shell · layout · 1440)
+screens: screens/wb-renew/submitting.html: <div.kit-field__field> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/submitting.html: <label.kit-field__label> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/submitting.html: <div.kit-field__hint> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/submitting.html: <div.kit-field__field> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/submitting.html: <label.kit-field__label> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/submitting.html: <div.kit-field__hint> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/submitting.html: 433 wide at 390 light (horizontal overflow from app-shell · layout · 1440)
+screens: screens/wb-renew/submitting.html: 433 wide at 390 dark (horizontal overflow from app-shell · layout · 1440)
+screens: screens/wb-renew/api-error.html: <div.kit-field__field> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/api-error.html: <label.kit-field__label> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/api-error.html: <div.kit-field__hint> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/api-unreachable.html: <div.kit-field__field> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/api-unreachable.html: <label.kit-field__label> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/api-unreachable.html: <div.kit-field__hint> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/wb-renew/api-unreachable.html: "localhost:5080" is not in the fixture, the stylekit or the brief (HONEST-1)

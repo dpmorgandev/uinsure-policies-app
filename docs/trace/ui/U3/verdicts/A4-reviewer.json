@@ -1,0 +1,66 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T18:10:02Z",
+  "plan": "ui",
+  "node": "U3",
+  "attempt": 4,
+  "agent": "reviewer",
+  "agent_id": "a79ebe0cb7a8b0ce7",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U3",
+    "attempt": 4,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "61c63e995aa8593fab58bbd7acdd44c9be81192a",
+    "diff_fingerprint": "4dd13ff69b2478ad055d8911dc251cb6b932c3e4",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "loop.jsonl:70 gate.qa@8b95cd4",
+      "loop.jsonl:71 gate.red@a4935b5 (A3 finding-red, 6 fail: 5 unit, 1 e2e)",
+      "loop.jsonl:72 gate.typecheck@4ab971f",
+      "loop.jsonl:73 gate.lint@4ab971f",
+      "loop.jsonl:74 gate.lint-css@4ab971f",
+      "loop.jsonl:75 gate.test@4ab971f (300 passed)",
+      "loop.jsonl:76 gate.build@4ab971f",
+      "loop.jsonl:77 gate.e2e@4ab971f (109 passed)",
+      "loop.jsonl:78 gate.e2e-regression@4ab971f (ok:false, U3 only)",
+      "loop.jsonl:79-80 gate.audit, gate.audit-dev@4ab971f",
+      "loop.jsonl:81 gate.coverage@4ab971f",
+      "loop.jsonl:82 gate.scope@4ab971f",
+      "loop.jsonl:83 gate.no-stubs@4ab971f",
+      "loop.jsonl:84 gate.e2e-regression@4ab971f (all nodes, ruled set unchanged, 489 rule tests passed)"
+    ],
+    "rules_covered": [
+      "LOOP-1",
+      "LOOP-2",
+      "LOOP-3",
+      "DATA-2"
+    ],
+    "rules_missing": [
+      "LOOP-4"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "LOOP-4",
+        "severity": "P1",
+        "file": "src/web/compiler/plans.ts",
+        "line": 237,
+        "what": "splitRootCause treats a marker quoted in prose ('Symptom:', \"Cause:\") as a split point: U3's own A3 I1 and I2 show cause text under Symptom and Fix direction, and the quoted words are lost.",
+        "why": "The marker pattern /(Symptom|Cause|Fix direction)(\\s*\\([^)]*\\))?:/g has no anchor, so it matches every occurrence anywhere in the text, including quoted mentions. With the new join-in-order behaviour, each quoted mention moves the text that follows it into the field it names. The real trail shows it on this node's own round, docs/trace/ui/U3/findings/A3.md:13, the only round whose root_cause quotes a marker. In I1, the Cause field stops at \"long-content.html:33 says 'Where a sentence comes before the \\\"\". The rest of the cause (the long-content quote, the retry-ladder README critique, the p0-reconciled note) is appended to Symptom through the quoted \"Symptom:\" and 'Symptom:'. In I2, the quoted 'Fix direction:' makes the Fix direction field open with \"'. Real rounds also write qualified forms. docs/trace/ui/U3/findings/A2.md:14 has '\". The quoted 'Symptom (security S1, P2, verdict PASS):' sends the middle of the cause (\"An unmatched qualified marker is not a split point ... HONEST-1 forbids naming a gap ('no\") to Symptom, and the quoted 'Cause:' and \"Cause:\" words disappear from the text. That is R1's symptom from A3: cause text under the Symptom label, on a real trail, on a page that labels the text 'recorded' (DATA-2). The function's own doc comment (:232) says 'Every character lands in a field', which is false here. The tests can't see it. Every new fixture text uses markers only at sentence starts, and expectEveryWord's MARKER_NAME (loop-4.test.ts:170) strips every marker name wherever it appears, so a dropped quoted marker word passes. The A3/I1 fix direction asked that every character of the recorded root_cause end up in some field. Route: first a red test on a fixture root_cause that quotes a marker inside a sentence (for example \"Cause: it matches only 'Symptom:' and 'Cause:'. Fix direction: F1.\"), then the compiler fix. This is narrower than A3's R1 but the same defect on the node's own trail, so it blocks by the same bar.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "A3 route checked. I1 (preamble, repeated marker): plans.ts:240-247 keeps the preamble as the start of Symptom and joins repeated markers in order, as long-content.html:33 says. I2 (qualified marker): the optional '(…)' group splits 'Cause (kit):' and 'Symptom (security S1, P2, verdict PASS):', and the qualifier stays in the field text. All five new unit tests and the one new e2e test pass at 4ab971f (loop.jsonl:75, :77).",
+      "TDD order for the round holds. Red commits ed3f62d (Fixes-Finding A3/I1) and a4935b5 (A3/I2) come before the gate.red at a4935b5 (loop.jsonl:71, 6 fail), then the green 4ab971f carries both Fixes-Finding lines. activity.jsonl:905 shows the web-builder edited only src/web/compiler/plans.ts. The earlier LOOP-4 unit tests (loop-4.test.ts:29-158) are unchanged: their expected values still match the A3 citations. Every attempt-4 test change is an addition.",
+      "The retry-ladder README.md:32-35 now corrects the 'as the real rounds write it' claim, as A3/I1 asked.",
+      "R3 from A3 is closed. U7 acceptance now holds the carries at ui.dag.yaml:445-452: A2/I3, A2/I4, the pause-1 DATA-2 labels, t6's kit notes, A3 R2 and R4, and the commit-msg hook line.",
+      "A3/I2 asked the builder to record whether the upper-case forms (SYMPTOM:, FIX DIRECTION:) count as markers. No record of that decision is visible. Those texts are still kept whole as the cause, with nothing lost, so this doesn't block.",
+      "Process: gate.qa (loop.jsonl:70) recorded docs/qa/ui-U3.md at 8b95cd4, after a reviewer FAIL. web-testing says the QA script follows both PASS verdicts. The script should be checked again once LOOP-4 changes.",
+      "The full gate set was re-run at 4ab971f. gate.e2e-regression ok:false at :78 is U3's regression folder alone. The all-nodes run at :84 shows the same failures as the set ruled intended at 5fa2f55 (loop.jsonl:65), with no new screen."
+    ]
+  }
+}

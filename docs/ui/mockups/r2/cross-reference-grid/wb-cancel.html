@@ -1,0 +1,985 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quote and cancel · F3-MVEOSVDQJQ · cross-reference grid</title>
+<style>
+:root {
+  --bg: #f6f7f8;
+  --surface: #ffffff;
+  --border: #c9ced4;
+  --accent: #56b4e9;
+  --text: #16181b;
+  --text2: #4f565e;
+  --primary: #0072b2;
+  --error: #d55e00;
+  --success: #009e73;
+  --warn: #9a6400;
+}
+[data-theme="dark"] {
+  --bg: #15171a;
+  --surface: #1d2024;
+  --border: #363b42;
+  --accent: #0072b2;
+  --text: #e6e8eb;
+  --text2: #9aa2ab;
+  --primary: #56b4e9;
+  --error: #d55e00;
+  --success: #009e73;
+  --warn: #e69f00;
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 40px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 13px/1.4 "IBM Plex Sans", system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.mono, code, kbd, .chip, td.m, th.m, .money, input.date {
+  font-family: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: 12px;
+}
+a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.skip { position: absolute; left: -999px; top: 0; background: var(--surface); color: var(--text); padding: 4px 8px; }
+.skip:focus { left: 8px; top: 8px; z-index: 10; }
+svg.i { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vertical-align: -2px; flex: none; }
+
+/* frame */
+.page { max-width: 1440px; margin: 0 auto; padding: 0 16px 48px; }
+.hdr { border-bottom: 2px solid var(--text); padding: 10px 0 8px; }
+.crumbs ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 6px; font-size: 12px; color: var(--text2); }
+.crumbs li + li::before { content: "/"; margin-right: 6px; color: var(--text2); }
+.crumbs [aria-current] { color: var(--text); font-weight: 600; }
+.stamp { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 6px; font-size: 12px; color: var(--text2); }
+.stamp b { color: var(--text); font-weight: 600; }
+.eyebrow { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--text2); font-weight: 600; }
+.prov { display: inline-flex; gap: 4px; align-items: center; font-size: 11px; color: var(--text2); border: 1px solid var(--text2); padding: 0 5px; border-radius: 2px; text-transform: lowercase; }
+
+/* the answer */
+.answer { padding: 16px 0 14px; border-bottom: 1px solid var(--border); }
+.question { font-size: 13px; color: var(--text2); margin: 0 0 2px; }
+.answer h1 { margin: 4px 0 0; font-weight: 600; line-height: 1.1; }
+.answer h1 .rt { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; color: var(--text2); margin-bottom: 6px; }
+.answer h1 .big { display: block; font-size: 34px; letter-spacing: -.01em; }
+.answer .chain { font-size: 20px; margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.answer .chain .op { color: var(--text2); }
+.answer .who { margin: 8px 0 0; font-size: 14px; display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: center; }
+
+/* regions: ruled, not boxed */
+.region { border-bottom: 1px solid var(--border); padding: 14px 0 18px; }
+.region > h2 { font-size: 14px; margin: 0 0 8px; font-weight: 600; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+.region h3 { font-size: 12px; margin: 14px 0 4px; font-weight: 600; }
+.note { font-size: 12px; color: var(--text2); margin: 6px 0 0; }
+figure { margin: 0; }
+figcaption { font-size: 12px; color: var(--text2); padding: 0 0 4px; }
+
+/* tags: word + glyph, colour on the glyph only */
+.tag { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; color: var(--text); }
+.tag.pass svg { color: var(--success); }
+.tag.fail svg { color: var(--error); }
+.tag.warn svg { color: var(--warn); }
+.tag.pend svg { color: var(--text2); }
+.tag.nb { border: 1px dashed var(--text2); padding: 0 6px; color: var(--text2); font-weight: 500; }
+.chip { display: inline-block; border: 1px solid var(--text2); padding: 0 4px; border-radius: 2px; color: var(--text); text-decoration: none; white-space: nowrap; }
+a.chip:hover { text-decoration: underline; }
+a.chip:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+.money { font-weight: 600; white-space: nowrap; }
+.dash { border: 1px dashed var(--text2); color: var(--text2); padding: 0 6px; font-size: 11px; white-space: nowrap; display: inline-block; }
+
+/* tables */
+.scroll { overflow-x: auto; max-width: 100%; }
+table { border-collapse: collapse; width: 100%; min-width: 760px; }
+table.compact { min-width: 0; }
+caption { text-align: left; font-size: 12px; color: var(--text2); padding: 0 0 4px; caption-side: top; }
+th, td { text-align: left; vertical-align: top; padding: 3px 8px; border-bottom: 1px solid var(--border); font-weight: 400; }
+thead th { position: sticky; top: 0; background: var(--bg); z-index: 2; border-bottom: 2px solid var(--text); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--text2); font-weight: 600; white-space: nowrap; }
+tbody th[scope="row"], tbody th[scope="rowgroup"] { position: sticky; left: 0; background: var(--bg); z-index: 1; font-weight: 600; white-space: nowrap; border-right: 1px solid var(--border); }
+thead th:first-child { left: 0; z-index: 3; }
+th.grp, tr.grp th { background: var(--bg); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; color: var(--text2); font-weight: 600; border-bottom: 1px solid var(--text2); padding-top: 8px; }
+td.n, th.n { text-align: right; }
+tfoot th, tfoot td { border-top: 2px solid var(--text); border-bottom: 0; font-weight: 600; background: var(--bg); }
+tfoot tr + tr th, tfoot tr + tr td { border-top: 1px solid var(--border); }
+tfoot th[scope="row"] { position: sticky; left: 0; }
+.sort::after { content: " \2193 #"; text-transform: none; letter-spacing: 0; }
+td.gap { border: 1px dashed var(--text2); color: var(--text2); font-size: 11px; }
+
+/* crosshair: ruled lines, no fills */
+td.xc { border-left: 2px solid var(--primary); border-right: 2px solid var(--primary); }
+tr.xr > th, tr.xr > td { border-top: 2px solid var(--primary); border-bottom: 2px solid var(--primary); }
+td.focus { outline: 3px solid var(--primary); outline-offset: -3px; font-weight: 600; }
+tr.open > td { background: var(--surface); border-bottom: 2px solid var(--primary); padding: 8px 10px 10px; }
+tr.open dl { margin: 0; display: grid; grid-template-columns: max-content 1fr; gap: 2px 14px; }
+tr.open dt { color: var(--text2); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; padding-top: 1px; }
+tr.open dd { margin: 0; }
+.eq { margin: 6px 0 0; padding: 0; list-style: none; font-size: 12px; color: var(--text2); border-top: 1px solid var(--border); }
+.eq li { padding: 2px 0; border-bottom: 1px solid var(--border); }
+.eq b { color: var(--text); font-weight: 600; }
+
+/* fields */
+.field label { display: block; font-weight: 600; }
+.field .hint { color: var(--text2); font-size: 12px; }
+.field .err { display: flex; gap: 5px; align-items: flex-start; font-size: 12px; font-weight: 600; margin: 2px 0; }
+.field .err svg { color: var(--error); margin-top: 2px; }
+input.date { display: block; width: 14ch; padding: 4px 6px; background: var(--surface); color: var(--text); border: 1px solid var(--text2); border-radius: 2px; margin-top: 2px; }
+input.date[aria-invalid="true"] { border: 2px solid var(--error); }
+input.date[readonly] { border-style: dashed; }
+.lock { font-size: 11px; color: var(--text2); }
+
+/* buttons */
+.btn { font: inherit; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border: 1px solid var(--primary); background: transparent; color: var(--primary); border-radius: 2px; cursor: pointer; white-space: nowrap; }
+.btn.primary { background: var(--primary); color: var(--bg); }
+.btn.sec { border-color: var(--text2); color: var(--text); }
+.btn.danger { background: var(--primary); color: var(--bg); border-left: 6px solid var(--error); }
+.btn.f { outline: 2px solid var(--primary); outline-offset: 2px; }
+.btn[disabled] { background: transparent; border: 1px dashed var(--text2); color: var(--text2); cursor: not-allowed; }
+.btn[aria-busy="true"] { cursor: progress; }
+.btns { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* spinner: static glyph under reduced motion */
+.spinner { display: inline-grid; width: 14px; height: 14px; }
+.ring { width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: currentColor; border-radius: 50%; animation: spin 1s linear infinite; }
+.still { display: none; }
+.spinner.rm .ring { animation: none; display: none; }
+.spinner.rm .still { display: block; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .ring { animation: none; display: none; }
+  .still { display: block; }
+}
+
+/* problems rendered in place: ruled, not boxed */
+.summary { border-top: 2px solid var(--error); border-bottom: 1px solid var(--border); padding: 6px 0 8px; }
+.summary h4, .banner h4 { margin: 0 0 4px; font-size: 13px; display: flex; gap: 6px; align-items: center; }
+.summary h4 svg, .banner h4 svg { color: var(--error); }
+.summary ul { margin: 0; padding: 0; list-style: none; }
+.summary li { padding: 2px 0; }
+.banner { border-top: 2px solid var(--warn); border-bottom: 1px solid var(--border); padding: 6px 0 8px; }
+.banner h4 svg { color: var(--warn); }
+.banner dl { display: grid; grid-template-columns: max-content 1fr; gap: 2px 12px; margin: 4px 0 0; }
+.banner dt { color: var(--text2); font-size: 11px; text-transform: uppercase; letter-spacing: .04em; padding-top: 1px; }
+.banner dd { margin: 0; }
+.confirm { border-top: 2px solid var(--text); border-bottom: 1px solid var(--border); padding: 6px 0 10px; }
+.confirm h4 { margin: 0 0 4px; font-size: 13px; display: flex; gap: 6px; align-items: center; }
+.confirm h4 svg { color: var(--error); }
+
+/* state sheet */
+.states { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 0 28px; margin-top: 10px; }
+.state { border-top: 2px solid var(--text); padding: 6px 0 14px; min-width: 0; }
+.state > h3 { margin: 0 0 8px; font-size: 12px; display: flex; gap: 8px; align-items: baseline; }
+.state > h3 .eyebrow { color: var(--text); }
+.state.wide { grid-column: 1 / -1; }
+.sk { height: 9px; margin: 6px 0; background: repeating-linear-gradient(90deg, var(--border) 0 8px, transparent 8px 12px); }
+
+@media (max-width: 480px) {
+  .answer h1 .big { font-size: 26px; }
+  .answer .chain { font-size: 16px; }
+}
+</style>
+</head>
+<body data-screen-id="wb-cancel">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-circle-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#main">Skip to the grid</a>
+
+<div class="page">
+
+<!-- page-header -->
+<header class="hdr">
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <ol>
+      <li>Workbench</li>
+      <li>Policies</li>
+      <li class="mono">F3-MVEOSVDQJQ</li>
+      <li aria-current="page">Cancel</li>
+    </ol>
+  </nav>
+  <div class="stamp">
+    <span>route <b class="mono">/workbench/policies/:reference/cancel</b></span>
+    <span>reference <b class="mono">F3-MVEOSVDQJQ</b></span>
+    <span>quotedOn <b class="mono">2026-10-19</b></span>
+    <span>values from <b class="mono">docs/qa/build-F3.md</b> step <span class="mono">10</span>, <span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Passed</span></span>
+    <span class="prov">recorded</span>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- the answer -->
+<div class="answer">
+  <p class="question">Question: does the cancellation that was sent agree with the quote that was shown?</p>
+  <h1>
+    <span class="rt"><svg class="i" aria-hidden="true"><use href="#i-receipt"/></svg>Quote and cancel · <span class="mono">F3-MVEOSVDQJQ</span></span>
+    <span class="big"><span class="tag pass" style="font-size:inherit"><svg class="i" style="width:28px;height:28px" aria-hidden="true"><use href="#i-check"/></svg>Agree</span> · refund <span class="mono money" style="font-size:inherit">445.11</span> on <span class="mono" style="font-size:inherit">2027-01-27</span></span>
+  </h1>
+  <p class="chain">
+    <a class="chip" href="rule.html">CANCEL-1c</a>
+    <span class="mono"><span class="money">615.40</span> <span class="op">&times;</span> 264 <span class="op">&divide;</span> 365 <span class="op">=</span> <span class="money">445.11</span></span>
+    <span class="op">to</span> <span class="mono">DirectDebit</span>
+  </p>
+  <p class="who">
+    <span>7 agree · 0 differ · 2 not compared <span class="prov">counted from the compare grid, region 3</span></span>
+  </p>
+</div>
+
+<!-- REGION 1: cancellation date and quote -->
+<section class="region" data-req="WB-4" aria-labelledby="r1">
+  <h2 id="r1"><span class="eyebrow">Region 1</span> Cancellation date and quote</h2>
+
+  <figure class="sig">
+    <figcaption>Request fields by checks. Each check sits on the field it guards; the last column fills from the response.</figcaption>
+    <div class="scroll">
+    <table id="fieldgrid">
+      <caption>Field by check · sort: request order, quote then cancel · focused cell: quote, CANCEL-3, API said (open below)</caption>
+      <thead>
+        <tr>
+          <th scope="col" class="sort">Field</th>
+          <th scope="col">Your value</th>
+          <th scope="col">Constraint</th>
+          <th scope="col">Rule</th>
+          <th scope="col" class="xc-h">API said</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="grp"><th scope="colgroup" colspan="5">Quote · E4 · <span class="mono" style="text-transform:none">GET /policies/F3-MVEOSVDQJQ/cancellation-quote?cancellationDate=2027-01-27</span></th></tr>
+        <tr>
+          <th scope="rowgroup" rowspan="3"><label for="cd-q" class="mono">cancellationDate</label><br><span class="lock">query, required</span></th>
+          <td rowspan="3" class="field">
+            <span class="hint" id="cd-q-h">yyyy-MM-dd</span>
+            <input class="date" id="cd-q" name="cancellationDate" type="text" value="2027-01-27" aria-describedby="cd-q-h" autocomplete="off">
+          </td>
+          <td class="m">yyyy-MM-dd, required</td>
+          <td>shape</td>
+          <td class="xc"><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Passed</span> <span class="mono">200</span></td>
+        </tr>
+        <tr class="xr">
+          <td>today or later (UK today)</td>
+          <td><a class="chip" href="rule.html">CANCEL-3</a></td>
+          <td class="xc focus"><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Passed</span> <span class="mono">200</span></td>
+        </tr>
+        <tr class="open">
+          <td colspan="5">
+            <dl>
+              <dt>Cell</dt><dd>quote · CANCEL-3 · API said, opened in place</dd>
+              <dt>quotedOn</dt><dd class="mono">2026-10-19 <span class="lock">(the UK today CANCEL-3 was checked against)</span></dd>
+              <dt>cancellationDate</dt><dd class="mono">2027-01-27</dd>
+              <dt>ruleApplied</dt><dd><a class="chip" href="rule.html">CANCEL-1c</a></dd>
+              <dt>Clock</dt><dd>one request, one UK today: the date CANCEL-3 checks is the quotedOn it answers with <span class="prov">QA step 53</span></dd>
+              <dt>Further</dt><dd><a href="rule.html">Rule page CANCEL-3</a></dd>
+            </dl>
+          </td>
+        </tr>
+        <tr>
+          <td class="m">on or before the latest term's end</td>
+          <td><a class="chip" href="rule.html">CANCEL-7</a></td>
+          <td class="xc"><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Passed</span> <span class="mono">200</span></td>
+        </tr>
+
+        <tr class="grp"><th scope="colgroup" colspan="5">Cancel · E3 · <span class="mono" style="text-transform:none">POST /policies/F3-MVEOSVDQJQ/cancellation</span></th></tr>
+        <tr>
+          <th scope="rowgroup" rowspan="3"><label for="cd-c" class="mono">cancellationDate</label><br><span class="lock">body, optional</span></th>
+          <td rowspan="3" class="field">
+            <span class="hint" id="cd-c-h">locked to the quoted date</span>
+            <input class="date" id="cd-c" name="cancellationDate" type="text" value="2027-01-27" readonly aria-describedby="cd-c-h">
+          </td>
+          <td class="m">yyyy-MM-dd; empty body means UK today</td>
+          <td>shape</td>
+          <td class="xc"><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Passed</span> <span class="mono">201</span></td>
+        </tr>
+        <tr>
+          <td>no past dates</td>
+          <td><a class="chip" href="rule.html">CANCEL-3</a></td>
+          <td class="xc"><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Passed</span> <span class="mono">201</span></td>
+        </tr>
+        <tr>
+          <td>on or before the latest term's end</td>
+          <td><a class="chip" href="rule.html">CANCEL-7</a></td>
+          <td class="xc"><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Passed</span> <span class="mono">201</span></td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <th scope="row">Footing</th>
+          <td class="n mono">2 values</td>
+          <td class="n mono">6 checks</td>
+          <td class="mono">shape 2 · CANCEL-3 2 · CANCEL-7 2</td>
+          <td class="mono">6 passed · 0 failed · 0 not run</td>
+        </tr>
+        <tr>
+          <th scope="row" class="mono">violations[]</th>
+          <td colspan="4">no field path, so never placed on a field · none returned on 200 or 201</td>
+        </tr>
+      </tfoot>
+    </table>
+    </div>
+    <ul class="eq" aria-label="Text equivalent of the field by check grid">
+      <li><b>Quote</b> · cancellationDate 2027-01-27: shape, CANCEL-3, CANCEL-7 passed; 200; quotedOn 2026-10-19.</li>
+      <li><b>Cancel</b> · cancellationDate 2027-01-27: shape, CANCEL-3, CANCEL-7 passed; 201.</li>
+      <li><b>Footing</b> · 6 checks, 6 passed, 0 failed; violations[] none.</li>
+    </ul>
+  </figure>
+
+  <div class="states">
+    <div class="state">
+      <h3><span class="eyebrow">State: empty</span> no date typed, no quote yet</h3>
+      <div class="scroll">
+      <table class="compact">
+        <caption>Quote request before send</caption>
+        <thead><tr><th scope="col">Field</th><th scope="col">Your value</th><th scope="col">API said</th></tr></thead>
+        <tbody>
+          <tr>
+            <th scope="row"><label for="cd-e" class="mono">cancellationDate</label></th>
+            <td class="field"><span class="hint" id="cd-e-h">yyyy-MM-dd</span><input class="date" id="cd-e" name="cancellationDate" type="text" value="" placeholder="yyyy-MM-dd" aria-describedby="cd-e-h"></td>
+            <td><span class="tag pend"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span> <span class="dash">not sent</span></td>
+          </tr>
+        </tbody>
+        <tfoot><tr><th scope="row">Footing</th><td class="mono n">0 values</td><td class="mono">0 of 3 checks run</td></tr></tfoot>
+      </table>
+      </div>
+    </div>
+
+    <div class="state">
+      <h3><span class="eyebrow">State: date-input</span> four values the API has been observed to answer</h3>
+      <div class="scroll">
+      <table class="compact">
+        <caption>As rendered, in GOV.UK order: label, hint, error, input</caption>
+        <thead><tr><th scope="col">State</th><th scope="col">As rendered</th><th scope="col">Source</th></tr></thead>
+        <tbody>
+          <tr>
+            <th scope="row">empty</th>
+            <td class="field"><label for="di-1" class="mono">cancellationDate</label><span class="hint">yyyy-MM-dd</span><input class="date" id="di-1" type="text" value="" placeholder="yyyy-MM-dd"></td>
+            <td class="mono">&mdash;</td>
+          </tr>
+          <tr>
+            <th scope="row">filled</th>
+            <td class="field"><label for="di-2" class="mono">cancellationDate</label><span class="hint">yyyy-MM-dd</span><input class="date" id="di-2" type="text" value="2027-01-27"></td>
+            <td class="mono">QA 10</td>
+          </tr>
+          <tr>
+            <th scope="row">invalid format</th>
+            <td class="field"><label for="di-3" class="mono">cancellationDate</label><span class="hint" id="di-3-h">yyyy-MM-dd</span><span class="err" id="di-3-e"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>The cancellation date must be a date in the form yyyy-MM-dd.</span><input class="date" id="di-3" type="text" value="2027-02-30" aria-invalid="true" aria-describedby="di-3-h di-3-e"><span class="lock">18/11/2026 gets the same 400</span></td>
+            <td class="mono">QA 48</td>
+          </tr>
+          <tr>
+            <th scope="row">invalid by rule</th>
+            <td class="field"><label for="di-4" class="mono">cancellationDate</label><span class="hint" id="di-4-h">yyyy-MM-dd</span><span class="err" id="di-4-e"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg><a class="chip" href="rule.html">CANCEL-3</a> 422 · today 2026-10-19</span><input class="date" id="di-4" type="text" value="2026-10-18" aria-invalid="true" aria-describedby="di-4-h di-4-e"></td>
+            <td class="mono">QA 16</td>
+          </tr>
+        </tbody>
+        <tfoot><tr><th scope="row">Footing</th><td class="mono">4 states shown</td><td class="mono">3 QA steps</td></tr></tfoot>
+      </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGION 2: the refund as a worked sum -->
+<section class="region" data-req="WB-4" aria-labelledby="r2">
+  <h2 id="r2"><span class="eyebrow">Region 2</span> The refund as a worked sum, per term, with the rule applied</h2>
+
+  <div class="scroll">
+  <table>
+    <caption>Quote for 2027-01-27 · refund = amount &times; unusedDays &divide; daysInTerm · sort: term number</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="sort">Term</th>
+        <th scope="col">Rule applied</th>
+        <th scope="col" class="n">amount</th>
+        <th scope="col" class="n">&times; unusedDays</th>
+        <th scope="col" class="n">&divide; daysInTerm</th>
+        <th scope="col" class="n">= refundAmount</th>
+        <th scope="col" class="n">used days</th>
+        <th scope="col">In words</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row" class="mono">1</th>
+        <td><a class="chip" href="rule.html">CANCEL-1c</a></td>
+        <td class="n"><span class="money">615.40</span></td>
+        <td class="n m">264</td>
+        <td class="n m">365</td>
+        <td class="n"><span class="money">445.11</span></td>
+        <td class="n m">101</td>
+        <td>pro-rata for unused days · the cancellation day counts as used · <span class="mono">615.40 &times; 264 &divide; 365 = 445.1112&hellip;</span>, the API wrote <span class="mono">445.11</span></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row">Footing</th>
+        <td class="mono">1 rule</td>
+        <td></td><td></td><td></td>
+        <td class="n"><span class="mono">totalRefund</span> <span class="money">445.11</span></td>
+        <td></td>
+        <td>1 term · refund to <span class="mono">DirectDebit</span>, the method of the payment it reverses (CANCEL-2)</td>
+      </tr>
+    </tfoot>
+  </table>
+  </div>
+  <p class="note">The API's term line reads {1, CANCEL-1c, 365, 101, 264, 445.11}. The 101 is placed as used days by arithmetic (365 &minus; 264); the excerpt does not name its field.</p>
+
+  <div class="states">
+    <div class="state wide">
+      <h3><span class="eyebrow">State: variants</span> term lines observed in the QA trail</h3>
+      <div class="scroll">
+      <table>
+        <caption>refund-worked-sum variants · sort: rule</caption>
+        <thead>
+          <tr>
+            <th scope="col" class="sort">Variant</th>
+            <th scope="col">Source</th>
+            <th scope="col" class="n">amount</th>
+            <th scope="col" class="n">&times; unusedDays</th>
+            <th scope="col" class="n">&divide; daysInTerm</th>
+            <th scope="col" class="n">= refundAmount</th>
+            <th scope="col">In words</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row"><a class="chip" href="rule.html">CANCEL-1a</a></th>
+            <td colspan="6" class="gap">no term line in the excerpt</td>
+          </tr>
+          <tr>
+            <th scope="row"><a class="chip" href="rule.html">CANCEL-1b</a></th>
+            <td class="mono">QA 42 · QA-F3-TWICE</td>
+            <td class="n"><span class="dash">not in excerpt</span></td>
+            <td class="n m">364</td>
+            <td class="n m">365</td>
+            <td class="n"><span class="money">401.20</span></td>
+            <td>full refund, inside the 14-day cooling-off (1 day used)</td>
+          </tr>
+          <tr>
+            <th scope="row"><a class="chip" href="rule.html">CANCEL-1c</a></th>
+            <td class="mono">QA 11 · F3-MVEOSVIKSN</td>
+            <td class="n"><span class="money">384.26</span></td>
+            <td class="n m">342</td>
+            <td class="n m">365</td>
+            <td class="n"><span class="money">360.05</span></td>
+            <td>pro-rata, 23 days used</td>
+          </tr>
+          <tr>
+            <th scope="row"><a class="chip" href="rule.html">COULD-2</a></th>
+            <td class="mono">QA 14 · F3-MVEOT2SE08</td>
+            <td class="n"><span class="money">476.25</span></td>
+            <td class="n m">361</td>
+            <td class="n m">365</td>
+            <td class="n"><span class="money">0.00</span></td>
+            <td>a claim is recorded: &pound;0 refund overrides CANCEL-1a and CANCEL-1b</td>
+          </tr>
+          <tr>
+            <th scope="row" class="mono">UNPAID-TERM</th>
+            <td colspan="6" class="gap">no term line in the excerpt</td>
+          </tr>
+          <tr>
+            <th scope="row">several terms</th>
+            <td colspan="6" class="gap">no multi-term quote in the excerpt</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th scope="row">Footing</th>
+            <td class="mono">3 of 5 variants observed</td>
+            <td></td><td></td><td></td>
+            <td class="mono n">3 refunds</td>
+            <td>several terms: 0 observed</td>
+          </tr>
+        </tfoot>
+      </table>
+      </div>
+    </div>
+
+    <div class="state">
+      <h3><span class="eyebrow">State: empty</span> no quote yet</h3>
+      <div class="scroll">
+      <table class="compact">
+        <caption>Worked sum before a quote</caption>
+        <thead><tr><th scope="col">Term</th><th scope="col">Rule applied</th><th scope="col" class="n">= refundAmount</th></tr></thead>
+        <tbody><tr><th scope="row" class="mono">&mdash;</th><td colspan="2" class="gap">no quote yet: nothing to sum. Type a date, then Quote.</td></tr></tbody>
+        <tfoot><tr><th scope="row">Footing</th><td class="mono">0 rules</td><td class="mono n">0 terms</td></tr></tfoot>
+      </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGION 3: cancel with the quoted date, then compare -->
+<section class="region" data-req="WB-4" aria-labelledby="r3">
+  <h2 id="r3"><span class="eyebrow">Region 3</span> Cancel with the quoted date, then quote and cancellation compared</h2>
+
+  <div class="scroll">
+  <table>
+    <caption>Quote (E4) beside the cancellation (E3) it led to · sort: response order</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="sort">Field</th>
+        <th scope="col">Quote · 200 · quotedOn 2026-10-19</th>
+        <th scope="col">Cancellation · 201</th>
+        <th scope="col">Compared</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row" class="m">cancellationDate</th>
+        <td class="m">2027-01-27</td><td class="m">2027-01-27</td>
+        <td><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Agree</span></td>
+      </tr>
+      <tr>
+        <th scope="row" class="m">ruleApplied</th>
+        <td><a class="chip" href="rule.html">CANCEL-1c</a></td><td><a class="chip" href="rule.html">CANCEL-1c</a></td>
+        <td><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Agree</span></td>
+      </tr>
+      <tr>
+        <th scope="row" class="m">terms</th>
+        <td class="m">{1, CANCEL-1c, 365, 101, 264, 445.11}</td><td class="m">{1, CANCEL-1c, 365, 101, 264, 445.11}</td>
+        <td><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Agree</span></td>
+      </tr>
+      <tr>
+        <th scope="row" class="m">totalRefund</th>
+        <td><span class="money">445.11</span></td><td><span class="money">445.11</span></td>
+        <td><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Agree</span></td>
+      </tr>
+      <tr>
+        <th scope="row" class="m">refunds[0] method</th>
+        <td class="m">DirectDebit</td><td class="m">DirectDebit</td>
+        <td><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Agree</span></td>
+      </tr>
+      <tr>
+        <th scope="row" class="m">refunds[0] amount</th>
+        <td><span class="money">445.11</span></td><td><span class="money">445.11</span></td>
+        <td><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Agree</span></td>
+      </tr>
+      <tr>
+        <th scope="row" class="m">refunds[0] payment ref</th>
+        <td class="m">PAY-7f24722e&hellip;</td><td class="m">PAY-7f24722e&hellip; (same PAY-)</td>
+        <td><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Agree</span></td>
+      </tr>
+      <tr>
+        <th scope="row" class="m">refunds[0] reference</th>
+        <td class="gap">the quote has none</td><td class="m">REF-c1b44418&hellip;</td>
+        <td><span class="tag nb">not compared</span></td>
+      </tr>
+      <tr>
+        <th scope="row" class="m">quotedOn</th>
+        <td class="m">2026-10-19</td><td class="gap">the cancellation has none</td>
+        <td><span class="tag nb">not compared</span></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row">Footing</th>
+        <td class="mono">9 fields</td>
+        <td class="mono">&nbsp;</td>
+        <td class="mono">7 agree · 0 differ · 2 not compared</td>
+      </tr>
+    </tfoot>
+  </table>
+  </div>
+
+  <div class="states">
+    <div class="state">
+      <h3><span class="eyebrow">State: confirm-dialog open</span> names exactly what will happen</h3>
+      <div class="confirm" role="alertdialog" aria-labelledby="cf1">
+        <h4 id="cf1"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg>Cancel F3-MVEOSVDQJQ on 2027-01-27</h4>
+        <div class="mono">refund <span class="money">445.11</span> to DirectDebit · <a class="chip" href="rule.html">CANCEL-1c</a></div>
+        <div class="btns" style="margin-top:8px">
+          <button class="btn danger" type="button"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg>Cancel policy on 2027-01-27</button>
+          <button class="btn sec" type="button">Keep policy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="state">
+      <h3><span class="eyebrow">State: confirm-dialog submitting</span> request running</h3>
+      <div class="confirm" role="alertdialog" aria-labelledby="cf2">
+        <h4 id="cf2"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg>Cancel F3-MVEOSVDQJQ on 2027-01-27</h4>
+        <div class="mono">refund <span class="money">445.11</span> to DirectDebit · <a class="chip" href="rule.html">CANCEL-1c</a></div>
+        <div class="btns" style="margin-top:8px">
+          <button class="btn danger" type="button" disabled aria-busy="true" aria-disabled="true"><span class="spinner" aria-hidden="true"><span class="ring"></span><svg class="i still" aria-hidden="true"><use href="#i-clock"/></svg></span>Cancelling&hellip;</button>
+          <button class="btn sec" type="button" disabled aria-disabled="true">Keep policy</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="state">
+      <h3><span class="eyebrow">State: compare, differ</span> layout only, no differing pair was observed</h3>
+      <div class="scroll">
+      <table class="compact">
+        <caption>Placeholder slots, not data</caption>
+        <thead><tr><th scope="col">Field</th><th scope="col">Quote</th><th scope="col">Cancellation</th><th scope="col">Compared</th></tr></thead>
+        <tbody>
+          <tr>
+            <th scope="row" class="m">totalRefund</th>
+            <td class="gap">(quote value)</td><td class="gap">(cancellation value)</td>
+            <td><span class="tag fail"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>Differ</span></td>
+          </tr>
+        </tbody>
+        <tfoot><tr><th scope="row">Footing</th><td></td><td></td><td class="mono">0 observed</td></tr></tfoot>
+      </table>
+      </div>
+    </div>
+
+    <div class="state">
+      <h3><span class="eyebrow">State: empty</span> nothing quoted, nothing cancelled</h3>
+      <div class="scroll">
+      <table class="compact">
+        <caption>Compare before any request</caption>
+        <thead><tr><th scope="col">Field</th><th scope="col">Quote</th><th scope="col">Cancellation</th></tr></thead>
+        <tbody><tr><th scope="row" class="m">&mdash;</th><td class="gap">no quote yet</td><td class="gap">not cancelled</td></tr></tbody>
+        <tfoot><tr><th scope="row">Footing</th><td class="mono" colspan="2">0 fields compared</td></tr></tfoot>
+      </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGION 4: problems -->
+<section class="region" data-req="WB-3" aria-labelledby="r4">
+  <h2 id="r4"><span class="eyebrow">Region 4</span> Problems <span class="mono">CANCEL-3 · CANCEL-4 · CANCEL-7</span></h2>
+
+  <div class="scroll">
+  <table>
+    <caption>Server answers against the field they land on · sort: HTTP status, then rule</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="sort">Status</th>
+        <th scope="col">Problem</th>
+        <th scope="col">Rule</th>
+        <th scope="col">Sent</th>
+        <th scope="col">Extension or key</th>
+        <th scope="col">Lands on</th>
+        <th scope="col">Source</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row"><span class="tag fail"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>Rejected</span> <span class="mono">400</span></th>
+        <td>date missing</td>
+        <td>shape</td>
+        <td class="m">no query string</td>
+        <td class="m">errors.cancellationDate: "The cancellationDate field is required."</td>
+        <td>field <span class="mono">cancellationDate</span></td>
+        <td class="mono">QA 22 · F3-MVEOTHRWL1</td>
+      </tr>
+      <tr>
+        <th scope="row"><span class="tag fail"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>Rejected</span> <span class="mono">400</span></th>
+        <td>not a date in yyyy-MM-dd</td>
+        <td>shape</td>
+        <td class="m">2027-02-30</td>
+        <td class="m">errors.cancellationDate: "The cancellation date must be a date in the form yyyy-MM-dd."</td>
+        <td>field <span class="mono">cancellationDate</span></td>
+        <td class="mono">QA 48 · QA-F3-SHAPE</td>
+      </tr>
+      <tr>
+        <th scope="row"><span class="tag fail"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>Rejected</span> <span class="mono">400</span></th>
+        <td>unknown query parameter</td>
+        <td>shape</td>
+        <td class="m">cancelationDate=2026-11-18</td>
+        <td class="m">errors.cancelationDate: "Unknown query parameter."</td>
+        <td>no field has this key: listed, not placed</td>
+        <td class="mono">QA 23 · F3-MVEOTHVE7U</td>
+      </tr>
+      <tr>
+        <th scope="row"><span class="tag warn"><svg class="i" aria-hidden="true"><use href="#i-alert"/></svg>Conflict</span> <span class="mono">409</span></th>
+        <td>Policy already cancelled</td>
+        <td><a class="chip" href="rule.html">CANCEL-4</a></td>
+        <td class="m">2026-11-28</td>
+        <td class="m">cancellationDate 2026-11-18</td>
+        <td>problem banner (record level)</td>
+        <td class="mono">QA 18 · F3-MVEOTAWL4W</td>
+      </tr>
+      <tr>
+        <th scope="row"><span class="tag fail"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>Rejected</span> <span class="mono">422</span></th>
+        <td>Cancellation date in the past</td>
+        <td><a class="chip" href="rule.html">CANCEL-3</a></td>
+        <td class="m">2026-10-18</td>
+        <td class="m">today 2026-10-19</td>
+        <td>field <span class="mono">cancellationDate</span></td>
+        <td class="mono">QA 16 · F3-MVEOTAONJW</td>
+      </tr>
+      <tr>
+        <th scope="row"><span class="tag fail"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>Rejected</span> <span class="mono">422</span></th>
+        <td>Cancellation date after the end of cover</td>
+        <td><a class="chip" href="rule.html">CANCEL-7</a></td>
+        <td class="m">2027-11-10</td>
+        <td class="m">latestEndDate 2027-11-09</td>
+        <td>field <span class="mono">cancellationDate</span></td>
+        <td class="mono">QA 21 · F3-MVEOTHOTP7</td>
+      </tr>
+      <tr>
+        <th scope="row"><span class="mono">422 multi</span></th>
+        <td colspan="6" class="gap">no multi-rule 422 on cancel in the excerpt: violations[] would be listed in the summary, not placed on a field</td>
+      </tr>
+      <tr>
+        <th scope="row"><span class="mono">404 · 429 · 500 · unreachable</span></th>
+        <td colspan="6" class="gap">no observed response in the excerpt</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row" class="mono">400 &times;3 · 409 &times;1 · 422 &times;2</th>
+        <td class="mono">6 observed</td>
+        <td class="mono">CANCEL-3 1 · CANCEL-4 1 · CANCEL-7 1 · shape 3</td>
+        <td></td><td></td>
+        <td class="mono">field 4 · banner 1 · listed 1</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+  </div>
+  <p class="note">CANCEL-4 answers before CANCEL-3: a second cancel dated 2026-10-18 is a 409, not a 422 <span class="prov">QA 42, 43, 60</span></p>
+
+  <div class="states">
+    <div class="state">
+      <h3><span class="eyebrow">State: api-error</span> error-summary, 422 single</h3>
+      <div class="summary" role="alert" tabindex="-1" aria-labelledby="es1">
+        <h4 id="es1"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg>1 problem</h4>
+        <ul>
+          <li><a href="#cd-q" class="mono">cancellationDate</a> 2026-10-18: Cancellation date in the past · <a class="chip" href="rule.html">CANCEL-3</a> · <span class="mono">today 2026-10-19</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="state">
+      <h3><span class="eyebrow">State: api-error</span> error-summary, 422 single, CANCEL-7</h3>
+      <div class="summary" role="alert" tabindex="-1" aria-labelledby="es2">
+        <h4 id="es2"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg>1 problem</h4>
+        <ul>
+          <li><a href="#cd-q" class="mono">cancellationDate</a> 2027-11-10: Cancellation date after the end of cover · <a class="chip" href="rule.html">CANCEL-7</a> · <span class="mono">latestEndDate 2027-11-09</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="state">
+      <h3><span class="eyebrow">State: api-error</span> error-summary, 400 field keys</h3>
+      <div class="summary" role="alert" tabindex="-1" aria-labelledby="es3">
+        <h4 id="es3"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg>1 problem</h4>
+        <ul>
+          <li><a href="#cd-q" class="mono">cancellationDate</a>: The cancellation date must be a date in the form yyyy-MM-dd.</li>
+        </ul>
+      </div>
+      <p class="note">Several keys in one 400: none observed.</p>
+    </div>
+
+    <div class="state">
+      <h3><span class="eyebrow">State: api-error</span> error-summary, key matches no field</h3>
+      <div class="summary" role="alert" tabindex="-1" aria-labelledby="es4">
+        <h4 id="es4"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg>1 problem</h4>
+        <ul>
+          <li><span class="mono">cancelationDate</span>: Unknown query parameter. <span class="dash">listed, not placed</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="state wide">
+      <h3><span class="eyebrow">State: api-error</span> problem-banner, 409 CANCEL-4</h3>
+      <div class="banner" role="alert" aria-labelledby="pb1">
+        <h4 id="pb1"><svg class="i" aria-hidden="true"><use href="#i-alert"/></svg>Policy already cancelled <span class="mono">409</span></h4>
+        <dl>
+          <dt>detail</dt><dd>The policy was already cancelled on 2026-11-18.</dd>
+          <dt>rule</dt><dd><a class="chip" href="rule.html">CANCEL-4</a></dd>
+          <dt>extension</dt><dd class="mono">cancellationDate 2026-11-18</dd>
+          <dt>you sent</dt><dd class="mono">2026-11-28</dd>
+          <dt>instance</dt><dd class="mono">/policies/F3-MVEOTAWL4W/cancellation</dd>
+        </dl>
+      </div>
+      <p class="note">unreachable: no status and no body in the excerpt, so no text is shown.</p>
+    </div>
+  </div>
+</section>
+
+<!-- REGION 5: inspector -->
+<section class="region" data-req="WB-7" aria-labelledby="r5">
+  <h2 id="r5"><span class="eyebrow">Region 5</span> The requests as sent <span class="prov">inspector, docked as a grid</span></h2>
+
+  <div class="scroll">
+  <table>
+    <caption>Requests in the order sent · state: open, two requests</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="sort">#</th>
+        <th scope="col">Method</th>
+        <th scope="col">Request</th>
+        <th scope="col">Status</th>
+        <th scope="col">Sent</th>
+        <th scope="col">Response</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row" class="mono">1</th>
+        <td class="m">GET</td>
+        <td class="m">/policies/F3-MVEOSVDQJQ/cancellation-quote?cancellationDate=2027-01-27</td>
+        <td><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>OK</span> <span class="mono">200</span></td>
+        <td>no body</td>
+        <td class="m">quotedOn 2026-10-19 · cancellationDate 2027-01-27 · ruleApplied CANCEL-1c · totalRefund 445.11 · terms [{1, CANCEL-1c, 365, 101, 264, 445.11}] · refunds [{DirectDebit, 445.11, PAY-7f24722e&hellip;}], no reference</td>
+      </tr>
+      <tr>
+        <th scope="row" class="mono">2</th>
+        <td class="m">POST</td>
+        <td class="m">/policies/F3-MVEOSVDQJQ/cancellation</td>
+        <td><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Created</span> <span class="mono">201</span></td>
+        <td class="m">cancellationDate 2027-01-27</td>
+        <td class="m">cancellationDate 2027-01-27 · ruleApplied CANCEL-1c · totalRefund 445.11 · terms [{1, CANCEL-1c, 365, 101, 264, 445.11}] · refunds [{REF-c1b44418&hellip;, DirectDebit, 445.11, PAY-7f24722e&hellip;}] · no quotedOn · no Location header</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row" class="mono">2</th>
+        <td class="mono" colspan="2">requests</td>
+        <td class="mono">200 &times;1 · 201 &times;1</td>
+        <td></td>
+        <td class="mono">0 problems</td>
+      </tr>
+    </tfoot>
+  </table>
+  </div>
+  <p class="note">The body of request 2 is the cancellationDate of QA step 10; the term lines are written positionally, as the QA record writes them.</p>
+
+  <div class="states">
+    <div class="state">
+      <h3><span class="eyebrow">State: closed</span></h3>
+      <div class="btns">
+        <button class="btn sec" type="button" aria-expanded="false"><svg class="i" aria-hidden="true"><use href="#i-receipt"/></svg>Requests as sent</button>
+        <span class="mono">2</span>
+      </div>
+    </div>
+
+    <div class="state">
+      <h3><span class="eyebrow">State: one request</span></h3>
+      <div class="scroll">
+      <table class="compact">
+        <caption>After the quote, before the cancel</caption>
+        <thead><tr><th scope="col">#</th><th scope="col">Method</th><th scope="col">Status</th></tr></thead>
+        <tbody><tr><th scope="row" class="mono">1</th><td class="m">GET quote</td><td><span class="tag pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>OK</span> <span class="mono">200</span></td></tr></tbody>
+        <tfoot><tr><th scope="row" class="mono">1</th><td class="mono">request</td><td class="mono">0 problems</td></tr></tfoot>
+      </table>
+      </div>
+    </div>
+
+    <div class="state wide">
+      <h3><span class="eyebrow">State: problem</span> the 409 as sent</h3>
+      <div class="scroll">
+      <table>
+        <caption>Cancel on a policy already cancelled</caption>
+        <thead><tr><th scope="col">#</th><th scope="col">Method</th><th scope="col">Request</th><th scope="col">Status</th><th scope="col">Sent</th><th scope="col">Response</th></tr></thead>
+        <tbody>
+          <tr>
+            <th scope="row" class="mono">2</th>
+            <td class="m">POST</td>
+            <td class="m">/policies/F3-MVEOTAWL4W/cancellation</td>
+            <td><span class="tag warn"><svg class="i" aria-hidden="true"><use href="#i-alert"/></svg>Conflict</span> <span class="mono">409</span></td>
+            <td class="m">cancellationDate 2026-11-28</td>
+            <td class="m">type /problems/cancel-4 · title "Policy already cancelled" · instance /policies/F3-MVEOTAWL4W/cancellation · ruleId CANCEL-4 · cancellationDate 2026-11-18 · detail "The policy was already cancelled on 2026-11-18." · traceId <span class="dash">value not in excerpt</span> · no violations</td>
+          </tr>
+        </tbody>
+        <tfoot><tr><th scope="row" class="mono">1</th><td class="mono" colspan="2">request</td><td class="mono">409 &times;1</td><td></td><td class="mono">1 problem</td></tr></tfoot>
+      </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REGION 6: actions, busy while the request runs -->
+<section class="region" data-req="BUSY-1" aria-labelledby="r6">
+  <h2 id="r6"><span class="eyebrow">Region 6</span> Quote and cancel actions, each busy while its request runs</h2>
+
+  <div class="scroll">
+  <table>
+    <caption>Action by state · busy buttons are disabled, say what is happening and cannot fire twice</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="sort">Action</th>
+        <th scope="col">Idle</th>
+        <th scope="col">Focus</th>
+        <th scope="col">Busy</th>
+        <th scope="col">Disabled</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">Quote<br><span class="lock">primary, no quote yet</span></th>
+        <td><button class="btn primary" type="button"><svg class="i" aria-hidden="true"><use href="#i-receipt"/></svg>Quote</button></td>
+        <td><button class="btn primary f" type="button"><svg class="i" aria-hidden="true"><use href="#i-receipt"/></svg>Quote</button></td>
+        <td><button class="btn primary" type="button" disabled aria-busy="true" aria-disabled="true"><span class="spinner" aria-hidden="true"><span class="ring"></span><svg class="i still" aria-hidden="true"><use href="#i-clock"/></svg></span>Quoting&hellip;</button></td>
+        <td><button class="btn primary" type="button" disabled aria-disabled="true"><svg class="i" aria-hidden="true"><use href="#i-receipt"/></svg>Quote</button> <span class="lock">no date typed</span></td>
+      </tr>
+      <tr>
+        <th scope="row">Quote<br><span class="lock">secondary, a quote exists</span></th>
+        <td><button class="btn sec" type="button"><svg class="i" aria-hidden="true"><use href="#i-receipt"/></svg>Quote</button></td>
+        <td><button class="btn sec f" type="button"><svg class="i" aria-hidden="true"><use href="#i-receipt"/></svg>Quote</button></td>
+        <td><button class="btn sec" type="button" disabled aria-busy="true" aria-disabled="true"><span class="spinner" aria-hidden="true"><span class="ring"></span><svg class="i still" aria-hidden="true"><use href="#i-clock"/></svg></span>Quoting&hellip;</button></td>
+        <td><button class="btn sec" type="button" disabled aria-disabled="true"><svg class="i" aria-hidden="true"><use href="#i-receipt"/></svg>Quote</button> <span class="lock">other request running</span></td>
+      </tr>
+      <tr>
+        <th scope="row">Cancel<br><span class="lock">destructive, opens the confirm</span></th>
+        <td><button class="btn danger" type="button"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg>Cancel on 2027-01-27</button></td>
+        <td><button class="btn danger f" type="button"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg>Cancel on 2027-01-27</button></td>
+        <td><button class="btn danger" type="button" disabled aria-busy="true" aria-disabled="true"><span class="spinner" aria-hidden="true"><span class="ring"></span><svg class="i still" aria-hidden="true"><use href="#i-clock"/></svg></span>Cancelling&hellip;</button></td>
+        <td><button class="btn danger" type="button" disabled aria-disabled="true"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg>Cancel on quoted date</button> <span class="lock">no quote yet</span></td>
+      </tr>
+      <tr>
+        <th scope="row">Grid cell<br><span class="lock">API said, while busy</span></th>
+        <td colspan="2" class="gap">the last answer stays until a new one lands</td>
+        <td><span class="tag pend"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span> <span class="dash">request running</span></td>
+        <td class="gap">&mdash;</td>
+      </tr>
+      <tr>
+        <th scope="row">Spinner<br><span class="lock">reduced motion</span></th>
+        <td colspan="2" class="gap">a static busy glyph replaces the rotation</td>
+        <td><button class="btn sec" type="button" disabled aria-busy="true" aria-disabled="true"><span class="spinner rm" aria-hidden="true"><span class="ring"></span><svg class="i still" aria-hidden="true"><use href="#i-clock"/></svg></span>Quoting&hellip;</button></td>
+        <td class="gap">the label changes too</td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr>
+        <th scope="row">Footing</th>
+        <td class="mono">3 buttons</td>
+        <td class="mono">3 buttons</td>
+        <td class="mono">4 buttons</td>
+        <td class="mono">3 buttons</td>
+      </tr>
+    </tfoot>
+  </table>
+  </div>
+
+  <div class="states">
+    <div class="state">
+      <h3><span class="eyebrow">State: submitting</span> quote request running</h3>
+      <div class="btns">
+        <button class="btn sec" type="button" disabled aria-busy="true" aria-disabled="true"><span class="spinner" aria-hidden="true"><span class="ring"></span><svg class="i still" aria-hidden="true"><use href="#i-clock"/></svg></span>Quoting&hellip;</button>
+        <button class="btn danger" type="button" disabled aria-disabled="true"><svg class="i" aria-hidden="true"><use href="#i-circle-alert"/></svg>Cancel on 2027-01-27</button>
+      </div>
+      <p class="note">API said: <span class="tag pend"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></p>
+    </div>
+    <div class="state">
+      <h3><span class="eyebrow">State: loading</span> static skeleton, no shimmer</h3>
+      <div class="sk" style="width:80%"></div>
+      <div class="sk" style="width:60%"></div>
+      <div class="sk" style="width:40%"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,165 @@
+{
+  "screen": "rule",
+  "route": "/rules/:ruleId",
+  "regions": [
+    {
+      "name": "rule text and agreed interpretation",
+      "req": ["RULE-1"],
+      "components": ["breadcrumbs", "page-header", "rule-chip", "provenance-label", "status-tag", "not-built-yet", "spinner"],
+      "fields": [
+        "rules[id=:ruleId].id",
+        "rules[id=:ruleId].title",
+        "rules[id=:ruleId].feature",
+        "rules[id=:ruleId].priority",
+        "rules[id=:ruleId].interpretation",
+        "rules[id=:ruleId].source.file",
+        "rules[id=:ruleId].source.line",
+        "rules[id=:ruleId].matrix.plan",
+        "rules[id=:ruleId].matrix.node",
+        "rules[id=:ruleId].matrix.tests.pass",
+        "rules[id=:ruleId].matrix.tests.total",
+        "rules[id=:ruleId].matrix.pr",
+        "rules[id=:ruleId].matrix.signoff",
+        "stamp.ref",
+        "stamp.sha",
+        "stamp.utc"
+      ]
+    },
+    {
+      "name": "signature: red-before-green evidence (custody chain / TDD ticks / chronology, per style)",
+      "req": ["RULE-2"],
+      "components": ["rule-evidence", "rung-spine", "sha-link", "status-tag", "not-built-yet", "spinner"],
+      "fields": [
+        "commits[plan=build][node=F2][rule=GET-1].order",
+        "commits[plan=build][node=F2][rule=GET-1].short",
+        "commits[plan=build][node=F2][rule=GET-1].sha",
+        "commits[plan=build][node=F2][rule=GET-1].tdd",
+        "commits[plan=build][node=F2][rule=GET-1].agent",
+        "commits[plan=build][node=F2][rule=GET-1].subject",
+        "commits[plan=build][node=F2][rule=GET-1].fixesFinding[].raw",
+        "rules[id=:ruleId].matrix.red",
+        "rules[id=:ruleId].matrix.green",
+        "rules[id=:ruleId].matrix.refactor",
+        "events[plan=build][node=F2][kind=gate].attempt",
+        "events[plan=build][node=F2][kind=gate].event",
+        "events[plan=build][node=F2][kind=gate].exit",
+        "events[plan=build][node=F2][kind=gate].expect",
+        "events[plan=build][node=F2][kind=gate].ok",
+        "events[plan=build][node=F2][kind=gate].head",
+        "events[plan=build][node=F2][kind=gate].detail",
+        "verdicts[node=F2].round",
+        "verdicts[node=F2].agent",
+        "verdicts[node=F2].verdict",
+        "verdicts[node=F2].head",
+        "verdicts[node=F2].rulesCovered",
+        "decisions[plan=build][node=F2].kind",
+        "decisions[plan=build][node=F2].when",
+        "decisions[plan=build][node=F2].what",
+        "decisions[plan=build][node=F2].sha"
+      ]
+    },
+    {
+      "name": "tests (count and scope)",
+      "req": ["RULE-1"],
+      "components": ["status-tag", "provenance-label", "not-built-yet", "spinner"],
+      "fields": [
+        "rules[id=:ruleId].matrix.tests.pass",
+        "rules[id=:ruleId].matrix.tests.total",
+        "rules[id=:ruleId].matrix.source.file",
+        "rules[id=:ruleId].matrix.source.line",
+        "events[plan=build][node=F2][kind=gate].gate",
+        "events[plan=build][node=F2][kind=gate].attempt",
+        "events[plan=build][node=F2][kind=gate].detail"
+      ]
+    },
+    {
+      "name": "QA step and sign-off",
+      "req": ["RULE-1", "HITL-1"],
+      "components": ["key-value-list", "status-tag", "sha-link", "provenance-label", "not-built-yet", "spinner"],
+      "fields": [
+        "rules[id=:ruleId].matrix.qaStep",
+        "rules[id=:ruleId].matrix.signoff",
+        "docs/qa/build-F2.md: Tester",
+        "docs/qa/build-F2.md: Date",
+        "docs/qa/build-F2.md: Commit signed off",
+        "docs/qa/build-F2.md: Steps passed",
+        "docs/qa/build-F2.md: Verdict",
+        "docs/qa/build-F2.md: Signature"
+      ]
+    },
+    {
+      "name": "red and green diffs (lazy)",
+      "req": ["RULE-3"],
+      "components": ["diff-viewer", "sha-link", "not-built-yet", "spinner"],
+      "fields": [
+        "commits[plan=build][node=F2][rule=GET-1].short",
+        "commits[plan=build][node=F2][rule=GET-1].order",
+        "commits[plan=build][node=F2][rule=GET-1].tdd",
+        "commits[plan=build][node=F2][rule=GET-1].agent",
+        "nodes[plan=build][id=F2].chunks.diffs"
+      ]
+    },
+    {
+      "name": "verify it yourself",
+      "req": ["VERIFY-1"],
+      "components": ["verify-command", "not-built-yet", "spinner"],
+      "fields": [
+        "rules[id=:ruleId].matrix.red",
+        "rules[id=:ruleId].matrix.green",
+        "rules[id=:ruleId].matrix.refactor"
+      ]
+    },
+    {
+      "name": "load diff, busy while the diff chunk loads",
+      "req": ["BUSY-1"],
+      "components": ["diff-viewer", "spinner", "not-built-yet"],
+      "fields": [
+        "commits[plan=build][node=F2][rule=GET-1].short",
+        "commits[plan=build][node=F2][rule=GET-1].order",
+        "nodes[plan=build][id=F2].chunks.diffs"
+      ]
+    },
+    {
+      "name": "links out: commit SHAs, PR numbers and file:line references, to GitHub at that SHA",
+      "req": ["NAV-3"],
+      "components": ["sha-link", "not-built-yet", "spinner"],
+      "fields": [
+        "rules[id=:ruleId].matrix.red",
+        "rules[id=:ruleId].matrix.green",
+        "rules[id=:ruleId].matrix.refactor",
+        "rules[id=:ruleId].matrix.pr",
+        "rules[id=:ruleId].source.file",
+        "rules[id=:ruleId].source.line",
+        "rules[id=:ruleId].matrix.source.file",
+        "rules[id=:ruleId].matrix.source.line",
+        "rules[id=:ruleId].matrix.qaStep",
+        "stamp.sha"
+      ]
+    }
+  ],
+  "states": [
+    { "name": "populated", "file": "populated.html", "variant": "the ref's own data: rules[id=GET-1] in build/F2, three attempts, red at #5, green at #17" },
+    { "name": "not-built", "file": "not-built.html", "variant": "the kit's labelled placeholders (‹ruleId›, ‹region›, PLACEHOLDER-1), attached to no real rule or node: every rule in the fixture is built" },
+    { "name": "long-content", "file": "long-content.html", "variant": "rules[id=COULD-2] in build/F3: nine commits, the longest trail, no green commit recorded; no layer, gate, QA result or verdict for F3 in the excerpt; the diff is the kit's labelled long-diff placeholder" },
+    { "name": "submitting", "file": "submitting.html", "variant": "the populated data with the red diff's load control in flight (BUSY-1)" }
+  ],
+  "actions": [
+    { "label": "Load red diff", "kind": "request", "to": "GET the red commit's chunk of trace/build/F2/diffs.json" },
+    { "label": "Load green diff", "kind": "request", "to": "GET the green commit's chunk of trace/build/F2/diffs.json" },
+    { "label": "Copy command", "kind": "control", "to": "copies the verify command to the clipboard; sends no request" },
+    { "label": "Show UTC time", "kind": "control", "to": "toggles the time zone of a timestamp; sends no request" },
+    { "label": "Text equivalent: the commit rungs as a table", "kind": "control", "to": "opens the table beside the rung spine; sends no request" },
+    { "label": "Overview", "kind": "link", "to": "/" },
+    { "label": "build", "kind": "link", "to": "/plans/:planId" },
+    { "label": "F2 Retrieve", "kind": "link", "to": "/plans/:planId/:nodeId" },
+    { "label": "Requirements matrix", "kind": "link", "to": "/rules" },
+    { "label": "Rule chip", "kind": "link", "to": "/rules/:ruleId" },
+    { "label": "Commit SHA", "kind": "link", "to": "GitHub commit page at that SHA" },
+    { "label": "PR number", "kind": "link", "to": "GitHub pull request page" },
+    { "label": "docs/requirements.md, line 69", "kind": "link", "to": "GitHub blob at the snapshot SHA, line anchor" },
+    { "label": "docs/trace/requirements-matrix.md, line 13", "kind": "link", "to": "GitHub blob at the snapshot SHA, line anchor" },
+    { "label": "docs/qa/build-F2.md", "kind": "link", "to": "GitHub blob" },
+    { "label": "Rejoins the spine at #26", "kind": "link", "to": "#anchor on this page" },
+    { "label": "See the red diff in flight", "kind": "link", "to": "the submitting state of this screen" }
+  ]
+}

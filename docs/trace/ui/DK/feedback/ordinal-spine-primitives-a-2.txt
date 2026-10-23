@@ -1,0 +1,174 @@
+
+> test:kit
+> vitest run --config vite.config.ts
+
+
+ RUN  v5.0.5 <root>
+
+ ❯ tests/web/kit/file-line-link.test.tsx (6 tests | 2 failed) 345ms
+   ❯ FileLineLink (3)
+     × shows path:line and links to the file at the SHA on GitHub 270ms
+     × shows only the path when the line is absent 27ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/web/kit/file-line-link.test.tsx > FileLineLink > shows path:line and links to the file at the SHA on GitHub
+TestingLibraryElementError: Unable to find an accessible element with the role "link" and name "src/Uinsure.Policies.Api/Contracts/PolicyMappings.cs:37 on GitHub"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "src/Uinsure.Policies.Api/Contracts/PolicyMappings.cs:37on GitHub":
+  <a
+    class="_link_8d7d2a"
+    data-line="present"
+    href="https://github.com/dpmorgandev/uinsure-policies-api/blob/8ea8f604d6be272a478d5938d0a05f3c31d6f874/src/Uinsure.Policies.Api/Contracts/PolicyMappings.cs#L37"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <a
+      class="_link_8d7d2a"
+      data-line="present"
+      href="https://github.com/dpmorgandev/uinsure-policies-api/blob/8ea8f604d6be272a478d5938d0a05f3c31d6f874/src/Uinsure.Policies.Api/Contracts/PolicyMappings.cs#L37"
+    >
+      <span
+        class="_text_8d7d2a"
+      >
+        src/Uinsure.Policies.Api/Contracts/PolicyMappings.cs:37
+      </span>
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-external-link _icon_8d7d2a"
+        fill="none"
+        focusable="false"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M15 3h6v6"
+        />
+        <path
+          d="M10 14 21 3"
+        />
+        <path
+          d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+        />
+      </svg>
+      <span
+        class="_srOnly_8d7d2a"
+      >
+         on GitHub
+      </span>
+    </a>
+  </div>
+</body>
+ ❯ Object.getElementError src/web/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ src/web/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ src/web/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ src/web/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/web/kit/file-line-link.test.tsx:27:25
+     25|   it('shows path:line and links to the file at the SHA on GitHub', () …
+     26|     render(<FileLineLink path={PATH} line={37} href={URL} />);
+     27|     const link = screen.getByRole('link', { name: `${PATH}:37 on GitHu…
+       |                         ^
+     28|     expect(link.getAttribute('href')).toBe(URL);
+     29|     expect(link.getAttribute('data-line')).toBe('present');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/web/kit/file-line-link.test.tsx > FileLineLink > shows only the path when the line is absent
+TestingLibraryElementError: Unable to find an accessible element with the role "link" and name "docs/qa/build-F2.md on GitHub"
+
+Here are the accessible roles:
+
+  link:
+
+  Name "docs/qa/build-F2.mdon GitHub":
+  <a
+    class="_link_8d7d2a"
+    data-line="absent"
+    href="https://example.invalid/f"
+  />
+
+  --------------------------------------------------
+
+Ignored nodes: comments, script, style
+<body>
+  <div>
+    <a
+      class="_link_8d7d2a"
+      data-line="absent"
+      href="https://example.invalid/f"
+    >
+      <span
+        class="_text_8d7d2a"
+      >
+        docs/qa/build-F2.md
+      </span>
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-external-link _icon_8d7d2a"
+        fill="none"
+        focusable="false"
+        height="24"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M15 3h6v6"
+        />
+        <path
+          d="M10 14 21 3"
+        />
+        <path
+          d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+        />
+      </svg>
+      <span
+        class="_srOnly_8d7d2a"
+      >
+         on GitHub
+      </span>
+    </a>
+  </div>
+</body>
+ ❯ Object.getElementError src/web/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ src/web/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ src/web/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ src/web/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ tests/web/kit/file-line-link.test.tsx:35:25
+     33|   it('shows only the path when the line is absent', () => {
+     34|     render(<FileLineLink path="docs/qa/build-F2.md" href="https://exam…
+     35|     const link = screen.getByRole('link', { name: 'docs/qa/build-F2.md…
+       |                         ^
+     36|     expect(link.getAttribute('data-line')).toBe('absent');
+     37|     expect(link.textContent).not.toContain(':');
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed | 22 passed (23)
+      Tests  2 failed | 220 passed (222)
+   Start at  08:04:07
+   Duration  12.54s (environment 78%, import 15%, tests 6%)
+
+Environment  jsdom was created 23 times · 150.79s total, 78% of tracked time
+             create it once per worker with pool: 'vmThreads' (keeps per-file isolation) or isolate: false (shares it across files)
+             learn more: https://vitest.dev/guide/improving-performance#test-environments
+

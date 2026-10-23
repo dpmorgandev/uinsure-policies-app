@@ -1,0 +1,176 @@
+{
+ "item": "SELL-1 · new reference → 201",
+ "folder": "F1 Sell / happy path",
+ "rule": "SELL-1",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:45:08Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "525"
+   },
+   "requestBody": {
+    "reference": "F1-MVFJOFJ8IS",
+    "type": "BuyToLet",
+    "startDate": "2026-11-18",
+    "amount": 412.34,
+    "autoRenew": false,
+    "paymentMethod": "Card",
+    "policyholders": [
+     {
+      "firstName": "Grace",
+      "lastName": "Hopper",
+      "dateOfBirth": "1990-04-12"
+     },
+     {
+      "firstName": "Alan",
+      "lastName": "Turing",
+      "dateOfBirth": "1992-06-23"
+     }
+    ],
+    "property": {
+     "addressLine1": "7 Canal St",
+     "addressLine2": "Flat 3",
+     "addressLine3": "Ancoats",
+     "postcode": "M4 6BX"
+    }
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:08 GMT",
+    "server": "Kestrel",
+    "location": "/policies/F1-MVFJOFJ8IS",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F1-MVFJOFJ8IS",
+    "type": "BuyToLet",
+    "status": "Pending",
+    "currentTermNumber": 1,
+    "startDate": "2026-11-18",
+    "endDate": "2027-11-17",
+    "amount": 412.34,
+    "hasClaims": false,
+    "autoRenew": false,
+    "policyholders": [
+     {
+      "firstName": "Grace",
+      "lastName": "Hopper",
+      "dateOfBirth": "1990-04-12"
+     },
+     {
+      "firstName": "Alan",
+      "lastName": "Turing",
+      "dateOfBirth": "1992-06-23"
+     }
+    ],
+    "property": {
+     "addressLine1": "7 Canal St",
+     "addressLine2": "Flat 3",
+     "addressLine3": "Ancoats",
+     "postcode": "M4 6BX"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-11-18",
+      "endDate": "2027-11-17",
+      "amount": 412.34,
+      "paymentReference": "PAY-5a88ac64fd264dae884c98431cc4974e"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-5a88ac64fd264dae884c98431cc4974e",
+      "type": "Card",
+      "amount": 412.34
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F1-MVFJOFJ8IS",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 200,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:45:08 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F1-MVFJOFJ8IS",
+    "type": "BuyToLet",
+    "status": "Pending",
+    "currentTermNumber": 1,
+    "startDate": "2026-11-18",
+    "endDate": "2027-11-17",
+    "amount": 412.34,
+    "hasClaims": false,
+    "autoRenew": false,
+    "policyholders": [
+     {
+      "firstName": "Grace",
+      "lastName": "Hopper",
+      "dateOfBirth": "1990-04-12"
+     },
+     {
+      "firstName": "Alan",
+      "lastName": "Turing",
+      "dateOfBirth": "1992-06-23"
+     }
+    ],
+    "property": {
+     "addressLine1": "7 Canal St",
+     "addressLine2": "Flat 3",
+     "addressLine3": "Ancoats",
+     "postcode": "M4 6BX"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-11-18",
+      "endDate": "2027-11-17",
+      "amount": 412.34,
+      "paymentReference": "PAY-5a88ac64fd264dae884c98431cc4974e"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-5a88ac64fd264dae884c98431cc4974e",
+      "type": "Card",
+      "amount": 412.34
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  }
+ ]
+}

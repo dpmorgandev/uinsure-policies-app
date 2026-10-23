@@ -1,0 +1,5 @@
+{"v":1,"ts":"2026-10-16T09:05:00Z","plan":"build","node":"F1","attempt":1,"source":"orchestrator","event":"setup","branch":"feature/build/F1","head":"{{c0}}"}
+{"v":1,"ts":"2026-10-16T13:20:00Z","plan":"build","node":"F1","attempt":1,"source":"orchestrator","event":"pause1","head":"{{c1}}","detail":"David: go"}
+{"v":1,"ts":"2026-10-18T09:40:00Z","plan":"build","node":"F1","attempt":1,"source":"orchestrator","event":"pr(10)","head":"{{c4}}","detail":"draft PR https://github.com/dpmorgandev/uinsure-policies-api/pull/10 at {{c4:7}}"}
+{"v":1,"ts":"2026-10-18T18:40:27Z","plan":"build","node":"F1","attempt":1,"source":"orchestrator","event":"signoff({{c4}})","head":"{{c4}}","detail":"David: sign off. docs/qa/build-F1.md signed by David Morgan 2026-10-18, Verdict Accept F1"}
+{"v":1,"ts":"2026-10-18T18:51:24Z","plan":"build","node":"F1","attempt":1,"source":"orchestrator","event":"merged({{c5}})","head":"{{c5:7}}","detail":"David merged PR #10 in the GitHub UI with a merge commit at 2026-10-18T18:50:55Z"}

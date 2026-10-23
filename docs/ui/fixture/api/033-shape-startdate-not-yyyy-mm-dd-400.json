@@ -1,0 +1,99 @@
+{
+ "item": "SHAPE · startDate not yyyy-MM-dd → 400",
+ "folder": "F1 Sell / rule violations",
+ "rule": "SHAPE",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:46:10Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "430"
+   },
+   "requestBody": {
+    "reference": "F1-MVFJPRIIHK",
+    "type": "Household",
+    "startDate": "01/11/2026",
+    "amount": 527.18,
+    "autoRenew": true,
+    "paymentMethod": "DirectDebit",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 400,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:46:09 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+    "title": "One or more validation errors occurred.",
+    "status": 400,
+    "instance": "/policies",
+    "errors": {
+     "request": [
+      "The request field is required."
+     ],
+     "$.startDate": [
+      "The JSON value could not be converted to System.Nullable`1[System.DateOnly]. Path: $.startDate | LineNumber: 3 | BytePositionInLine: 27."
+     ]
+    },
+    "traceId": "00-0ce35a45b19d706eb81d383622676a2b-1e37e05f89972a8a-00"
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F1-MVFJPRIIHK",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 404,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:46:09 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/get-1",
+    "title": "Policy not found",
+    "status": 404,
+    "detail": "No policy with reference 'F1-MVFJPRIIHK'.",
+    "instance": "/policies/F1-MVFJPRIIHK",
+    "traceId": "00-6e65857dbc1a18ecc5977bbce1cb1344-f3b90ed05ae8991d-00",
+    "ruleId": "GET-1",
+    "reference": "F1-MVFJPRIIHK"
+   }
+  }
+ ]
+}

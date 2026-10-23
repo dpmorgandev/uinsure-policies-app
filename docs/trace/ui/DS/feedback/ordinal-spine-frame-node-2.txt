@@ -1,0 +1,6 @@
+screens: screens/_frames/node.html: <div.s-node>: screen classes (s-) can't be used inside a kit instance
+screens: screens/_frames/node.html: <div.s-node-header>: screen classes (s-) can't be used inside a kit instance
+screens: screens/_frames/node.html: <div.s-node-content>: screen classes (s-) can't be used inside a kit instance
+screens: screens/_frames/node.html: <span.kit-sha-link__wrap> inside app-shell is not in app-shell's stylekit markup
+screens: screens/_frames/node.html: <a.kit-sha-link__link.kit-sha-link__sha> inside app-shell is not in app-shell's stylekit markup
+screens: screens/_frames/node.html: <svg.kit-sha-link__icon.lucide.lucide-external-link> inside app-shell is not in app-shell's stylekit markup

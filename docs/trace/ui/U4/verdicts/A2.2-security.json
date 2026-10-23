@@ -1,0 +1,63 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T05:52:08Z",
+  "plan": "ui",
+  "node": "U4",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a2e4d684da806742b",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U4",
+    "attempt": 2,
+    "base_sha": "e7ca509f098ebc8dd00f20553d3786ace4245846",
+    "head_sha": "b2fcbebea91d55533882b6a919f83c17c04b7942",
+    "diff_fingerprint": "9106533064ca8540db41c109801e5635c814335a",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit (attempt 2, gates.jsonl line 33)",
+      "gate.fingerprint (line 41)",
+      "gate.integrate (line 45, ok:true)",
+      "gate.kit-audit (line 37)",
+      "gate.stylekit (line 38)"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S3",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "src/web/kit/primitives/file-line-link/FileLineLink.tsx",
+        "line": 17,
+        "what": "FileLineLink draws a GitHub blob link with no rel=noreferrer. ReceiptFigure, PageHeader id and RuleEvidence qa/pr links carry GitHub hrefs the same way.",
+        "why": "Carried unchanged from the A2 verdict. W2 says external links carry rel=noreferrer. The links are same-tab with no target=_blank, so only the referrer origin leaks. Hygiene, not blocking.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Delta re-review at b2fcbeb. I judged delta.patch, which covers generated output only: docs/ui/derived (U4, U7, U8 and the other screens), docs/ui/stylekit and docs/ui/kit/review.html. Hand-written source (src/web/**) is unchanged for U4. The gate.fingerprint receipt shows the same patch-id (21f21f8) at d7888d1 and at HEAD once bookkeeping and generated paths are excluded. I read that receipt but did not recompute it. The src/web diff was not re-read, so the W1-W8 results rest on the A2 review plus the receipt.",
+      "W1: the delta has no script tags, javascript: URLs or dangerouslySetInnerHTML. The generated HTML is static, server-rendered kit markup.",
+      "W2/W3: every href or src in the delta that begins with http(s):// points at github.com. There are no other origins, and no link, import or url() reference to a third-party runtime or font.",
+      "W6: the delta has no local absolute path (Users path, drive-letter path) and no personal email address. The .claude/ strings in the rendered harness-page fixtures are repo-relative paths shown as text, not private paths. The orchestrator ran the stylekit, screens and frames audits and the kit audit, all clean (lines 37 to 40).",
+      "W7: the delta has no src/web/package.json change. The attempt 2 runtime audit gate (line 33) is exit 0. The last integrate receipt (line 45) reports audit 0. The dev-only stylelint/braces item stays as the known item and does not gate.",
+      "W4/W5/W8: no change to the explorer or workbench network surface, the compiler boundary or the error handling. They carry from the A2 review.",
+      "The 4 W3 workbench e2e failures at the first integrate gate were contention timeouts. They passed on re-run at one worker (line 44), and the superseding integrate receipt is ok:true (line 45). The e2e failures carried to U10 are functional and are not security findings.",
+      "S3 (P2) is carried unchanged, as instructed. The A2 notes on S1 and S2 (both fixed) still stand.",
+      "n/a: API1:2023, API2:2023, API3:2023, API4:2023, API5:2023, API6:2023, API7:2023, API9:2023. This is a ui node with no server code. Authentication and authorisation (API1, API2, API5) are out of scope in any case."
+    ]
+  }
+}

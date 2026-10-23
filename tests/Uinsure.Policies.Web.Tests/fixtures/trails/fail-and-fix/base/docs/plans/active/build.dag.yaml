@@ -1,0 +1,13 @@
+plan_id: build
+kind: build
+title: Fixture build
+status: approved
+nodes:
+  - id: F1
+    title: Sell
+    kind: feature
+    owner: tester
+    depends_on: []
+    rules: [SELL-1, SELL-2]
+    status: in_progress
+    attempt: 2

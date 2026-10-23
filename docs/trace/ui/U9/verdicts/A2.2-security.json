@@ -1,0 +1,53 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T05:16:21Z",
+  "plan": "ui",
+  "node": "U9",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "adf60881ed1acee31",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U9",
+    "attempt": 2,
+    "base_sha": "e7ca509f098ebc8dd00f20553d3786ace4245846",
+    "head_sha": "ca43c934cd0fd7c77c80ef1435fdb16627391dd3",
+    "diff_fingerprint": "2dbe07ad103cc6ae4ba05359224b5fc2ed698e0e",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.finding-red",
+      "gate.green",
+      "gate.build",
+      "gate.test",
+      "gate.web-unit",
+      "gate.diff-scope",
+      "gate.integrate"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "D1 additions checked and met. Uinsure.Policies.slnLaunch holds only relative project paths and the debug target names 'http' and 'localhost (Edge)', with no secret, user path or URL beyond localhost. src/web/.vscode/launch.json is one Edge launch configuration on http://localhost:4170 with webRoot ${workspaceFolder}. It is loopback-only, adds no remote debug port to the repo and carries no credential. LaunchProfileTests only reads repo files through RepoPaths and XDocument.Load on the esproj. It makes no network call and runs no process. The README run steps contain no secret, token or private path, and no local absolute path appears in the D1 files. The old Uinsure.Policies.slnx.slnLaunch is deleted, so no stale profile file is left.",
+      "I4 (Avast detections), stated only from the evidence. Nothing in U9's diff plausibly explains them. The diff has no binary patch, with zero 'Binary files' or 'GIT binary patch' hunks, and every touched file is text: .md, .slnx, .slnLaunch, .yaml, .json, .bicep, .bicepparam, .yml, .py, .cs and .esproj. U9 added no executable, script download, install hook or package.json/lockfile change, so there is nothing in the repo to flag. What U9 newly makes happen on David's machine at F5 is not in the diff as files. First, the esproj names the SDK Microsoft.VisualStudio.JavaScript.Sdk/1.0.2752196, which NuGet restores into the user package cache. Second, the D1 Edge debug target makes the Visual Studio debugger start Edge with a debugging port. The StartupCommand 'npx vite' and the API apphost under bin/ are the other F5 executables, and npx vite loads from the existing src/web/node_modules, which U9 did not change. I can't link any of these to a detection, because no detection name, path or hash is known. Next step is the one D1 I4 already gives: get the paths and hashes from Avast's report or quarantine first. Don't add exclusions or restore files on the loop's authority.",
+      "W7: src/web/package.json and the lockfile are untouched by U9's diff. The gates.jsonl for this round carries no npm audit event. The last receipt is gate.audit exit 0 at 3925ba9, cited in A2-security.json, and no package change has landed since. The head merges origin/ui e7ca509 (U8), already reviewed, so it was not judged here.",
+      "The SDK reference on the esproj is an MSBuild SDK resolved through NuGet, pinned to an exact version. It was already in the A2 diff, which passed. No vulnerable-package receipt covers it, since dotnet list package --vulnerable does not list MSBuild SDKs. Not raised as a finding.",
+      "Carried and not re-raised. A2 S1 (SWA CLI via npx --yes) and A1 S2 (frame-ancestors and Referrer-Policy in staticwebapp.config.json) are P2 hardening already on U10's acceptance lines. Neither file changed in D1.",
+      "Web-security checklist for a ui node. W1 met: no innerHTML, eval or similar in the diff. W2 met vacuously: no href-from-data code added. W3 met: the staticwebapp.config.json CSP keeps default-src 'self', and no src/web index.html change in D1. W4 met: the only network surface is the same-origin /api, and the debug config targets only localhost:4170. W5 met vacuously: compiler/** untouched. W6 met: no local path, personal email, key or token in the diff. W8 met vacuously: no error-display code changed. API8 met: no secrets in the IaC, pipeline or launch files. API10 met: no new consumption of API answers.",
+      "n/a (ui node, no server code): API1 (no auth or tenancy), API2 (auth out of scope), API3, API4, API5 (no roles), API6, API7 (no outbound fetching in src/), API9. The .NET extras (raw SQL, money types, logging) are not reached, because no src/ .NET file changed. The only .cs change is the architecture test.",
+      "Not a security finding, for David's ruling as D1 I2 notes. With both projects launching, the API's http profile still opens its own browser tab on /health/live beside the Edge debug window on 4170. It is documented in the README."
+    ]
+  }
+}

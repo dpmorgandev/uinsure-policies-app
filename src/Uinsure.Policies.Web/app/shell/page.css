@@ -1,0 +1,11 @@
+/* RESP-1: the kit's app shell is `min-height: 100%`, which needs a parent with a set height.
+   Give html, body and #root the window's height, and drop the body margin so the frame fits exactly. */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}

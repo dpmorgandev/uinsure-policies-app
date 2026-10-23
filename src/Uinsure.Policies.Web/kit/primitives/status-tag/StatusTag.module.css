@@ -1,0 +1,48 @@
+.tag {
+  --c: var(--color-text-secondary);
+  --ink: var(--c);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 1.5rem;
+  padding: 0 var(--space-2) 0 var(--space-1);
+  font-family: var(--font-sans);
+  font-size: var(--text-14);
+  font-weight: 600;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums lining-nums;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--c) 10%, var(--color-background));
+  border: 1px solid color-mix(in srgb, var(--c) 55%, var(--color-background));
+  border-radius: var(--radius);
+  white-space: nowrap;
+}
+
+.pass {
+  --c: var(--color-success);
+}
+
+.fail {
+  --c: var(--color-error);
+  --ink: color-mix(in srgb, var(--color-error) 85%, var(--color-text-primary));
+}
+
+.warn {
+  --c: var(--color-warn);
+}
+
+.pending {
+  --c: var(--color-text-secondary);
+}
+
+.notBuilt {
+  --c: var(--color-text-secondary);
+  background: none;
+  border-style: dashed;
+}
+
+.icon {
+  flex: none;
+  width: 1em;
+  height: 1em;
+}

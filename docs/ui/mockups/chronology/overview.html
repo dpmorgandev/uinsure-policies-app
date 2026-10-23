@@ -1,0 +1,764 @@
+<!doctype html>
+<html data-theme="light" lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overview: was this really built test-first, and was the AI really checked?</title>
+<style>
+:root {
+  --bg: #ffffff;
+  --surface: #f3f3f3;
+  --text: #0b0c0c;
+  --text2: #484949;
+  --link: #0072B2;
+  --focus: #0072B2;
+  --fail: #D55E00;
+  --pass: #009E73;
+  --warn: #E69F00;
+  --warn-text: #8a5a00;
+  --border: #cecece;
+  --sans: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --mono: "Atkinson Hyperlegible Mono", ui-monospace, "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+}
+[data-theme="dark"] {
+  --bg: #111314;
+  --surface: #1b1e20;
+  --text: #f3f3f3;
+  --text2: #b1b4b6;
+  --link: #56B4E9;
+  --focus: #56B4E9;
+  --fail: #E8783A;
+  --pass: #2BB58E;
+  --warn: #E69F00;
+  --warn-text: #E69F00;
+  --border: #3a3f42;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 56px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.5 var(--sans);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.mono, code, pre, time { font-family: var(--mono); font-variant-numeric: tabular-nums lining-nums; }
+a { color: var(--link); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible, summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.skip { position: absolute; left: -9999px; top: 0; background: var(--bg); color: var(--link); padding: 8px 12px; z-index: 5; }
+.skip:focus { left: 8px; top: 8px; }
+.wrap { max-width: 1160px; margin: 0 auto; padding: 0 24px 48px; }
+h1, h2, h3, p { margin: 0; }
+.eyebrow {
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text2);
+  font-weight: 700;
+}
+.small { font-size: 14px; line-height: 20px; }
+.muted { color: var(--text2); }
+section { margin-top: 48px; }
+h2.sec { font-size: 24px; line-height: 32px; font-weight: 700; margin: 4px 0 16px; }
+h3 { font-size: 18px; line-height: 24px; font-weight: 700; }
+
+/* icons */
+.i { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; vertical-align: -3px; }
+
+/* status tags: word + glyph + colour, never interactive */
+.tag { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; line-height: 20px; font-weight: 700; color: var(--text); white-space: nowrap; }
+.tag-pass .i { color: var(--pass); }
+.tag-fail .i { color: var(--fail); }
+.tag-warn .i { color: var(--warn-text); }
+.tag-pend .i { color: var(--text2); }
+.tag-nb { border: 1px dashed var(--text2); padding: 0 6px; border-radius: 2px; font-weight: 400; color: var(--text); }
+
+/* rule chips */
+.chip { display: inline-block; font: 14px/20px var(--mono); padding: 0 6px; margin: 2px 4px 2px 0; border: 1px solid var(--text2); border-radius: 2px; text-decoration: none; color: var(--link); }
+.chip-nb { border-style: dashed; color: var(--text2); }
+
+/* completeness banner */
+.banner { display: flex; gap: 12px; align-items: baseline; flex-wrap: wrap; background: var(--surface); padding: 12px 16px; margin-top: 16px; border-radius: 2px; border-left: 4px solid var(--pass); }
+.banner .i { color: var(--pass); align-self: center; }
+.banner strong { font: 700 18px/24px var(--mono); }
+
+/* page header */
+.ph { display: flex; justify-content: space-between; gap: 32px; flex-wrap: wrap; margin-top: 24px; align-items: flex-start; }
+.ph-title { font-size: 18px; line-height: 24px; font-weight: 700; }
+.ph-meta { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; margin-top: 4px; font-size: 14px; }
+.stamp { max-width: 520px; font-size: 14px; line-height: 20px; }
+.stamp time.big { display: block; font-size: 18px; line-height: 24px; font-weight: 700; margin: 2px 0; }
+.stamp details { margin-top: 8px; }
+.stamp summary { cursor: pointer; color: var(--link); }
+
+/* headline answer */
+.question { font-size: 16px; color: var(--text2); margin-top: 32px; }
+.answer h1 { font-size: 32px; line-height: 40px; font-weight: 700; max-width: 34em; margin: 8px 0 16px; }
+.answer h1 .num { font-family: var(--mono); }
+.answer .support { max-width: 62em; margin-top: 8px; }
+.cta { display: inline-flex; align-items: center; gap: 8px; margin-top: 16px; background: var(--link); color: var(--bg); font-weight: 700; padding: 8px 16px; border-radius: 2px; text-decoration: none; font-size: 16px; }
+.cta:hover { text-decoration: underline; }
+.secondary-links { margin-top: 12px; display: flex; gap: 24px; flex-wrap: wrap; font-size: 14px; }
+
+/* chronology figure */
+figure { margin: 0; }
+.chrono { margin-top: 24px; background: var(--surface); padding: 16px; border-radius: 2px; }
+.chrono svg.axis { display: block; width: 100%; height: auto; }
+.chrono figcaption { font-size: 14px; line-height: 20px; max-width: 70em; margin-top: 12px; }
+.legend { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 12px 0 0; padding: 0; list-style: none; font-size: 14px; }
+.legend li { display: inline-flex; align-items: center; gap: 6px; }
+.sw { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--text); background: var(--bg); }
+.sw-dash { border: 1px dashed var(--text2); }
+.sw-band { width: 24px; height: 8px; border: 1px dashed var(--text2); }
+.sw-line { width: 2px; height: 16px; border: 0; background: var(--text); }
+.gap-note { margin-top: 12px; border: 1px dashed var(--text2); padding: 8px 12px; border-radius: 2px; font-size: 14px; line-height: 20px; }
+details.eq { margin-top: 16px; }
+details.eq summary { cursor: pointer; font-weight: 700; color: var(--link); }
+
+/* svg text */
+svg text { font: 12px var(--sans); fill: var(--text); }
+svg .m { font-family: var(--mono); }
+svg .d { fill: var(--text2); }
+svg .lane { font: 700 12px var(--mono); }
+svg .halo { paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
+svg .halo-bg { paint-order: stroke; stroke: var(--bg); stroke-width: 4px; stroke-linejoin: round; }
+svg .grid { stroke: var(--text2); stroke-opacity: .3; stroke-width: 1; fill: none; }
+svg .sep { stroke: var(--border); stroke-width: 1; fill: none; }
+svg .hl { stroke: var(--text); stroke-width: 1.5; fill: none; }
+svg .cmp { stroke: var(--text2); stroke-width: 1.5; stroke-dasharray: 4 3; fill: none; }
+svg .snap { fill: var(--surface); stroke: var(--text); stroke-width: 2; }
+svg .xm { stroke: var(--fail); stroke-width: 2.5; stroke-linecap: round; fill: none; }
+svg .band { fill: none; stroke: var(--text2); stroke-width: 1; stroke-dasharray: 2 2; }
+svg .nbbox { fill: none; stroke: var(--text2); stroke-width: 1; stroke-dasharray: 5 3; }
+svg .win { fill: none; stroke: var(--link); stroke-width: 2; }
+svg .mk { fill: var(--surface); stroke-width: 2; }
+svg .mk-fail { stroke: var(--fail); }
+svg .mk-pend { stroke: var(--text2); }
+svg .mk-hum { stroke: var(--text); }
+svg .g { stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+svg .g-fail { color: var(--fail); stroke: currentColor; }
+svg .g-pend { color: var(--text2); stroke: currentColor; }
+svg .g-hum { color: var(--text); stroke: currentColor; }
+svg .brk { stroke: var(--text2); stroke-width: 1.5; stroke-dasharray: 5 3; fill: none; }
+svg .edge { stroke: var(--text2); stroke-width: 1.5; fill: none; }
+svg .arrow { fill: var(--text2); stroke: none; }
+svg .node-done { fill: var(--surface); stroke: var(--text2); stroke-width: 1.5; }
+svg .node-pend { fill: var(--bg); stroke: var(--text2); stroke-width: 1.5; stroke-dasharray: 5 3; }
+svg .si { stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; fill: none; stroke: currentColor; }
+svg .si-pass { color: var(--pass); }
+svg .si-pend { color: var(--text2); }
+svg .si-warn { color: var(--warn-text); }
+
+/* tables */
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 20px; }
+caption { text-align: left; font-size: 14px; color: var(--text2); padding: 0 0 8px; caption-side: top; }
+th, td { padding: 6px 12px 6px 0; vertical-align: top; text-align: left; border-bottom: 1px solid var(--border); }
+thead th { position: sticky; top: 0; background: var(--bg); z-index: 1; font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--text2); border-bottom: 2px solid var(--text2); }
+tbody th { font: 700 14px/20px var(--mono); color: var(--text); text-transform: none; letter-spacing: 0; background: transparent; position: static; }
+.chrono thead th { background: var(--surface); }
+.chrono td, .chrono th { border-bottom-color: var(--border); }
+td.num, th.num { text-align: right; font-family: var(--mono); }
+tr.grp th { font: 700 12px/16px var(--sans); letter-spacing: .05em; text-transform: uppercase; color: var(--text2); padding-top: 16px; border-bottom: 2px solid var(--text2); }
+
+/* receipts */
+.receipts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+.rf { background: var(--surface); padding: 16px; border-radius: 2px; border-top: 3px solid var(--text); display: flex; flex-direction: column; gap: 8px; }
+.rf .val { font: 700 32px/36px var(--mono); }
+.rf .val .of { font-size: 18px; font-weight: 400; color: var(--text2); }
+.rf .derived { font-size: 14px; line-height: 20px; }
+.rf .src { font: 12px/16px var(--mono); margin-top: auto; }
+.rf .src a { display: block; word-break: break-all; }
+
+.verify { margin-top: 24px; background: var(--surface); padding: 16px; border-radius: 2px; }
+.verify pre { margin: 8px 0; padding: 12px; background: var(--bg); font-size: 14px; line-height: 20px; overflow-x: auto; border-left: 4px solid var(--text2); white-space: pre-wrap; word-break: break-all; }
+.copy { font: 700 14px var(--sans); background: transparent; color: var(--link); border: 1px solid var(--link); padding: 4px 12px; border-radius: 2px; cursor: pointer; }
+
+/* DAG */
+.dag { background: var(--surface); padding: 16px; border-radius: 2px; }
+.dag svg { display: block; width: 100%; height: auto; }
+.dag figcaption { font-size: 14px; line-height: 20px; margin: 12px 0 16px; max-width: 70em; }
+.dag .tbl-wrap { background: var(--bg); padding: 8px 12px; }
+.kind { display: block; font-size: 12px; line-height: 16px; color: var(--text2); }
+
+/* human decisions */
+.hd { list-style: none; margin: 0; padding: 0; }
+.hd-row { display: grid; grid-template-columns: 148px 1fr 280px; gap: 8px 24px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.hd-row:first-child { border-top: 2px solid var(--text2); }
+.hd-type { display: flex; flex-direction: column; gap: 2px; }
+.hd-type .tag { font-weight: 700; }
+.hd-what { max-width: 52em; }
+.hd-when { font-size: 14px; line-height: 20px; }
+.hd-when time { display: block; font-weight: 700; }
+.hd-note { margin-top: 4px; font-size: 14px; line-height: 20px; color: var(--text2); }
+
+/* states */
+.states { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.panel { background: var(--surface); padding: 16px; border-radius: 2px; }
+.state-label { display: inline-block; font: 700 12px/16px var(--sans); letter-spacing: .06em; text-transform: uppercase; background: var(--text); color: var(--bg); padding: 2px 8px; border-radius: 2px; margin-bottom: 12px; }
+.skel { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 8px; }
+.skel div { background: var(--bg); padding: 8px; border-top: 3px solid var(--border); }
+.skel i { display: block; background: var(--border); height: 12px; margin-bottom: 8px; }
+.skel i.b { height: 28px; }
+.skel i.s { width: 60%; }
+.err { background: var(--bg); padding: 12px 16px; border-left: 4px solid var(--fail); }
+.err .tag { margin-bottom: 4px; }
+.ifl { background: var(--bg); padding: 12px 16px; border-left: 4px solid var(--text2); display: flex; flex-direction: column; gap: 8px; }
+.nbregion { border: 1px dashed var(--text2); padding: 12px 16px; border-radius: 2px; background: var(--bg); }
+.nbregion .nbw { font-weight: 700; }
+
+@media (max-width: 1000px) {
+  .receipts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .states { grid-template-columns: 1fr; }
+  .hd-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body data-screen-id="overview">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+  <symbol id="i-gavel" viewBox="0 0 24 24"><path d="m14 13-7.5 7.5c-.83.83-2.17.83-3 0a2.12 2.12 0 0 1 0-3L11 10"/><path d="m16 16 6-6"/><path d="m8 8 6-6"/><path d="m9 7 8 8"/><path d="m21 11-8-8"/></symbol>
+  <symbol id="i-flask" viewBox="0 0 24 24"><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><path d="M8.5 2h7"/><path d="M7 16h10"/></symbol>
+  <symbol id="i-pr" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><path d="M6 9v12"/></symbol>
+</svg>
+
+<a class="skip" href="#main">Skip to the answer</a>
+
+<div class="wrap">
+
+<!-- completeness-banner: always first -->
+<div class="banner" data-req="DATA-4" role="status">
+  <svg class="i" aria-hidden="true"><use href="#i-check"/></svg>
+  <strong>OK</strong>
+  <span class="small">Completeness line reported by the F0b, F1, F1b and F2 trails. The F0a and F3 completeness lines are not in the data this page was drawn from, so they are not claimed here.</span>
+</div>
+
+<!-- page-header -->
+<header class="ph">
+  <div>
+    <p class="eyebrow">Overview</p>
+    <p class="ph-title">Build plan <span class="mono">build</span>: 10 nodes, 29 rules</p>
+    <p class="ph-meta">
+      <span class="tag tag-pend"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span>
+      <span>6 of 10 nodes done, from the build plan. Next node: <span class="mono">F4</span> Renew.</span>
+    </p>
+  </div>
+  <div class="stamp" data-req="DATA-3">
+    <p class="eyebrow">Compiled at</p>
+    <time class="big" datetime="2026-10-19T03:33:55Z">2026-10-19T03:33:55Z</time>
+    <p class="muted">Requirements matrix, generated by <span class="mono">.claude/scripts/render-trace.mjs</span> from every node trail and <span class="mono">docs/requirements.md</span>. Do not edit.</p>
+    <details open>
+      <summary>Where each figure on this page was stamped</summary>
+      <div class="tbl-wrap">
+      <table>
+        <caption>Provenance of each source this page reads</caption>
+        <thead><tr><th scope="col">Source</th><th scope="col">Kind</th><th scope="col">Stamp</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">requirements-matrix.md</th><td>Generated</td><td class="mono">2026-10-19T03:33:55Z</td></tr>
+          <tr><th scope="row">build/F0b README</th><td>Generated</td><td class="mono">2026-10-18T02:09:11Z</td></tr>
+          <tr><th scope="row">build/F1 README</th><td>Generated</td><td class="mono">2026-10-18T18:40:51Z</td></tr>
+          <tr><th scope="row">build/F1b README</th><td>Generated</td><td class="mono">2026-10-18T21:44:56Z</td></tr>
+          <tr><th scope="row">build/F2 README</th><td>Generated</td><td class="mono">2026-10-19T00:07:57Z</td></tr>
+          <tr><th scope="row">build/F2 loop.jsonl</th><td>Recorded</td><td class="mono">2026-10-18T22:26:21Z to 2026-10-19T00:10:40Z</td></tr>
+          <tr><th scope="row">build.dag.yaml</th><td>Written</td><td class="muted">No stamp in the data</td></tr>
+          <tr><th scope="row">Snapshot SHA</th><td>Gap</td><td class="muted">Not in the data this page was drawn from</td></tr>
+        </tbody>
+      </table>
+      </div>
+    </details>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- headline answer + the signature chronology -->
+<section class="answer" id="headline" data-req="NAV-1" aria-labelledby="answer-h">
+  <p class="question">Was this really built test-first, and was the AI really checked?</p>
+  <h1 id="answer-h">Yes, on the record: <span class="num">21 of 21</span> built rules have a red commit, and <span class="num">5</span> FAILs from gates, security and reviewers are on file.</h1>
+  <p class="support">Counted from the requirements matrix and the node trails. <span class="mono">13</span> of the 21 list a separate green commit; <span class="mono">8</span> have a blank green cell in the matrix and this page does not guess why: <span class="chip-list"><a class="chip" href="rule.html#CANCEL-1a">CANCEL-1a</a><a class="chip" href="rule.html#CANCEL-1b">CANCEL-1b</a><a class="chip" href="rule.html#CANCEL-6">CANCEL-6</a><a class="chip" href="rule.html#CANCEL-7">CANCEL-7</a><a class="chip" href="rule.html#COULD-2">COULD-2</a><a class="chip" href="rule.html#COULD-2a">COULD-2a</a><a class="chip" href="rule.html#COULD-2b">COULD-2b</a><a class="chip" href="rule.html#COULD-2c">COULD-2c</a></span>. Seven SELL rules, seven different red commits, one shared green: <span class="mono">7d3f791</span>. Not yet built: 8 of 29 rules, all in node F4.</p>
+  <a class="cta" href="../../../trace/requirements-matrix.md"><svg class="i" aria-hidden="true"><use href="#i-flask"/></svg>Open the requirements matrix: red and green SHAs for all 29 rules</a>
+  <p class="secondary-links">
+    <a href="../../../trace/build/F2/loop.jsonl">F2 loop events</a>
+    <a href="../../../plans/active/build.dag.yaml">Build plan</a>
+    <a href="../../../trace/build/F2/README.md">F2 trail</a>
+  </p>
+
+  <h2 class="sec" style="margin-top:32px">The order of events</h2>
+  <figure class="chrono" aria-labelledby="chrono-cap">
+    <svg class="axis" viewBox="0 0 1000 650" role="img" aria-labelledby="chrono-t chrono-d">
+      <title id="chrono-t">Chronology of build trail events, 2026-10-18 to 2026-10-19</title>
+      <desc id="chrono-d">Upper strip: one lane per node on a 28-hour axis. F0b, F1 and F1b each have one trail snapshot. F2 has two FAIL-driven attempts, pause 1, a sign-off and a merge inside a window that is enlarged below. F1 and F3 sign-offs are dated but have no time. F4 to F7 are not built yet. Lower panel: the F2 window from 22:00 on 2026-10-18 to 00:30 on 2026-10-19. The full text equivalent is the table below the drawing.</desc>
+
+      <!-- STRIP: 2026-10-18T00:00Z to 2026-10-19T04:00Z -->
+      <path class="sep" d="M0 72H1000M0 104H1000M0 136H1000M0 168H1000M0 200H1000M0 232H1000M0 264H1000"/>
+      <path class="grid" d="M130 38V264M251.4 38V264M372.9 38V264M494.3 38V264M615.7 38V264M737.1 38V264M858.6 38V264M980 38V264"/>
+
+      <text class="m d" x="130" y="14">2026-10-18</text>
+      <text class="m d" x="858.6" y="14">2026-10-19</text>
+      <g class="m d">
+        <text class="m d" x="130" y="32">00:00</text>
+        <text class="m d" x="251.4" y="32" text-anchor="middle">04:00</text>
+        <text class="m d" x="372.9" y="32" text-anchor="middle">08:00</text>
+        <text class="m d" x="494.3" y="32" text-anchor="middle">12:00</text>
+        <text class="m d" x="615.7" y="32" text-anchor="middle">16:00</text>
+        <text class="m d" x="737.1" y="32" text-anchor="middle">20:00</text>
+        <text class="m d" x="858.6" y="32" text-anchor="middle">00:00</text>
+        <text class="m d" x="980" y="32" text-anchor="end">04:00</text>
+      </g>
+
+      <text class="lane" x="8" y="60">F0a</text>
+      <text class="lane" x="8" y="92">F0b</text>
+      <text class="lane" x="8" y="124">F1</text>
+      <text class="lane" x="8" y="156">F1b</text>
+      <text class="lane" x="8" y="188">F2</text>
+      <text class="lane" x="8" y="220">F3</text>
+      <text class="lane" x="8" y="252">F4 to F7</text>
+
+      <!-- F0a: gap -->
+      <text class="d halo" x="140" y="60">No timestamped event in the data (done, attempt 0).</text>
+
+      <!-- F0b -->
+      <rect class="snap" x="191.4" y="80" width="8" height="8"/>
+      <text class="halo" x="206" y="88"><tspan class="m">02:09:11Z</tspan> trail compiled, OK. Untimed: steer D1 at pause 1; reviewer FAIL at attempt 0.</text>
+
+      <!-- F1 -->
+      <rect class="snap" x="693.1" y="112" width="8" height="8"/>
+      <text class="halo" x="688" y="120" text-anchor="end"><tspan class="m">18:40:51Z</tspan> trail compiled, OK</text>
+      <rect class="band" x="130" y="125" width="728.6" height="8"/>
+      <text class="d halo" x="138" y="122">Sign-off dated 2026-10-18, time not recorded</text>
+
+      <!-- F1b -->
+      <rect class="snap" x="786.2" y="144" width="8" height="8"/>
+      <text class="halo" x="780" y="152" text-anchor="end"><tspan class="m">21:44:56Z</tspan> trail compiled, OK. Untimed: security FAIL and reviewer FAIL at attempt 1.</text>
+
+      <!-- F2 -->
+      <text class="halo" x="790" y="188" text-anchor="end">Enlarged below: 2 FAILs, pause 1, sign-off, merge</text>
+      <rect class="win" x="797.9" y="172" width="75.9" height="24"/>
+      <path class="xm" d="M807.2 180l8 8M815.2 180l-8 8M819.2 180l8 8M827.2 180l-8 8"/>
+
+      <!-- F3 -->
+      <text class="d halo" x="850" y="219" text-anchor="end">Sign-off dated 2026-10-19, time not recorded</text>
+      <rect class="band" x="858.6" y="210" width="121.4" height="10"/>
+
+      <!-- F4 to F7: not built yet -->
+      <rect class="nbbox" x="132" y="238" width="846" height="20"/>
+      <text class="halo" x="142" y="252">Not built yet: F4, F5, F6 and F7 are pending at attempt 0, with no events.</text>
+
+      <!-- full-height human lines (strip) -->
+      <path class="hl" d="M813.1 38V264M862.4 38V264M864 38V264"/>
+      <!-- matrix compiled -->
+      <path class="cmp" d="M966.8 38V264"/>
+
+      <text class="d" x="130" y="284">Full-height lines: F2 pause 1, sign-off and merge. Solid marks are observed events; dashed bars carry a date but no time.</text>
+      <text class="d" x="975" y="300" text-anchor="end">Dashed line: matrix compiled <tspan class="m">2026-10-19T03:33:55Z</tspan></text>
+
+      <!-- DETAIL: 2026-10-18T22:00Z to 2026-10-19T00:30Z -->
+      <text x="8" y="330" style="font-weight:700;font-size:14px">Enlarged: node F2, 22:00 on 2026-10-18 to 00:30 on 2026-10-19</text>
+      <g>
+        <text class="m d" x="130" y="354" text-anchor="middle">22:00</text>
+        <text class="m d" x="300" y="354" text-anchor="middle">22:30</text>
+        <text class="m d" x="470" y="354" text-anchor="middle">23:00</text>
+        <text class="m d" x="640" y="354" text-anchor="middle">23:30</text>
+        <text class="m d" x="810" y="354" text-anchor="middle">00:00</text>
+        <text class="m d" x="980" y="354" text-anchor="end">00:30</text>
+      </g>
+      <path class="grid" d="M130 360V604M300 360V604M470 360V604M640 360V604M810 360V604M980 360V604"/>
+      <path class="sep" d="M0 364H1000M0 424H1000M0 464H1000M0 564H1000M0 604H1000M0 644H1000"/>
+
+      <text class="lane" x="8" y="398">Gates, verdicts</text>
+      <text class="lane" x="8" y="448">Orchestrator</text>
+      <text class="lane" x="8" y="516">David</text>
+      <text class="lane" x="8" y="588">Trail snapshot</text>
+      <text class="lane" x="8" y="628">Rule commits</text>
+
+      <!-- full-height human lines (detail) -->
+      <path class="hl" d="M300.9 360V604M853 360V604M870.4 360V604"/>
+
+      <!-- L1: FAILs -->
+      <circle class="mk mk-fail" cx="279.3" cy="394" r="9"/>
+      <use href="#i-x" class="g g-fail" x="273.3" y="388" width="12" height="12"/>
+      <text class="halo" x="308" y="379"><tspan class="m">22:26:21Z</tspan> attempt 1 to 2, gate.stub FAIL at <tspan class="m">305789d</tspan></text>
+      <circle class="mk mk-fail" cx="414.4" cy="394" r="9"/>
+      <use href="#i-x" class="g g-fail" x="408.4" y="388" width="12" height="12"/>
+      <text class="halo" x="430" y="420"><tspan class="m">22:50:11Z</tspan> attempt 2 to 3, reviewer FAIL at <tspan class="m">8ea8f60</tspan></text>
+
+      <!-- L2: investigation -->
+      <circle class="mk mk-pend" cx="414.4" cy="444" r="9"/>
+      <use href="#i-clock" class="g g-pend" x="408.4" y="438" width="12" height="12"/>
+      <text class="halo" x="430" y="448"><tspan class="m">22:50:11Z</tspan> investigation <tspan class="m">inv-001</tspan> opened: run ends until David decides</text>
+
+      <!-- L3: David -->
+      <circle class="mk mk-hum" cx="300.9" cy="512" r="8"/>
+      <use href="#i-gavel" class="g g-hum" x="294.9" y="506" width="12" height="12"/>
+      <text class="halo" x="316" y="494"><tspan class="m">22:30:10Z</tspan> pause 1, Api.Tests RED 22/202</text>
+      <path class="brk" d="M318 512H843M318 506V518M843 506V518"/>
+      <text class="halo d" x="581" y="534" text-anchor="middle">1h 37m 25s from pause 1 to sign-off; nothing else recorded in the data</text>
+      <circle class="mk mk-hum" cx="853" cy="512" r="8"/>
+      <use href="#i-gavel" class="g g-hum" x="847" y="506" width="12" height="12"/>
+      <text class="halo" x="845" y="478" text-anchor="end"><tspan class="m">00:07:35Z</tspan> sign-off: Accept F2, 41/41 steps PASS at <tspan class="m">beba48e</tspan></text>
+      <circle class="mk mk-hum" cx="870.4" cy="512" r="8"/>
+      <use href="#i-pr" class="g g-hum" x="864.4" y="506" width="12" height="12"/>
+      <text class="halo m" x="886" y="516">00:10:40Z</text>
+      <text class="halo" x="886" y="531">merged, PR #17</text>
+      <text class="halo" x="886" y="546">by David</text>
+
+      <!-- L4: snapshot -->
+      <rect class="snap" x="851.1" y="580" width="8" height="8"/>
+      <text class="halo" x="845" y="588" text-anchor="end"><tspan class="m">00:07:57Z</tspan> F2 trail compiled; it still says "merge pending"</text>
+
+      <!-- L5: rule commits, untimed gap -->
+      <rect class="nbbox" x="132" y="610" width="846" height="26"/>
+      <text class="halo" x="142" y="627">GET-1 commits red <tspan class="m">94a7473</tspan>, green <tspan class="m">92ede9e</tspan>, refactor <tspan class="m">80d3ee2</tspan>: commit times are not in the data, so they are not plotted.</text>
+    </svg>
+
+    <ul class="legend" aria-label="Key to the marks">
+      <li><svg class="i" aria-hidden="true" style="color:var(--fail)"><use href="#i-x"/></svg><strong>Fail</strong> gate or verdict</li>
+      <li><svg class="i" aria-hidden="true" style="color:var(--text2)"><use href="#i-clock"/></svg><strong>Pending</strong> investigation opened</li>
+      <li><svg class="i" aria-hidden="true"><use href="#i-gavel"/></svg><strong>Human decision</strong> pause, sign-off</li>
+      <li><svg class="i" aria-hidden="true"><use href="#i-pr"/></svg><strong>Merge</strong></li>
+      <li><span class="sw" aria-hidden="true"></span><strong>Snapshot</strong> trail compiled</li>
+      <li><span class="sw sw-line" aria-hidden="true"></span><strong>Full-height line</strong> David's pause, sign-off, merge</li>
+      <li><span class="sw sw-band" aria-hidden="true"></span><strong>Date only</strong> time not recorded</li>
+      <li><span class="sw sw-dash" aria-hidden="true"></span><strong>Not built yet</strong> or not in the data</li>
+    </ul>
+
+    <p class="gap-note"><strong>Gap, named:</strong> the data this page was drawn from holds SHAs for each rule's red, green and refactor commits but no commit times. So no rule's red and green are plotted against the clock yet; only events that carry a time are. The command under "Re-check it yourself" below prints those times for GET-1.</p>
+
+    <figcaption id="chrono-cap">
+      <strong>Text equivalent.</strong> Eleven events carry a time, from <span class="mono">2026-10-18T02:09:11Z</span> to <span class="mono">2026-10-19T03:33:55Z</span>. On F2: an attempt to 2 on a gate.stub FAIL at <span class="mono">22:26:21Z</span>, pause 1 at <span class="mono">22:30:10Z</span>, an attempt to 3 on a reviewer FAIL and investigation inv-001 at <span class="mono">22:50:11Z</span>, David's sign-off at <span class="mono">00:07:35Z</span>, the F2 trail compiled at <span class="mono">00:07:57Z</span> still reading "merge pending", then the merge of PR #17 at <span class="mono">00:10:40Z</span>. Six more events are dated or ordered but carry no time. The same events as a table:
+    </figcaption>
+
+    <details class="eq" open>
+      <summary>Chronology as a table</summary>
+      <div class="tbl-wrap">
+      <table>
+        <caption>Every event drawn above, in time order. Default sort: time, ascending.</caption>
+        <thead>
+          <tr>
+            <th scope="col" aria-sort="ascending">Time (UTC), sorted</th>
+            <th scope="col">Node</th>
+            <th scope="col">Kind</th>
+            <th scope="col">Event</th>
+            <th scope="col">Source</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">2026-10-18T02:09:11Z</th><td class="mono">F0b</td><td><span class="tag tag-pend">Snapshot</span></td><td>Trail compiled. Completeness OK. Status done, PR #6, merge pending.</td><td><a class="mono" href="../../../trace/build/F0b/README.md">F0b README</a></td></tr>
+          <tr><th scope="row">2026-10-18T18:40:51Z</th><td class="mono">F1</td><td><span class="tag tag-pend">Snapshot</span></td><td>Trail compiled. Completeness OK. Status done, PR #10, merge pending.</td><td><a class="mono" href="../../../trace/build/F1/README.md">F1 README</a></td></tr>
+          <tr><th scope="row">2026-10-18T21:44:56Z</th><td class="mono">F1b</td><td><span class="tag tag-pend">Snapshot</span></td><td>Trail compiled. Completeness OK. Status done, PR #15, merge pending.</td><td><a class="mono" href="../../../trace/build/F1b/README.md">F1b README</a></td></tr>
+          <tr><th scope="row">2026-10-18T22:26:21Z</th><td class="mono">F2</td><td><span class="tag tag-fail"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>Fail</span></td><td><span class="mono">attempt++</span> 1 → 2 on gate.stub FAIL at <span class="mono">305789d</span>; failure route round A1.</td><td><a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a></td></tr>
+          <tr><th scope="row">2026-10-18T22:30:10Z</th><td class="mono">F2</td><td><span class="tag"><svg class="i" aria-hidden="true"><use href="#i-gavel"/></svg>Pause 1</span></td><td><span class="mono">pause1</span>: Api.Tests RED 22/202 (21 GET-1 + unknown-query 400); stub callable.</td><td><a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a></td></tr>
+          <tr><th scope="row">2026-10-18T22:50:11Z</th><td class="mono">F2</td><td><span class="tag tag-fail"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>Fail</span></td><td><span class="mono">attempt++</span> 2 → 3 on reviewer FAIL at <span class="mono">8ea8f60</span> (A2).</td><td><a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a></td></tr>
+          <tr><th scope="row">2026-10-18T22:50:11Z</th><td class="mono">F2</td><td><span class="tag tag-pend"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></td><td><span class="mono">investigation.opened(inv-001)</span>: attempt 3 stop; parent build/F2; run ends until David decides.</td><td><a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a></td></tr>
+          <tr><th scope="row">2026-10-19T00:07:35Z</th><td class="mono">F2</td><td><span class="tag"><svg class="i" aria-hidden="true"><use href="#i-gavel"/></svg>Sign-off</span></td><td>David: sign off. QA file signed by David Morgan 2026-10-19 01:05, Verdict Accept F2; 41/41 steps PASS at <span class="mono">beba48e</span>. Two times for one act: the loop stamps <span class="mono">00:07:35Z</span>, the QA file records 01:05.</td><td><a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a>, <a class="mono" href="../../../qa/build-F2.md">build-F2.md</a></td></tr>
+          <tr><th scope="row">2026-10-19T00:07:57Z</th><td class="mono">F2</td><td><span class="tag tag-pend">Snapshot</span></td><td>Trail compiled. Completeness OK. Status done, PR #17, merge pending.</td><td><a class="mono" href="../../../trace/build/F2/README.md">F2 README</a></td></tr>
+          <tr><th scope="row">2026-10-19T00:10:40Z</th><td class="mono">F2</td><td><span class="tag"><svg class="i" aria-hidden="true"><use href="#i-pr"/></svg>Merge</span></td><td><span class="mono">merged(ad7b6b0)</span>: PR #17 merged by David in the GitHub UI.</td><td><a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a></td></tr>
+          <tr><th scope="row">2026-10-19T03:33:55Z</th><td class="mono">all</td><td><span class="tag tag-pend">Snapshot</span></td><td>Requirements matrix compiled.</td><td><a class="mono" href="../../../trace/requirements-matrix.md">requirements-matrix.md</a></td></tr>
+          <tr class="grp"><th scope="colgroup" colspan="5">Not on the axis: a date or an order, but no time in the data</th></tr>
+          <tr><th scope="row">Dated 2026-10-18</th><td class="mono">F1</td><td><span class="tag"><svg class="i" aria-hidden="true"><use href="#i-gavel"/></svg>Sign-off</span></td><td>David, PR #10.</td><td><a class="mono" href="../../../trace/requirements-matrix.md">requirements-matrix.md</a></td></tr>
+          <tr><th scope="row">Dated 2026-10-19</th><td class="mono">F3</td><td><span class="tag"><svg class="i" aria-hidden="true"><use href="#i-gavel"/></svg>Sign-off</span></td><td>David, PR #20.</td><td><a class="mono" href="../../../trace/requirements-matrix.md">requirements-matrix.md</a></td></tr>
+          <tr><th scope="row">No time</th><td class="mono">F0b</td><td><span class="tag"><svg class="i" aria-hidden="true"><use href="#i-gavel"/></svg>Steer</span></td><td>Steer D1 (pause 1), then attempt 0: reviewer FAIL.</td><td><a class="mono" href="../../../trace/build/F0b/README.md">F0b README</a></td></tr>
+          <tr><th scope="row">No time</th><td class="mono">F1b</td><td><span class="tag tag-fail"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>Fail</span></td><td>Attempt 1: security FAIL and reviewer FAIL; attempt 2: both PASS.</td><td><a class="mono" href="../../../trace/build/F1b/README.md">F1b README</a></td></tr>
+        </tbody>
+      </table>
+      </div>
+    </details>
+  </figure>
+</section>
+
+<!-- receipt figures -->
+<section id="receipts" data-req="NAV-1 VERIFY-1" aria-labelledby="receipts-h">
+  <p class="eyebrow">Receipts</p>
+  <h2 class="sec" id="receipts-h">The figures behind the answer, each with its source</h2>
+  <div class="receipts">
+    <article class="rf">
+      <p class="eyebrow">Rules built</p>
+      <p class="val">21<span class="of"> of 29</span></p>
+      <p class="derived">Counted from the matrix: 29 rule rows, 8 of them read "not built yet".</p>
+      <p><span class="tag tag-nb">8 not built yet</span></p>
+      <p class="src"><a href="../../../trace/requirements-matrix.md">docs/trace/requirements-matrix.md</a></p>
+    </article>
+    <article class="rf">
+      <p class="eyebrow">Tests passing</p>
+      <p class="val">358<span class="of"> of 358</span></p>
+      <p class="derived">Summed from the pass/total cell of each of the 21 built rows. A per-rule sum, not a de-duplicated suite total.</p>
+      <p><span class="tag tag-pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Pass</span></p>
+      <p class="src"><a href="../../../trace/requirements-matrix.md">docs/trace/requirements-matrix.md</a></p>
+    </article>
+    <article class="rf">
+      <p class="eyebrow">Nodes done</p>
+      <p class="val">6<span class="of"> of 10</span></p>
+      <p class="derived">From the plan: F0a, F0b, F1, F1b, F2 and F3 are done. F4, F5, F6 and F7 are pending.</p>
+      <p><span class="tag tag-pend"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span> <span class="small">4 nodes</span></p>
+      <p class="src"><a href="../../../plans/active/build.dag.yaml">docs/plans/active/build.dag.yaml</a></p>
+    </article>
+    <article class="rf">
+      <p class="eyebrow">Attempts and FAILs</p>
+      <p class="val">5<span class="of"> FAILs</span></p>
+      <p class="derived">Seen in F0b (1), F1b (2) and F2 (2). Highest attempt counter: F2 at 3; F0b, F1, F1b and F3 at 2. F1 and F3 loop lines are not in the data, so 5 is a floor.</p>
+      <p><span class="tag tag-fail"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>Fail</span> <span class="small">all three nodes now done</span></p>
+      <p class="src"><a href="../../../trace/build/F2/loop.jsonl">build/F2/loop.jsonl</a><a href="../../../trace/build/F1b/README.md">build/F1b/README.md</a><a href="../../../trace/build/F0b/README.md">build/F0b/README.md</a></p>
+    </article>
+    <article class="rf">
+      <p class="eyebrow">Human decisions</p>
+      <p class="val">6<span class="of"> on record</span></p>
+      <p class="derived">1 pause, 1 steer, 3 sign-offs (F1, F2, F3) and 1 merge, seen in the data. Listed below.</p>
+      <p><span class="tag"><svg class="i" aria-hidden="true"><use href="#i-gavel"/></svg>Decisions</span></p>
+      <p class="src"><a href="#human-decisions">Latest human decisions, below</a></p>
+    </article>
+  </div>
+
+  <div class="verify" data-component="verify-command">
+    <p class="eyebrow">Re-check it yourself</p>
+    <p class="small">Prints the commit time of GET-1's red, green and refactor commits, the times the chronology above lacks.</p>
+    <pre id="verify-cmd">git log --no-walk=unsorted --format='%h %cI %s' 94a7473 92ede9e 80d3ee2</pre>
+    <p class="small muted">Placeholder format string: the canonical template in <span class="mono">docs/trace/README.md</span> is not in the data this page was drawn from. The SHAs are GET-1's red, green and refactor from the matrix.</p>
+    <p style="margin-top:8px"><button class="copy" type="button" aria-describedby="verify-cmd">Copy command</button></p>
+  </div>
+</section>
+
+<!-- build plan at a glance -->
+<section id="plan" data-req="DAG-1" aria-labelledby="plan-h">
+  <p class="eyebrow">Build plan at a glance</p>
+  <h2 class="sec" id="plan-h">Ten nodes: six done, four not built yet</h2>
+  <figure class="dag" aria-labelledby="dag-cap">
+    <svg viewBox="0 0 1000 232" role="img" aria-labelledby="dag-t dag-d">
+      <title id="dag-t">Build plan as a graph of ten nodes</title>
+      <desc id="dag-d">F0a leads to F0b, F1, F1b, F2, F3, F4, F6 and F7 in a chain. F5 depends on F0b only. F0a to F3 are done; F4 to F7 are pending and not built yet. The adjacency table below holds the same information.</desc>
+      <!-- edges, arrowheads drawn as paths -->
+      <path class="edge" d="M116 60h10M224 60h10M332 60h10M440 60h10M548 60h10M656 60h10M764 60h10M872 60h10M176 104V126"/>
+      <path class="arrow" d="M127 60l-6-4v8zM235 60l-6-4v8zM343 60l-6-4v8zM451 60l-6-4v8zM559 60l-6-4v8zM667 60l-6-4v8zM775 60l-6-4v8zM883 60l-6-4v8zM176 127l-4-6h8z"/>
+
+      <!-- F0a -->
+      <rect class="node-done" x="20" y="16" width="96" height="88" rx="2"/>
+      <text class="m" x="28" y="36" style="font-weight:700;font-size:14px">F0a</text>
+      <use href="#i-check" class="si si-pass" x="28" y="44" width="14" height="14"/>
+      <text x="46" y="55" style="font-weight:700">Done</text>
+      <text class="m d" x="28" y="74">attempt 0</text>
+      <text class="m d" x="28" y="92">no PR</text>
+      <!-- F0b -->
+      <rect class="node-done" x="128" y="16" width="96" height="88" rx="2"/>
+      <text class="m" x="136" y="36" style="font-weight:700;font-size:14px">F0b</text>
+      <use href="#i-alert" class="si si-warn" x="202" y="22" width="14" height="14"/>
+      <use href="#i-check" class="si si-pass" x="136" y="44" width="14" height="14"/>
+      <text x="154" y="55" style="font-weight:700">Done</text>
+      <text class="m d" x="136" y="74">attempt 2</text>
+      <text class="m d" x="136" y="92">PR #6 vs null</text>
+      <!-- F1 -->
+      <rect class="node-done" x="236" y="16" width="96" height="88" rx="2"/>
+      <text class="m" x="244" y="36" style="font-weight:700;font-size:14px">F1</text>
+      <use href="#i-check" class="si si-pass" x="244" y="44" width="14" height="14"/>
+      <text x="262" y="55" style="font-weight:700">Done</text>
+      <text class="m d" x="244" y="74">attempt 2</text>
+      <text class="m d" x="244" y="92">PR #10</text>
+      <!-- F1b -->
+      <rect class="node-done" x="344" y="16" width="96" height="88" rx="2"/>
+      <text class="m" x="352" y="36" style="font-weight:700;font-size:14px">F1b</text>
+      <use href="#i-check" class="si si-pass" x="352" y="44" width="14" height="14"/>
+      <text x="370" y="55" style="font-weight:700">Done</text>
+      <text class="m d" x="352" y="74">attempt 2</text>
+      <text class="m d" x="352" y="92">PR #15</text>
+      <!-- F2 -->
+      <rect class="node-done" x="452" y="16" width="96" height="88" rx="2"/>
+      <text class="m" x="460" y="36" style="font-weight:700;font-size:14px">F2</text>
+      <use href="#i-check" class="si si-pass" x="460" y="44" width="14" height="14"/>
+      <text x="478" y="55" style="font-weight:700">Done</text>
+      <text class="m d" x="460" y="74">attempt 3</text>
+      <text class="m d" x="460" y="92">PR #17</text>
+      <!-- F3 -->
+      <rect class="node-done" x="560" y="16" width="96" height="88" rx="2"/>
+      <text class="m" x="568" y="36" style="font-weight:700;font-size:14px">F3</text>
+      <use href="#i-check" class="si si-pass" x="568" y="44" width="14" height="14"/>
+      <text x="586" y="55" style="font-weight:700">Done</text>
+      <text class="m d" x="568" y="74">attempt 2</text>
+      <text class="m d" x="568" y="92">PR #20</text>
+      <!-- F4 -->
+      <rect class="node-pend" x="668" y="16" width="96" height="88" rx="2"/>
+      <text class="m" x="676" y="36" style="font-weight:700;font-size:14px">F4</text>
+      <use href="#i-clock" class="si si-pend" x="676" y="44" width="14" height="14"/>
+      <text x="694" y="55" style="font-weight:700">Pending</text>
+      <text class="m d" x="676" y="74">attempt 0</text>
+      <text x="676" y="92">not built yet</text>
+      <!-- F6 -->
+      <rect class="node-pend" x="776" y="16" width="96" height="88" rx="2"/>
+      <text class="m" x="784" y="36" style="font-weight:700;font-size:14px">F6</text>
+      <use href="#i-clock" class="si si-pend" x="784" y="44" width="14" height="14"/>
+      <text x="802" y="55" style="font-weight:700">Pending</text>
+      <text class="m d" x="784" y="74">attempt 0</text>
+      <text x="784" y="92">not built yet</text>
+      <!-- F7 -->
+      <rect class="node-pend" x="884" y="16" width="96" height="88" rx="2"/>
+      <text class="m" x="892" y="36" style="font-weight:700;font-size:14px">F7</text>
+      <use href="#i-clock" class="si si-pend" x="892" y="44" width="14" height="14"/>
+      <text x="910" y="55" style="font-weight:700">Pending</text>
+      <text class="m d" x="892" y="74">attempt 0</text>
+      <text x="892" y="92">not built yet</text>
+      <!-- F5 -->
+      <rect class="node-pend" x="128" y="128" width="96" height="88" rx="2"/>
+      <text class="m" x="136" y="148" style="font-weight:700;font-size:14px">F5</text>
+      <use href="#i-clock" class="si si-pend" x="136" y="156" width="14" height="14"/>
+      <text x="154" y="167" style="font-weight:700">Pending</text>
+      <text class="m d" x="136" y="186">attempt 0</text>
+      <text x="136" y="204">not built yet</text>
+      <text class="d" x="236" y="176">Depends on F0b. No node lists F5 as a dependency.</text>
+    </svg>
+    <figcaption id="dag-cap">
+      <strong>Text equivalent.</strong> The plan is a chain F0a, F0b, F1, F1b, F2, F3, F4, F6, F7, with F5 branching from F0b. Read from <span class="mono">build.dag.yaml</span>. The adjacency table:
+    </figcaption>
+    <div class="tbl-wrap">
+      <table>
+        <caption>Build plan as an adjacency table. Default sort: plan order.</caption>
+        <thead>
+          <tr>
+            <th scope="col" aria-sort="ascending">Node, plan order</th>
+            <th scope="col">Title</th>
+            <th scope="col">Depends on</th>
+            <th scope="col">Status</th>
+            <th scope="col" class="num">Attempt</th>
+            <th scope="col" class="num">PR</th>
+            <th scope="col">Rules</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">F0a</th><td>Harness<span class="kind">harness</span></td><td class="mono">none</td><td><span class="tag tag-pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="num">0</td><td class="num muted">none</td><td class="muted">No rules</td></tr>
+          <tr><th scope="row">F0b</th><td>Walking skeleton<span class="kind">feature</span></td><td class="mono">F0a</td><td><span class="tag tag-pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="num">2</td><td class="num">#6 <span class="tag tag-warn"><svg class="i" aria-hidden="true"><use href="#i-alert"/></svg>Sources differ</span></td><td class="muted">No rules</td></tr>
+          <tr><th scope="row">F1</th><td>Sell (+ bare GET)<span class="kind">feature</span></td><td class="mono">F0b</td><td><span class="tag tag-pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="num">2</td><td class="num">#10</td>
+            <td><a class="chip" href="rule.html#SELL-1">SELL-1</a><a class="chip" href="rule.html#SELL-2">SELL-2</a><a class="chip" href="rule.html#SELL-3">SELL-3</a><a class="chip" href="rule.html#SELL-4">SELL-4</a><a class="chip" href="rule.html#SELL-5">SELL-5</a><a class="chip" href="rule.html#SELL-6">SELL-6</a><a class="chip" href="rule.html#SELL-7">SELL-7</a></td></tr>
+          <tr><th scope="row">F1b</th><td>Layered models and interfaces<span class="kind">feature</span></td><td class="mono">F1</td><td><span class="tag tag-pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="num">2</td><td class="num">#15</td><td class="muted">No rules</td></tr>
+          <tr><th scope="row">F2</th><td>Retrieve<span class="kind">feature</span></td><td class="mono">F1b</td><td><span class="tag tag-pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="num">3</td><td class="num">#17</td><td><a class="chip" href="rule.html#GET-1">GET-1</a></td></tr>
+          <tr><th scope="row">F3</th><td>Cancel (+ quote, + claims)<span class="kind">feature</span></td><td class="mono">F2</td><td><span class="tag tag-pass"><svg class="i" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="num">2</td><td class="num">#20</td>
+            <td><a class="chip" href="rule.html#CANCEL-1a">CANCEL-1a</a><a class="chip" href="rule.html#CANCEL-1b">CANCEL-1b</a><a class="chip" href="rule.html#CANCEL-1c">CANCEL-1c</a><a class="chip" href="rule.html#CANCEL-2">CANCEL-2</a><a class="chip" href="rule.html#CANCEL-3">CANCEL-3</a><a class="chip" href="rule.html#CANCEL-4">CANCEL-4</a><a class="chip" href="rule.html#CANCEL-6">CANCEL-6</a><a class="chip" href="rule.html#CANCEL-7">CANCEL-7</a><a class="chip" href="rule.html#COULD-1">COULD-1</a><a class="chip" href="rule.html#COULD-2">COULD-2</a><a class="chip" href="rule.html#COULD-2a">COULD-2a</a><a class="chip" href="rule.html#COULD-2b">COULD-2b</a><a class="chip" href="rule.html#COULD-2c">COULD-2c</a></td></tr>
+          <tr><th scope="row">F4</th><td>Renew<span class="kind">feature</span></td><td class="mono">F3</td><td><span class="tag tag-pend"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span> <span class="tag tag-nb">not built yet</span></td><td class="num">0</td><td class="num muted">none</td>
+            <td><a class="chip chip-nb" href="rule.html#RENEW-1/2">RENEW-1/2</a><a class="chip chip-nb" href="rule.html#RENEW-3a">RENEW-3a</a><a class="chip chip-nb" href="rule.html#RENEW-3b">RENEW-3b</a><a class="chip chip-nb" href="rule.html#RENEW-4">RENEW-4</a><a class="chip chip-nb" href="rule.html#RENEW-5">RENEW-5</a><a class="chip chip-nb" href="rule.html#RENEW-6">RENEW-6</a><a class="chip chip-nb" href="rule.html#COULD-3">COULD-3</a><a class="chip chip-nb" href="rule.html#CANCEL-5">CANCEL-5</a> <span class="small muted">all not built yet</span></td></tr>
+          <tr><th scope="row">F5</th><td>IaC + pipeline (evidence, never deployed)<span class="kind">evidence</span></td><td class="mono">F0b</td><td><span class="tag tag-pend"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span> <span class="tag tag-nb">not built yet</span></td><td class="num">0</td><td class="num muted">none</td><td class="muted">No rules</td></tr>
+          <tr><th scope="row">F6</th><td>README<span class="kind">docs</span></td><td class="mono">F4</td><td><span class="tag tag-pend"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span> <span class="tag tag-nb">not built yet</span></td><td class="num">0</td><td class="num muted">none</td><td class="muted">No rules</td></tr>
+          <tr><th scope="row">F7</th><td>Pitch deck<span class="kind">docs</span></td><td class="mono">F6</td><td><span class="tag tag-pend"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span> <span class="tag tag-nb">not built yet</span></td><td class="num">0</td><td class="num muted">none</td><td class="muted">No rules</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small" style="margin-top:12px"><strong>Sources disagree on F0b's PR.</strong> Its trail README header reads "PR #6 · merge pending"; <span class="mono">build.dag.yaml</span> has <span class="mono">pr: null</span>. Both are shown; neither is picked.</p>
+  </figure>
+</section>
+
+<!-- latest human decisions -->
+<section id="human-decisions" data-req="HITL-1" aria-labelledby="hd-h">
+  <p class="eyebrow">Latest human decisions</p>
+  <h2 class="sec" id="hd-h">Who decided what, newest first</h2>
+  <p class="small muted" style="margin:-8px 0 12px">Ordered by date; ties by time where one is recorded. Rows with a date but no time cannot be ordered against timed rows on the same day.</p>
+  <ol class="hd">
+    <li class="hd-row" data-component="human-decision-row">
+      <div class="hd-type"><span class="tag"><svg class="i" aria-hidden="true"><use href="#i-pr"/></svg>Merge</span><span class="small muted">F2 · David</span></div>
+      <div class="hd-what">
+        <p>PR #17 merged by David in the GitHub UI.</p>
+        <p class="hd-note">The F2 trail README (compiled <span class="mono">2026-10-19T00:07:57Z</span>) still reads "merge pending"; the loop records the merge afterwards, as <span class="mono">merged(ad7b6b0)</span>.</p>
+      </div>
+      <div class="hd-when"><time datetime="2026-10-19T00:10:40Z">2026-10-19T00:10:40Z</time>Recorded in <a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a></div>
+    </li>
+    <li class="hd-row" data-component="human-decision-row">
+      <div class="hd-type"><span class="tag"><svg class="i" aria-hidden="true"><use href="#i-gavel"/></svg>Sign-off</span><span class="small muted">F2 · David</span></div>
+      <div class="hd-what">
+        <p>Verdict Accept F2: 41/41 steps PASS at <span class="mono">beba48e</span>; Postman F2 25/0 and 26/0; integrate 374/0 on this head.</p>
+        <p class="hd-note">Carried over to F3: the errors-key casing noted as <span class="mono">?REFERENCE</span> in the sign-off detail.</p>
+      </div>
+      <div class="hd-when"><time datetime="2026-10-19T00:07:35Z">2026-10-19T00:07:35Z</time>The QA file records 2026-10-19 01:05. Sources: <a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a>, <a class="mono" href="../../../qa/build-F2.md">docs/qa/build-F2.md</a></div>
+    </li>
+    <li class="hd-row" data-component="human-decision-row">
+      <div class="hd-type"><span class="tag"><svg class="i" aria-hidden="true"><use href="#i-gavel"/></svg>Sign-off</span><span class="small muted">F3 · David</span></div>
+      <div class="hd-what">
+        <p>Sign-off recorded for the 13 rules of node F3, PR #20.</p>
+        <p class="hd-note">The matrix holds a date only.</p>
+      </div>
+      <div class="hd-when"><time datetime="2026-10-19">2026-10-19</time>Time not recorded. Source: <a class="mono" href="../../../trace/requirements-matrix.md">requirements-matrix.md</a></div>
+    </li>
+    <li class="hd-row" data-component="human-decision-row">
+      <div class="hd-type"><span class="tag"><svg class="i" aria-hidden="true"><use href="#i-gavel"/></svg>Pause 1</span><span class="small muted">F2 · recorded by the orchestrator</span></div>
+      <div class="hd-what">
+        <p>Api.Tests RED 22/202 (21 GET-1 + unknown-query 400); stub callable.</p>
+        <p class="hd-note">David's reply at this pause is not in the data this page was drawn from.</p>
+      </div>
+      <div class="hd-when"><time datetime="2026-10-18T22:30:10Z">2026-10-18T22:30:10Z</time>Recorded in <a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a></div>
+    </li>
+    <li class="hd-row" data-component="human-decision-row">
+      <div class="hd-type"><span class="tag"><svg class="i" aria-hidden="true"><use href="#i-gavel"/></svg>Sign-off</span><span class="small muted">F1 · David</span></div>
+      <div class="hd-what">
+        <p>Sign-off recorded for the 7 SELL rules of node F1, PR #10.</p>
+        <p class="hd-note">The matrix holds a date only.</p>
+      </div>
+      <div class="hd-when"><time datetime="2026-10-18">2026-10-18</time>Time not recorded. Source: <a class="mono" href="../../../trace/requirements-matrix.md">requirements-matrix.md</a></div>
+    </li>
+    <li class="hd-row" data-component="human-decision-row">
+      <div class="hd-type"><span class="tag"><svg class="i" aria-hidden="true"><use href="#i-gavel"/></svg>Steer</span><span class="small muted">F0b · who: not stated</span></div>
+      <div class="hd-what">
+        <p>Steer D1, given at pause 1.</p>
+        <p class="hd-note">The trail README lists it in the loop line with no time and no author.</p>
+      </div>
+      <div class="hd-when"><span class="muted">Time not in the data.</span> Source: <a class="mono" href="../../../trace/build/F0b/README.md">F0b README</a></div>
+    </li>
+  </ol>
+</section>
+
+<!-- states -->
+<section id="states" aria-labelledby="states-h">
+  <p class="eyebrow">States of this screen</p>
+  <h2 class="sec" id="states-h">Loading, error, in flight and not built yet, beside the populated view above</h2>
+  <div class="states">
+
+    <div class="panel" aria-label="State: loading">
+      <p class="state-label">State: loading</p>
+      <p class="small">Reading <span class="mono">docs/trace/requirements-matrix.md</span>. Static skeleton, no motion; no figure is shown until it is read.</p>
+      <div class="skel" aria-busy="true" role="status">
+        <div><i class="s"></i><i class="b"></i><i></i></div>
+        <div><i class="s"></i><i class="b"></i><i></i></div>
+        <div><i class="s"></i><i class="b"></i><i></i></div>
+        <div><i class="s"></i><i class="b"></i><i></i></div>
+        <div><i class="s"></i><i class="b"></i><i></i></div>
+        <span style="position:absolute;left:-9999px">Loading the receipt figures from the trail</span>
+      </div>
+    </div>
+
+    <div class="panel" aria-label="State: error">
+      <p class="state-label">State: error</p>
+      <div class="err" role="alert">
+        <p class="tag tag-fail"><svg class="i" aria-hidden="true"><use href="#i-x"/></svg>Error</p>
+        <p>The requirements matrix could not be read, so the receipt figures are withheld rather than guessed.</p>
+        <p class="small" style="margin-top:8px">Open the source: <a class="mono" href="../../../trace/requirements-matrix.md">docs/trace/requirements-matrix.md</a>. The completeness banner at the top of the page would stay first and say what is missing.</p>
+      </div>
+    </div>
+
+    <div class="panel" aria-label="State: in flight">
+      <p class="state-label">State: in flight</p>
+      <div class="ifl">
+        <p class="eyebrow">Node F2, as the loop recorded it at <time class="mono" datetime="2026-10-18T22:50:11Z">2026-10-18T22:50:11Z</time></p>
+        <p><span class="tag tag-pend"><svg class="i" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span> <span class="mono">attempt 3</span>, investigation <span class="mono">inv-001</span> opened</p>
+        <p class="small">"attempt 3 stop; parent build/F2 ... run ends until David decides." A live page shows the open node here and refreshes its figures as the trail grows. No progress bar: the trail records events, not percentages.</p>
+        <p class="small"><a class="mono" href="../../../trace/build/F2/loop.jsonl">build/F2/loop.jsonl</a></p>
+      </div>
+    </div>
+
+    <div class="panel" aria-label="State: not built">
+      <p class="state-label">State: not built</p>
+      <div class="nbregion">
+        <p><span class="nbw">Rules in node F4: not built yet.</span></p>
+        <p class="small" style="margin:4px 0 8px">These rows hold no tests, commits or sign-off yet. Nothing here is a failure.</p>
+        <p><a class="chip chip-nb" href="rule.html#CANCEL-5">CANCEL-5</a><a class="chip chip-nb" href="rule.html#RENEW-1/2">RENEW-1/2</a><a class="chip chip-nb" href="rule.html#RENEW-3a">RENEW-3a</a><a class="chip chip-nb" href="rule.html#RENEW-3b">RENEW-3b</a><a class="chip chip-nb" href="rule.html#RENEW-4">RENEW-4</a><a class="chip chip-nb" href="rule.html#RENEW-5">RENEW-5</a><a class="chip chip-nb" href="rule.html#RENEW-6">RENEW-6</a><a class="chip chip-nb" href="rule.html#COULD-3">COULD-3</a></p>
+        <p class="small muted" style="margin-top:8px">From the matrix: 8 of 29 rows read "not built yet".</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+</main>
+</div>
+</body>
+</html>

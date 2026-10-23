@@ -1,0 +1,25 @@
+// Cut from tests/web/e2e/U1/nav-1.spec.ts: a plain title, a title in a loop whose template literal interpolates
+// three values (one source line, one test per figure when it runs), and a backtick title with no interpolation.
+import { expect, test } from '@playwright/test';
+
+const figures = [
+  { name: 'rules built', value: '3 of 5' },
+  { name: 'tests passing', value: '2 of 5' },
+] as const;
+
+test('NAV-1 · the overview opens on the question, before any other region', async ({ page }) => {
+  await page.goto('/#/');
+  await expect(page.getByRole('main')).toBeVisible();
+});
+
+for (const [i, f] of figures.entries()) {
+  test(`NAV-1 · receipt figure ${i + 1}, ${f.name}, reads ${f.value} from the fixture`, async ({ page }) => {
+    await page.goto('/#/');
+    await expect(page.locator('figure').nth(i).locator('p').first()).toHaveText(f.value);
+  });
+}
+
+test(`NAV-1 · the overview draws the search and the theme toggle once, in the top bar`, async ({ page }) => {
+  await page.goto('/#/');
+  await expect(page.getByRole('search')).toHaveCount(1);
+});

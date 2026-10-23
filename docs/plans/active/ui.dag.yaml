@@ -1,0 +1,612 @@
+plan_id: ui
+kind: build
+title: Docket UI build
+status: approved
+created: 2026-10-20
+approved_by: david
+approved_on: 2026-10-20
+requirements_rev: 716553f
+parent: null
+nodes:
+  - id: U0a
+    title: Harness extension: the web loop, kit fixes, derivation and fixture trails
+    kind: harness
+    owner: david
+    depends_on: []
+    rules: []
+    cuttable: false
+    budget: null
+    status: done
+    attempt: 1
+    branch: feature/ui/U0a
+    worktree: .claude/worktrees/ui-U0a
+    pr: 57
+    qa: docs/qa/ui-U0a.md
+    trace: docs/trace/ui/U0a/
+    acceptance:
+      - "web-testing.spec.md settles red, stub and green for a screen; /feature runs a ui node with the web gates: typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference"
+      - "The kit defects in docs/trace/ui/DS/g4-defects.md section 2 are fixed through one supervised kit change, the stylekit rebuilt, and David re-signs the changed screens"
+      - "derive-screens.mjs renders a node reference screens from the signed-off set (screens C7), with its tests, setting the shell (current nav item and tab, title, one in-flow drawer) from each screen, never its frame (g4-defects.md section 1)"
+      - "Small hand-checked fixture trails (complete, incomplete, FAIL-and-fix) exist for behaviour tests"
+      - "render-trace.mjs emits the harness file AGENT-3 reads into docs/trace/, so the compiler never reads .claude/ (DATA-7)"
+    tasks:
+      - {id: t1, role: david, step: session, layer: null, rules: [], title: "web-testing.spec.md, and /feature extended to ui nodes (web gates, diff scopes, the tester and builder web skills), by harness PR", status: done}
+      - {id: t2, role: david, step: session, layer: null, rules: [], title: "Kit fixes from g4-defects.md section 2 (data-table clipping and class undefined, dark-mode contrast, refund-worked-sum alignment, request-log at 390) as a supervised kit change; stylekit rebuilt; changed screens re-signed", status: done}
+      - {id: t3, role: david, step: session, layer: null, rules: [], title: "derive-screens.mjs and its tests", status: done}
+      - {id: t4, role: david, step: session, layer: null, rules: [], title: "Fixture trails for behaviour tests: complete, incomplete, FAIL-and-fix", status: done}
+      - {id: t5, role: david, step: session, layer: null, rules: [], title: "render-trace.mjs emits the harness file (the roster, skills and hooks) into docs/trace/", status: done}
+  - id: U0b
+    title: Walking skeleton: compiler, trace.json, the app shell, static build
+    kind: feature
+    owner: loop
+    depends_on: [U0a]
+    rules: [DATA-1, DATA-3, DATA-5, DATA-6, DATA-7, THEME-1, SEC-1, BRAND-1, HONEST-1, A11Y-1, RESP-1]
+    cuttable: false
+    budget: null
+    status: done
+    attempt: 5
+    branch: feature/ui/U0b
+    worktree: .claude/worktrees/ui-U0b
+    pr: null
+    qa: docs/qa/ui-U0b.md
+    trace: docs/trace/ui/U0b/
+    acceptance:
+      - "npm run trace compiles the trail into trace.json, reading only docs/ and git, and fails on a privacy-denylist match"
+      - "npm run build then npm run preview serves the app; every nav entry routes, and unbuilt screens show the not-built-yet pattern"
+      - "The app shell sets the current nav item, the page title and the footer stamp (compiled-at SHA and UTC time) from the route and trace.json, as g4-defects.md section 1 requires"
+      - "Light and dark both render; axe finds no violation; no page scrolls sideways at 390"
+      - "No page shows a raw placeholder (‹nodeId›, ‹ruleId›, ‹planId›, ‹reference›); a loading, error or not-built page makes no snapshot claim (g4-defects.md section 1, section 3)"
+    tasks:
+      - {id: t1, role: builder, step: scaffold, layer: null, rules: [], title: "The app entry, the hash router and the trace npm script; no screens", status: done}
+      - {id: t2, role: tester, step: red, layer: acceptance, rules: [DATA-1, DATA-3, DATA-5, DATA-6, DATA-7, THEME-1, SEC-1, BRAND-1, HONEST-1, A11Y-1, RESP-1], title: "Playwright acceptance for U0b on fixture trails, and parity with its derived reference; every node rule", status: done}
+      - {id: t3, role: builder, step: stub, layer: screen, rules: [], title: "The U0b routes render the derived reference as canned content", status: done}
+      - {id: t4, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U0b stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: done}
+      - {id: t5, role: tester, step: red, layer: compiler, rules: [DATA-1, DATA-3, DATA-5, DATA-6, DATA-7], title: "Unit tests for the trail compiler: trace.json with its SHA and UTC stamp, read-only, privacy denylist", status: done}
+      - {id: t6, role: builder, step: green, layer: compiler, rules: [DATA-1, DATA-3, DATA-5, DATA-6, DATA-7], title: "Green: the trail compiler: trace.json with its SHA and UTC stamp, read-only, privacy denylist", status: done}
+      - {id: t7, role: tester, step: red, layer: loader, rules: [DATA-1, DATA-3], title: "Unit tests for the data loader: one versioned trace.json, no runtime repo reads", status: done}
+      - {id: t8, role: builder, step: green, layer: loader, rules: [DATA-1, DATA-3], title: "Green: the data loader: one versioned trace.json, no runtime repo reads", status: done}
+      - {id: t9, role: builder, step: green, layer: screen, rules: [DATA-1, DATA-3, DATA-5, DATA-6, DATA-7, THEME-1, SEC-1, BRAND-1, HONEST-1, A11Y-1, RESP-1], title: "The app shell (route-driven nav, title, stamp, theme) and the not-built-yet pattern; whole acceptance suite green", status: done}
+      - {id: t10, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: done}
+      - {id: t11, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: done}
+      - {id: t12, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t13, role: tester, step: qa, layer: null, rules: [DATA-1, DATA-3, DATA-5, DATA-6, DATA-7, THEME-1, SEC-1, BRAND-1, HONEST-1, A11Y-1, RESP-1], title: "QA script docs/qa/ui-U0b.md: steps in the running app, tagged per rule", status: done}
+      - {id: t14, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: done}
+      - {id: t15, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: done}
+      - {id: t16, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: done}
+      - {id: t17, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: done}
+      - {id: t18, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: done}
+  - id: U1
+    title: Overview, requirements matrix and rule page
+    kind: feature
+    owner: loop
+    depends_on: [U0b]
+    rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3]
+    cuttable: false
+    budget: null
+    status: done
+    attempt: 2
+    branch: feature/ui/U1
+    worktree: .claude/worktrees/ui-U1
+    pr: 84
+    qa: docs/qa/ui-U1.md
+    trace: docs/trace/ui/U1/
+    acceptance:
+      - "The overview answers its question first, with the receipt figures from trace.json"
+      - "The matrix lists every rule with its node, tests and status, and filters by node and status"
+      - "A rule page shows the rule red before green, each step linked to its commit; links out open the commit and the file on GitHub"
+      - "A rule with no node or no tests shows not built yet; an incomplete trail shows its reasons verbatim, never clean"
+      - "Every rule chip opens its own rule; the overview draws the search and theme toggle once, and an incomplete node's reasons as rendered text, not raw Markdown (g4-defects.md section 3)"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "Playwright acceptance for U1 on fixture trails, and parity with its derived reference; every node rule", status: done}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U1 routes render the derived reference as canned content", status: done}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U1 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: done}
+      - {id: t4, role: tester, step: red, layer: compiler, rules: [NAV-1, RULE-2, DATA-4], title: "Unit tests for rules, their tests, red-before-green order, the receipt figures and TRAIL INCOMPLETE reasons verbatim", status: done}
+      - {id: t5, role: builder, step: green, layer: compiler, rules: [NAV-1, RULE-2, DATA-4], title: "Green: rules, their tests, red-before-green order, the receipt figures and TRAIL INCOMPLETE reasons verbatim", status: done}
+      - {id: t6, role: tester, step: red, layer: compiler, rules: [MATRIX-1, RULE-1, NAV-3], title: "Unit tests for the compiler: rule title, feature, priority and interpretation from requirements.md, its source line, tests by name, commit parents", status: done}
+      - {id: t7, role: builder, step: green, layer: compiler, rules: [MATRIX-1, RULE-1, NAV-3], title: "Green: rule title, feature, priority and interpretation from requirements.md, its source line, tests by name, commit parents", status: done}
+      - {id: t8, role: builder, step: green, layer: screen, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "The overview, matrix and rule screens; whole acceptance suite green", status: done}
+      - {id: t9, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: done}
+      - {id: t10, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: done}
+      - {id: t11, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t12, role: tester, step: qa, layer: null, rules: [NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4, NAV-3], title: "QA script docs/qa/ui-U1.md: steps in the running app, tagged per rule", status: done}
+      - {id: t13, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: done}
+      - {id: t14, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: done}
+      - {id: t15, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: done}
+      - {id: t16, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: done}
+      - {id: t17, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: done}
+  - id: U2
+    title: Plan DAG, node page and walkthrough
+    kind: feature
+    owner: loop
+    depends_on: [U0b]
+    rules: [DAG-1, NODE-1, TDD-1, RULE-3, DATA-8]
+    cuttable: false
+    budget: null
+    status: done
+    attempt: 2
+    branch: feature/ui/U2
+    worktree: .claude/worktrees/ui-U2
+    pr: null
+    qa: docs/qa/ui-U2.md
+    trace: docs/trace/ui/U2/
+    acceptance:
+      - "The plan page shows the DAG with each node status and a text equivalent, in file order"
+      - "The node page shows the node header, its tasks and tabs from the route"
+      - "Every node link opens the node it names, and every node page (node, walkthrough, loop, activity) heads the node shown, not F3 (g4-defects.md sections 1 and 3)"
+      - "The walkthrough lists the node commits in order with their TDD steps; a commit shows its diff"
+      - "A node in flight compiles with what exists and shows as in progress; malformed lines are reported, never dropped"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [DAG-1, NODE-1, TDD-1, RULE-3, DATA-8], title: "Playwright acceptance for U2 on fixture trails, and parity with its derived reference; every node rule", status: done}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U2 routes render the derived reference as canned content", status: done}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U2 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: done}
+      - {id: t4, role: tester, step: red, layer: regression, rules: [], title: "U1's parity settles each region at builtAt, as U0b's does, so U1's suite holds once U2 builds the node and rule pages' regions (U2 t1 tester note)", status: done}
+      - {id: t5, role: tester, step: red, layer: compiler, rules: [DAG-1, TDD-1, RULE-3, DATA-8], title: "Unit tests for plans, nodes, commits with TDD trailers and diffs, and in-flight tolerance", status: done}
+      - {id: t6, role: builder, step: green, layer: compiler, rules: [DAG-1, TDD-1, RULE-3, DATA-8], title: "Green: plans, nodes, commits with TDD trailers and diffs, and in-flight tolerance", status: done}
+      - {id: t7, role: builder, step: green, layer: screen, rules: [DAG-1, NODE-1, TDD-1, RULE-3, DATA-8], title: "The plan, node, walkthrough and commit screens; whole acceptance suite green", status: done}
+      - {id: t8, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: done}
+      - {id: t9, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: done}
+      - {id: t10, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t11, role: tester, step: qa, layer: null, rules: [DAG-1, NODE-1, TDD-1, RULE-3, DATA-8], title: "QA script docs/qa/ui-U2.md: steps in the running app, tagged per rule", status: done}
+      - {id: t12, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: done}
+      - {id: t13, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: done}
+      - {id: t14, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: done}
+      - {id: t15, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: done}
+      - {id: t16, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: U3
+    title: Loop, verdicts, findings and the retry ladder
+    kind: feature
+    owner: loop
+    depends_on: [U0b]
+    rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2]
+    cuttable: false
+    budget: null
+    status: done
+    attempt: 5
+    branch: feature/ui/U3
+    worktree: .claude/worktrees/ui-U3
+    pr: 101
+    qa: docs/qa/ui-U3.md
+    trace: docs/trace/ui/U3/
+    acceptance:
+      - "The loop shows every gate with its command, exit code, expectation and detail; FAILs stand out"
+      - "The retry ladder shows each attempt and what changed next"
+      - "Each verdict renders from its JSON with gate refs, head SHA and findings, the raw JSON one click away; each finding shows the commit that fixed it"
+      - "Every item keeps its provenance label"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2], title: "Playwright acceptance for U3 on fixture trails, and parity with its derived reference; every node rule", status: done}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U3 routes render the derived reference as canned content", status: done}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U3 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: done}
+      - {id: t4, role: tester, step: red, layer: compiler, rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2], title: "Unit tests for loop events, attempts, verdicts, findings and provenance labels", status: done}
+      - {id: t5, role: builder, step: green, layer: compiler, rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2], title: "Green: loop events, attempts, verdicts, findings and provenance labels", status: done}
+      - {id: t6, role: builder, step: green, layer: screen, rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2], title: "The loop, verdict and finding screens; whole acceptance suite green", status: done}
+      - {id: t7, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: done}
+      - {id: t8, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: done}
+      - {id: t9, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t10, role: tester, step: qa, layer: null, rules: [LOOP-1, LOOP-2, LOOP-3, LOOP-4, DATA-2], title: "QA script docs/qa/ui-U3.md: steps in the running app, tagged per rule", status: done}
+      - {id: t11, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: done}
+      - {id: t12, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: done}
+      - {id: t13, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: done}
+      - {id: t14, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: done}
+      - {id: t15, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: U4
+    title: Agents, human decisions and verify-it-yourself: the explorer end to end
+    kind: feature
+    owner: loop
+    depends_on: [U1, U2, U3]
+    rules: [AGENT-1, AGENT-2, HITL-1, VERIFY-1, NAV-2, NAV-4, PERF-1]
+    cuttable: false
+    budget: null
+    status: done
+    attempt: 2
+    branch: feature/ui/U4
+    worktree: .claude/worktrees/ui-U4
+    pr: 113
+    qa: docs/qa/ui-U4.md
+    trace: docs/trace/ui/U4/
+    acceptance:
+      - "Each commit names the agent its trailers give and the hook-seen agent; the activity page shows agent swimlanes with a text table"
+      - "The decisions page lists every pause, steer, sign-off and merge with its evidence"
+      - "The about page explains how to verify the trail yourself; every entity has a URL and an unknown path shows not-found; search finds rules, nodes, SHAs and paths"
+      - "Not-found uses the triangle-alert state and claims nothing was compiled only when nothing was; decisions labels its filters, never raw ids (g4-defects.md section 3)"
+      - "The cross-node flow gates pass (follow the F2 FAIL to its fix across node, loop and finding); every built explorer screen matches its signed-off reference; cold load within budget"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [AGENT-1, AGENT-2, HITL-1, VERIFY-1, NAV-2, NAV-4, PERF-1], title: "Playwright acceptance for U4 on fixture trails, regression specs, parity with its derived reference, and unit tests (compiler: agents per commit, activity logs, human decisions; loader: entity URLs, the search index, the cold-load budget); every node rule … and unit tests", status: done}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U4 routes render the derived reference as canned content (skipped: David delegation 2026-10-22, ui.md 13)", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1 (skipped: David delegation 2026-10-22, ui.md 13; David sees everything at Pause 2)", status: skipped}
+      - {id: t4, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui before green (U5 landed the shell and the sessions compiler U4 builds on); re-derive", status: done}
+      - {id: t5, role: builder, step: green, layer: screen, rules: [AGENT-1, AGENT-2, HITL-1, VERIFY-1, NAV-2, NAV-4, PERF-1], title: "Compiler (agents, activity, decisions) and loader (entity URLs, search index, cold-load budget), then the activity, decisions, about and not-found screens and search; the cross-node flows; whole acceptance suite green … all layers", status: done}
+      - {id: t6, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: skipped}
+      - {id: t7, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity, the regression, rule coverage, diff scope", status: done}
+      - {id: t8, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t9, role: tester, step: qa, layer: null, rules: [AGENT-1, AGENT-2, HITL-1, VERIFY-1, NAV-2, NAV-4, PERF-1], after: [t7], title: "QA script docs/qa/ui-U4.md, beside review", status: done}
+      - {id: t10, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: done}
+      - {id: t11, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: done}
+      - {id: t12, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
+      - {id: t13, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script, then sign off", status: done}
+      - {id: t14, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: U5
+    title: Sessions, harness anatomy, stats and the tour
+    kind: feature
+    owner: loop
+    depends_on: [U0b]
+    rules: [CTX-1, AGENT-3, STATS-1, NAV-5]
+    cuttable: true
+    budget: null
+    status: done
+    attempt: 1
+    branch: feature/ui/U5
+    worktree: .claude/worktrees/ui-U5
+    pr: 103
+    qa: docs/qa/ui-U5.md
+    trace: docs/trace/ui/U5/
+    acceptance:
+      - "The sessions page lists the context snapshots and opens one at /sessions/:file"
+      - "The harness page shows each agent, its tools, skills and never-dos, and the hooks that guard it, from the generated harness file"
+      - "The stats page and the guided tour render from the trail"
+      - "Each stats figure has one value from the trail (F6 A2's reviewer FAIL has one time), and each sessions entry opens its own file (g4-defects.md section 3)"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], title: "Playwright acceptance for U5 on fixture trails, regression specs, parity with its derived reference, and unit tests (compiler: context snapshots, the harness file, delivery stats); every node rule … and unit tests", status: done}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The U5 routes render the derived reference as canned content", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the U5 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: skipped}
+      - {id: t4, role: builder, step: green, layer: screen, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], title: "Compiler (context snapshots, the harness file, delivery stats), then the sessions, harness and stats screens and the tour; whole acceptance suite green … all layers", status: done}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: skipped}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity, the regression, rule coverage, diff scope", status: done}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [CTX-1, AGENT-3, STATS-1, NAV-5], after: [t6], title: "QA script docs/qa/ui-U5.md, beside review", status: done}
+      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: done}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: done}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script, then sign off", status: done}
+      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: U6
+    title: Hosting: static build and deep links on a static host
+    kind: evidence
+    owner: loop
+    depends_on: [U4]
+    rules: []
+    cuttable: true
+    budget: null
+    status: cut
+    decided_by: david
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/ui-U6.md
+    trace: docs/trace/ui/U6/
+    acceptance:
+      - "web-deployment.spec.md settles the base path and deep links; vite preview serves every route from the static build"
+      - "The GitHub Pages workflow is written and checked; enabling Pages is David alone, once the repo is public"
+    tasks:
+      - {id: t1, role: builder, step: write, layer: null, rules: [], title: "web-deployment.spec.md, the static build settings and the Pages workflow", status: pending}
+      - {id: t2, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: pending}
+      - {id: t3, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t4, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U6.md: steps in the running app, tagged per rule", status: pending}
+      - {id: t5, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: pending}
+      - {id: t6, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; screenshot review page; completeness check passes", status: pending}
+      - {id: t7, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: pending}
+      - {id: t8, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: pending}
+      - {id: t9, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: W1
+    title: Workbench: sell, policy view and problem details
+    kind: feature
+    owner: loop
+    depends_on: [U0b]
+    rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1]
+    cuttable: false
+    budget: null
+    status: done
+    attempt: 4
+    branch: feature/ui/W1
+    worktree: .claude/worktrees/ui-W1
+    pr: 92
+    qa: docs/qa/ui-W1.md
+    trace: docs/trace/ui/W1/
+    acceptance:
+      - "With the API on port 5080, the sell form sells a policy and opens its policy view, with the dates the API returns"
+      - "A 400 or 422 shows the problem details against each field; send anyway sends the body as typed and shows the API answer"
+      - "A running request shows busy; recent policies in this browser are listed on the workbench home"
+      - "A submitting form shows its request in flight; a field error never sits beside a valid value; the home's reference input has a label; a policy link opens that policy (g4-defects.md section 3)"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1], title: "Playwright acceptance for W1 on fixture trails, and parity with its derived reference; every node rule", status: done}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The W1 routes render the derived reference as canned content", status: done}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the W1 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: done}
+      - {id: t4, role: tester, step: red, layer: client, rules: [WB-1, WB-2, WB-3, WB-6, WB-9], title: "Unit tests for the API client: sell, retrieve, problem details, send anyway, recent policies", status: done}
+      - {id: t5, role: builder, step: green, layer: client, rules: [WB-1, WB-2, WB-3, WB-6, WB-9], title: "Green: the API client: sell, retrieve, problem details, send anyway, recent policies", status: done}
+      - {id: t6, role: builder, step: green, layer: screen, rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1], title: "The workbench home, sell and policy screens; whole acceptance suite green", status: done}
+      - {id: t7, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green", status: done}
+      - {id: t8, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: done}
+      - {id: t9, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t10, role: tester, step: qa, layer: null, rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1], title: "QA script docs/qa/ui-W1.md: steps in the running app, tagged per rule", status: done}
+      - {id: t11, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: done}
+      - {id: t12, role: tester, step: red, layer: regression, rules: [WB-1, WB-2, WB-3, WB-6, WB-9, BUSY-1], title: "Regression specs for wb-home, wb-sell and wb-policy, and the backfill of U0a's and U0b's screens (ui.md, a node past red)", status: done}
+      - {id: t13, role: builder, step: refactor, layer: null, rules: [], title: "snapshotPathTemplate into docs/ui/baselines/ in playwright.config.ts", status: done}
+      - {id: t14, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity with the derived reference, every screen built so far against its baseline, rule coverage, diff scope", status: done}
+      - {id: t15, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t16, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/ui; every check on the post-rebase HEAD", status: done}
+      - {id: t17, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; write the baselines; chore(trace) commit; screenshot review page; completeness check passes", status: done}
+      - {id: t18, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and rebase comments", status: done}
+      - {id: t19, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script and the review page, then sign off", status: done}
+      - {id: t20, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: done}
+  - id: W2
+    title: Workbench: cancel with quote
+    kind: feature
+    owner: loop
+    depends_on: [W1]
+    rules: [WB-4]
+    cuttable: false
+    budget: null
+    status: done
+    attempt: 2
+    branch: feature/ui/W2
+    worktree: .claude/worktrees/ui-W2
+    pr: 100
+    qa: docs/qa/ui-W2.md
+    trace: docs/trace/ui/W2/
+    acceptance:
+      - "Cancel quotes first, cancels with the quoted date, and compares quote and cancellation"
+      - "A successful cancel is shown; submitting shows one busy Cancel button and its request in flight (g4-defects.md section 3)"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-4], title: "Playwright acceptance for W2 on the live API, regression specs, parity with its derived reference, and unit tests (client); every node rule … and unit tests", status: done}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The W2 routes render the derived reference as canned content", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the W2 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: skipped}
+      - {id: t4, role: builder, step: green, layer: screen, rules: [WB-4], title: "Quote and cancel client, then the cancel screen; whole acceptance suite green … all layers", status: done}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: skipped}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity, the regression, rule coverage, diff scope", status: done}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [WB-4], after: [t6], title: "QA script docs/qa/ui-W2.md, beside review", status: done}
+      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: done}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: done}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script, then sign off", status: done}
+      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: W3
+    title: Workbench: claims, renew and the request inspector
+    kind: feature
+    owner: loop
+    depends_on: [W1]
+    rules: [WB-5, WB-7]
+    cuttable: false
+    budget: null
+    status: done
+    attempt: 5
+    branch: feature/ui/W3
+    worktree: .claude/worktrees/ui-W3
+    pr: 105
+    qa: docs/qa/ui-W3.md
+    trace: docs/trace/ui/W3/
+    acceptance:
+      - "A claim is recorded and the re-quote shows its effect; renew renews within the window"
+      - "The inspector shows every request this page sent as an overlay that never covers content; the requests page lists them all"
+      - "One inspector per page; the requests page has one filter and one count and shows only times it recorded; the claim description has a label and renew's amount is named as shown (g4-defects.md sections 1 and 3)"
+      - "The workbench cross-node flow gates pass: sell, then cancel, claim and renew the same policy"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-5, WB-7], title: "Playwright acceptance for W3 on the live API, regression specs, parity with its derived reference, and unit tests (client: claims, renewals, the request log); every node rule … and unit tests", status: done}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "The W3 routes render the derived reference as canned content", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: open the W3 stub routes in the running app beside the derived reference, read the acceptance tests; go or change", status: skipped}
+      - {id: t4, role: builder, step: green, layer: screen, rules: [WB-5, WB-7], title: "Claims, renewals and request-log client, then the claim, renew and requests screens and the inspector drawer; the workbench flows; whole acceptance suite green … all layers", status: done}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: skipped}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, parity, the regression, rule coverage, diff scope", status: done}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [WB-5, WB-7], after: [t6], title: "QA script docs/qa/ui-W3.md, beside review", status: done}
+      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: done}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: done}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: test the feature in the running app from the QA script, then sign off", status: done}
+      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: U7
+    title: "Tech debt: the non-blocking carries (inv-005)"
+    kind: feature
+    owner: loop
+    depends_on: [U0b]
+    rules: []
+    cuttable: true
+    budget: null
+    status: done
+    attempt: 1
+    branch: feature/ui/U7
+    worktree: .claude/worktrees/ui-U7
+    pr: 107
+    qa: docs/qa/ui-U7.md
+    trace: docs/trace/ui/U7/
+    acceptance:
+      - "The page's referrer policy is no-referrer, so no link out sends a referrer; the CSP also sets base-uri 'self', form-action 'none' and object-src 'none' (U0b security S1, S2; per-link rel=noreferrer carried past the demo)"
+      - "The activity regression spec photographs its populated state as a bounded shot, not a full page of about 1130 records (390x144310 px, about 5 MB, and a 5000ms screenshot timeout at 1440), and the trace step writes the activity screen's baselines, which W1 left out (W1 t17, David 2026-10-22)"
+      - "The activity regression baselines at 1440 (populated, light and dark) are written: the full-page capture no longer times out at the 5000ms default (U2 trace, 2026-10-22; non-blocking, tech debt)"
+      - "The cancel screen states the HTTP status it received, never a literal 200 or 201 (W2 A1 R1, HONEST-1)"
+      - "After a 201 cancel the cancel screen re-reads the policy, so its header status is the one the API holds now (W2 A1 R2, WB-4)"
+      - "The tour follows one rule end to end: its Walkthrough and Commit stops open the node of the rule its Rule stop opens (U5 A1 R1, NAV-5)"
+      - "The tour's Rule, Walkthrough and Commit stop targets are pinned by tests (U5 A1 R2, NAV-5)"
+      - "plans/:planId is registered once: u2Routes and u3Routes both register it, so one shadows the other (U5 A1.2 reviewer note, DAG-1)"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance for the U7 demo slice (rel=noreferrer and the CSP directives, the cancel status and re-read, the tour following one rule, one plans/:planId route, the bounded activity shot) … and unit tests", status: done}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the U7 acceptance tests; go or change", status: skipped}
+      - {id: t4, role: builder, step: green, layer: screen, rules: [], title: "The demo slice: external links, CSP, cancel status and re-read, the tour, one plans route, the activity shot; whole acceptance suite green … all layers", status: done}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: skipped}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, every screen built so far against its baseline, rule coverage, diff scope", status: done}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [], after: [t6], title: "QA script docs/qa/ui-U7.md, beside review", status: done}
+      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: done}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: done}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: check the fixes from the QA script, then sign off", status: done}
+      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: U8
+    title: "Tech debt: W3's carries (D1, W3 review A2/A4)"
+    kind: feature
+    owner: loop
+    depends_on: [W3]
+    rules: []
+    cuttable: true
+    budget: null
+    status: done
+    attempt: 2
+    branch: feature/ui/U8
+    worktree: .claude/worktrees/ui-U8
+    pr: 112
+    qa: docs/qa/ui-U8.md
+    trace: docs/trace/ui/U8/
+    acceptance:
+      - "Every external link (commit SHAs, the footer's repository link) carries rel=noreferrer; the CSP also sets base-uri 'self', form-action 'none' and object-src 'none' (U0b security S1, S2)"
+      - "The compiler refuses a plan or node id outside [A-Za-z0-9._-] or holding '..', and never writes outside src/web/public (U0b security S3)"
+      - "A commit with several Fixes-Finding lines keeps every one, in order, in trace.json, and each is privacy-scanned (inv-005 I5; skipped if U3 has landed it)"
+      - "src/web/public/, src/web/test-results/ and src/web/playwright-report/ are git-ignored, so generated output can't be staged"
+      - "The node's e2e suite and every earlier node's pass at the default Playwright worker count, not only at one worker"
+      - "The theme toggle's choice survives a reload; with no choice made, the theme follows the system (U0b carry-over, David 2026-10-21)"
+      - "The overview and node page decide 'no trail' from the compiler's nodes[*].trail flag, which TraceNode declares, not from completeness being null (U1 review A2 R1, DATA-4)"
+      - "TraceRule.status is typed string | null, as the compiler emits it (U1 review A2 R2, MATRIX-1)"
+      - "The matrix links a PR cell out only when it matches #<n>, as the rule page does, from one shared parser (U1 review A2 R3, NAV-3)"
+      - "A commit trailed 'Rule: none' shows its no-Rule state on its page, with no #/rules/none link, pinned by a screen test (U1 review A2.2 R2, NAV-3)"
+      - "compiler/index.ts commitsOf keeps its original spacing; the D3 green reformatted it (U1 review A2.2 R1, RULE-1)"
+      - "The activity regression spec photographs its populated state as a bounded shot, not a full page of about 1130 records (390x144310 px, about 5 MB, and a 5000ms screenshot timeout at 1440), and the trace step writes the activity screen's baselines, which W1 left out (W1 t17, David 2026-10-22)"
+      - "A 2xx answer whose body isn't JSON is shown as a problem, never as 'ok' with no Policy, and the Sell button re-enables (W1 review A3 R1, WB-3, BUSY-1)"
+      - "A test pins the send-anyway list's chips and the timeline's ruleApplied chip to #/rules/<id> (W1 review A3 R2, WB-3)"
+      - "One shared helper builds every workbench rule link as '#/rules/' + encodeURIComponent(ruleId) (W1 review A3 R3; W1 security A3 and A4 hygiene note, WB-3)"
+      - ".s-wb-list is kept: W2's cancel screen uses it for the refusals list (W1 review A3 R4 revised by W2 A1 R5, WB-2)"
+      - "tests/web/e2e/U0b/support/built.ts exports nothing unused (screenSettled, own) (W1 review A4 R1)"
+      - "W1's trail carries its merged(8f8f365) event and the QA correction for the stale preview at part I steps 61-68 (W1 carry-over, 2026-10-22)"
+      - "PlanGraph builds its rule links through the shared shell/ruleLinks.ts helper (encoded), not its own copy (U2 review A2 R1, DAG-1)"
+      - "The plan graph shows a null or unknown node status as written, marked, never as pending or in progress (U2 review A2 R2, DAG-1, HONEST-1)"
+      - "The nav's Plan link and the overview's full-plan link use the trail's build plan id, with no 'build' fallback; no build plan draws not built yet (U2 review A2 R3, DAG-1, HONEST-1)"
+      - "Vitest characterisation tests pin the compiler's node pr, acceptance and tasks (a title with a quoted comma included), parsePatch and loadDiffs (U2 review A2 R4, NODE-1)"
+      - "trace.json carries no field nothing reads (nodes[*].qa, TraceTask.step), or a screen reads it (U2 review A2 R5, NODE-1)"
+      - "The activity regression baselines at 1440 (populated, light and dark) are written: the full-page capture no longer times out at the 5000ms default (U2 trace, 2026-10-22; non-blocking, tech debt)"
+      - "The cancel screen states the HTTP status it received, never a literal 200 or 201 (W2 A1 R1, HONEST-1)"
+      - "After a 201 cancel the cancel screen re-reads the policy, so its header status is the one the API holds now (W2 A1 R2, WB-4)"
+      - "The cancel screen builds its rule links with the shared ruleLinks helper, encoded, not a local copy (W2 A1 R3, WB-3)"
+      - "The WB-4 unit test that compares two recorded answers is replaced by one that can fail for a code fault (W2 A1 R4, WB-4)"
+      - "A test moved from another node after a stale-test finding is committed as a test(...) move, not TDD: red, and the trace reads it as such (W2 A2 R2, WB-3)"
+      - "A gate line with no ok is drawn 'ok not recorded', never Waived: a gate-row kit state (one /kit-gap, in-node per A5), then Ladder.tsx maps ok null to it (U3 inv-007 I3, LOOP-1)"
+      - "A finding with no testable is drawn 'testable not recorded', never Untestable: a finding-card kit state, then Finding.tsx maps null to it (U3 inv-007 I4, LOOP-4)"
+      - "FindingCard's severity accepts P0 in the fail tone, as VerdictCard does since KG10 (KG10 left it: one catalog state per node, LOOP-4)"
+      - "Loop events and ladder verdicts carry their DATA-2 provenance label wherever they appear; the loop's source sentence reads 'source: orchestrator', not 'recorded' (U3 pause-1 ruling and A3 reviewer note, DATA-2)"
+      - "The kit workarounds in U3's screens are removed: FindingCard's id needs no trailing space (Finding.tsx:83), and FindingCard.fixedBy takes several commits, so fixOf drops its '(then …)' subject (U3 t6 kit notes, LOOP-4)"
+      - "A severity outside P0-P2 is shown as recorded on the verdict card too, never mapped to P2 (severityOf, loopData.ts:35), so the card and the findings region agree (U3 A3 R2, LOOP-3)"
+      - "The trace tells merge repairs from finding fixes: U3's ad2105d and f5f98c8 are fix(...) commits that repair the U2 merge and carry no Fixes-Finding (U3 A3 R4, LOOP-2)"
+      - "The commit-msg hook refuses a fix(...) commit with no Fixes-Finding trailer; merge repairs use a non-fix type (U3 A3 I5, LOOP-2; harness)"
+      - "splitRootCause treats a single-quoted span as a quotation, so a marker after a sentence end inside it ('Done. Cause: x') stays words; U3's own D1/I1 finding page shows its text unsplit (U3 A5 R1, LOOP-4)"
+      - "A marker after a sentence end that closes a single quote (\"…'y.' Fix direction:\") is a split point again, as it was at ca3f1a3; the ten build F1 D2 and F6 A2 cards split correctly, pinned by a unit test (U3 QA step 46, a regression since 3b25c3c; David 2026-10-22: land, U7)"
+      - "Each gate receipt's ok agrees with its exit and expect; a run that passes only on re-run records each re-run as its own receipt, and U3's LOOP-4 round-A1 region test holds under load at --workers=2 (U3 A5.2 R1, LOOP-4)"
+      - "U3 and W2 trails carry their merged(48186c1) and merged(83cc7be) events, which the trail-tail route could not carry (U4 SETUP carry-over; David 2026-10-22: U7)"
+      - "U3 lesson (attempt 5, required) is written once docs/lessons.md has a home on ui or main (U4 SETUP carry-over; David 2026-10-22: U7)"
+      - "The tour follows one rule end to end: its Walkthrough and Commit stops open the node of the rule its Rule stop opens (U5 A1 R1, NAV-5)"
+      - "The tour's Rule, Walkthrough and Commit stop targets are pinned by tests (U5 A1 R2, NAV-5)"
+      - "Stats computes commits per agent from trace.json commits[] instead of drawing it as a gap, if David rules the gap is not to stand (U5 A1 R3, STATS-1)"
+      - "The stats table sorts by its Node column with aria-sort, as the reference's action lists (U5 A1 R4, STATS-1)"
+      - "A compiler unit test covers the harness file for AGENT-3 (U5 A1 R5, AGENT-3)"
+      - "The unused U5 test support (rowOf, mainText, the rowTexts re-export, route.plan) is removed (U5 A1 R6, CTX-1)"
+      - "A context snapshot's path and slug are denylist-scanned before they reach trace.json (U5 A1 S1, CTX-1)"
+      - "A test shows that a denylist hit in a docs/context snapshot fails the compile with no trace.json written (U5 A1 S2, CTX-1)"
+      - "Each sessions entry opens its own snapshot at /sessions/:file: the reference tags it NAV-2, so U4 or U7 builds it (U5 A1 reviewer note, CTX-1)"
+      - "plans/:planId is registered once: u2Routes and u3Routes both register it, so one shadows the other (U5 A1.2 reviewer note, DAG-1)"
+      - "The policy view's actions region draws the reference's three kit Buttons (quote and cancel, record a claim, renew), and a W3 parity test checks that region's components (W3 review A4 R1, WB-5; landed as tech debt by David's ruling D1)"
+      - "The policy view's requests region matches the policy reference on a path-segment boundary, so ABC never lists ABC-2's requests, with a behaviour test over two policies sharing a prefix (W3 review A4 R2, WB-7, HONEST-1; David D1)"
+      - "wb-claim, wb-renew and wb-requests have axe tests, light and dark at 1440 and 390, and a gate.axe receipt (W3 review A4 R3, A11Y-1; David D1)"
+      - "The renew form never shows a payment method the term does not hold: no Card fallback (W3 review A2 R4, WB-5, HONEST-1)"
+      - "The request log table shows an unanswered or pending request as pending, never status 0 (W3 review A2 R5, WB-7, HONEST-1)"
+      - "W3 e2e specs pass a literal policy reference per test, not one built from Date.now() (W3 review A2 R6, WB-5, WB-7)"
+      - "The policy view's requests region shows a pending exchange as pending, never status 0 (W3 review A4 R4, WB-7, HONEST-1)"
+      - "The request log's one-exchange region draws the kit HttpExchange curl part ('Repeat it') the wb-requests reference draws (W3 review A4 R5, WB-7)"
+      - "W3's cheque COULD-3 e2e waits for the policy read before typing, and the intermittent 'amount null' renewal is explained or fixed in RenewPolicy (W3 review A4 R6, WB-5)"
+      - "routes.tsx's doc comment no longer says cancel falls to the not-built page (W3 review A4 R7, WB-5)"
+      - "tests/web/e2e/W1/support/parity.ts has no orphan nav-settle comment block (W3 review A4 R8)"
+      - "The workbench request log is capped, or publish() stops re-copying the whole log on every exchange (W3 security A4 S1, WB-7)"
+      - "U7's NAV-5 tour tests wait for the tour's Rule stop to name a rule before reading it: the Walkthrough test read #/rules before the trace loaded and failed 2 of 6 runs (U8 red, 2026-10-23)"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance and unit tests for every U8 acceptance line … and unit tests", status: done}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the U8 acceptance tests; go or change", status: skipped}
+      - {id: t4, role: builder, step: green, layer: screen, rules: [], title: "The fixes for every U8 acceptance line; whole acceptance suite green … all layers", status: done}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: skipped}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, the regression, rule coverage, diff scope", status: done}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [], after: [t6], title: "QA script docs/qa/ui-U8.md, beside review", status: done}
+      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: skipped}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: done}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: check the fixes from the QA script, then sign off", status: done}
+      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: U9
+    title: "Docket ships: Azure Static Web Apps in the Bicep, web CI, Visual Studio launch, README"
+    kind: evidence
+    owner: loop
+    depends_on: []
+    rules: []
+    cuttable: true
+    budget: null
+    status: done
+    attempt: 2
+    branch: feature/ui/U9
+    worktree: .claude/worktrees/ui-U9
+    pr: 111
+    qa: docs/qa/ui-U9.md
+    trace: docs/trace/ui/U9/
+    acceptance:
+      - "Replaces U6 (cut by David 2026-10-23: one Azure hosting story, not GitHub Pages): a hand-written infrastructure/modules/staticwebapp.bicep, wired into main.bicep beside the App Service"
+      - "The Static Web App links the App Service as its backend, same origin, so the CSP stays default-src 'self'. The linked backend forwards /api unchanged and the API has no /api prefix: a documented gap in infrastructure/README.md, not fixed (David 2026-10-23, U9 review A1 R3: evidence only, never deployed)"
+      - "The static build's settings and deep links on the host (routes fall back to index.html); trace.json is compiled before the build"
+      - "bicep build and bicep build-params succeed for dev, test and prod; the pipeline gains a web build and deploy stage from the existing stage template; pipeline schema check passes"
+      - "No secrets (deployment token from the resource, never in params); az never run; nothing deployed"
+      - "Visual Studio (David 2026-10-23): the web app is a project in Uinsure.Policies.slnx (a JavaScript SDK .esproj in a web solution folder), and one launch profile starts the API and the web app together (multiple startup projects, the web app's dev server proxying /api to the API's port)"
+      - "dotnet build Uinsure.Policies.slnx -warnaserror and dotnet test --solution stay as they are: the .esproj is excluded from the solution build, so pre-commit and pre-push never run npm"
+      - "CI for the web app (David 2026-10-23): the Azure pipeline gains a web build and test stage (npm ci, typecheck, lint, CSS lint, unit, the trace compile, build; Playwright against the API in the test stage) from the existing stage template, before the Static Web Apps deploy. Every pipeline and IaC file lives under infrastructure/, and nothing goes in .github/workflows; project-local tooling such as git hooks stays where it is"
+      - "infrastructure/README.md documents the Static Web App, the web stage and their configured-not-tested notes, in the style of its App Service sections"
+      - "README.md says what Docket is (the trail explorer and the workbench) and how to run it: Visual Studio F5 for API and web together, or the CLI (API, npm run trace, build, preview)"
+      - "Diff scope: infrastructure/**, the .esproj and launch settings under src/web/, src/web/vite.config.ts, Uinsure.Policies.slnx, Uinsure.Policies.slnLaunch (the name Visual Studio reads: the solution base name, D1 I1), src/web/.vscode/launch.json, tests/Uinsure.Policies.Architecture.Tests/LaunchProfileTests.cs (D1 red tests), README.md, docs/trace/**, docs/qa/ui-U9.md, the plan files"
+    tasks:
+      - {id: t1, role: builder, step: write, layer: null, rules: [], title: "staticwebapp.bicep, main.bicep wiring, three param files; the web build, test and deploy stages; the static build settings; the .esproj, web solution folder and API + web launch; infrastructure/README.md and README.md", status: done}
+      - {id: t2, role: orchestrator, step: gates, layer: null, rules: [], title: "Scoped (David 2026-10-23): bicep build and build-params for dev, test and prod; pipeline schema check; dotnet build of the slnx runs no npm; typecheck, lint, unit and build; render-trace check; diff scope. No app runtime file changed, so no full e2e; the visual regression is deferred to U10", status: done}
+      - {id: t3, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t4, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U9.md", status: done}
+      - {id: t5, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: done}
+      - {id: t6, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; chore(trace) commit", status: done}
+      - {id: t7, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
+      - {id: t8, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md and the QA script", status: done}
+      - {id: t9, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: U10
+    title: "Rename: src/web to src/Uinsure.Policies.Web, tests/web to tests/Uinsure.Policies.Web.Tests"
+    kind: feature
+    owner: loop
+    depends_on: [U4, U7, U8, U9]
+    rules: []
+    cuttable: true
+    budget: null
+    status: hitl
+    attempt: 2
+    branch: feature/ui/U10
+    worktree: .claude/worktrees/ui-U10
+    pr: null
+    qa: docs/qa/ui-U10.md
+    trace: docs/trace/ui/U10/
+    acceptance:
+      - "David 2026-10-23: the web project is named like the others. git mv keeps history; the U9 .esproj and solution folder follow the new path. In Uinsure.Policies.slnx the web project sits in the /src/ solution folder beside the other src projects, not in its own /web/ folder (David 2026-10-23, U9 Pause 2)"
+      - "Every live reference moves: configs, scripts, CI, docs, README, CLAUDE.md and the harness (skills, specs, scripts, hooks, agents). The harness edits are the orchestrator's, through a harness/<slug> PR into main"
+      - "Trail records already committed (docs/trace/**, packets, verdicts) keep src/web: they are receipts. The compiler, render-trace and the checks accept both paths"
+      - "Runs last, after every other ui node has landed, so no node in flight conflicts with the move"
+      - "The stale matrix rows are re-rendered (moved from U9, 2026-10-23: render-trace finds a node's commits as origin/<base>..HEAD, so a merged node can't be re-rendered; a harness change first gives render an explicit range): no cell reads undefined (build/F4, ui/U0b), and U0b's sign-off cells match its trail"
+      - "U9 carries (P2): check-pipeline.py asks the deploy template for the Static Web Apps deploy, and its run lint needle no longer matches lint:css alone (review A1 R6); the CI e2e wait is bounded and the regression specs are kept off the Linux agent or given per-platform baselines (R7); staticwebapp.config.json sets frame-ancestors and Referrer-Policy (security A1 S2); the solution lists staticwebapp.bicep and staticwebapp.config.json, and src/web/public/ is ignored (U9 QA note 3); the deploy agent prerequisites name Node (review A2 R1); the SWA CLI is installed from a lockfile or with integrity, not npx --yes (security A2 S1); D1 round (A2.2): docs/qa/ui-U9.md steps 25, 28 and note 1 and its header match the deploy steps be687b6 added (review R1), the README's measured test count is re-measured (R2), and orchestrator fix commits carry a TDD trailer (R3); stylelint is upgraded past the braces advisory GHSA-vfj7-8cjw-p6xm (5 high, dev only; the shipped audit --omit=dev is clean), and the prerequisites name Node 22.22 or later (jsdom, react-router and undici warn on 22.18, David's npm ci 2026-10-23)"
+      - "U8 carries (W3 and U8 debt, David 2026-10-23 'add debt to u10 so we can finish here'; ui.plan.md 'Carried past the demo'): the Renew screen never merges the term default into an amount the person is typing, so the two texts can't join ('527.18544.10'), the 'amount null' trigger (W3 A4 I6, U8 A1 I2); U5 STATS-1 'F1's last verdict reads PASS at A1' draws the facts region within 5s every run; the W3 wb-5 claim and renewal specs pass under --repeat-each and beside another session's run (no shared API data); the workbench request log is capped for the life of the page; U7's two pinned NAV-5 tour tests pass under --repeat-each 5 (openTour waits for the trace); RenewPolicy's amountToSend decides what is sent as a number with a decimal pattern, not Number(), which reads '0x10' as 16 and '1e2' as 100 (U8 review A2 R1, WB-5, HONEST-1)"
+      - "U4 carries (David 2026-10-23 'add to u10 any debt to u10 so we can finish here'; U4 trail gate.e2e at d7888d1): the earlier nodes' shell parity e2e tests are re-derived for the U4 shell (the kit Search combobox in the top bar, the Human decisions nav entry, the footer link rel=noreferrer), 22 tests: BRAND-1 x3, DATA-4 x2, MATRIX-1, NAV-3, NAV-1, RULE-1, DAG-1, NODE-1, RULE-3, TDD-1 x2, LOOP-1..4, AGENT-3, CTX-1, STATS-1, WB-1, WB-2, WB-9; HONEST-1 'every unbuilt screen's route shows not-built-yet' and A11Y-1 'an unbuilt screen's page has no axe violation' are re-pointed or retired, since U4 built the last explorer screens; DATA-1 'the app shows the trail it is served as trace.json' sees the fixture's real row count (10, not 5; likely U4's new build/F3 lines in the agents fixture); RESP-1 'on a short page the footer sits at the bottom of the window' and WB-3 'the renew route' and 'the record a claim route shows no canned value' are diagnosed first, as possible real U4 regressions (the taller top bar, or routes hitting not-found or search), and fixed; the deferred visual regression's baseline ruling covers U4's new top bar on every page, and re-baselines activity (U7's activity/populated-390-light.png) and wb-policy (W3's 12 wb-policy/*.png), taken at the U4 integrate without the top-bar search. U4 A2 P2s: FileLineLink, ReceiptFigure, PageHeader's id link and RuleEvidence's qa/pr links get rel=noreferrer, or U7's referrer policy is confirmed to cover them (security A2 S3, SEC-1); nav-4.spec.ts:40's title says click, not Enter (review A2 R1, NAV-4); the undrawn-lines notice (s-events-note) becomes a kit state or component, not screen markup (R2, AGENT-1); SearchEntry.href is split into a route and a repo path (R3, NAV-4)"
+      - "One-key F5 (U9 steer D2, moved here by David 2026-10-23): in the 'API and web' profile Visual Studio runs Docket.Web's debug target and never its StartupCommand, so the Edge target opens on a 4170 nothing serves. David's verified fix: a launch.json configuration 'Vite dev server' (type node, request launch, cwd the project, program node_modules/vite/bin/vite.js, args --port 4170 --strictPort --open) named as Docket.Web's DebugTarget in Uinsure.Policies.slnLaunch. The LaunchProfileTests D1 test that requires a browser target is changed red first to require a target that runs Vite on the StartupCommand's port; the Edge configuration stays for Start New Instance; README.md and docs/qa/ui-U9.md say what F5 opens (the default browser via --open, not a VS-attached Edge window); David's F5 is the check"
+      - "U4's trail carries its merged(ce05465) event, which the trail-tail route could not carry (U4 cleanup, 2026-10-23): the event is in local commit 2abcc5b on feature/ui/U4 (docs/trace/ui/U4/loop.jsonl), kept so it can be cherry-picked"
+      - "Plan switcher (David 2026-10-23, U9 Pause 2: 'how do i swap to see the ui plan in docket?'): the Plan nav entry no longer always opens the build plan (src/web/app/shell/Frame.tsx:113 picks the plan of kind build). It offers every plan in trace.json (build, ui and the investigations), each opening #/plans/<id>, from kit components only, with a unit test and an e2e test that a ui plan link reaches #/plans/ui"
+      - "Trace on start (David 2026-10-23: 'Does trace need to be run when we start the project in vs if yes can we add it to u10'): the compiler writes src/Uinsure.Policies.Web/public/trace.json, which is ignored, so a fresh clone has none and Docket shows 'Could not load trace.json'. Starting the dev server (F5's Vite dev server target, the StartupCommand and npx vite) compiles the trail first, so a fresh clone opens on the trail with no manual npm run trace; a failed compile is reported in the console and the page, never a silent empty trail; tested red first"
+      - "Every check passes on the renamed tree: dotnet build and test, typecheck, unit, e2e, regression, the harness self-test, render-trace check for every ui node"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "One red suite for every U10 acceptance line: the rename architecture test (paths, slnx /src/ folder, no live src/web or tests/web), LaunchProfileTests D2 (the debug target runs Vite on the StartupCommand port), the plan switcher unit and e2e tests, trace on start, the U8, U4 and U9 carries (Renew merge, amountToSend, log cap, STATS-1, NAV-5, wb-5 isolation, the 22 re-derived shell parity tests, rel=noreferrer)", status: done}
+      - {id: t2, role: builder, step: stub, layer: null, rules: [], title: "Stub skipped under delegation (A5); a rename has no route to stub", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1 skipped under delegation (A5)", status: skipped}
+      - {id: t4, role: builder, step: green, layer: null, rules: [], title: "Plan switcher: the Plan nav offers every plan in trace.json from kit components, each opening #/plans/<id>; its unit and e2e tests pass", status: done}
+      - {id: t5, role: builder, step: green, layer: null, rules: [], title: "Trace on start: the dev server compiles the trail before it serves, F5 Vite dev server target included; its tests pass", status: done}
+      - {id: t6, role: builder, step: green, layer: null, rules: [], title: "The carries: one-key F5 (Vite dev server DebugTarget, README and QA wording), the U8, U4 and U9 debt lines; their tests pass", status: done}
+      - {id: t7, role: builder, step: green, layer: null, rules: [], title: "Rename last: git mv both folders; update every live reference outside the harness and the committed trail; the whole suite passes", status: done}
+      - {id: t8, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: skipped}
+      - {id: t9, role: orchestrator, step: gates, layer: null, rules: [], title: "dotnet build and test, typecheck, unit, CSS lint, e2e, the full visual regression for every screen (deferred here, David 2026-10-23; baselines ruled at Pause 2), harness self-test, render-trace check for every ui node; diff scope", status: done}
+      - {id: t10, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t11, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U10.md", status: done}
+      - {id: t12, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui if it moved; every check on the post-integrate HEAD", status: done}
+      - {id: t13, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; chore(trace) commit", status: done}
+      - {id: t14, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
+      - {id: t15, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: F5 on a fresh clone starts API and web on the trail, run the QA script, then sign off (delegated)", status: pending}
+      - {id: t16, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}

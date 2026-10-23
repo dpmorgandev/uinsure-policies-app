@@ -1,0 +1,146 @@
+{
+ "item": "CANCEL-1b · cancel on start+14 → 201",
+ "folder": "F3 Cancel / happy path",
+ "rule": "CANCEL-1b",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:47:06Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "333"
+   },
+   "requestBody": {
+    "reference": "F3-MVFJQZ3NMB",
+    "type": "Household",
+    "startDate": "2026-10-19",
+    "amount": 604.25,
+    "autoRenew": true,
+    "paymentMethod": "DirectDebit",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:06 GMT",
+    "server": "Kestrel",
+    "location": "/policies/F3-MVFJQZ3NMB",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F3-MVFJQZ3NMB",
+    "type": "Household",
+    "status": "Active",
+    "currentTermNumber": 1,
+    "startDate": "2026-10-19",
+    "endDate": "2027-10-18",
+    "amount": 604.25,
+    "hasClaims": false,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-10-19",
+      "endDate": "2027-10-18",
+      "amount": 604.25,
+      "paymentReference": "PAY-8a4507754a95453c8fe52e3f1ec06ff2"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-8a4507754a95453c8fe52e3f1ec06ff2",
+      "type": "DirectDebit",
+      "amount": 604.25
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  },
+  {
+   "role": "request",
+   "method": "POST",
+   "path": "/policies/F3-MVFJQZ3NMB/cancellation",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "38"
+   },
+   "requestBody": {
+    "cancellationDate": "2026-11-02"
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:06 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F3-MVFJQZ3NMB",
+    "cancellationDate": "2026-11-02",
+    "ruleApplied": "CANCEL-1b",
+    "totalRefund": 604.25,
+    "terms": [
+     {
+      "termNumber": 1,
+      "ruleApplied": "CANCEL-1b",
+      "daysInTerm": 365,
+      "daysUsed": 15,
+      "unusedDays": 350,
+      "refundAmount": 604.25
+     }
+    ],
+    "refunds": [
+     {
+      "reference": "REF-5033796f411344fd95b0bb5751707aa7",
+      "type": "DirectDebit",
+      "amount": 604.25,
+      "paymentReference": "PAY-8a4507754a95453c8fe52e3f1ec06ff2"
+     }
+    ]
+   }
+  }
+ ]
+}

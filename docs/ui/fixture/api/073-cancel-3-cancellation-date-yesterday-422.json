@@ -1,0 +1,202 @@
+{
+ "item": "CANCEL-3 · cancellation date yesterday → 422",
+ "folder": "F3 Cancel / rule violations",
+ "rule": "CANCEL-3",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:47:31Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "325"
+   },
+   "requestBody": {
+    "reference": "F3-MVFJRIATA4",
+    "type": "Household",
+    "startDate": "2026-10-19",
+    "amount": 333.8,
+    "autoRenew": true,
+    "paymentMethod": "Card",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:30 GMT",
+    "server": "Kestrel",
+    "location": "/policies/F3-MVFJRIATA4",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F3-MVFJRIATA4",
+    "type": "Household",
+    "status": "Active",
+    "currentTermNumber": 1,
+    "startDate": "2026-10-19",
+    "endDate": "2027-10-18",
+    "amount": 333.8,
+    "hasClaims": false,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-10-19",
+      "endDate": "2027-10-18",
+      "amount": 333.8,
+      "paymentReference": "PAY-0ef2ee97a5e8465b98f01f3695584f35"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-0ef2ee97a5e8465b98f01f3695584f35",
+      "type": "Card",
+      "amount": 333.8
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  },
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies/F3-MVFJRIATA4/cancellation",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "38"
+   },
+   "requestBody": {
+    "cancellationDate": "2026-10-18"
+   },
+   "status": 422,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:30 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/cancel-3",
+    "title": "Cancellation date in the past",
+    "status": 422,
+    "detail": "The cancellation date cannot be in the past.",
+    "instance": "/policies/F3-MVFJRIATA4/cancellation",
+    "traceId": "00-8401f775bba404f99079daef516388a1-ed811aba60e06d51-00",
+    "ruleId": "CANCEL-3",
+    "today": "2026-10-19",
+    "violations": [
+     {
+      "ruleId": "CANCEL-3",
+      "detail": "The cancellation date cannot be in the past."
+     }
+    ]
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F3-MVFJRIATA4",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 200,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:30 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F3-MVFJRIATA4",
+    "type": "Household",
+    "status": "Active",
+    "currentTermNumber": 1,
+    "startDate": "2026-10-19",
+    "endDate": "2027-10-18",
+    "amount": 333.8,
+    "hasClaims": false,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-10-19",
+      "endDate": "2027-10-18",
+      "amount": 333.8,
+      "paymentReference": "PAY-0ef2ee97a5e8465b98f01f3695584f35"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-0ef2ee97a5e8465b98f01f3695584f35",
+      "type": "Card",
+      "amount": 333.8
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  }
+ ]
+}

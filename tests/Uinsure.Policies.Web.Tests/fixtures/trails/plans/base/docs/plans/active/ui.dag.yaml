@@ -1,0 +1,48 @@
+plan_id: ui
+kind: build
+title: Fixture UI build
+status: approved
+created: 2026-10-20
+approved_by: David Morgan
+approved_on: 2026-10-20
+requirements_rev: 5e6f7a8
+parent: null
+nodes:
+  - id: U0
+    title: Kit and fixtures
+    kind: harness
+    owner: david
+    depends_on: []
+    rules: []
+    cuttable: false
+    budget: null
+    status: done
+    attempt: 1
+    branch: feature/ui/U0
+    worktree: .claude/worktrees/ui-U0
+    pr: 57
+    qa: docs/qa/ui-U0.md
+    trace: docs/trace/ui/U0/
+    acceptance:
+      - "The kit renders every catalogued component"
+    tasks:
+      - {id: t1, role: david, step: session, layer: null, rules: [], title: "The kit, in-session", status: done}
+  - id: U1
+    title: Overview and rules
+    kind: feature
+    owner: loop
+    depends_on: [U0]
+    rules: []
+    cuttable: false
+    budget: null
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/ui-U1.md
+    trace: docs/trace/ui/U1/
+    acceptance:
+      - "The overview answers from the data"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Acceptance tests for the overview", status: pending}

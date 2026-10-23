@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Overview · Build trail · Instrument</title>
+<style>
+:root {
+  --bg: #f4f4f4;
+  --surface: #ffffff;
+  --text: #161616;
+  --text2: #525252;
+  --primary: #0f62fe;
+  --accent: #0f62fe;
+  --fail: #da1e28;
+  --pass: #198038;
+  --warn: #8e6a00;
+  --border: #c6c6c6;
+  --font-sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+[data-theme="dark"] {
+  --bg: #161616;
+  --surface: #262626;
+  --text: #f4f4f4;
+  --text2: #a8a8a8;
+  --primary: #78a9ff;
+  --accent: #78a9ff;
+  --fail: #fa4d56;
+  --pass: #42be65;
+  --warn: #f1c21b;
+  --border: #393939;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { font-size: 100%; scroll-padding-top: 3rem; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+a { color: var(--primary); text-underline-offset: 2px; }
+a:focus-visible, button:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+h1, h2, h3, p, ul, ol, figure, table { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+.mono, code, kbd, time {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.num, td.num, th.num { font-variant-numeric: tabular-nums lining-nums; }
+.eyebrow {
+  font-size: 0.75rem;
+  line-height: 1.3;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text2);
+  font-weight: 600;
+}
+.skip {
+  position: absolute; left: 0; top: -3rem;
+  background: var(--surface); color: var(--primary); padding: 0.5rem 0.75rem;
+}
+.skip:focus { top: 0; }
+
+.icon {
+  width: 1em; height: 1em;
+  fill: none; stroke: currentColor; stroke-width: 2;
+  stroke-linecap: round; stroke-linejoin: round;
+  vertical-align: -0.14em; flex: none;
+}
+
+/* status */
+.tag {
+  display: inline-flex; align-items: center; gap: 0.25rem;
+  height: 1.25rem; padding: 0 0.375rem;
+  border: 1px solid currentColor; border-radius: 4px;
+  font-size: 0.75rem; font-weight: 600; white-space: nowrap;
+  background: var(--surface);
+}
+.s-pass { color: var(--pass); }
+.s-fail { color: var(--fail); }
+.s-warn { color: var(--warn); }
+.s-pending { color: var(--text2); }
+.nb {
+  display: inline-flex; align-items: center;
+  border: 1px dashed var(--text2); border-radius: 4px;
+  color: var(--text2); padding: 0 0.375rem; font-size: 0.75rem;
+  white-space: nowrap;
+}
+.st { display: inline-flex; align-items: center; gap: 0.25rem; font-size: 0.75rem; font-weight: 600; white-space: nowrap; }
+
+.chip {
+  display: inline-block; padding: 0 0.3rem; margin: 1px 0;
+  font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.25rem;
+  border: 1px solid var(--border); border-radius: 4px;
+  background: var(--surface);
+}
+.chip-nb { border: 1px dashed var(--text2); color: var(--text2); }
+.chips { display: flex; flex-wrap: wrap; gap: 0.25rem; }
+
+/* top bar and shell */
+.topbar {
+  display: flex; align-items: center; gap: 1rem; height: 2.5rem; padding: 0 1rem;
+  background: var(--surface); border-bottom: 1px solid var(--border);
+}
+.brand { font-weight: 600; font-size: 0.875rem; }
+.topbar .crumb { color: var(--text2); font-size: 0.8125rem; }
+.shell { display: grid; grid-template-columns: 16.5rem minmax(0, 1fr); align-items: start; }
+.rail {
+  background: var(--surface); border-right: 1px solid var(--border);
+  padding: 0.75rem; position: sticky; top: 0; align-self: stretch;
+}
+.rail .eyebrow { margin: 0.25rem 0 0.25rem; }
+.rail .plan { display: block; padding: 0.25rem 0.5rem; font-weight: 600; text-decoration: none; color: var(--text); border-left: 3px solid var(--accent); background: var(--bg); }
+.rail ul { margin-top: 0.25rem; }
+.rail li a {
+  display: grid; grid-template-columns: minmax(2.1rem, auto) minmax(0, 1fr) auto;
+  gap: 0.375rem; align-items: baseline;
+  min-height: 1.5rem; padding: 0.125rem 0.5rem; text-decoration: none; color: var(--text);
+}
+.rail li a:hover { background: var(--bg); }
+.rail .nid { font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; }
+.rail .nt { font-size: 0.8125rem; }
+main { padding: 1rem 1.5rem 2rem; min-width: 0; max-width: 72rem; }
+main > * + * { margin-top: 1rem; }
+
+/* completeness banner */
+.banner {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.75rem;
+  padding: 0.5rem 0.75rem; background: var(--surface);
+  border-left: 4px solid var(--pass);
+}
+.banner .verdict { display: inline-flex; align-items: center; gap: 0.375rem; color: var(--pass); font-weight: 600; font-size: 1rem; }
+.banner .why { color: var(--text2); font-size: 0.8125rem; }
+
+/* tabs */
+.tabs { display: flex; gap: 0.25rem; border-bottom: 1px solid var(--border); }
+.tabs a { padding: 0.375rem 0.75rem; text-decoration: none; color: var(--text2); border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.tabs a[aria-current="page"] { color: var(--text); font-weight: 600; border-bottom-color: var(--accent); }
+.tabs a:hover { color: var(--text); }
+
+/* page header */
+.pagehead { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 1rem; }
+.pagehead h1 { font-size: 1rem; font-weight: 600; }
+.pagehead .ids { color: var(--text2); font-size: 0.8125rem; }
+
+.stamp { background: var(--surface); padding: 0.5rem 0.75rem; }
+.stamp .line { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; align-items: baseline; font-size: 0.8125rem; }
+.stamp .line > span.k { color: var(--text2); }
+.gap { display: inline-block; border: 1px dashed var(--text2); border-radius: 4px; padding: 0 0.375rem; color: var(--text2); font-size: 0.75rem; }
+.differ { margin-top: 0.5rem; display: grid; gap: 0.25rem; }
+.differ li { display: grid; grid-template-columns: auto 1fr; gap: 0.5rem; align-items: baseline; font-size: 0.8125rem; }
+.stamp details { margin-top: 0.5rem; font-size: 0.8125rem; }
+.stamp summary { cursor: pointer; color: var(--primary); }
+
+/* sections */
+section.region { background: var(--surface); padding: 1rem; }
+section.region > h2 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
+.sub { color: var(--text2); font-size: 0.8125rem; }
+
+/* headline answer */
+.question { font-size: 0.875rem; font-weight: 400; color: var(--text2); margin-top: 0.125rem; }
+.answers { display: grid; gap: 1rem; margin-top: 0.75rem; }
+.answer-row { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: 0.25rem 1rem; align-items: start; }
+.answer-row .eyebrow { padding-top: 0.5rem; }
+.answer { font-size: 1.5rem; line-height: 1.3; font-weight: 600; }
+.answer .n { font-family: var(--font-mono); font-variant-numeric: tabular-nums lining-nums; }
+.answer-note { grid-column: 2; color: var(--text2); font-size: 0.875rem; max-width: 62ch; }
+.answer-note strong { color: var(--text); font-weight: 600; }
+.action { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.75rem 1.5rem; align-items: center; }
+a.primary {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  min-height: 2rem; padding: 0.25rem 0.875rem;
+  background: var(--primary); color: var(--surface);
+  font-weight: 600; text-decoration: none; border-radius: 4px;
+}
+a.primary:hover { text-decoration: underline; }
+a.primary:focus-visible { outline-offset: 3px; }
+
+/* figures */
+figure.fig { margin-top: 1.25rem; }
+figure.fig > h3 { font-size: 0.875rem; font-weight: 600; margin-bottom: 0.25rem; }
+.scroll { overflow-x: auto; }
+.lanes-svg, .dag-svg { display: block; width: 100%; height: auto; }
+.lanes-svg { min-width: 62rem; }
+.dag-svg { min-width: 48rem; }
+figcaption { color: var(--text2); font-size: 0.8125rem; margin-top: 0.5rem; max-width: 80ch; }
+svg text { font-family: var(--font-mono); fill: var(--text); font-size: 12px; font-variant-numeric: tabular-nums lining-nums; }
+svg .t-bold { font-weight: 600; }
+svg .t-dim { fill: var(--text2); font-size: 11px; }
+svg .t-fail { fill: var(--fail); font-weight: 600; }
+svg .t-pass { fill: var(--pass); font-weight: 600; }
+svg .t-sans { font-family: var(--font-sans); font-size: 12px; }
+svg .lane { stroke: var(--border); stroke-width: 1; }
+svg .gaprect { fill: var(--surface); stroke: var(--text2); stroke-width: 1; stroke-dasharray: 4 3; }
+svg .m-pass-c { fill: var(--surface); stroke: var(--pass); stroke-width: 2; }
+svg .m-pass-p { fill: none; stroke: var(--pass); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+svg .m-fail-r { fill: var(--fail); }
+svg .m-fail-x { stroke: var(--surface); stroke-width: 2; stroke-linecap: round; fill: none; }
+svg .m-tick { stroke: var(--text); stroke-width: 2.5; }
+svg .m-gate { fill: var(--text); }
+svg .m-open { fill: var(--surface); stroke: var(--text2); stroke-width: 2; stroke-dasharray: 3 2; }
+svg .dn { fill: var(--surface); stroke: var(--border); stroke-width: 1; }
+svg .edge { fill: none; stroke: var(--text2); stroke-width: 1.5; }
+svg .arrow { fill: var(--text2); }
+svg .sp { color: var(--pass); }
+svg .sx { color: var(--text2); }
+svg .sw { fill: var(--pass); font-family: var(--font-sans); font-weight: 600; font-size: 12px; }
+svg .sw-pending { fill: var(--text2); font-family: var(--font-sans); font-weight: 600; font-size: 12px; }
+svg .icon { stroke-width: 2; }
+
+/* tables */
+table { border-collapse: collapse; width: 100%; font-size: 0.8125rem; }
+caption { text-align: left; color: var(--text2); padding: 0.25rem 0; font-size: 0.8125rem; }
+th, td { text-align: left; vertical-align: top; padding: 0.25rem 0.5rem; height: 2rem; border-bottom: 1px solid var(--border); }
+thead th { position: sticky; top: 0; background: var(--surface); font-weight: 600; font-size: 0.75rem; text-transform: none; z-index: 1; border-bottom: 2px solid var(--border); }
+th.num, td.num { text-align: right; }
+tbody th { font-family: var(--font-mono); font-weight: 600; }
+.sortnote { color: var(--text2); font-weight: 400; margin-left: 0.25rem; }
+table.compact th, table.compact td { height: 1.5rem; }
+.tbl-wrap { overflow-x: auto; margin-top: 0.75rem; }
+details > summary { cursor: pointer; color: var(--primary); }
+td details { margin: 0; }
+
+/* receipts */
+.rf-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
+.rf { grid-column: span 2; background: var(--bg); padding: 0.75rem; display: flex; flex-direction: column; gap: 0.25rem; }
+.rf.wide { grid-column: span 3; }
+.rf h3 { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text2); display: flex; align-items: center; gap: 0.375rem; }
+.rf .big { font-family: var(--font-mono); font-variant-numeric: tabular-nums lining-nums; font-size: 1.5rem; font-weight: 600; line-height: 1.2; }
+.rf .big .of { font-size: 1rem; font-weight: 400; color: var(--text2); }
+.rf .from { font-size: 0.8125rem; color: var(--text2); }
+.rf .src { margin-top: auto; padding-top: 0.25rem; font-size: 0.8125rem; display: flex; align-items: center; gap: 0.375rem; }
+.verify { margin-top: 0.75rem; background: var(--bg); padding: 0.75rem; }
+.verify h3 { font-size: 0.875rem; font-weight: 600; }
+.cmdrow { display: flex; gap: 0.5rem; align-items: stretch; margin-top: 0.5rem; }
+.cmd {
+  flex: 1; min-width: 0; margin: 0; padding: 0.5rem 0.75rem; background: var(--surface);
+  font-family: var(--font-mono); font-size: 0.8125rem; overflow-x: auto; white-space: pre;
+  border-left: 3px solid var(--text2);
+}
+button.copy {
+  display: inline-flex; align-items: center; gap: 0.375rem; padding: 0 0.75rem;
+  background: var(--surface); color: var(--primary);
+  border: 1px solid var(--text2); border-radius: 4px; font: inherit; font-size: 0.8125rem; font-weight: 600; cursor: pointer;
+}
+
+/* decisions */
+.dec { margin-top: 0.75rem; }
+.dec li {
+  display: grid; grid-template-columns: 7.5rem minmax(0, 1fr) 14rem; gap: 0.25rem 1rem;
+  padding: 0.5rem 0; border-top: 1px solid var(--border); align-items: start;
+}
+.dec .kind { display: inline-flex; align-items: center; gap: 0.375rem; font-weight: 600; }
+.dec .what { font-size: 0.875rem; }
+.dec .meta { color: var(--text2); font-size: 0.8125rem; margin-top: 0.125rem; }
+.dec .when { font-family: var(--font-mono); font-size: 0.75rem; font-variant-numeric: tabular-nums lining-nums; }
+.dec .ev { font-size: 0.8125rem; margin-top: 0.125rem; display: flex; align-items: center; gap: 0.375rem; flex-wrap: wrap; }
+.dec .gapnote { margin-top: 0.25rem; }
+
+/* states */
+.states { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 0.75rem; }
+.state { background: var(--bg); padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; }
+.state > h3 { font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text2); font-weight: 600; }
+.state .body { background: var(--surface); padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+.sk { height: 0.75rem; background: var(--border); border-radius: 2px; }
+.sk.tall { height: 1.75rem; }
+.err { border-left: 4px solid var(--fail); }
+.nbbox { border: 1px dashed var(--text2); border-radius: 4px; padding: 0.5rem 0.75rem; color: var(--text2); display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.25rem 0.5rem; }
+.nbbox b { color: var(--text); font-weight: 600; }
+.placeholder { font-size: 0.75rem; color: var(--text2); }
+
+@media (max-width: 60rem) {
+  .shell { grid-template-columns: minmax(0, 1fr); }
+  .rail { position: static; border-right: 0; border-bottom: 1px solid var(--border); }
+  .rf, .rf.wide { grid-column: span 6; }
+  .answer-row { grid-template-columns: minmax(0, 1fr); }
+  .answer-note { grid-column: 1; }
+  .dec li { grid-template-columns: minmax(0, 1fr); }
+  .states { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+</head>
+<body data-screen-id="overview">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-gavel" viewBox="0 0 24 24"><path d="m14 13-8.381 8.38a1 1 0 0 1-3.001-3L11 9.999"/><path d="M15.973 4.027A13 13 0 0 0 5.902 2.373c-1.398.342-1.092 2.158.277 2.601a19.9 19.9 0 0 1 5.822 3.024"/><path d="M16.001 11.999a19.9 19.9 0 0 1 3.024 5.824c.444 1.369 2.26 1.676 2.603.278A13 13 0 0 0 20 8.069"/><path d="M18.352 3.352a1.205 1.205 0 0 0-1.704 0l-5.296 5.296a1.205 1.205 0 0 0 0 1.704l2.296 2.296a1.205 1.205 0 0 0 1.704 0l5.296-5.296a1.205 1.205 0 0 0 0-1.704z"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2"/><path d="M6.453 15h11.094"/><path d="M8.5 2h7"/></symbol>
+    <symbol id="i-pr" viewBox="0 0 24 24"><circle cx="18" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><path d="M13 6h3a2 2 0 0 1 2 2v7"/><line x1="6" x2="6" y1="9" y2="21"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></symbol>
+  </defs>
+</svg>
+
+<a class="skip" href="#answer">Skip to the answer</a>
+
+<header class="topbar">
+  <span class="brand">Build trail</span>
+  <span class="crumb">Plan <span class="mono">build</span> / Overview</span>
+</header>
+
+<div class="shell">
+
+  <nav class="rail" aria-label="Plans and nodes">
+    <p class="eyebrow">Plans</p>
+    <a class="plan mono" href="#" aria-current="page">build</a>
+    <p class="eyebrow" style="margin-top:0.75rem">Nodes, plan order</p>
+    <ul>
+      <li><a href="#"><span class="nid">F0a</span><span class="nt">Harness</span><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Done</span></a></li>
+      <li><a href="#"><span class="nid">F0b</span><span class="nt">Walking skeleton</span><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Done</span></a></li>
+      <li><a href="#"><span class="nid">F1</span><span class="nt">Sell (+ bare GET)</span><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Done</span></a></li>
+      <li><a href="#"><span class="nid">F1b</span><span class="nt">Layered models and interfaces</span><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Done</span></a></li>
+      <li><a href="#"><span class="nid">F2</span><span class="nt">Retrieve</span><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Done</span></a></li>
+      <li><a href="#"><span class="nid">F3</span><span class="nt">Cancel (+ quote, + claims)</span><span class="st s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Done</span></a></li>
+      <li><a href="#"><span class="nid">F4</span><span class="nt">Renew</span><span class="st s-pending"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></a></li>
+      <li><a href="#"><span class="nid">F5</span><span class="nt">IaC + pipeline (evidence, never deployed)</span><span class="st s-pending"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></a></li>
+      <li><a href="#"><span class="nid">F6</span><span class="nt">README</span><span class="st s-pending"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></a></li>
+      <li><a href="#"><span class="nid">F7</span><span class="nt">Pitch deck</span><span class="st s-pending"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></a></li>
+    </ul>
+  </nav>
+
+  <main id="main">
+
+    <div class="banner" role="status" aria-label="Trail completeness">
+      <span class="verdict"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span class="mono">OK</span></span>
+      <span class="why">Completeness as the node READMEs for <span class="mono">F0b</span>, <span class="mono">F1</span>, <span class="mono">F1b</span> and <span class="mono">F2</span> state it. The F0a and F3 READMEs are not in the excerpt, so their completeness is not shown.</span>
+    </div>
+
+    <nav class="tabs" aria-label="Views of this plan">
+      <a href="#" aria-current="page">Overview</a>
+      <a href="#">Walkthrough</a>
+      <a href="#">Loop</a>
+      <a href="#">Activity</a>
+    </nav>
+
+    <div class="pagehead">
+      <h1>Overview</h1>
+      <span class="tag s-pending"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span>
+      <span class="ids">Plan <span class="mono">build</span>: 4 of 10 nodes pending, counted from <span class="mono">docs/plans/active/build.dag.yaml</span></span>
+    </div>
+
+    <section class="stamp" data-req="DATA-3" aria-label="Compiled-at stamp">
+      <p class="line">
+        <span class="k">Compiled at</span>
+        <time datetime="2026-10-19T03:33:55Z">2026-10-19T03:33:55Z</time>
+        <span class="k">by</span> <span class="mono">.claude/scripts/render-trace.mjs</span>
+        <span class="k">from</span> <a class="mono" href="../../../trace/requirements-matrix.md">docs/trace/requirements-matrix.md</a>
+        <span class="k">Snapshot SHA</span> <span class="gap">not in the excerpt</span>
+      </p>
+      <ul class="differ" aria-label="Where sources differ">
+        <li><span class="tag s-warn"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>Out of date</span>
+          <span>F2 README (compiled <time datetime="2026-10-19T00:07:57Z">2026-10-19T00:07:57Z</time>) says <span class="mono">merge pending</span>. F2 <span class="mono">loop.jsonl</span> records <span class="mono">merged</span> at <time datetime="2026-10-19T00:10:40Z">2026-10-19T00:10:40Z</time>, PR #17. Both shown; the README is the older stamp.</span></li>
+        <li><span class="tag s-warn"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>Differs</span>
+          <span>F0b PR: its README says <span class="mono">PR #6</span>; <span class="mono">build.dag.yaml</span> has <span class="mono">pr: null</span>. Both shown; neither is picked.</span></li>
+      </ul>
+      <details>
+        <summary>Compiled-at stamp per source</summary>
+        <div class="tbl-wrap">
+        <table class="compact">
+          <caption>Stamps as each source states them</caption>
+          <thead><tr><th scope="col">Source</th><th scope="col">Stamp</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">requirements-matrix.md</th><td class="mono">2026-10-19T03:33:55Z</td></tr>
+            <tr><th scope="row">build/F0b/README.md</th><td class="mono">2026-10-18T02:09:11Z</td></tr>
+            <tr><th scope="row">build/F1/README.md</th><td class="mono">2026-10-18T18:40:51Z</td></tr>
+            <tr><th scope="row">build/F1b/README.md</th><td class="mono">2026-10-18T21:44:56Z</td></tr>
+            <tr><th scope="row">build/F2/README.md</th><td class="mono">2026-10-19T00:07:57Z</td></tr>
+            <tr><th scope="row">build.dag.yaml</th><td><span class="gap">no stamp in the excerpt</span></td></tr>
+          </tbody>
+        </table>
+        </div>
+      </details>
+    </section>
+
+    <section class="region" id="answer" data-req="NAV-1" aria-labelledby="h-answer">
+      <p class="eyebrow">Question</p>
+      <h2 class="question" id="h-answer">Was this really built test-first, and was the AI really checked?</h2>
+
+      <div class="answers">
+        <div class="answer-row">
+          <p class="eyebrow">Built test-first?</p>
+          <p class="answer"><span class="n">21</span> of <span class="n">21</span> built rules have a red commit on record.</p>
+          <p class="answer-note"><strong>13</strong> also record a green commit; <span class="mono">SELL-1</span> to <span class="mono">SELL-7</span> share one, <a class="mono" href="../../../trace/requirements-matrix.md">7d3f791</a>. <strong>8</strong> record none in the matrix, and the matrix does not say why:
+            <span class="chips" style="display:inline-flex;vertical-align:baseline">
+              <a class="chip" href="rule.html?id=CANCEL-1a">CANCEL-1a</a><a class="chip" href="rule.html?id=CANCEL-1b">CANCEL-1b</a><a class="chip" href="rule.html?id=CANCEL-6">CANCEL-6</a><a class="chip" href="rule.html?id=CANCEL-7">CANCEL-7</a><a class="chip" href="rule.html?id=COULD-2">COULD-2</a><a class="chip" href="rule.html?id=COULD-2a">COULD-2a</a><a class="chip" href="rule.html?id=COULD-2b">COULD-2b</a><a class="chip" href="rule.html?id=COULD-2c">COULD-2c</a>
+            </span>
+            The matrix gives no dates, so red-before-green is checked by the command under Receipts.</p>
+        </div>
+        <div class="answer-row">
+          <p class="eyebrow">AI checked?</p>
+          <p class="answer">At least <span class="n">5</span> FAILs were recorded, and David signed off <span class="n">3</span> nodes.</p>
+          <p class="answer-note">FAILs seen: <span class="mono">F0b</span> reviewer (1), <span class="mono">F1b</span> security and reviewer (2), <span class="mono">F2</span> <span class="mono">gate.stub</span> and reviewer (2). Sign-offs: <span class="mono">F1</span>, <span class="mono">F2</span>, <span class="mono">F3</span>. Loop lines for <span class="mono">F0a</span>, <span class="mono">F1</span> and <span class="mono">F3</span> are not in the excerpt, so 5 is a floor, not a total.</p>
+        </div>
+      </div>
+
+      <div class="action">
+        <a class="primary" href="../../../trace/requirements-matrix.md"><svg class="icon" aria-hidden="true"><use href="#i-flask"/></svg>Show me the proof: open the requirements matrix</a>
+        <span class="sub">29 rule rows, each with its red, green and refactor SHAs, QA step, sign-off and PR.</span>
+      </div>
+
+      <figure class="fig" id="lanes">
+        <h3>Where the checks happened: agent lanes, build plan</h3>
+        <div class="scroll">
+        <svg class="lanes-svg" viewBox="0 0 1052 458" role="img" aria-labelledby="lanes-t lanes-d">
+          <title id="lanes-t">Agent lanes for the build plan</title>
+          <desc id="lanes-d">Seven agent lanes and one human lane across nodes F0a to F3. F0b: reviewer FAIL at attempt 0, then passes. F1b: security FAIL and reviewer FAIL at attempt 1, then passes at attempt 2. F2: gate.stub FAIL, pause 1, reviewer FAIL, investigation inv-001 opened, sign-off, merge. F0a, F1 and F3 loop lines are not in the excerpt. A text equivalent follows.</desc>
+          <defs>
+            <g id="mk-pass"><circle r="7" class="m-pass-c"/><path d="M-3.5 0.5 L-1 3 L3.5 -2.5" class="m-pass-p"/></g>
+            <g id="mk-fail"><rect x="-7" y="-7" width="14" height="14" rx="2" class="m-fail-r"/><path d="M-3 -3 L3 3 M3 -3 L-3 3" class="m-fail-x"/></g>
+            <g id="mk-tick"><line x1="0" y1="-7" x2="0" y2="7" class="m-tick"/></g>
+            <g id="mk-gate"><rect x="-5" y="-5" width="10" height="10" transform="rotate(45)" class="m-gate"/></g>
+            <g id="mk-open"><circle r="7" class="m-open"/></g>
+          </defs>
+
+          <!-- gap columns: loop lines not in the excerpt -->
+          <rect class="gaprect" x="108" y="44" width="44" height="308" rx="4"/>
+          <rect class="gaprect" x="392" y="44" width="44" height="308" rx="4"/>
+          <rect class="gaprect" x="964" y="44" width="80" height="308" rx="4"/>
+          <text class="t-dim" transform="translate(134 198) rotate(-90)" text-anchor="middle">loop not in excerpt</text>
+          <text class="t-dim" transform="translate(418 198) rotate(-90)" text-anchor="middle">loop not in excerpt</text>
+          <text class="t-dim" transform="translate(1004 198) rotate(-90)" text-anchor="middle">loop not in excerpt</text>
+
+          <!-- lane lines -->
+          <g>
+            <line class="lane" x1="152" x2="392" y1="58" y2="58"/><line class="lane" x1="436" x2="964" y1="58" y2="58"/>
+            <line class="lane" x1="152" x2="392" y1="102" y2="102"/><line class="lane" x1="436" x2="964" y1="102" y2="102"/>
+            <line class="lane" x1="152" x2="392" y1="146" y2="146"/><line class="lane" x1="436" x2="964" y1="146" y2="146"/>
+            <line class="lane" x1="152" x2="392" y1="190" y2="190"/><line class="lane" x1="436" x2="964" y1="190" y2="190"/>
+            <line class="lane" x1="152" x2="392" y1="234" y2="234"/><line class="lane" x1="436" x2="964" y1="234" y2="234"/>
+            <line class="lane" x1="152" x2="392" y1="278" y2="278"/><line class="lane" x1="436" x2="964" y1="278" y2="278"/>
+            <line class="lane" x1="152" x2="392" y1="322" y2="322"/><line class="lane" x1="436" x2="964" y1="322" y2="322"/>
+            <line class="lane" x1="108" x2="1044" y1="366" y2="366"/>
+          </g>
+
+          <!-- lane labels -->
+          <text x="4" y="62" class="t-bold">main</text><text x="4" y="75" class="t-dim">orchestrator</text>
+          <text x="4" y="106" class="t-bold">tester</text><text x="4" y="119" class="t-dim">not in excerpt</text>
+          <text x="4" y="150" class="t-bold">builder</text><text x="4" y="163" class="t-dim">not in excerpt</text>
+          <text x="4" y="194" class="t-bold">reviewer</text>
+          <text x="4" y="238" class="t-bold">security</text>
+          <text x="4" y="282" class="t-bold">investigator</text><text x="4" y="295" class="t-dim">open event only</text>
+          <text x="4" y="326" class="t-bold">git</text><text x="4" y="339" class="t-dim">not in excerpt</text>
+          <text x="4" y="370" class="t-bold">human</text><text x="4" y="383" class="t-dim">gates</text>
+
+          <!-- column headers -->
+          <text x="108" y="14" class="t-bold">F0a</text><text x="108" y="30" class="t-dim">no PR</text>
+          <text x="160" y="14" class="t-bold">F0b · Walking skeleton</text><text x="160" y="30" class="t-dim">PR #6 · attempt 2</text>
+          <text x="392" y="14" class="t-bold">F1</text><text x="392" y="30" class="t-dim">PR #10</text>
+          <text x="444" y="14" class="t-bold">F1b</text><text x="444" y="30" class="t-dim">PR #15 · attempt 2</text>
+          <text x="596" y="14" class="t-bold">F2 · Retrieve</text><text x="596" y="30" class="t-dim">PR #17 · attempt 3</text>
+          <text x="964" y="14" class="t-bold">F3</text><text x="964" y="30" class="t-dim">PR #20</text>
+
+          <!-- F0b: README order -->
+          <use href="#mk-gate" x="188" y="366"/>
+          <text x="188" y="383" text-anchor="middle">steer D1</text><text x="188" y="394" text-anchor="middle" class="t-dim">pause 1</text>
+
+          <use href="#mk-pass" x="216" y="234"/><text x="216" y="251" text-anchor="middle" class="t-pass">PASS a0</text>
+          <use href="#mk-fail" x="244" y="190"/><text x="244" y="207" text-anchor="middle" class="t-fail">FAIL a0</text>
+          <use href="#mk-pass" x="272" y="234"/><text x="272" y="251" text-anchor="middle" class="t-pass">PASS a0</text>
+          <use href="#mk-pass" x="300" y="190"/><text x="300" y="207" text-anchor="middle" class="t-pass">PASS a0</text>
+          <use href="#mk-pass" x="328" y="234"/><text x="328" y="251" text-anchor="middle" class="t-pass">PASS a2</text>
+          <use href="#mk-pass" x="356" y="190"/><text x="356" y="207" text-anchor="middle" class="t-pass">PASS a2</text>
+
+          <!-- F1: sign-off, date only -->
+          <use href="#mk-gate" x="414" y="366"/>
+          <text x="414" y="383" text-anchor="middle">sign-off</text><text x="414" y="394" text-anchor="middle" class="t-dim">2026-10-18</text>
+
+          <!-- F1b: README order -->
+          <use href="#mk-fail" x="472" y="234"/><text x="472" y="251" text-anchor="middle" class="t-fail">FAIL a1</text>
+          <use href="#mk-fail" x="501" y="190"/><text x="501" y="207" text-anchor="middle" class="t-fail">FAIL a1</text>
+          <use href="#mk-pass" x="531" y="234"/><text x="531" y="251" text-anchor="middle" class="t-pass">PASS a2</text>
+          <use href="#mk-pass" x="560" y="190"/><text x="560" y="207" text-anchor="middle" class="t-pass">PASS a2</text>
+
+          <!-- F2: loop.jsonl order, with times -->
+          <use href="#mk-fail" x="632" y="58"/>
+          <text x="624" y="75" class="t-fail">gate.stub FAIL</text><text x="624" y="86" class="t-dim">305789d → attempt 2</text>
+          <use href="#mk-gate" x="704" y="366"/>
+          <text x="704" y="383" text-anchor="middle">pause 1</text><text x="704" y="394" text-anchor="middle" class="t-dim">22:30:10Z</text>
+          <use href="#mk-fail" x="776" y="190"/>
+          <text x="768" y="207" class="t-fail">FAIL</text><text x="768" y="218" class="t-dim">8ea8f60 → attempt 3</text>
+          <use href="#mk-tick" x="776" y="58"/>
+          <text x="768" y="75">attempt 2 → 3</text><text x="768" y="86" class="t-dim">22:50:11Z</text>
+          <use href="#mk-open" x="776" y="278"/>
+          <text x="768" y="295">inv-001 opened</text><text x="768" y="306" class="t-dim">22:50:11Z</text>
+          <use href="#mk-gate" x="848" y="366"/>
+          <text x="848" y="383" text-anchor="middle">sign-off</text><text x="848" y="394" text-anchor="middle" class="t-dim">00:07:35Z</text>
+          <use href="#mk-gate" x="920" y="366"/>
+          <text x="920" y="383" text-anchor="middle">merged #17</text><text x="920" y="394" text-anchor="middle" class="t-dim">00:10:40Z</text>
+
+          <!-- F3: sign-off, date only -->
+          <use href="#mk-gate" x="1004" y="366"/>
+          <text x="1004" y="383" text-anchor="middle">sign-off</text><text x="1004" y="394" text-anchor="middle" class="t-dim">2026-10-19</text>
+
+          <!-- legend -->
+          <use href="#mk-pass" x="116" y="424"/><text x="130" y="428" class="t-sans">Pass verdict</text>
+          <use href="#mk-fail" x="256" y="424"/><text x="270" y="428" class="t-sans">Fail verdict or gate FAIL</text>
+          <use href="#mk-tick" x="470" y="424"/><text x="484" y="428" class="t-sans">Orchestrator event</text>
+          <use href="#mk-gate" x="640" y="424"/><text x="654" y="428" class="t-sans">Human decision</text>
+          <use href="#mk-open" x="116" y="446"/><text x="130" y="450" class="t-sans">Opened, not worked: /plan-investigation is not built yet</text>
+          <rect class="gaprect" x="560" y="437" width="24" height="18" rx="3"/><text x="592" y="450" class="t-sans">Loop lines not in the excerpt</text>
+        </svg>
+        </div>
+        <figcaption>Marks sit in the order each source records them, not to time scale; only F2 has timestamps in the excerpt (UTC, 2026-10-18 to 2026-10-19). Orchestrator events sit on the main lane. a0, a1, a2 are attempt numbers. Commit authorship is not in the excerpt, so tester, builder and git lanes carry nothing. Sources: F0b and F1b READMEs (Loop), F2 <span class="mono">loop.jsonl</span>, requirements matrix (sign-offs).</figcaption>
+
+        <div class="tbl-wrap">
+        <table>
+          <caption>Text equivalent of the agent lanes: events per node, in recorded order</caption>
+          <thead><tr><th scope="col">Node</th><th scope="col">Events, in recorded order</th><th scope="col">Source</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">F0a</th><td><span class="gap">loop lines not in the excerpt</span> PR: none</td><td class="mono">build.dag.yaml</td></tr>
+            <tr><th scope="row">F0b</th><td>steer D1 (pause 1) · attempt 0: security <span class="s-pass">PASS</span> · attempt 0: reviewer <span class="s-fail">FAIL</span> · attempt 0: security <span class="s-pass">PASS</span> · attempt 0: reviewer <span class="s-pass">PASS</span> · attempt 2: security <span class="s-pass">PASS</span> · attempt 2: reviewer <span class="s-pass">PASS</span></td><td class="mono">build/F0b/README.md</td></tr>
+            <tr><th scope="row">F1</th><td><span class="gap">loop lines not in the excerpt</span> Sign-off: David 2026-10-18, PR #10</td><td class="mono">requirements-matrix.md</td></tr>
+            <tr><th scope="row">F1b</th><td>attempt 1: security <span class="s-fail">FAIL</span> · attempt 1: reviewer <span class="s-fail">FAIL</span> · attempt 2: security <span class="s-pass">PASS</span> · attempt 2: reviewer <span class="s-pass">PASS</span></td><td class="mono">build/F1b/README.md</td></tr>
+            <tr><th scope="row">F2</th><td>2026-10-18T22:26:21Z attempt 1 → 2 on <span class="mono">gate.stub</span> <span class="s-fail">FAIL</span> at <span class="mono">305789d</span> · 22:30:10Z pause 1 · 22:50:11Z attempt 2 → 3 on reviewer <span class="s-fail">FAIL</span> at <span class="mono">8ea8f60</span> · 22:50:11Z investigation inv-001 opened · 2026-10-19T00:07:35Z sign-off, David · 00:10:40Z merged, PR #17. Verdicts after attempt 3 are not in the excerpt.</td><td class="mono">build/F2/loop.jsonl</td></tr>
+            <tr><th scope="row">F3</th><td><span class="gap">loop lines not in the excerpt</span> Sign-off: David 2026-10-19, PR #20</td><td class="mono">requirements-matrix.md</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </figure>
+    </section>
+
+    <section class="region" data-req="NAV-1 VERIFY-1" aria-labelledby="h-receipts">
+      <h2 id="h-receipts">Receipt figures</h2>
+      <p class="sub">Each figure says what it was counted from and links to the file it came from.</p>
+
+      <div class="rf-grid">
+        <article class="rf">
+          <h3><svg class="icon" aria-hidden="true"><use href="#i-flask"/></svg>Rules built</h3>
+          <p class="big">21 <span class="of">of 29</span></p>
+          <p class="from">Counted from the matrix: 21 rows carry test counts. 8 rows read <span class="nb">not built yet</span>, all on <span class="mono">F4</span>. <span class="mono">RENEW-1/2</span> is one row.</p>
+          <p class="src"><a class="mono" href="../../../trace/requirements-matrix.md">requirements-matrix.md</a></p>
+        </article>
+
+        <article class="rf">
+          <h3><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Tests passing</h3>
+          <p class="big">358 <span class="of">of 358</span></p>
+          <p class="from">Sum of the pass/total cells of the 21 built rows; every row reads pass = total. The matrix does not say whether a test counts under more than one rule. <span class="mono">F2</span> sign-off records <span class="mono">integrate 374/0</span> on its head, a separate figure from a different source.</p>
+          <p class="src"><a class="mono" href="../../../trace/requirements-matrix.md">requirements-matrix.md</a> <a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a></p>
+        </article>
+
+        <article class="rf">
+          <h3><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Nodes done</h3>
+          <p class="big">6 <span class="of">of 10</span></p>
+          <p class="from">Counted from node status: <span class="mono">F0a F0b F1 F1b F2 F3</span> done; <span class="mono">F4 F5 F6 F7</span> pending.</p>
+          <p class="src"><a class="mono" href="../../../plans/active/build.dag.yaml">build.dag.yaml</a></p>
+        </article>
+
+        <article class="rf wide">
+          <h3><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>Attempts and FAILs</h3>
+          <p class="big">5 <span class="of">FAILs seen · deepest attempt 3</span></p>
+          <p class="from">FAILs counted from loop lines: <span class="mono">F0b</span> 1, <span class="mono">F1b</span> 2, <span class="mono">F2</span> 2. Final attempt per node in <span class="mono">build.dag.yaml</span>: <span class="mono">F0b</span> 2, <span class="mono">F1</span> 2, <span class="mono">F1b</span> 2, <span class="mono">F2</span> 3, <span class="mono">F3</span> 2. Loop lines for <span class="mono">F0a</span>, <span class="mono">F1</span> and <span class="mono">F3</span> are not in the excerpt, so 5 is a floor.</p>
+          <p class="src"><a class="mono" href="../../../trace/build/F0b/README.md">F0b README</a> <a class="mono" href="../../../trace/build/F1b/README.md">F1b README</a> <a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a> <a class="mono" href="../../../plans/active/build.dag.yaml">build.dag.yaml</a></p>
+        </article>
+
+        <article class="rf wide">
+          <h3><svg class="icon" aria-hidden="true"><use href="#i-gavel"/></svg>Human decisions</h3>
+          <p class="big">3 <span class="of">sign-offs, all David</span></p>
+          <p class="from">Sign-off column of the matrix: <span class="mono">F1</span> 2026-10-18, <span class="mono">F2</span> 2026-10-19, <span class="mono">F3</span> 2026-10-19. Also in the loop lines: 1 steer (<span class="mono">F0b</span> D1), 1 pause 1 (<span class="mono">F2</span>), 1 merge (<span class="mono">F2</span>, PR #17), 1 investigation opened (<span class="mono">inv-001</span>, ruling not in the excerpt).</p>
+          <p class="src"><a class="mono" href="../../../trace/requirements-matrix.md">requirements-matrix.md</a> <a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a></p>
+        </article>
+      </div>
+
+      <div class="verify">
+        <h3>Re-check the order yourself</h3>
+        <p class="sub"><span class="mono">GET-1</span> on <span class="mono">F2</span>: red <span class="mono">94a7473</span>, green <span class="mono">92ede9e</span>, refactor <span class="mono">80d3ee2</span>, as the matrix lists them. The command prints each commit's time in the order given; red should be earliest.</p>
+        <div class="cmdrow">
+          <pre class="cmd" tabindex="0" aria-label="Command to re-check the order of the GET-1 commits">git log --no-walk=unsorted --format='%h %cI %s' 94a7473 92ede9e 80d3ee2</pre>
+          <button class="copy" type="button"><svg class="icon" aria-hidden="true"><use href="#i-copy"/></svg>Copy</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="region" data-req="DAG-1" aria-labelledby="h-dag">
+      <h2 id="h-dag">Build plan at a glance</h2>
+      <p class="sub">10 nodes in plan <span class="mono">build</span>. 6 done, 4 pending. Counted from <span class="mono">build.dag.yaml</span>.</p>
+
+      <figure class="fig" id="dag">
+        <div class="scroll">
+        <svg class="dag-svg" viewBox="0 0 904 140" role="img" aria-labelledby="dag-t dag-d">
+          <title id="dag-t">Dependency graph of the build plan</title>
+          <desc id="dag-d">F0a leads to F0b. F0b leads to F1 and to F5. F1 leads to F1b, then F2, F3, F4, F6 and F7 in a chain. F0a, F0b, F1, F1b, F2 and F3 are done; F4, F5, F6 and F7 are pending. The adjacency table below gives the same.</desc>
+          <!-- edges -->
+          <path class="edge" d="M92 35 H100"/><polygon class="arrow" points="99,31 106,35 99,39"/>
+          <path class="edge" d="M192 35 H200"/><polygon class="arrow" points="199,31 206,35 199,39"/>
+          <path class="edge" d="M292 35 H300"/><polygon class="arrow" points="299,31 306,35 299,39"/>
+          <path class="edge" d="M392 35 H400"/><polygon class="arrow" points="399,31 406,35 399,39"/>
+          <path class="edge" d="M492 35 H500"/><polygon class="arrow" points="499,31 506,35 499,39"/>
+          <path class="edge" d="M592 35 H600"/><polygon class="arrow" points="599,31 606,35 599,39"/>
+          <path class="edge" d="M692 35 H700"/><polygon class="arrow" points="699,31 706,35 699,39"/>
+          <path class="edge" d="M792 35 H800"/><polygon class="arrow" points="799,31 806,35 799,39"/>
+          <path class="edge" d="M150 58 V107 H200"/><polygon class="arrow" points="199,103 206,107 199,111"/>
+          <!-- nodes: F0a F0b F1 F1b F2 F3 F4 F6 F7 on the main row; F5 below F1 -->
+          <g>
+            <rect class="dn" x="8" y="12" width="84" height="46" rx="4"/>
+            <use href="#i-check" class="icon sp" x="16" y="20" width="14" height="14"/><text x="36" y="32" class="t-bold">F0a</text><text x="16" y="50" class="sw">Done</text>
+            <rect class="dn" x="108" y="12" width="84" height="46" rx="4"/>
+            <use href="#i-check" class="icon sp" x="116" y="20" width="14" height="14"/><text x="136" y="32" class="t-bold">F0b</text><text x="116" y="50" class="sw">Done</text>
+            <rect class="dn" x="208" y="12" width="84" height="46" rx="4"/>
+            <use href="#i-check" class="icon sp" x="216" y="20" width="14" height="14"/><text x="236" y="32" class="t-bold">F1</text><text x="216" y="50" class="sw">Done</text>
+            <rect class="dn" x="308" y="12" width="84" height="46" rx="4"/>
+            <use href="#i-check" class="icon sp" x="316" y="20" width="14" height="14"/><text x="336" y="32" class="t-bold">F1b</text><text x="316" y="50" class="sw">Done</text>
+            <rect class="dn" x="408" y="12" width="84" height="46" rx="4"/>
+            <use href="#i-check" class="icon sp" x="416" y="20" width="14" height="14"/><text x="436" y="32" class="t-bold">F2</text><text x="416" y="50" class="sw">Done</text>
+            <rect class="dn" x="508" y="12" width="84" height="46" rx="4"/>
+            <use href="#i-check" class="icon sp" x="516" y="20" width="14" height="14"/><text x="536" y="32" class="t-bold">F3</text><text x="516" y="50" class="sw">Done</text>
+            <rect class="dn" x="608" y="12" width="84" height="46" rx="4"/>
+            <use href="#i-clock" class="icon sx" x="616" y="20" width="14" height="14"/><text x="636" y="32" class="t-bold">F4</text><text x="616" y="50" class="sw-pending">Pending</text>
+            <rect class="dn" x="708" y="12" width="84" height="46" rx="4"/>
+            <use href="#i-clock" class="icon sx" x="716" y="20" width="14" height="14"/><text x="736" y="32" class="t-bold">F6</text><text x="716" y="50" class="sw-pending">Pending</text>
+            <rect class="dn" x="808" y="12" width="84" height="46" rx="4"/>
+            <use href="#i-clock" class="icon sx" x="816" y="20" width="14" height="14"/><text x="836" y="32" class="t-bold">F7</text><text x="816" y="50" class="sw-pending">Pending</text>
+            <rect class="dn" x="208" y="84" width="84" height="46" rx="4"/>
+            <use href="#i-clock" class="icon sx" x="216" y="92" width="14" height="14"/><text x="236" y="104" class="t-bold">F5</text><text x="216" y="122" class="sw-pending">Pending</text>
+          </g>
+        </svg>
+        </div>
+        <figcaption>An arrow runs from a node to the node that depends on it. <span class="mono">F5</span> depends on <span class="mono">F0b</span> only.</figcaption>
+
+        <div class="tbl-wrap">
+        <table>
+          <caption>Adjacency table: the same plan as text, from <span class="mono">build.dag.yaml</span> (rules per node), with the PR cell checked against the node READMEs</caption>
+          <thead>
+            <tr>
+              <th scope="col" aria-sort="ascending">Node<span class="sortnote">sorted: plan order</span></th>
+              <th scope="col">Title</th>
+              <th scope="col">Kind</th>
+              <th scope="col">Depends on</th>
+              <th scope="col">Status</th>
+              <th scope="col" class="num">Attempt</th>
+              <th scope="col">PR</th>
+              <th scope="col">Rules</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row"><a href="node.html?id=F0a">F0a</a></th><td>Harness</td><td>harness</td><td class="mono">none</td><td><span class="tag s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="num mono">0</td><td>none</td><td>none</td></tr>
+            <tr><th scope="row"><a href="node.html?id=F0b">F0b</a></th><td>Walking skeleton</td><td>feature</td><td class="mono">F0a</td><td><span class="tag s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="num mono">2</td>
+              <td><span class="mono">#6</span> in README, <span class="mono">null</span> in dag <span class="tag s-warn"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>Differs</span></td><td>none</td></tr>
+            <tr><th scope="row"><a href="node.html?id=F1">F1</a></th><td>Sell (+ bare GET)</td><td>feature</td><td class="mono">F0b</td><td><span class="tag s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="num mono">2</td><td><a class="mono" href="#">#10</a></td>
+              <td><details><summary>7 rules</summary><div class="chips"><a class="chip" href="rule.html?id=SELL-1">SELL-1</a><a class="chip" href="rule.html?id=SELL-2">SELL-2</a><a class="chip" href="rule.html?id=SELL-3">SELL-3</a><a class="chip" href="rule.html?id=SELL-4">SELL-4</a><a class="chip" href="rule.html?id=SELL-5">SELL-5</a><a class="chip" href="rule.html?id=SELL-6">SELL-6</a><a class="chip" href="rule.html?id=SELL-7">SELL-7</a></div></details></td></tr>
+            <tr><th scope="row"><a href="node.html?id=F1b">F1b</a></th><td>Layered models and interfaces</td><td>feature</td><td class="mono">F1</td><td><span class="tag s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="num mono">2</td><td><a class="mono" href="#">#15</a></td><td>none</td></tr>
+            <tr><th scope="row"><a href="node.html?id=F2">F2</a></th><td>Retrieve</td><td>feature</td><td class="mono">F1b</td><td><span class="tag s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="num mono">3</td><td><a class="mono" href="#">#17</a></td>
+              <td><div class="chips"><a class="chip" href="rule.html?id=GET-1">GET-1</a></div></td></tr>
+            <tr><th scope="row"><a href="node.html?id=F3">F3</a></th><td>Cancel (+ quote, + claims)</td><td>feature</td><td class="mono">F2</td><td><span class="tag s-pass"><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg>Done</span></td><td class="num mono">2</td><td><a class="mono" href="#">#20</a></td>
+              <td><details><summary>13 rules</summary><div class="chips"><a class="chip" href="rule.html?id=CANCEL-1a">CANCEL-1a</a><a class="chip" href="rule.html?id=CANCEL-1b">CANCEL-1b</a><a class="chip" href="rule.html?id=CANCEL-1c">CANCEL-1c</a><a class="chip" href="rule.html?id=CANCEL-2">CANCEL-2</a><a class="chip" href="rule.html?id=CANCEL-3">CANCEL-3</a><a class="chip" href="rule.html?id=CANCEL-4">CANCEL-4</a><a class="chip" href="rule.html?id=CANCEL-6">CANCEL-6</a><a class="chip" href="rule.html?id=CANCEL-7">CANCEL-7</a><a class="chip" href="rule.html?id=COULD-1">COULD-1</a><a class="chip" href="rule.html?id=COULD-2">COULD-2</a><a class="chip" href="rule.html?id=COULD-2a">COULD-2a</a><a class="chip" href="rule.html?id=COULD-2b">COULD-2b</a><a class="chip" href="rule.html?id=COULD-2c">COULD-2c</a></div></details></td></tr>
+            <tr><th scope="row"><a href="node.html?id=F4">F4</a></th><td>Renew</td><td>feature</td><td class="mono">F3</td><td><span class="tag s-pending"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></td><td class="num mono">0</td><td>none</td>
+              <td><details open><summary>8 rules, <span class="nb">not built yet</span></summary><div class="chips"><a class="chip chip-nb" href="rule.html?id=RENEW-1%2F2">RENEW-1/2</a><a class="chip chip-nb" href="rule.html?id=RENEW-3a">RENEW-3a</a><a class="chip chip-nb" href="rule.html?id=RENEW-3b">RENEW-3b</a><a class="chip chip-nb" href="rule.html?id=RENEW-4">RENEW-4</a><a class="chip chip-nb" href="rule.html?id=RENEW-5">RENEW-5</a><a class="chip chip-nb" href="rule.html?id=RENEW-6">RENEW-6</a><a class="chip chip-nb" href="rule.html?id=COULD-3">COULD-3</a><a class="chip chip-nb" href="rule.html?id=CANCEL-5">CANCEL-5</a></div></details></td></tr>
+            <tr><th scope="row"><a href="node.html?id=F5">F5</a></th><td>IaC + pipeline (evidence, never deployed)</td><td>evidence</td><td class="mono">F0b</td><td><span class="tag s-pending"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></td><td class="num mono">0</td><td>none</td><td>none</td></tr>
+            <tr><th scope="row"><a href="node.html?id=F6">F6</a></th><td>README</td><td>docs</td><td class="mono">F4</td><td><span class="tag s-pending"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></td><td class="num mono">0</td><td>none</td><td>none</td></tr>
+            <tr><th scope="row"><a href="node.html?id=F7">F7</a></th><td>Pitch deck</td><td>docs</td><td class="mono">F6</td><td><span class="tag s-pending"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span></td><td class="num mono">0</td><td>none</td><td>none</td></tr>
+          </tbody>
+        </table>
+        </div>
+      </figure>
+    </section>
+
+    <section class="region" data-req="HITL-1" aria-labelledby="h-dec">
+      <h2 id="h-dec">Latest human decisions</h2>
+      <p class="sub">Newest first by date, then time where recorded. Everything the excerpt holds; no pause 2 is recorded in it.</p>
+
+      <ol class="dec">
+        <li>
+          <span class="kind"><svg class="icon" aria-hidden="true"><use href="#i-gavel"/></svg>Sign-off</span>
+          <div>
+            <p class="what">David signed off <span class="mono">build/F3</span>, Cancel (+ quote, + claims).</p>
+            <p class="meta">Where: PR #20, QA steps in <span class="mono">docs/qa/build-F3.md</span>. Time not recorded in the matrix.</p>
+          </div>
+          <div>
+            <p class="when">2026-10-19</p>
+            <p class="ev"><a class="mono" href="../../../trace/requirements-matrix.md">matrix, sign-off column</a></p>
+          </div>
+        </li>
+        <li>
+          <span class="kind"><svg class="icon" aria-hidden="true"><use href="#i-pr"/></svg>Merge</span>
+          <div>
+            <p class="what">David merged PR #17 in the GitHub UI.</p>
+            <p class="meta">Where: <span class="mono">build/F2</span>, merge <span class="mono">ad7b6b0</span>, head <span class="mono">0a04b8b</span>.</p>
+          </div>
+          <div>
+            <p class="when">2026-10-19T00:10:40Z</p>
+            <p class="ev"><a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a></p>
+          </div>
+        </li>
+        <li>
+          <span class="kind"><svg class="icon" aria-hidden="true"><use href="#i-gavel"/></svg>Sign-off</span>
+          <div>
+            <p class="what">David: sign off. Verdict Accept F2; 41/41 QA steps PASS at <span class="mono">beba48e</span>; Postman F2 25/0 and 26/0; integrate 374/0 on this head.</p>
+            <p class="meta">Where: <span class="mono">build/F2</span>, <span class="mono">docs/qa/build-F2.md</span>, signed there as 2026-10-19 01:05. Event <span class="mono">signoff(223102a)</span>. Carried over to F3: the <span class="mono">?REFERENCE</span> errors-key casing.</p>
+          </div>
+          <div>
+            <p class="when">2026-10-19T00:07:35Z</p>
+            <p class="ev"><a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a> <a class="mono" href="../../../qa/build-F2.md">build-F2.md</a></p>
+          </div>
+        </li>
+        <li>
+          <span class="kind"><svg class="icon" aria-hidden="true"><use href="#i-gavel"/></svg>Ruling</span>
+          <div>
+            <p class="what">Investigation <span class="mono">inv-001</span> opened at the attempt 3 stop; the run ends until David decides.</p>
+            <p class="meta">Where: <span class="mono">build/F2</span>, parent <span class="mono">build/F2</span>; <span class="mono">/plan-investigation</span> is not built yet.</p>
+            <p class="gapnote"><span class="gap">ruling not in the excerpt</span></p>
+          </div>
+          <div>
+            <p class="when">2026-10-18T22:50:11Z</p>
+            <p class="ev"><a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a></p>
+          </div>
+        </li>
+        <li>
+          <span class="kind"><svg class="icon" aria-hidden="true"><use href="#i-flask"/></svg>Pause 1</span>
+          <div>
+            <p class="what">Pause at <span class="mono">Api.Tests RED 22/202 (21 GET-1 + unknown-query 400); stub callable</span>.</p>
+            <p class="meta">Where: <span class="mono">build/F2</span>, attempt 2, head <span class="mono">8c75bb4</span>. Recorded by the orchestrator; the decision after the pause is not in the excerpt.</p>
+          </div>
+          <div>
+            <p class="when">2026-10-18T22:30:10Z</p>
+            <p class="ev"><a class="mono" href="../../../trace/build/F2/loop.jsonl">F2 loop.jsonl</a></p>
+          </div>
+        </li>
+        <li>
+          <span class="kind"><svg class="icon" aria-hidden="true"><use href="#i-gavel"/></svg>Sign-off</span>
+          <div>
+            <p class="what">David signed off <span class="mono">build/F1</span>, Sell (+ bare GET).</p>
+            <p class="meta">Where: PR #10, QA steps in <span class="mono">docs/qa/build-F1.md</span>. Time not recorded in the matrix.</p>
+          </div>
+          <div>
+            <p class="when">2026-10-18</p>
+            <p class="ev"><a class="mono" href="../../../trace/requirements-matrix.md">matrix, sign-off column</a></p>
+          </div>
+        </li>
+        <li>
+          <span class="kind"><svg class="icon" aria-hidden="true"><use href="#i-gavel"/></svg>Steer</span>
+          <div>
+            <p class="what">Steer <span class="mono">D1</span> at pause 1.</p>
+            <p class="meta">Where: <span class="mono">build/F0b</span>. Who and time are not in the excerpt; the README that lists it was compiled 2026-10-18T02:09:11Z.</p>
+          </div>
+          <div>
+            <p class="when"><span class="gap">time not in the excerpt</span></p>
+            <p class="ev"><a class="mono" href="../../../trace/build/F0b/README.md">F0b README</a></p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="region" aria-labelledby="h-states">
+      <h2 id="h-states">States of this screen</h2>
+      <p class="sub">Each state shown beside the populated view above. Where a panel shows figures, they are the same observed figures; nothing here is new data.</p>
+
+      <div class="states">
+
+        <div class="state" id="state-loading">
+          <h3>State: loading</h3>
+          <div class="body" aria-busy="true">
+            <span class="tag s-pending"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Loading</span>
+            <p>Reading <span class="mono">requirements-matrix.md</span> and <span class="mono">build.dag.yaml</span>. No figure is shown until both are read.</p>
+            <div class="sk tall" style="width:70%"></div>
+            <div class="sk" style="width:90%"></div>
+            <div class="sk" style="width:55%"></div>
+            <div class="sk tall" style="width:40%"></div>
+            <p class="placeholder">Static skeleton, no animation.</p>
+          </div>
+        </div>
+
+        <div class="state" id="state-error">
+          <h3>State: error</h3>
+          <div class="body err" role="group" aria-label="Error state">
+            <span class="tag s-fail"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>Failed</span>
+            <p>The requirements matrix could not be read, so rules built, tests passing and the sign-off figures are not shown. Nothing has been estimated in their place.</p>
+            <p class="sub">Source: <span class="mono">docs/trace/requirements-matrix.md</span></p>
+            <p><a href="">Reload this view</a></p>
+          </div>
+        </div>
+
+        <div class="state" id="state-inflight">
+          <h3>State: in flight</h3>
+          <div class="body">
+            <span class="tag s-pending"><svg class="icon" aria-hidden="true"><use href="#i-clock"/></svg>Pending</span>
+            <p><strong>A node is running.</strong> Figures are the trail as of the compiled-at stamp and are not updated until the next compile.</p>
+            <p class="big mono" style="font-size:1.5rem;font-weight:600;font-variant-numeric:tabular-nums lining-nums">5 <span class="sub" style="font-size:0.875rem;font-weight:400">FAILs seen so far, as of 2026-10-19T03:33:55Z</span></p>
+            <p class="placeholder">Illustration of the state only. The excerpt holds no running node: F4 is pending with attempt 0.</p>
+          </div>
+        </div>
+
+        <div class="state" id="state-notbuilt">
+          <h3>State: not built</h3>
+          <div class="body">
+            <div class="nbbox"><b>Rule</b><a class="chip chip-nb" href="rule.html?id=RENEW-4">RENEW-4</a><span>not built yet</span></div>
+            <div class="nbbox"><b>Node</b><span class="mono">F4</span> Renew: trail cells in the matrix read <span>not built yet</span></div>
+            <div class="nbbox"><b>Region</b>Tests for <span class="mono">F4</span> rules: <span>not built yet</span></div>
+            <div class="nbbox"><b>Nav entry</b><span class="mono">/plan-investigation</span>: <span>not built yet</span></div>
+            <p class="placeholder">The dashed outline and the words are the whole signal. Absence is not drawn as a failure.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+</div>
+
+</body>
+</html>

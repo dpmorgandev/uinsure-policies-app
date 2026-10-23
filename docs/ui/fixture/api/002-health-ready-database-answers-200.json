@@ -1,0 +1,35 @@
+{
+ "item": "HEALTH · ready (database answers) → 200",
+ "folder": "F0b Walking skeleton / happy path",
+ "rule": "HEALTH",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:45:06Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/health/ready",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 200,
+   "responseHeaders": {
+    "content-type": "text/plain",
+    "date": "Mon, 19 Oct 2026 17:45:05 GMT",
+    "server": "Kestrel",
+    "cache-control": "no-store, no-cache",
+    "expires": "Thu, 01 Jan 1970 00:00:00 GMT",
+    "pragma": "no-cache",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": "Healthy"
+  }
+ ]
+}

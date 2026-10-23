@@ -1,0 +1,37 @@
+screens: screens/overview/populated.html: <svg.kit-provenance-label__icon.lucide.lucide-cog> inside receipt-figure is not in receipt-figure's stylekit markup
+screens: screens/overview/populated.html: <svg.kit-provenance-label__icon.lucide.lucide-cog> inside receipt-figure is not in receipt-figure's stylekit markup
+screens: screens/overview/populated.html: <svg.kit-provenance-label__icon.lucide.lucide-cog> inside receipt-figure is not in receipt-figure's stylekit markup
+screens: screens/overview/populated.html: <svg.kit-provenance-label__icon.lucide.lucide-cog> inside receipt-figure is not in receipt-figure's stylekit markup
+screens: screens/overview/populated.html: <svg.kit-provenance-label__icon.lucide.lucide-database> inside receipt-figure is not in receipt-figure's stylekit markup
+screens: screens/overview/populated.html: <svg.kit-provenance-label__icon.lucide.lucide-cog> inside receipt-figure is not in receipt-figure's stylekit markup
+screens: screens/overview/populated.html: <span.kit-status-tag__tag.kit-status-tag__warn> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/overview/populated.html: <svg.kit-status-tag__icon.lucide.lucide-alert-triangle.lucide-triangle-alert> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/overview/populated.html: <span.kit-status-tag__tag.kit-status-tag__warn> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/overview/populated.html: <svg.kit-status-tag__icon.lucide.lucide-alert-triangle.lucide-triangle-alert> has kit classes outside any data-comp instance: tag each pasted snippet's root
+screens: screens/overview/populated.html: "docs/trace/requirements-matrix.md#L6-L34" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/overview/populated.html: "18:45:08" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/overview/loading.html: spinner is not in this page's catalog components
+screens: screens/overview/loading.html: spinner is not in this page's catalog components
+screens: screens/overview/loading.html: spinner is not in this page's catalog components
+screens: screens/overview/loading.html: spinner is not in this page's catalog components
+screens: screens/overview/loading.html: spinner is not in this page's catalog components
+screens: screens/overview/loading.html: spinner is not in this page's catalog components
+screens: screens/overview/error.html: empty-state is not in this page's catalog components
+screens: screens/overview/error.html: empty-state is not in this page's catalog components
+screens: screens/overview/error.html: empty-state is not in this page's catalog components
+screens: screens/overview/error.html: empty-state is not in this page's catalog components
+screens: screens/overview/error.html: empty-state is not in this page's catalog components
+screens: screens/overview/error.html: empty-state is not in this page's catalog components
+screens: screens/overview/in-flight.html: <span.kit-status-tag__pending.kit-status-tag__tag> inside page-header is not in page-header's stylekit markup
+screens: screens/overview/in-flight.html: <svg.kit-status-tag__icon.lucide.lucide-clock> inside page-header is not in page-header's stylekit markup
+screens: screens/overview/in-flight.html: <svg.kit-provenance-label__icon.lucide.lucide-cog> inside receipt-figure is not in receipt-figure's stylekit markup
+screens: screens/overview/in-flight.html: <svg.kit-provenance-label__icon.lucide.lucide-database> inside receipt-figure is not in receipt-figure's stylekit markup
+screens: screens/overview/in-flight.html: <svg.kit-provenance-label__icon.lucide.lucide-cog> inside receipt-figure is not in receipt-figure's stylekit markup
+screens: screens/overview/in-flight.html: <svg.kit-provenance-label__icon.lucide.lucide-database> inside receipt-figure is not in receipt-figure's stylekit markup
+screens: screens/overview/in-flight.html: "docs/trace/build/F6/loop.jsonl#L16" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/overview/in-flight.html: "docs/trace/build/F6/loop.jsonl#L14-L15" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/overview/in-flight.html: "docs/trace/build/F6/loop.jsonl#L3" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/overview/in-flight.html: "docs/trace/build/F6/loop.jsonl#L9" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/overview/in-flight.html: "09:40:39" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/overview/in-flight.html: "18:45:08" is not in the fixture, the stylekit or the brief (HONEST-1)
+screens: screens/overview/not-built.html: "18:45:08" is not in the fixture, the stylekit or the brief (HONEST-1)

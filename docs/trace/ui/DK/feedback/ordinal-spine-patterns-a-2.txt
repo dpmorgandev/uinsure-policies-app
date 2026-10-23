@@ -1,0 +1,3 @@
+pre-commit: G10: private content in the staged files:
+tests/web/kit/markdown-text.test.tsx:81:      '[a](https://example.test/x) [b](http://example.test/y) [c](mailto:d[@]example.test) [d](/rules/GET-1) [e](#r5) [f](docs/qa/build-F2.md)',
+tests/web/kit/markdown-text.test.tsx:86:      'mailto:d[@]example.test',

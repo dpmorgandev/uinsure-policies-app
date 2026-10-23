@@ -1,0 +1,127 @@
+.root {
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  background: var(--color-surface);
+  border-top: 4px solid var(--color-primary);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  min-width: 0;
+}
+
+.root[data-outcome="problem"],
+.root[data-outcome="unreachable"] {
+  border-top-color: var(--color-error);
+}
+
+.root[data-outcome="unreachable"] {
+  border-top-style: dashed;
+}
+
+.title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-16);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.n,
+.method,
+.url,
+.figure,
+.header,
+.body {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.n,
+.method {
+  font-size: var(--text-16);
+}
+
+.url {
+  min-width: 0;
+  font-size: var(--text-14);
+  font-weight: 400;
+  overflow-wrap: anywhere;
+}
+
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin: 0 0 var(--space-3);
+}
+
+.figure {
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+}
+
+.part {
+  margin: 0 0 var(--space-3);
+  min-width: 0;
+}
+
+.partTitle {
+  margin: 0 0 var(--space-1);
+  color: var(--color-text-secondary);
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.none {
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--text-14);
+  overflow-wrap: anywhere;
+}
+
+.headers {
+  margin: 0;
+  font-size: var(--text-14);
+}
+
+.header {
+  display: grid;
+  grid-template-columns: minmax(8rem, max-content) minmax(0, 1fr);
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-1) 0;
+  overflow-wrap: anywhere;
+}
+
+.header dt {
+  color: var(--color-text-secondary);
+}
+
+.header dd {
+  margin: 0;
+}
+
+.bodyWrap {
+  margin-top: var(--space-1);
+}
+
+.body {
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-background);
+  border-left: 4px solid var(--color-text-secondary);
+  border-radius: var(--radius);
+  font-size: var(--text-14);
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 40rem) {
+  .header {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

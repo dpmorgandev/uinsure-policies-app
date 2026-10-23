@@ -1,0 +1,58 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T04:45:15Z",
+  "plan": "ui",
+  "node": "U4",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "abdbe1a9b5a232704",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U4",
+    "attempt": 2,
+    "base_sha": "f2c39dde0113bade996ef54c8bce55ca78f2557f",
+    "head_sha": "d7888d152c46fa9751aa11f713826413b6656637",
+    "diff_fingerprint": "0f89c6936a80c335d848d73eb6a03af878a319bf",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit (attempt 1, line 30)",
+      "gate.audit (attempt 2, line 62)"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S3",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "src/web/kit/primitives/file-line-link/FileLineLink.tsx",
+        "line": 17,
+        "what": "FileLineLink draws a GitHub blob link with no rel=noreferrer. ReceiptFigure, PageHeader id and RuleEvidence qa/pr links carry GitHub hrefs the same way.",
+        "why": "W2 says external links carry rel=noreferrer. S2's fix covered ShaLink, HumanDecisionRow and Footer only. The links are same-tab with no target=_blank, so only the referrer leaks, and only its origin under the default policy. Hygiene, not blocking.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "S1 fixed. SearchEntry.href for a path is now the bare repo path from trace.json. SiteSearch.tsx:21 builds the URL with blobUrl(snapshotSha, path), which is prefixed with the constant REPO (https://github.com/...). The host is fixed, so the data cannot produce a javascript: or other-origin URL. SiteSearch.tsx:28 opens it with window.open(href, '_blank', 'noreferrer'). The old '#/files/' route is gone.",
+      "S1 residual, no finding: the path is not URL-encoded, so a '#' or '?' in a repo path would only change the fragment or query on the same github.com repo URL. If the snapshot SHA were unavailable, the raw path would be opened as a relative URL. That is harmless, and the search is only populated once the trace is ready.",
+      "S2 fixed. Footer.tsx repo link has rel=noreferrer. ShaLink has it on the separate GitHub anchor, and on the primary anchor when it is the only link (!href && githubHref); the in-app link has none. HumanDecisionRow sets it when item.external is true or the href matches ^https?://, and in-app evidence links stay without it. Unit tests cover each case, plus an e2e check that every a[href^=https://github.com/] on the decisions page and a commit page has the rel.",
+      "Delta check: the activity notice text is built from record counts and agent names and rendered as a React text child inside a p element. The decisions page note and the rule page git command text are static strings or template strings of trace SHAs and the rule id, rendered as text. The rule page command now adds --first-parent. The agents list is a typed Record over the kit's AgentName union, so the compiler enforces it. The kit gains five new agent names, as plain strings. The delta adds no network access, no storage use and no HTML sinks. A grep for dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( and new Function across src/web finds only a comment in MarkdownText.tsx.",
+      "The delta adds no src/web/package.json change. The runtime audit gate in the receipts found 0 vulnerabilities (attempts 1 and 2). The dev audit is the known dev-only item and does not gate.",
+      "n/a: API1:2023, API2:2023, API3:2023, API4:2023, API5:2023, API6:2023, API7:2023, API9:2023. This is a ui node with no server code; API1, API2 and API5 are out of scope for authentication in any case.",
+      "The explorer and workbench network surface (W4) and the compiler boundary (W5) have no changes in this delta, so they are carried from the attempt 1 review. W3 (CSP in index.html) and W6 (nothing private) are likewise unchanged. The new test fixtures use example.com addresses and temp directories only."
+    ]
+  }
+}

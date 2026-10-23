@@ -1,0 +1,138 @@
+.root {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+  padding-bottom: var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--text-16);
+  line-height: 1.5;
+  color: var(--color-text-primary);
+  border-bottom: 2px solid var(--color-text-secondary);
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: var(--text-12);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  overflow-wrap: anywhere;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-24);
+  font-weight: 700;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.question {
+  margin: 0;
+  max-width: 46rem;
+  color: var(--color-text-secondary);
+}
+
+.question strong {
+  color: var(--color-text-primary);
+}
+
+.answer {
+  margin: 0;
+  max-width: 52rem;
+  font-size: var(--text-32);
+  font-weight: 700;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-5);
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-14);
+}
+
+.field {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+  min-width: 0;
+}
+
+.field dt {
+  color: var(--color-text-secondary);
+}
+
+.field dd {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.stamp {
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+a.mono {
+  color: var(--color-primary);
+  text-underline-offset: 0.2em;
+}
+
+a.mono:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+.gap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-2);
+  color: var(--color-text-secondary);
+  border: 1.5px dashed var(--color-text-secondary);
+  border-radius: var(--radius);
+}
+
+.live {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-2);
+  font-weight: 700;
+  color: var(--color-primary);
+  border: 1.5px solid var(--color-primary);
+  border-radius: var(--radius);
+}
+
+.liveNote {
+  color: var(--color-text-secondary);
+}
+
+.icon {
+  flex: none;
+  width: 1em;
+  height: 1em;
+}
+
+.note {
+  margin: 0;
+  max-width: 46rem;
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+}

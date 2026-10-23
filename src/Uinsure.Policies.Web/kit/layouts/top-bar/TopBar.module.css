@@ -1,0 +1,123 @@
+/* The bar is its own size container, so it lays out by its own width (a 390 frame or a phone). */
+.bar {
+  container-type: inline-size;
+  position: relative;
+  background: var(--color-surface);
+  border-bottom: 2px solid var(--color-border);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas: "name search theme";
+  align-items: end;
+  gap: var(--space-3) var(--space-5);
+  max-width: 74rem;
+  margin: 0 auto;
+  padding: var(--space-3) var(--space-5);
+}
+
+.name {
+  grid-area: name;
+  align-self: center;
+  color: var(--color-text-primary);
+  font-size: var(--text-24);
+  font-weight: 700;
+  line-height: 1.2;
+  text-decoration: none;
+}
+
+.name:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.name:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+.search {
+  grid-area: search;
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 36rem;
+  min-width: 0;
+  margin: 0;
+}
+
+.field {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* The caller's own search (the kit Search combobox) sits where the plain box would. */
+.slot {
+  grid-area: search;
+  width: 100%;
+  max-width: 36rem;
+  min-width: 0;
+}
+
+.theme {
+  grid-area: theme;
+  justify-self: end;
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+@container (max-width: 48rem) {
+  .inner {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "name theme"
+      "search search";
+    align-items: center;
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .search,
+  .slot {
+    max-width: none;
+  }
+}
+
+/* Too narrow for the name and the three-way toggle on one row (390 wide): one thing per row. */
+@container (max-width: 30rem) {
+  .inner {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "name"
+      "search"
+      "theme";
+  }
+
+  .theme {
+    justify-self: start;
+  }
+
+  /* The field takes the whole row, so its placeholder ("Rule ID, node, SHA or path") is read whole. */
+  .search {
+    flex-wrap: wrap;
+  }
+
+  .field {
+    flex-basis: 100%;
+  }
+}

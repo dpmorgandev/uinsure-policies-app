@@ -1,0 +1,134 @@
+.root {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: min(100%, 46rem);
+  min-width: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-16);
+  line-height: 1.55;
+  color: var(--color-text-primary);
+  overflow-wrap: anywhere;
+}
+
+.root > :first-child {
+  margin-top: 0;
+}
+
+.root > :last-child {
+  margin-bottom: 0;
+}
+
+.root p,
+.root ul,
+.root ol,
+.root blockquote,
+.root .codeFrame {
+  margin: 0 0 var(--space-3);
+}
+
+.root h2,
+.root h3,
+.root h4,
+.root h5,
+.root h6 {
+  margin: var(--space-4) 0 var(--space-2);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.root h2 {
+  font-size: var(--text-24);
+}
+
+.root h3 {
+  font-size: var(--text-18);
+}
+
+.root h4,
+.root h5,
+.root h6 {
+  font-size: var(--text-16);
+}
+
+.root ul,
+.root ol {
+  padding-left: var(--space-5);
+}
+
+.root li + li {
+  margin-top: var(--space-1);
+}
+
+.root li > ul,
+.root li > ol {
+  margin: var(--space-1) 0 0;
+}
+
+.root a {
+  color: var(--color-primary);
+  text-underline-offset: 0.2em;
+}
+
+.root a:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+.root code {
+  padding: 0 var(--space-1);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-variant-numeric: tabular-nums lining-nums;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+}
+
+/*
+ * A code line wraps at the edge of its frame, so a long command is read whole without scrolling and never reaches past
+ * the pane. The frame still scrolls (and the keyboard can reach it) for any line that cannot break.
+ */
+.root .codeFrame {
+  position: relative;
+  max-width: 100%;
+  overflow-x: auto;
+  background: var(--color-surface);
+  border-left: 4px solid var(--color-text-secondary);
+  border-radius: var(--radius);
+}
+
+.root .codeFrame:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.root pre {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-14);
+  line-height: 1.5;
+}
+
+.root pre code {
+  padding: 0;
+  font-size: inherit;
+  background: none;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.root blockquote {
+  padding: var(--space-1) var(--space-4);
+  color: var(--color-text-secondary);
+  border-left: 4px solid var(--color-border);
+}
+
+.root hr {
+  margin: var(--space-4) 0;
+  border: 0;
+  border-top: 1.5px solid var(--color-border);
+}

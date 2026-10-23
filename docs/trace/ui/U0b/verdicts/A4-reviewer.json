@@ -1,0 +1,130 @@
+{
+  "v": 1,
+  "ts": "2026-10-21T01:39:13Z",
+  "plan": "ui",
+  "node": "U0b",
+  "attempt": 4,
+  "agent": "reviewer",
+  "agent_id": "a0515f59741ebd70d",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U0b",
+    "attempt": 4,
+    "base_sha": "02dfd6a8defc27cbf26c84909346c8d251b61a4a",
+    "head_sha": "690ad1598bbcb6a3934e7b45e5d6d339e6b5d1e5",
+    "diff_fingerprint": "106357ffb35f4f4771fcafcabbbd214730087fd8",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "loop.jsonl:3 gate.scaffold 0f2d3c6",
+      "loop.jsonl:4 gate.red 8d2bb50 (ok:false)",
+      "loop.jsonl:7 gate.finding-red 1fbe5af",
+      "loop.jsonl:8 gate.fix 380ef5f",
+      "loop.jsonl:9 gate.red 380ef5f",
+      "loop.jsonl:10 gate.stub 03ccd8e",
+      "loop.jsonl:14 gate.finding-red 0d90b80",
+      "loop.jsonl:15 gate.fix 98b45f4",
+      "loop.jsonl:16 gate.stub 98b45f4",
+      "loop.jsonl:20 gate.red 15d077a",
+      "loop.jsonl:21 gate.green 09ea6b5",
+      "loop.jsonl:22 gate.red 9f09f94",
+      "loop.jsonl:23 gate.green 5c1bc6e",
+      "loop.jsonl:24 gate.green 8049a28 (ok:false)",
+      "loop.jsonl:30 gate.finding-red d8fbf84",
+      "loop.jsonl:31 gate.fix 99e9d93",
+      "loop.jsonl:32 gate.green 99e9d93",
+      "loop.jsonl:33 gate.refactor f187832",
+      "loop.jsonl:54 gate.e2e 661cbd8 (ok:false)",
+      "loop.jsonl:64 gate.finding-red 9d3037e",
+      "loop.jsonl:65 gate.fix 0d24fc1",
+      "loop.jsonl:66 gate.typecheck a5c521a",
+      "loop.jsonl:67 gate.lint a5c521a",
+      "loop.jsonl:68 gate.lint-css a5c521a",
+      "loop.jsonl:69 gate.test a5c521a",
+      "loop.jsonl:70 gate.build a5c521a",
+      "loop.jsonl:71 gate.e2e a5c521a",
+      "loop.jsonl:72 gate.e2e-regression a5c521a",
+      "loop.jsonl:73 gate.audit a5c521a",
+      "loop.jsonl:74 gate.audit-dev a5c521a",
+      "loop.jsonl:75 gate.coverage a5c521a",
+      "loop.jsonl:76 gate.scope a5c521a",
+      "loop.jsonl:77 gate.no-stubs a5c521a"
+    ],
+    "rules_covered": [
+      "DATA-1",
+      "DATA-3",
+      "DATA-6",
+      "DATA-7",
+      "THEME-1",
+      "SEC-1",
+      "BRAND-1",
+      "A11Y-1",
+      "RESP-1"
+    ],
+    "rules_missing": [
+      "HONEST-1",
+      "DATA-5"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "HONEST-1",
+        "severity": "P1",
+        "file": "src/web/compiler/index.ts",
+        "line": 149,
+        "what": "The activity chunk mapping drops `attempt`, so every Attempt cell on the activity page shows a dash, and the page says a dash means the log has no value. The log has one.",
+        "why": "Every activity.jsonl line carries attempt (e.g. docs/trace/ui/U0b/activity.jsonl:1, and the complete fixture's lines 1-5 hold attempt 1). The signed-off contract reads trace/<plan>/<node>/activity.json[].attempt (docs/ui/derived/U0b/activity/screen.json:17,26). Activity.tsx:46 renders `row.record.attempt ?? GAP`, and Activity.tsx:107 tells the reader 'A dash means the log holds none for that column'. Showing an absence the trail contradicts is a claim that isn't in the trail (ui-requirements HONEST-1; principle 'show the receipt, not the claim'). The fix belongs in the compiler (carry attempt into the chunk), not in the screen.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "HONEST-1",
+        "severity": "P1",
+        "file": "tests/web/e2e/U0b/a11y-1.spec.ts",
+        "line": 174,
+        "what": "The activity row read-back checks Line, Agent, Tool, command, Commit and TDD but skips Attempt. The compiler's chunk test maps only agent/tool/file/command. Neither sees R1.",
+        "why": "Success tests must read the resource back in full through the shared assertion (reviewer check 3; requirements-trace 'Stub-proof success rows'). A partial read-back let a missing column pass 64/64 at loop.jsonl:71. tests/web/unit/compiler/data-1.test.ts:103 likewise omits attempt (and ts) from the chunk shape. No HONEST-1-tagged test asserts the activity values against the fixture trail. A red test should assert Attempt = 1 on rows 1-5 of the complete fixture, plus a chunk-shape assertion that includes attempt.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R3",
+        "rule_id": "DATA-5",
+        "severity": "P1",
+        "file": "src/web/compiler/index.ts",
+        "line": 111,
+        "what": "Only the commit subject goes through the denylist scan. Emitted trailer values (Rule, Agent, Plan, Node, TDD, Fixes-Finding) and compiledAt.ref reach trace.json unscanned.",
+        "why": "DATA-5: 'The compiler fails the build if its output matches the privacy denylist'. The data-5 unit test header claims the scan covers 'every value it emits'. That is not so: index.ts:112-124 emits commits[].agent/plan/node/rule/tdd/fixesFinding from commit bodies, and :206 emits ref, with no scan(). Nothing else guards these values: .githooks/pre-commit scans staged files only, and commit-msg checks the Rule trailer only for being non-empty, so its free text is unguarded. The exposure is narrow (Agent, TDD and Fixes-Finding are pattern-checked by commit-msg), but the rule's guarantee isn't met and no test plants a denylisted trailer. Fix direction: scan the serialised output, or every emitted git-derived value, and add a red test with a denylisted Rule trailer.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "DATA-1",
+        "severity": "P2",
+        "file": "src/web/compiler/git.ts",
+        "line": 40,
+        "what": "trailersOf uses Object.fromEntries, so a repeated trailer key keeps only its last value. Commits with several Fixes-Finding lines lose all but the last in trace.json.",
+        "why": "This trail repeats Fixes-Finding lines: 380ef5f has A1/I1 and A1/I2, and 99e9d93 has A2/I1, A2/I3 and A2/I4 (packet/trailers.txt). fixesFinding() at index.ts expects a comma list, but the trail writes one line per finding, so the compiled commits[].fixesFinding misstates the trail. No U0b screen reads it yet, but LOOP-2 (the retry ladder) will, and no test covers repeated trailers. That is why this is P2 and not P1.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R5",
+        "rule_id": "DATA-1",
+        "severity": "P2",
+        "file": "src/web/compiler/index.ts",
+        "line": 154,
+        "what": "The compiler fills events, verdicts and rules[].status/feature/red/green with parsing logic that no U0b test drives and no U0b screen reads.",
+        "why": "The loop.jsonl event parse (:154-163), the verdict envelope and round parse (:164-179) and the rule status derivation (:189-200) have no red test in tests/web/unit/compiler (the DATA-1 tests check only the rule ids and the commit fields). The trace-data schema needs the lists to exist, but filling them with untested logic is code not driven by a red commit (web-testing: green follows red), and it is speculative for this node (code-quality slop list). Either test it here or emit empty lists until U1/U3 drive it.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "TDD order holds for every node rule. Each red commit precedes its green: DATA-1/3/5/6/7 red at 7916c11..632df24 (re-reds acb2e1d..15d077a, e79c238, 9f09f94), green at 09ea6b5 and 5c1bc6e. THEME-1, SEC-1, BRAND-1, HONEST-1 and RESP-1 red at d676d53..8d2bb50, green at 8049a28. A11Y-1 red at 85dc9c4, green at 99e9d93. The stub 03ccd8e precedes every green.",
+      "gate.stub (loop.jsonl:10) records only reachable/parity passes at the stub. The re-run at loop.jsonl:16 records one more pass, the D1 finding test (RESP-1), after its fix landed. The orchestrator logged it as an exception (stub gate vs fix gate). It is a harness contradiction, not a code defect, so it is a note, not a finding.",
+      "The test edits after red were checked against the finding records. A2/I2 (reading headers as allTextContents) and A2/I4 (comparing the background by colour value) were investigator-recommended corrections, accepted under inv-004. Neither loosens an expected value. No Skip or deleted assertion was seen in the HEAD tests.",
+      "A3/I1 fix verified on the code: tokens.css:36-37 applies dark under :root:not([data-theme=\"light\"]), so index.html with no data-theme really does paint the system theme first. The new THEME-1 test checks the attribute from document creation.",
+      "No `not implemented` stub remains in src/web (loop.jsonl:77). The compiler's `new Date()` default is the injected compile clock (CompileOptions.now), and the DATA-3 unit tests inject it.",
+      "Gates at a5c521a cover HEAD 690ad15: the only commit between them changes docs/plans (t11 → done)."
+    ]
+  }
+}

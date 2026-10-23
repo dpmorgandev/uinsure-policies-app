@@ -1,0 +1,58 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-4);
+  border: 2px solid var(--color-primary);
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-16);
+  font-weight: 700;
+  line-height: 1.2;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-short),
+    color var(--duration-short);
+}
+
+.button svg {
+  flex: none;
+}
+
+.primary {
+  background: var(--color-primary);
+  color: var(--color-background);
+}
+
+.secondary {
+  background: transparent;
+  color: var(--color-primary);
+}
+
+.destructive {
+  background: var(--color-error);
+  border-color: var(--color-error);
+  color: var(--color-background);
+}
+
+.button:focus-visible,
+.button[data-show-focus] {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.button:disabled,
+.button[aria-disabled="true"] {
+  background: var(--color-surface);
+  border: 2px dashed var(--color-text-secondary);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.button[aria-busy="true"] {
+  cursor: progress;
+}

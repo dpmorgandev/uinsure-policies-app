@@ -1,0 +1,233 @@
+{
+  "node": "U4",
+  "builtNodes": [
+    "U0a",
+    "U0b",
+    "U1",
+    "U2",
+    "U3",
+    "U4",
+    "U5",
+    "U7",
+    "U8",
+    "W1",
+    "W2",
+    "W3"
+  ],
+  "screens": {
+    "about": {
+      "built": [
+        "provenance-labels",
+        "glossary-and-status-legend",
+        "re-verify-with-git",
+        "guided-tour-entry-one-rule-end-to-end-could",
+        "compiled-at-stamp-the-commit-sha-and-utc-time-trace-json-was-compiled-from"
+      ],
+      "notBuilt": []
+    },
+    "activity": {
+      "built": [
+        "agent-lanes",
+        "event-table-text-equivalent"
+      ],
+      "notBuilt": []
+    },
+    "commit": {
+      "built": [
+        "commit-header-and-trailers",
+        "trailer-agent-vs-hook-agent",
+        "diff-lazy",
+        "links-out"
+      ],
+      "notBuilt": []
+    },
+    "decisions": {
+      "built": [
+        "decision-list"
+      ],
+      "notBuilt": []
+    },
+    "finding": {
+      "built": [
+        "findings",
+        "fixed-by"
+      ],
+      "notBuilt": []
+    },
+    "harness": {
+      "built": [
+        "agents",
+        "hooks"
+      ],
+      "notBuilt": []
+    },
+    "loop": {
+      "built": [
+        "attempt-ladder",
+        "gate-timeline"
+      ],
+      "notBuilt": []
+    },
+    "matrix": {
+      "built": [
+        "filters-status-feature",
+        "matrix-table",
+        "test-count-scope-note-counts-are-per-node-sell-7-10-at-f1-vs-15-traited"
+      ],
+      "notBuilt": []
+    },
+    "node": {
+      "built": [
+        "completeness-banner",
+        "rules",
+        "tasks",
+        "attempts",
+        "who-touched-what"
+      ],
+      "notBuilt": []
+    },
+    "not-found": {
+      "built": [
+        "what-was-asked-for-and-where-to-go"
+      ],
+      "notBuilt": []
+    },
+    "overview": {
+      "built": [
+        "headline-answer",
+        "receipt-figures-rules-built-total-tests-passing-nodes-done-attempts-and-fails-human-decisions",
+        "build-plan-at-a-glance",
+        "latest-human-decisions",
+        "compiled-at-stamp",
+        "top-bar-search-and-theme-toggle-global-tagged-here-once",
+        "trail-completeness-trail-incomplete-reasons-verbatim-not-built-yet-and-f0a-as-git-only"
+      ],
+      "notBuilt": []
+    },
+    "plan": {
+      "built": [
+        "plan-header-status-approval-requirements-rev",
+        "node-graph-and-its-table",
+        "investigation-body-inv-plans-only"
+      ],
+      "notBuilt": []
+    },
+    "rule": {
+      "built": [
+        "rule-text-and-agreed-interpretation",
+        "signature-red-before-green-evidence-custody-chain-tdd-ticks-chronology-per-style",
+        "tests-count-and-scope",
+        "qa-step-and-sign-off",
+        "red-and-green-diffs-lazy",
+        "verify-it-yourself",
+        "load-diff-busy-while-the-diff-chunk-loads",
+        "links-out-commit-shas-pr-numbers-and-file-line-references-to-github-at-that-sha"
+      ],
+      "notBuilt": []
+    },
+    "sessions": {
+      "built": [
+        "snapshot-timeline",
+        "one-snapshot-open-at-its-own-url-sessions-file"
+      ],
+      "notBuilt": []
+    },
+    "stats": {
+      "built": [
+        "facts-per-agent-and-node"
+      ],
+      "notBuilt": []
+    },
+    "verdict": {
+      "built": [
+        "verdict-summary",
+        "findings",
+        "raw-json"
+      ],
+      "notBuilt": []
+    },
+    "walkthrough": {
+      "built": [
+        "commit-sequence"
+      ],
+      "notBuilt": []
+    },
+    "wb-cancel": {
+      "built": [
+        "cancellation-date-and-quote",
+        "quote-and-cancel-actions-each-busy-while-its-request-runs",
+        "problems-cancel-3-cancel-4-cancel-7",
+        "the-refund-as-a-worked-sum-per-term-with-the-rule-applied",
+        "cancel-with-the-quoted-date-then-quote-and-cancellation-compared",
+        "the-requests-as-sent-inspector"
+      ],
+      "notBuilt": []
+    },
+    "wb-claim": {
+      "built": [
+        "claim-date-and-description",
+        "refund-before-and-after-the-claim-two-quotes",
+        "problems-could-2a-could-2b-could-2c",
+        "record-claim-busy-while-the-request-and-the-two-quotes-run"
+      ],
+      "notBuilt": []
+    },
+    "wb-home": {
+      "built": [
+        "open-a-policy-by-reference",
+        "open-by-reference-busy-while-the-policy-loads",
+        "sell-a-new-policy-entry",
+        "recent-policies-kept-in-this-browser"
+      ],
+      "notBuilt": []
+    },
+    "wb-policy": {
+      "built": [
+        "status-and-current-term",
+        "terms-timeline-terms-payments-claims-cancellation-dates-the-api-returned-only",
+        "policyholders-and-property",
+        "payments-and-refunds",
+        "claims",
+        "cancellation-summary-from-get-per-term-breakdown-from-the-logged-cancel-response",
+        "record-level-problem-banner-404-409",
+        "actions-quote-and-cancel-record-a-claim-renew",
+        "requests-that-touched-this-policy"
+      ],
+      "notBuilt": []
+    },
+    "wb-renew": {
+      "built": [
+        "renewal-amount-and-payment-method-default-shown-from-the-current-term-omitted-when-auto-renew-is-off",
+        "problems-renew-1-2-with-its-window-renew-3b-renew-5-renew-6-could-3-several-at-once-listed-not-placed",
+        "the-new-term-last-on-the-timeline",
+        "renew-busy-while-the-request-runs"
+      ],
+      "notBuilt": []
+    },
+    "wb-requests": {
+      "built": [
+        "request-log",
+        "one-exchange-request-response-status-line-curl"
+      ],
+      "notBuilt": []
+    },
+    "wb-sell": {
+      "built": [
+        "error-summary-every-problem-each-linked-to-its-field-and-its-rule",
+        "policy-fields-reference-type-start-date-amount-payment-method-auto-renew",
+        "reference-as-stored-normalisation-preview",
+        "policyholders-1-to-3",
+        "property",
+        "send-it-anyway-client-checks-off",
+        "submit-busy-while-the-sell-request-runs-spinner-disabled",
+        "the-request-as-sent-inspector"
+      ],
+      "notBuilt": []
+    }
+  },
+  "notBuiltScreens": [],
+  "unmappedIds": [],
+  "nodeRulesWithoutRegion": [
+    "PERF-1"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "v": 1,
+  "ts": "2026-10-18T13:50:00Z",
+  "plan": "build",
+  "node": "F1",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": null,
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "build",
+    "node_id": "F1",
+    "attempt": 2,
+    "base_sha": "{{c0}}",
+    "head_sha": "{{c6}}",
+    "diff_fingerprint": "7c2e9a41d06b38f5e1a4c9d27b80f63e5a1d4c98",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.green@{{c6}}"
+    ],
+    "rules_covered": [
+      "API1:2023",
+      "API3:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "A2 security PASS"
+    ]
+  }
+}

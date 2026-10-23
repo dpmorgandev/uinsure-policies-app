@@ -1,0 +1,42 @@
+.field {
+  display: block;
+  box-sizing: border-box;
+  max-width: 36rem;
+  min-width: 0;
+  margin: 0 0 var(--space-4);
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+}
+
+.label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--text-16);
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.required {
+  font-weight: 400;
+  color: var(--color-text-secondary);
+}
+
+.hint {
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-14);
+  line-height: 1.4;
+  color: var(--color-text-secondary);
+}
+
+.constraint {
+  margin: 0 0 var(--space-1);
+}
+
+/*
+ * An invalid field is not indented or barred: the message above the input carries the only icon, and the
+ * input is marked by its border, at the width it has when valid.
+ */
+.field > * {
+  min-width: 0;
+  max-width: 100%;
+}

@@ -1,0 +1,69 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T03:10:05Z",
+  "plan": "ui",
+  "node": "U9",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a2a7d80a68668e0ed",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U9",
+    "attempt": 2,
+    "base_sha": "a3420f104aebf4aaa532ee57de83ab3c67e5146e",
+    "head_sha": "0bd7e57db9728bf974c85a18c6942dc2bfce9c06",
+    "diff_fingerprint": "f8d558ee3e0990a0ec0d3e38bef61ccd9c141b46",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.write",
+      "gate.finding-red",
+      "gate.audit",
+      "gate.typecheck",
+      "gate.lint",
+      "gate.lint-css",
+      "gate.test",
+      "gate.build",
+      "gate.test-dotnet",
+      "gate.trace-check",
+      "gate.e2e",
+      "gate.e2e-regression"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "infrastructure/pipelines/stage-template.yml",
+        "line": 174,
+        "what": "The Deploy web step runs the pinned SWA CLI through npx --yes, with the production deployment token in its environment. Transitive dependencies resolve at run time with no lockfile.",
+        "why": "Hardening only. The token is masked and reaches the step only through env. The CLI version is pinned, but its dependencies are not, and the step runs on the production deploy agent. Fix by vendoring the CLI as a locked devDependency or an integrity-checked install. Not blocking for an evidence-only, never-deployed node.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "A1 S1 is resolved. The Deploy_<env> job now has the token step, the CLI deploy and the site smoke test that infrastructure/README.md describes. check-pipeline.py asserts them.",
+      "Token handling, checked closely. The step 'Read the Static Web App deployment token' (stage-template.yml:158-169) reads it with 'az staticwebapp secrets list' on the ARM connection at run time. It captures the value in a shell variable, so the az output is never printed. It sets the pipeline variable with 'issecret=true', so Azure DevOps masks it in logs. The 'Deploy web' step maps it explicitly through env (SWA_CLI_DEPLOYMENT_TOKEN). The CLI command line carries no token, and check-pipeline.py enforces that. The smoke-test steps do not map it, because secret variables are not exported to a step's environment unless mapped. No Bicep output exposes a key: the staticwebapp.bicep outputs are siteName and hostName only, and there is no listSecrets, apiKey or @secure anywhere in infrastructure. The token is in no param file, variable group or committed file.",
+      "The Web stage (azure-pipelines.yml:63-124) uses no secrets. The e2e run starts the API on the agent against its development SQLite database. The web artifact is dist/ plus staticwebapp.config.json.",
+      "Carried to U10 and not re-raised. A1 S2: staticwebapp.config.json sets only the CSP and nosniff headers, with no frame-ancestors or Referrer-Policy. This is hardening (P2) and is already an acceptance line on U10.",
+      "Web-security checklist, ui node. W1 met: the diff has no innerHTML, eval or similar. W2 met vacuously: no href-from-data code was added. W3 met: the host CSP is unchanged from A1, and its default-src is 'self'. W4 met: the only network surface is the same-origin /api linked backend. W5 met vacuously: compiler/** is untouched. W6 met: no local path, personal email, key or token appears in the diff. W7 met: package.json and the lockfile are untouched, and gate.audit exited 0 at 3925ba9. W8 met vacuously: no error-display code changed. API8 met: no secrets in the IaC or the pipeline. API10 met.",
+      "n/a (ui node, no server code): API1 (no auth or tenancy), API2 (auth out of scope), API3, API4, API5 (no roles), API6, API7 (no outbound fetching in src/), API9. The .NET extras (raw SQL, money types, logging) are not reached, because no src/ .NET file changed.",
+      "Operational mismatch, not a security finding: the linked backend forwards /api unchanged, but the API has no /api prefix. It is documented in infrastructure/README.md.",
+      "The fix-round gates (gate.write at be687b6, gate.finding-red at b813ad1) cover check-pipeline.py, the Bicep builds and the dotnet build. No src/web file changed since the web gates, so those receipts still cover it."
+    ]
+  }
+}

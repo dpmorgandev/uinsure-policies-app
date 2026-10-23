@@ -1,0 +1,45 @@
+{
+ "item": "GET-1 · claim on an unknown policy → 404",
+ "folder": "F3 Cancel / rule violations",
+ "rule": "GET-1",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:48:08Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "request",
+   "method": "POST",
+   "path": "/policies/F3-MVFJSAM5DH/claims",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "31"
+   },
+   "requestBody": {
+    "claimDate": "2026-10-19"
+   },
+   "status": 404,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:48:07 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/get-1",
+    "title": "Policy not found",
+    "status": 404,
+    "detail": "No policy with reference 'F3-MVFJSAM5DH'.",
+    "instance": "/policies/F3-MVFJSAM5DH/claims",
+    "traceId": "00-0df6f6d7864a68cbf179ba3906e34211-e8be749352165e65-00",
+    "ruleId": "GET-1",
+    "reference": "F3-MVFJSAM5DH"
+   }
+  }
+ ]
+}

@@ -1,0 +1,90 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T05:18:27Z",
+  "plan": "ui",
+  "node": "U9",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a5e0eac568ed63724",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U9",
+    "attempt": 2,
+    "base_sha": "e7ca509f098ebc8dd00f20553d3786ace4245846",
+    "head_sha": "ca43c934cd0fd7c77c80ef1435fdb16627391dd3",
+    "diff_fingerprint": "2dbe07ad103cc6ae4ba05359224b5fc2ed698e0e",
+    "verdict": "PASS",
+    "gate_refs": [
+      "steer(D1,pause2)@00276f4",
+      "findings(docs/trace/ui/U9/findings/D1.md)@38801af",
+      "gate.finding-red@a5c87ed7933047d8ddd5ac98eb006637707f8a96",
+      "gate.green@ca43c934cd0fd7c77c80ef1435fdb16627391dd3",
+      "gate.build@ca43c934cd0fd7c77c80ef1435fdb16627391dd3",
+      "gate.test@ca43c934cd0fd7c77c80ef1435fdb16627391dd3",
+      "gate.web-unit@ca43c934cd0fd7c77c80ef1435fdb16627391dd3",
+      "gate.diff-scope@ca43c934cd0fd7c77c80ef1435fdb16627391dd3",
+      "gate.integrate@ca43c934cd0fd7c77c80ef1435fdb16627391dd3",
+      "gate.write@be687b6bb5cd778be30619d2e3b92fcd3b0a4aab",
+      "gate.qa-run@59d4df1249053f526ae12592c768c9cc49939a7b",
+      "signoff(59d4df1249053f526ae12592c768c9cc49939a7b)"
+    ],
+    "rules_covered": [
+      "U9-acceptance-1",
+      "U9-acceptance-2",
+      "U9-acceptance-3",
+      "U9-acceptance-4",
+      "U9-acceptance-5",
+      "U9-acceptance-6",
+      "U9-acceptance-7",
+      "U9-acceptance-8",
+      "U9-acceptance-9",
+      "U9-acceptance-10",
+      "U9-acceptance-11"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "U9-acceptance-10",
+        "severity": "P2",
+        "file": "docs/qa/ui-U9.md",
+        "line": 89,
+        "what": "Step 25, step 28 and note 1 still say stage-template.yml has no token step, web deploy or site smoke test, and tell David to expect them to fail. A1's fix (be687b6) added all three.",
+        "why": "The QA script is what David runs at Pause 2. At HEAD these rows are false and point him at a defect that has been fixed. The header (line 6) also names a4da445 as the commit under test. The D1 edit (a5c87ed) fixed the F5 rows but left these. The F5 rows themselves (3-7) match the files.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "U9-acceptance-10",
+        "severity": "P2",
+        "file": "README.md",
+        "line": 133,
+        "what": "README says 'on this branch': 637 tests, 67 of them architecture. D1 adds two LaunchProfileTests, and gate.test@ca43c93 reports 639/639.",
+        "why": "The README is a U9 deliverable. Its measured count is now wrong because of this node's own diff. It is minor, because the sentence is dated 2026-10-19.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "U9-acceptance-6",
+        "severity": "P2",
+        "file": "Uinsure.Policies.slnLaunch",
+        "line": 13,
+        "what": "Fix commits b695dba (I1 rename) and 66378ef (I2 DebugTarget) are 'Agent: main' with no TDD trailer. b695dba also stages the trace files with the code.",
+        "why": "CLAUDE.md: loop commits carry Agent, Plan, Node, Rule and TDD. The red commit (1573976) comes before both, and the TDD: green commit (ca43c93) closes the round, so the order holds. But the trailer log can't classify the two commits that changed the profile. This is a trailer-hygiene finding, not a behaviour defect. The orchestrator wrote the root profile file because the builder's guard keeps it out (the same precedent as ec646d7).",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "D1/I1 is closed. The committed profile file is Uinsure.Policies.slnLaunch, the solution's base name. It was moved with git mv from Uinsure.Policies.slnx.slnLaunch (activity.jsonl:356). That line first removed the untracked copy Visual Studio had written, after an identical-content check at activity.jsonl:355. Only one profile file exists now. Acceptance line 11 (749ba4e) and README line 17 name the new file.",
+      "D1/I2 is closed. src/web/.vscode/launch.json has one configuration, 'localhost (Edge)': type edge, request launch, url http://localhost:4170, webRoot ${workspaceFolder}. The profile's Docket.Web.esproj entry has DebugTarget 'localhost (Edge)', and the port matches the esproj StartupCommand '--port 4170 --strictPort'. vite.config.ts:37 gives the dev server the same /api proxy, to DOCKET_API_PORT or 5080, so the esproj comment and the README proxy claim are true.",
+      "D1/I3 is closed. README lines 16-21 name the file VS reads. They say what opens: the API on 5080 with its own tab on /health/live (launchSettings.json:14-15, launchBrowser true), and the dev server on 4170 with an Edge debug window. They keep 'npm ci and npm run trace once first'. Step 2 of 'In Visual Studio' (lines 150-151) now points to the API and web profile, so the two passages agree. QA rows 3-7 expect the same.",
+      "TDD order for D1: 1573976 (tester, TDD: red, Fixes-Finding D1/I1 and D1/I2), then a5c87ed (QA), b695dba and 66378ef (fixes), then ca43c93 (builder, TDD: green). gate.finding-red@a5c87ed failed exactly the two new tests (67 passed). Both failed on their own asserts: the stale file exists, and launch.json is missing. Neither failed on a setup fault. activity.jsonl shows LaunchProfileTests.cs edited only by the tester (lines 343-345), before the red commit, so nothing was loosened after red. The three existing launchSettings tests are unchanged in the base...head diff.",
+      "What the files prove: the committed file has the name and content Visual Studio's convention expects, and the esproj entry names a browser configuration that exists, on the dev server's port. What they don't prove: that Visual Studio loads this profile into the dropdown; that the JavaScript SDK resolves DebugTarget against .vscode/launch.json (the investigator called this unprovable from the repo, citing the SDK's React template convention); that Edge opens; and that Shift+F5 also stops the Vite process (QA step 7). F5 stays David's check (QA Part A, steps 3-7).",
+      "The rest of the node: the U9 diff under infrastructure/ hasn't changed since A2 (gate.write@be687b6, A2-reviewer PASS), so acceptance lines 1-5, 8 and 9 still hold. Line 7: the slnx keeps Build Project=false on the esproj, and gate.build and gate.test@ca43c93 are 0 (639/639) with no npm. Line 11: gate.diff-scope@ca43c93 lists only files allowed by the amended line. The U8 merge (e7ca509) was not re-judged.",
+      "Plan state, outside the fix: ui.dag.yaml line 489 still says U9 'status: done', and t8 pause2 is 'done', while the D1 fix round is open after David's steer. The orchestrator should reconcile this before Pause 2 is signed again.",
+      "Minor, not raised as findings. The LaunchProfileTests header comment (lines 9-11) still describes only the launchSettings profiles. README 'In Visual Studio' step 1 lists the solution folders but not /web/; U10 moves that folder anyway. D1/I4 (the Avast detection) is untestable until David supplies the paths, and no binary is in the U9 diff."
+    ]
+  }
+}

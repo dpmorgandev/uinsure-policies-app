@@ -1,0 +1,78 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T01:47:55Z",
+  "plan": "ui",
+  "node": "U4",
+  "attempt": 3,
+  "agent": "security",
+  "agent_id": "aef3660ca3160fc99",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U4",
+    "attempt": 3,
+    "base_sha": "f2c39dde0113bade996ef54c8bce55ca78f2557f",
+    "head_sha": "acf9a9bffde63f29a558d12fd36c129b2e19d5cc",
+    "diff_fingerprint": "93ea1e7bde426e0a0c618b2cd230b058aa10ab50",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.build",
+      "gate.test",
+      "gate.typecheck",
+      "gate.lint",
+      "gate.diff-scope",
+      "gate.green"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "W2",
+        "severity": "P2",
+        "file": "src/web/app/shell/SiteSearch.tsx",
+        "line": 22,
+        "what": "A path result's GitHub link is built from the hash route, not the path: blobUrl(sha, entry.href) gives .../blob/<sha>/#/files/<enc>.",
+        "why": "W2 says links are built from IDs in trace.json. The host is fixed to the repo, so nothing can be injected. But the link opens the commit root, not the file, and nav-4 only checks the option exists, not its href. Use entry.label.",
+        "route_to": "builder"
+      },
+      {
+        "id": "S2",
+        "rule_id": "W2",
+        "severity": "P2",
+        "file": "src/web/kit/project/human-decision-row/HumanDecisionRow.tsx",
+        "line": 142,
+        "what": "External evidence links (GitHub blob URLs from DecisionRow.tsx:55) have no rel=\"noreferrer\". ShaLink's GitHub link has the same gap.",
+        "why": "W2 asks for rel=\"noreferrer\" on external links. The links open in the same tab, so there is no opener risk. The cost is a Referer leak to GitHub. Hygiene only.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "The dispatch prompt gave attempt 1. The stop hook requires attempt 3, which matches the loop log's attempt counter after the two kit-gap attempt++ events. I used the hook's value.",
+      "API1, API2, API3, API4, API5, API6, API7 and the .NET extras: n/a, ui node, no server code. API1, API2 and API5 are also out of scope by design.",
+      "W1 met: grep of src/web finds no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function, and no javascript: apart from the MarkdownText.tsx comments and its safeHref refusal. Loop-line detail (HumanDecisionRow what), activity tool/file/command labels, the open snapshot's fields and the not-found path are all rendered as React text. A session's next action goes through MarkdownText, which builds elements, refuses non-http/https/mailto schemes and sets rel=\"noopener noreferrer\".",
+      "W2 met apart from S1 and S2. entityUrl builds every hash route with encodeURIComponent. The search sends non-path hits through window.location.hash with that encoded route, and path hits through blobUrl with window.open(..., 'noreferrer'). Decision, commit and diff links all use the fixed REPO constant from repo.ts.",
+      "W3 met: index.html is not in the diff and keeps the CSP default-src 'self' (style-src 'unsafe-inline' is unchanged from before). No http(s):, @import or url( appears in src/web app, kit or compiler sources.",
+      "W4 met: the diff adds no fetch, storage, cookie or WebSocket use. The only data call is the existing loadChunk. markInteractive uses performance.mark only.",
+      "W5 met: the compiler's added code (hookAgents, withTdd, steer parsing) reads parsed docs/ trace lines and the already-read commits. It has no fetch, process.env or .claude path. Every tracked text is still scanned against the privacy denylist at compiler/index.ts:167, and commit subjects and trailers at :198, so the new round, at, what, when and hookAgent values come from scanned text.",
+      "W6 met: no local path, personal email or key in src/web app, kit or compiler, tests/web, or the changed docs/ui files. The docs/ui/fixture activity.json matches for such strings are not in this diff.",
+      "W7 met: package.json and the lockfile are not in the diff. gate.audit (npm audit --omit=dev --audit-level=high) was exit 0 with 0 runtime vulnerabilities. The dev audit is the known item and does not gate.",
+      "W8 met: NotFound echoes the asked path as escaped text with no stack or internals, and shows the kit EmptyState. Compiler, loader and screen failures go through DataNotice. No new error leaks.",
+      "API8:2023 met via W3 and W4. API10:2023 met via W1 and W8.",
+      "The SiteSearch result list is capped at MAX_MATCHES (30), so a one-letter query cannot render every path in the trail."
+    ]
+  }
+}

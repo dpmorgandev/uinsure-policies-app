@@ -1,0 +1,6 @@
+The gap: src/web/kit/layouts/primary-nav/PrimaryNav.tsx's NavItem only renders links, so a
+not-built nav entry can't be drawn. The kit already has NotBuiltYet kind="nav entry"
+(src/web/kit/project/not-built-yet/). The derived reference docs/ui/derived/U0b/ shows
+Requirements matrix, Plan, Human decisions and Workbench as not-built nav entries. Four U0b tests
+need this: BRAND-1 parity (overview, about, activity) and "HONEST-1 · reachable: each unbuilt nav
+entry says not built yet and is not a link".

@@ -1,0 +1,4 @@
+The signed-off overview screen (docs/ui/screens/overview/populated.html) draws an ok banner whose text
+lists the nodes, e.g. 'OK: F0b, F1, …', with data-completeness=ok. The kit's classify() only treats the
+exact value 'OK' as ok, so 'OK: F1' renders as unrecognised. A value of 'OK' or one starting 'OK:' must
+classify as ok, with a kit test for it.

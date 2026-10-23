@@ -1,0 +1,59 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T03:08:06Z",
+  "plan": "ui",
+  "node": "W1",
+  "attempt": 4,
+  "agent": "security",
+  "agent_id": "a75bd621b29210d7c",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "W1",
+    "attempt": 4,
+    "base_sha": "fa18658f714d3f424da3819c53fea510bfb6fc74",
+    "head_sha": "d91946ccdd6f3fbf808b04bb63dfe016e08077b2",
+    "diff_fingerprint": "97895b39ceb1d609e9ffd70af0f563d3e2a8fcb9",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.scope",
+      "gate.e2e",
+      "gate.e2e-regression",
+      "gate.build",
+      "gate.lint",
+      "gate.typecheck",
+      "gate.test",
+      "gate.no-stubs"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Scope of this round: the A3.2 round already passed. The only code since is 85154dd, which touches test support only (tests/web/e2e/U0b/support/built.ts and parity.ts, tests/web/e2e/U1/support/parity.ts and the W1 parity). It adds builtAt() and settledNav(), which read docs/ui/derived/*.json and docs/ui/screens.json from disk. They make no network calls and handle no user input. I re-walked the whole src/web/app diff anyway. The gate receipts are at 85154dd, and d91946c on top of it changes trace files only.",
+      "W1 met: a grep of src/web for dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( and new Function has one hit. It is a comment in kit MarkdownText.tsx:7 saying the component does not use them. Problem title, detail, violations, policy fields and the unreachable reason render as React text (ProblemView.tsx, WorkbenchHome.tsx, SellPolicy.tsx, PolicyView.tsx).",
+      "W2 met: the workbench hrefs are internal hash routes, with encodeURIComponent on the reference (SellPolicy.tsx:272, WorkbenchHome.tsx:131). The rule link in ProblemView.tsx:4 is '#/rules/' + ruleId, so it always starts with '#' and cannot become a javascript: URL. External links are built by repo.ts and blobUrl/pullUrl from trace ids, and carry rel=noreferrer (Matrix.tsx, Rule.tsx). P2 hygiene, not a finding: ProblemView.tsx:4 does not encodeURIComponent the API's ruleId, unlike the other routes. Out of the diff and unchanged: the kit Footer and ShaLink anchors don't set rel=noreferrer.",
+      "W3 met: index.html is unchanged and keeps default-src 'self'; style-src 'self' 'unsafe-inline'. The 'unsafe-inline' style source predates this node. The only absolute URL in src/web/app is the REPO constant in shell/repo.ts, used to build GitHub links. Nothing loads from another origin.",
+      "W4 met: the only network call in the app is fetch in browser.ts, through deps.fetch in api.ts:272. It goes to /api/policies... and the vite proxy sends it same-origin to the local API port, rewriting the /api prefix. The only storage is window.localStorage, behind a try/catch, for the recent-policies list (WB-9). There is no cookie, sessionStorage, sendBeacon, XMLHttpRequest or WebSocket access.",
+      "W5 met (vacuously): src/web/compiler/** is not in this diff and no compiler file was touched. The app code in src/web/app has no reference to .claude, and no process.env use.",
+      "W6 met: no absolute path, personal email, key or token in src/web/app or tests/web code or fixtures. The 'token' and 'secret' matches in src/web are design-token and redaction-token names. The matches in tests/web/fixtures are the privacy-denylist regex lines. The privacy scan in gate.qa covers the trace files.",
+      "W7 met: src/web/package.json and the lockfile are not in the diff, so no package was added or changed. gate.audit for attempt 4 is clean on the runtime dependencies (0 vulnerabilities, gated). The first run hit a registry timeout and the re-run passed. The dev audit returned no result, because the registry timed out again. It is not gated, so I could not check it against the known stylelint/micromatch/braces item. This is a gap in the receipt, not a finding.",
+      "W8 met: no stack, componentStack or error.stack is rendered. The unreachable branch shows the fetch error text beside the kit's problem state, and API answers show as returned. Hardening, not a finding: the app has no React ErrorBoundary. An uncaught render error would blank the page without leaking a stack.",
+      "API8:2023 met (the ui reading, W3 and W4). The vite.config.ts proxy change adds a rewrite of the /api prefix and still targets localhost only. playwright.config.ts snapshotPathTemplate is a fixed template that writes under docs/ui/baselines. No secret is committed.",
+      "API10:2023 met: the API's answers are read defensively and rendered as text (W1, W8).",
+      "n/a, ui node, no server code: API1:2023 (no auth or tenancy), API2:2023 (auth out of scope), API3:2023, API4:2023, API5:2023 (no roles), API6:2023, API7:2023 (no outbound URL fetching from server code), API9:2023. The .NET extras (raw SQL, decimal money, NuGet packages, server logging) were replaced by W1 to W8. There is no .NET code in this diff."
+    ]
+  }
+}

@@ -1,0 +1,41 @@
+{
+ "provenance": "fixture: hand-written in the shape render-trace.mjs emits, with one agent, one skill, one hook and one script",
+ "agents": [
+  {
+   "file": ".claude/agents/fixture-tester.md",
+   "name": "fixture-tester",
+   "description": "The fixture harness's only agent.",
+   "model": "sonnet",
+   "tools": "Read, Write",
+   "skills": [
+    "fixture-skill"
+   ],
+   "never": [
+    "Write outside the fixture."
+   ]
+  }
+ ],
+ "skills": [
+  {
+   "file": ".claude/skills/fixture-skill/SKILL.md",
+   "name": "fixture-skill",
+   "description": "The fixture harness's only skill.",
+   "userInvocable": "false"
+  }
+ ],
+ "hooks": [
+  {
+   "file": ".claude/hooks/fixture-hook.mjs",
+   "purpose": "The fixture harness's only hook.",
+   "gates": [
+    "G1"
+   ]
+  }
+ ],
+ "scripts": [
+  {
+   "file": ".claude/scripts/fixture-script.mjs",
+   "purpose": "The fixture harness's only script."
+  }
+ ]
+}

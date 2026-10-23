@@ -1,0 +1,5 @@
+Two things in the layout batch stop ui node U4's screens from drawing their rules (U4 green, e2e at e4e49f8).
+
+1. TopBar can't hold the site search. TopBar renders its own plain search input, and has no slot for another one. NAV-4 needs the kit Search combobox (empty, results, no results) in the top bar on every page, jumping to a rule ID, node, SHA or path. TopBar must take the search as a slot (a ReactNode prop, for example `search`), drawn where its own input sits now, and keep its plain input only when no slot is given. Add an example with the Search combobox in the slot. Search is composed here, not changed.
+
+2. AgentLanes draws a tick's label as only #n and the TDD step; the tool and the file it touched appear only in the tick's title attribute. AGENT-2 needs each lane to name its tool and file as visible text (for example "Read · src/sell.txt"), and the lanes' text-equivalent table to carry the same. Keep #n and the TDD step, and keep the states it has (pop, one agent, empty, git-only); add no state.

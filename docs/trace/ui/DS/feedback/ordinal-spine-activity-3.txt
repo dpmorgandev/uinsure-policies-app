@@ -1,0 +1,1 @@
+A8: you wrote docs/ui/screens/activity/populated.html before reading every line of your prompt .claude/scripts/design/.out/screens-activity-2.md: line(s) 1009-1955, 2017-2353, 2356, 2358, 2360, 2363-5244 of 5245 were unread at your first write

@@ -1,0 +1,499 @@
+/* The spine lays out by the width of its own box: a narrow pane moves the rail to the left edge as a phone does. */
+.root {
+  container-type: inline-size;
+  position: relative;
+  min-width: 0;
+  max-width: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--text-16);
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+.keys {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  margin-bottom: var(--space-4);
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+}
+
+.keys kbd {
+  padding: 0 var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-text-secondary);
+  border-bottom-width: 3px;
+  border-radius: var(--radius);
+}
+
+.spine {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* One row of the spine: label | rail | receipt. DOM order is rail, label, receipt, so the ordinal is read first. */
+.item {
+  --c: var(--color-text-secondary);
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(7rem, 0.75fr) 3.75rem minmax(0, 2fr);
+  column-gap: var(--space-2);
+  padding-bottom: var(--space-4);
+}
+
+.rail {
+  position: relative;
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.rail::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: calc(-1 * var(--space-4));
+  left: 50%;
+  border-left: 2px solid var(--color-text-secondary);
+  transform: translateX(-1px);
+}
+
+.item:last-child .rail::before {
+  display: none;
+}
+
+.label {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  padding-top: var(--space-1);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.receipt {
+  grid-column: 3;
+  grid-row: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.rung:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+/* The marker */
+.marker {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
+  min-width: 2.9rem;
+  padding: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-14);
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums lining-nums;
+  text-align: center;
+  color: var(--color-text-primary);
+  background: var(--color-background);
+  border: 2px solid var(--c);
+  border-radius: var(--radius);
+}
+
+.red {
+  --c: var(--color-error);
+}
+
+.green {
+  --c: var(--color-success);
+}
+
+.refactor {
+  --c: var(--color-primary);
+}
+
+.stub .marker {
+  border-style: dashed;
+}
+
+.emphasis .marker {
+  min-width: 3.25rem;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-18);
+  background: color-mix(in srgb, var(--c) 14%, var(--color-background));
+  border-width: 3px;
+}
+
+.round .marker {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  min-width: 0;
+  padding: 0;
+  font-size: var(--text-16);
+  border-width: 3px;
+  border-radius: 50%;
+}
+
+.current {
+  --c: var(--color-primary);
+}
+
+.current .marker {
+  color: var(--color-background);
+  background: var(--color-primary);
+}
+
+.waiting {
+  --c: var(--color-text-secondary);
+}
+
+.waiting .marker {
+  color: var(--color-text-secondary);
+  border-style: dashed;
+}
+
+.stopped {
+  --c: var(--color-error);
+}
+
+/* The figure keeps the primary text colour: error-coloured text on the key-rung tint measured 4.18:1 in the light theme.
+   The stop is carried by the error border (heavier than a done rung's), the tint on a key rung, and the words in the tag. */
+.stopped .marker {
+  color: var(--color-text-primary);
+  border-width: 3px;
+}
+
+/* The label column */
+.stepLabel {
+  display: block;
+  margin: 0;
+  font-size: var(--text-16);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.agent {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--text-14);
+  line-height: 1.3;
+  color: var(--color-text-secondary);
+}
+
+.hint {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+}
+
+.tagLine {
+  margin: var(--space-2) 0 0;
+}
+
+.busyLine {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-14);
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* A value carried down from an earlier rung */
+.carried {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  margin: 0 0 var(--space-3);
+}
+
+.carried dt {
+  font-weight: 700;
+}
+
+.carried dd {
+  margin: 0;
+}
+
+.carriedValue {
+  font-family: var(--font-mono);
+  font-size: var(--text-24);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.carriedNote {
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+}
+
+/* A gap: rows the data does not hold */
+.gap {
+  padding-bottom: var(--space-3);
+}
+
+.gap .rail::before {
+  bottom: calc(-1 * var(--space-3));
+  border-left-style: dashed;
+}
+
+.gap .receipt {
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+}
+
+/* A band across the receipt column */
+.bandItem {
+  padding-bottom: var(--space-3);
+}
+
+.band {
+  align-self: start;
+  padding: var(--space-1) var(--space-3);
+  font-weight: 700;
+  background: var(--color-accent);
+  border-radius: var(--radius);
+}
+
+/* A branch: it steps off the spine to the side and rejoins */
+.branchGlyph {
+  position: relative;
+  z-index: 1;
+  display: inline-grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-top: var(--space-1);
+  color: var(--color-primary);
+  background: var(--color-background);
+  border: 2px solid var(--color-primary);
+  border-radius: 50%;
+}
+
+.branch {
+  margin-left: var(--space-4);
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-border);
+  border-left: 4px solid var(--color-primary);
+  border-radius: var(--radius);
+}
+
+.marked {
+  border-left-color: var(--color-warn);
+  border-left-style: double;
+  border-left-width: 6px;
+}
+
+.branchItem:has(.marked) .branchGlyph {
+  color: var(--color-warn);
+  border-color: var(--color-warn);
+}
+
+.branchTitle {
+  margin: 0;
+  font-size: var(--text-18);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.markedLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-14);
+  font-weight: 700;
+  color: var(--color-warn);
+}
+
+.leaves {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-14);
+}
+
+.why {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+}
+
+.steps {
+  margin: var(--space-3) 0 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+  border-left: 3px solid var(--color-primary);
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: var(--space-2);
+  padding: 0 0 var(--space-3) var(--space-3);
+}
+
+.step::before {
+  content: "";
+  position: absolute;
+  top: 0.85rem;
+  left: 0;
+  width: var(--space-2);
+  border-top: 3px solid var(--color-primary);
+}
+
+.stepMarker {
+  align-self: start;
+  padding: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums lining-nums;
+  text-align: center;
+  background: var(--color-background);
+  border: 2px solid var(--color-text-secondary);
+  border-radius: var(--radius);
+}
+
+.dashed {
+  border-style: dashed;
+}
+
+.stepBody {
+  min-width: 0;
+  font-size: var(--text-14);
+}
+
+.stepBody p {
+  margin: 0;
+}
+
+.stepHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+}
+
+.event {
+  font-family: var(--font-mono);
+  font-size: var(--text-14);
+  font-weight: 700;
+}
+
+.stepText {
+  margin-top: var(--space-1);
+}
+
+.turn {
+  margin: 0 0 var(--space-3) var(--space-3);
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-14);
+  font-weight: 600;
+  background: var(--color-accent);
+  border-radius: var(--radius);
+}
+
+.rejoin {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0 var(--space-3);
+  font-size: var(--text-14);
+  font-weight: 600;
+}
+
+.rejoin a {
+  color: var(--color-primary);
+  text-underline-offset: 0.2em;
+}
+
+.rejoin a:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.icon {
+  flex: none;
+  width: 1em;
+  height: 1em;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+.muted {
+  color: var(--color-text-secondary);
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 390 wide: the rail moves to the left edge and the receipt stacks under its label */
+@container (max-width: 40rem) {
+  .item {
+    grid-template-columns: 3.4rem minmax(0, 1fr);
+    column-gap: var(--space-2);
+  }
+
+  .rail {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+  }
+
+  .label {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: left;
+  }
+
+  .receipt {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .branch {
+    margin-left: 0;
+  }
+
+  .marker {
+    min-width: 2.7rem;
+  }
+
+  .emphasis .marker {
+    min-width: 3rem;
+    font-size: var(--text-16);
+  }
+
+  .step {
+    grid-template-columns: 2.6rem minmax(0, 1fr);
+  }
+}

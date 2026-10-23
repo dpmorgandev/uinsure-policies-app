@@ -21,6 +21,7 @@
     <File Path="infrastructure/modules/monitoring.bicep" />
     <File Path="infrastructure/modules/network.bicep" />
     <File Path="infrastructure/modules/sql.bicep" />
+    <File Path="infrastructure/modules/staticwebapp.bicep" />
   </Folder>
   <Folder Name="/infrastructure/params/">
     <File Path="infrastructure/params/dev.bicepparam" />
@@ -33,11 +34,20 @@
     <File Path="infrastructure/pipelines/pipeline.schema.json" />
     <File Path="infrastructure/pipelines/stage-template.yml" />
   </Folder>
+  <Folder Name="/infrastructure/pipelines/swa-cli/">
+    <File Path="infrastructure/pipelines/swa-cli/package.json" />
+  </Folder>
+  <Folder Name="/infrastructure/web/">
+    <File Path="infrastructure/web/staticwebapp.config.json" />
+  </Folder>
   <Folder Name="/src/">
     <Project Path="src/Uinsure.Policies.Api/Uinsure.Policies.Api.csproj" />
     <Project Path="src/Uinsure.Policies.Domain/Uinsure.Policies.Domain.csproj" />
     <Project Path="src/Uinsure.Policies.Persistence/Uinsure.Policies.Persistence.csproj" />
     <Project Path="src/Uinsure.Policies.Services/Uinsure.Policies.Services.csproj" />
+    <Project Path="src/Uinsure.Policies.Web/Docket.Web.esproj">
+      <Build Project="false" />
+    </Project>
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Uinsure.Policies.Api.Tests/Uinsure.Policies.Api.Tests.csproj" />

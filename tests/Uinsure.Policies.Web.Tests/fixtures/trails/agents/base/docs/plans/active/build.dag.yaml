@@ -1,0 +1,45 @@
+plan_id: build
+kind: build
+title: Fixture build
+status: approved
+created: 2026-10-15
+approved_by: David Morgan
+approved_on: 2026-10-15
+parent: null
+nodes:
+  - id: F0a
+    title: Harness
+    kind: harness
+    owner: david
+    depends_on: []
+    rules: []
+    status: done
+    attempt: 0
+    pr: null
+  - id: F1
+    title: Sell
+    kind: feature
+    owner: loop
+    depends_on: [F0a]
+    rules: [SELL-1, SELL-2]
+    status: done
+    attempt: 2
+    pr: 10
+  - id: F2
+    title: Retrieve
+    kind: feature
+    owner: loop
+    depends_on: [F1]
+    rules: [GET-1]
+    status: in_progress
+    attempt: 1
+    pr: null
+  - id: F3
+    title: Cancel
+    kind: feature
+    owner: loop
+    depends_on: [F2]
+    rules: [CANCEL-1]
+    status: pending
+    attempt: 0
+    pr: null

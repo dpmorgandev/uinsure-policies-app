@@ -1,0 +1,41 @@
+{
+ "item": "GET-1 · quote an unknown policy → 404",
+ "folder": "F3 Cancel / rule violations",
+ "rule": "GET-1",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:48:06Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F3-MVFJS91KVS/cancellation-quote?cancellationDate=2026-11-18",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 404,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:48:05 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/get-1",
+    "title": "Policy not found",
+    "status": 404,
+    "detail": "No policy with reference 'F3-MVFJS91KVS'.",
+    "instance": "/policies/F3-MVFJS91KVS/cancellation-quote",
+    "traceId": "00-c108b2682d4fce58047fccb740ee6932-7555a2b6a2b1a3df-00",
+    "ruleId": "GET-1",
+    "reference": "F3-MVFJS91KVS"
+   }
+  }
+ ]
+}

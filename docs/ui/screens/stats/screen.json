@@ -1,0 +1,45 @@
+{
+  "screen": "stats",
+  "route": "/stats",
+  "regions": [
+    {
+      "name": "facts per agent and node",
+      "req": ["STATS-1"],
+      "components": ["page-header", "data-table", "receipt-figure", "agent-badge"],
+      "fields": [
+        "stamp.ref",
+        "stamp.sha",
+        "stamp.utc",
+        "nodes[plan=build][*].id",
+        "nodes[plan=build][*].attempt",
+        "nodes[plan=build][*].status",
+        "nodes[plan=build][*].trail",
+        "nodes[plan=build][id=F0a].completenessReasons",
+        "verdicts[plan=build][*].node",
+        "verdicts[plan=build][*].round",
+        "verdicts[plan=build][*].agent",
+        "verdicts[plan=build][*].attempt",
+        "verdicts[plan=build][*].ts",
+        "verdicts[plan=build][*].verdict",
+        "events[plan=build][node=F6][line<=20].line",
+        "events[plan=build][node=F6][line<=20].ts",
+        "events[plan=build][node=F6][line<=20].attempt",
+        "events[plan=build][node=F6][line<=20].event",
+        "events[plan=build][node=F6][line<=20].gate",
+        "events[plan=build][node=F6][line<=20].exit",
+        "events[plan=build][node=F6][line<=20].ok",
+        "events[plan=build][node=F6][line<=20].head",
+        "events[plan=build][node=F6][line<=20].detail"
+      ]
+    }
+  ],
+  "states": [
+    { "name": "populated", "file": "populated.html", "variant": "the fixture's own build plan: 10 nodes, with their recorded attempt counts and verdicts" },
+    { "name": "in-flight", "file": "in-flight.html", "variant": "build/F6 cut to its first 20 loop events, so the node is mid-run at attempt 3" }
+  ],
+  "actions": [
+    { "label": "Open the plan to see each node's receipts", "kind": "link", "to": "/plans/:planId" },
+    { "label": "Sort the table by its first column", "kind": "control", "to": "client-side sort, no request" },
+    { "label": "Show the time in UTC", "kind": "control", "to": "toggle on the page, no request" }
+  ]
+}

@@ -1,0 +1,18 @@
+plan_id: build
+kind: build
+title: Fixture build
+status: approved
+created: 2026-10-15
+approved_by: David Morgan
+approved_on: 2026-10-15
+parent: null
+nodes:
+  - id: F1
+    title: Sell and retrieve
+    kind: feature
+    owner: loop
+    depends_on: []
+    rules: [SELL-1, GET-1]
+    status: in_progress
+    attempt: 1
+    pr: null

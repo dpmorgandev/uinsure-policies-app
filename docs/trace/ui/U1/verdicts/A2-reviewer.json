@@ -1,0 +1,103 @@
+{
+  "v": 1,
+  "ts": "2026-10-21T23:55:25Z",
+  "plan": "ui",
+  "node": "U1",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "aef01a340766fc501",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U1",
+    "attempt": 2,
+    "base_sha": "64809b4e83c531b4e80ef305ea74bcba2179ee71",
+    "head_sha": "e8fdf4eaf28cf70a7975a00b80450481089a04cd",
+    "diff_fingerprint": "9c983b1d3cfd4fdb2ce36ea1d5c71f8f0b555c81",
+    "verdict": "PASS",
+    "gate_refs": [
+      "docs/trace/ui/U1/loop.jsonl:3 gate.red (t1 typecheck, tests/web only)",
+      "docs/trace/ui/U1/loop.jsonl:4 gate.red (t1 e2e per rule: 113 failed, 1 parity pass)",
+      "docs/trace/ui/U1/loop.jsonl:5 gate.red (U0b derived follow-up)",
+      "docs/trace/ui/U1/loop.jsonl:6 gate.stub (82 failed / 32 passed, every pass reachable or parity)",
+      "docs/trace/ui/U1/loop.jsonl:9 gate.red (t4 compiler NAV-1, RULE-2, DATA-4)",
+      "docs/trace/ui/U1/loop.jsonl:11 gate.red (D1 follow-up)",
+      "docs/trace/ui/U1/loop.jsonl:12 gate.green (t5 compiler)",
+      "docs/trace/ui/U1/loop.jsonl:14 gate.red (t6 compiler MATRIX-1, RULE-1, NAV-3)",
+      "docs/trace/ui/U1/loop.jsonl:15 gate.green (t7 compiler)",
+      "docs/trace/ui/U1/loop.jsonl:16 gate.red (THEME-1 retarget)",
+      "docs/trace/ui/U1/loop.jsonl:17 gate.integrate",
+      "docs/trace/ui/U1/loop.jsonl:18 gate.green (t8 screens, U1 e2e 114/114)",
+      "docs/trace/ui/U1/loop.jsonl:28 gate.coverage (attempt 1 FAIL)",
+      "docs/trace/ui/U1/loop.jsonl:34 reconciled(activity:640e3e1)",
+      "docs/trace/ui/U1/loop.jsonl:36 gate.finding-red (D1/I1)",
+      "docs/trace/ui/U1/loop.jsonl:37 gate.finding-green (D1/I1)",
+      "docs/trace/ui/U1/loop.jsonl:39 gate.finding-red (D2/I1-I6, 20 new tests red)",
+      "docs/trace/ui/U1/loop.jsonl:40 gate.typecheck",
+      "docs/trace/ui/U1/loop.jsonl:41 gate.lint",
+      "docs/trace/ui/U1/loop.jsonl:42 gate.lint-css",
+      "docs/trace/ui/U1/loop.jsonl:43 gate.test (133/133)",
+      "docs/trace/ui/U1/loop.jsonl:44 gate.build",
+      "docs/trace/ui/U1/loop.jsonl:45 gate.e2e (124/124)",
+      "docs/trace/ui/U1/loop.jsonl:47 gate.audit",
+      "docs/trace/ui/U1/loop.jsonl:49 gate.coverage (OK)",
+      "docs/trace/ui/U1/loop.jsonl:50 gate.scope",
+      "docs/trace/ui/U1/loop.jsonl:51 gate.no-stubs (none)",
+      "docs/trace/ui/U1/loop.jsonl:52 gate.e2e-regression (U0b 65/65)",
+      "docs/trace/ui/U1/loop.jsonl:53 gate.finding-green (D2/I1-I6)"
+    ],
+    "rules_covered": [
+      "NAV-1",
+      "MATRIX-1",
+      "RULE-1",
+      "RULE-2",
+      "DATA-4",
+      "NAV-3"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "DATA-4",
+        "severity": "P2",
+        "file": "src/web/app/explorer/overview/Overview.tsx",
+        "line": 35,
+        "what": "The overview and node page say a node has 'no trail' when completeness is null. They ignore the compiler's trail flag, which TraceNode doesn't declare.",
+        "why": "The compiler emits nodes[*].trail (src/web/compiler/index.ts:228, pinned by data-4.test.ts). The screens decide 'no trail' from completeness === null instead (Overview.tsx:35 and :41-45, Node.tsx:10). A node in flight, with activity.jsonl or loop.jsonl but no README Completeness section, would be shown as having no trail, which is not what the trail holds (HONEST-1, DATA-8). It doesn't fire on the real build trail at HEAD, because every build node with a loop has a README, so this is non-blocking.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "MATRIX-1",
+        "severity": "P2",
+        "file": "src/web/app/data/trace.ts",
+        "line": 92,
+        "what": "TraceRule.status is typed string, but the compiler emits null for a rule with no matrix row.",
+        "why": "index.ts sets status to cells === null ? null : …, and data-1.test.ts asserts null. The loader type claims a string is always there. The screens happen to handle null as 'not built', but the type hides the case from the compiler's checks.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "NAV-3",
+        "severity": "P2",
+        "file": "src/web/app/explorer/matrix/Matrix.tsx",
+        "line": 80,
+        "what": "The matrix links any non-empty PR cell as /pull/<text>, while the rule page links only a cell that matches ^#(\\d+)$.",
+        "why": "NAV-3 and the react-web rule say links out are built from IDs in trace.json, never from free text. Every real PR cell today is '#<n>', so nothing is wrong on screen. But the two screens parse the same cell two ways, and a cell like 'pending' would become a GitHub link on the matrix.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "TDD order holds for every node rule in trailers.txt. NAV-1, MATRIX-1, RULE-1, RULE-2, DATA-4 and NAV-3 each have a red commit (74b73a4, 47f82a2, 2366161, a2a05e5, 83b5300, dcae9d9) before the stub 6d05b21, which comes before their greens (feb65db, 640e3e1, 709338c). Compiler red (t4, t6) precedes compiler green (t5, t7). The D1/I1 fix runs red 50732a4 then green ffb50b9, and D2/I1-I6 run red (4dfaa8e..bf29f59) then green b70c382 and f64c03f. All are receipted at loop.jsonl:36-39 and :53, and Fixes-Finding trailers cover all six D2 findings.",
+      "gate.stub (loop.jsonl:6): 32 tests passed at the stub, and every one was a reachable or parity test. No behaviour test passed on canned content.",
+      "Most behaviour tests are hard for a stub to satisfy: they run on fixture trails and assert values only the fixture has (3 of 5, 1 of 4 FAIL, GET-1 flagged at #2/#3, dates 2026-10-16 and 2026-10-17, CANCEL-5's 'undefined' cell not linked), and several assert the design fixture's figures are absent. A few D2 e2e checks are loose (nav-1.spec.ts:113 and :121 accept /^[0-3] of 3$/), but nav-1.spec.ts:133 pins 3 of 3.",
+      "I could only check that no assertion was weakened after its red commit at base…HEAD level: no skip, only, fixme or todo is in tests/web. The packet holds no per-commit test diffs. Two earlier assertions changed by recorded David rulings: data-1.test.ts drops the verdicts-empty assertion (steer D1, loop.jsonl:10), and U0b's not-built and THEME-1 parity checks now read the newest derived reference ('derived', loop.jsonl:5 and :16). Neither is a U1 rule.",
+      "David's rulings for D2/I3 (the overview counts only the build plan's rules) and D2/I6 (parameterised titles are shown with placeholders and marked) are cited only in test comments (nav-1.spec.ts:95, rule-1.spec.ts:125-126). loop.jsonl has no steer or ruling event for them. The orchestrator should record them so the behaviour traces to a written decision.",
+      "t9 (refactor) is marked done in e8fdf4e, but there is no TDD: refactor commit and no loop.jsonl event recording that no refactor was needed.",
+      "The acceptance line in ui.dag.yaml says the matrix 'filters by node and status'. The MATRIX-1 rule row and the signed-off reference (filters-status-feature) say status and feature, and that is what is built and tested. The orchestrator has queued the gap for David at Pause 2 (loop.jsonl:39).",
+      "RULE-1's 'status codes' are read as the bold codes inside the rule's interpretation. rule-1.spec.ts:52 and rule-1.test.ts:63 assert 400 and 409 for SELL-1, which matches the derived reference.",
+      "Leftovers: gate.no-stubs found no 'not implemented' in src/web (loop.jsonl:51). No C# or banned time and rounding APIs were touched."
+    ]
+  }
+}

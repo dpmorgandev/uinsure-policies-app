@@ -1,0 +1,81 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T20:01:26Z",
+  "plan": "ui",
+  "node": "U3",
+  "attempt": 5,
+  "agent": "security",
+  "agent_id": "adc5f1a40bde354d7",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U3",
+    "attempt": 5,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "f8c3471e1a4ef0f14693ed7865786845713ce178",
+    "diff_fingerprint": "1e74ff7c69171e13fd17e733ea9bf79c259e3325",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.lint",
+      "gate.test",
+      "gate.build",
+      "gate.e2e",
+      "gate.e2e-regression",
+      "gate.scope",
+      "gate.no-stubs",
+      "gate.coverage",
+      "gate.integrate"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "W2",
+        "severity": "P2",
+        "file": "src/web/kit/primitives/sha-link/ShaLink.tsx",
+        "line": 61,
+        "what": "The kit's ShaLink and FileLineLink external GitHub anchors set no rel=\"noreferrer\", and U3 adds more uses of both.",
+        "why": "W2 says external links carry rel=\"noreferrer\". The kit files are not in this diff and a build node cannot change them. The links open in the same tab, so the only exposure is the Referer header. It is already a U7 acceptance line (ui.dag.yaml:421), as ruled, and is not fixed in this node. Hygiene only, not blocking.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Re-review A5.2 at f8c3471. The code fingerprint equals the A5 security verdict's fingerprint at 80b91e4. Commits after 80b91e4 touch only trace files, findings, activity and U3's regression baselines, so the A5 security conclusions stand. I re-ran the greps below against the current tree and found nothing new.",
+      "API1:2023 n/a: no auth or tenancy; ui node, no server code.",
+      "API2:2023 n/a: auth is out of scope.",
+      "API3:2023 n/a: ui node, no server code.",
+      "API4:2023 n/a: ui node, no server code.",
+      "API5:2023 n/a: no roles; ui node, no server code.",
+      "API6:2023 n/a: ui node, no server code.",
+      "API7:2023 n/a: ui node, no server code; the diff adds no outbound fetch.",
+      "API9:2023 n/a: ui node, no server code.",
+      "API8:2023 met through W3 and W4. The diff does not touch index.html or the CSP. In src/web/app/explorer there is no fetch, XMLHttpRequest, localStorage, sessionStorage, cookie or process.env use.",
+      "API10:2023 met through W1 and W8. The grep over src/web for dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( and new Function finds one comment in MarkdownText.tsx:7, which says it does not use them. MarkdownText.safeHref (line 28) refuses every scheme except http, https and mailto. The new pages render verdict, finding and loop text as React text nodes or through MarkdownText.",
+      "W1 met: see API10:2023 above.",
+      "W2 met except S1. Every href in src/web/app/explorer is an internal hash route (#/plans, #/rules with encodeURIComponent, #/commits, #gate-line-N) or is built by commitUrl, blobUrl or pullUrl from the fixed repo constant plus a SHA, path or line from trace.json. No href is passed through from free text. The explorer's own external anchors in Matrix.tsx and Rule.tsx carry rel=\"noreferrer\".",
+      "W3 met: the diff changes no index.html and the CSP default-src 'self' is unchanged.",
+      "W4 met: the explorer fetches only its own static files and reads no storage or cookies.",
+      "W5 met: grep of src/web/compiler for .claude, fetch(, http(s):// and process.env finds only a comment at index.ts:1 saying the compiler never reads .claude/ or the network. All files go through read(), which runs the privacy denylist. The opensASentence change in plans.ts uses simple anchored regexes, so there is no ReDoS exposure at build time.",
+      "W6 met: grep of src/web (excluding node_modules, dist and test-results) for local absolute paths, personal emails, private-key headers and GitHub tokens finds nothing.",
+      "W7 met: the diff changes no package.json, lockfile or .npmrc. gate.audit (runtime, --omit=dev, high) found 0 vulnerabilities. gate.audit-dev reports 5 high findings, which the receipt labels as the known dev-only braces GHSA-vfj7-8cjw-p6xm chain via stylelint. That item is excluded from gating and does not ship in dist/.",
+      "W8 met: the new pages show the kit's NotBuiltYet or DataNotice state when a verdict, finding, loop log or trace is absent. No stack trace or exception message is rendered.",
+      "Gate receipts: gate.e2e-regression at 048d497 is ok with the ruled set, and gate.coverage is OK at 048d497. The earlier red entries at 3b25c3c were superseded and have no security bearing. The reviewer's R1 (single-quoted marker in splitRootCause) is a fidelity issue with no security impact and is carried to U7 by ruling.",
+      "Untracked src/web/test-results/ in the session git status is Playwright output, not in the diff. Nothing was checked for secrets in it."
+    ]
+  }
+}

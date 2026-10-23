@@ -1,0 +1,171 @@
+{
+  "node": "W1",
+  "builtNodes": [
+    "U0a",
+    "U0b",
+    "U1",
+    "W1"
+  ],
+  "screens": {
+    "about": {
+      "built": [
+        "glossary-and-status-legend",
+        "compiled-at-stamp-the-commit-sha-and-utc-time-trace-json-was-compiled-from"
+      ],
+      "notBuilt": [
+        "provenance-labels",
+        "re-verify-with-git",
+        "guided-tour-entry-one-rule-end-to-end-could"
+      ]
+    },
+    "activity": {
+      "built": [
+        "event-table-text-equivalent"
+      ],
+      "notBuilt": [
+        "agent-lanes"
+      ]
+    },
+    "commit": {
+      "built": [
+        "links-out"
+      ],
+      "notBuilt": [
+        "commit-header-and-trailers",
+        "trailer-agent-vs-hook-agent",
+        "diff-lazy"
+      ]
+    },
+    "matrix": {
+      "built": [
+        "filters-status-feature",
+        "matrix-table",
+        "test-count-scope-note-counts-are-per-node-sell-7-10-at-f1-vs-15-traited"
+      ],
+      "notBuilt": []
+    },
+    "node": {
+      "built": [
+        "completeness-banner"
+      ],
+      "notBuilt": [
+        "rules",
+        "tasks",
+        "attempts",
+        "who-touched-what"
+      ]
+    },
+    "overview": {
+      "built": [
+        "headline-answer",
+        "receipt-figures-rules-built-total-tests-passing-nodes-done-attempts-and-fails-human-decisions",
+        "compiled-at-stamp",
+        "top-bar-search-and-theme-toggle-global-tagged-here-once",
+        "trail-completeness-trail-incomplete-reasons-verbatim-not-built-yet-and-f0a-as-git-only"
+      ],
+      "notBuilt": [
+        "build-plan-at-a-glance",
+        "latest-human-decisions"
+      ]
+    },
+    "rule": {
+      "built": [
+        "rule-text-and-agreed-interpretation",
+        "signature-red-before-green-evidence-custody-chain-tdd-ticks-chronology-per-style",
+        "tests-count-and-scope",
+        "qa-step-and-sign-off",
+        "load-diff-busy-while-the-diff-chunk-loads",
+        "links-out-commit-shas-pr-numbers-and-file-line-references-to-github-at-that-sha"
+      ],
+      "notBuilt": [
+        "red-and-green-diffs-lazy",
+        "verify-it-yourself"
+      ]
+    },
+    "wb-cancel": {
+      "built": [
+        "quote-and-cancel-actions-each-busy-while-its-request-runs",
+        "problems-cancel-3-cancel-4-cancel-7"
+      ],
+      "notBuilt": [
+        "cancellation-date-and-quote",
+        "the-refund-as-a-worked-sum-per-term-with-the-rule-applied",
+        "cancel-with-the-quoted-date-then-quote-and-cancellation-compared",
+        "the-requests-as-sent-inspector"
+      ]
+    },
+    "wb-claim": {
+      "built": [
+        "problems-could-2a-could-2b-could-2c",
+        "record-claim-busy-while-the-request-and-the-two-quotes-run"
+      ],
+      "notBuilt": [
+        "claim-date-and-description",
+        "refund-before-and-after-the-claim-two-quotes"
+      ]
+    },
+    "wb-home": {
+      "built": [
+        "open-a-policy-by-reference",
+        "open-by-reference-busy-while-the-policy-loads",
+        "sell-a-new-policy-entry",
+        "recent-policies-kept-in-this-browser"
+      ],
+      "notBuilt": []
+    },
+    "wb-policy": {
+      "built": [
+        "status-and-current-term",
+        "terms-timeline-terms-payments-claims-cancellation-dates-the-api-returned-only",
+        "policyholders-and-property",
+        "payments-and-refunds",
+        "claims",
+        "cancellation-summary-from-get-per-term-breakdown-from-the-logged-cancel-response",
+        "record-level-problem-banner-404-409"
+      ],
+      "notBuilt": [
+        "actions-quote-and-cancel-record-a-claim-renew",
+        "requests-that-touched-this-policy"
+      ]
+    },
+    "wb-renew": {
+      "built": [
+        "problems-renew-1-2-with-its-window-renew-3b-renew-5-renew-6-could-3-several-at-once-listed-not-placed",
+        "the-new-term-last-on-the-timeline",
+        "renew-busy-while-the-request-runs"
+      ],
+      "notBuilt": [
+        "renewal-amount-and-payment-method-default-shown-from-the-current-term-omitted-when-auto-renew-is-off"
+      ]
+    },
+    "wb-sell": {
+      "built": [
+        "error-summary-every-problem-each-linked-to-its-field-and-its-rule",
+        "policy-fields-reference-type-start-date-amount-payment-method-auto-renew",
+        "reference-as-stored-normalisation-preview",
+        "policyholders-1-to-3",
+        "property",
+        "send-it-anyway-client-checks-off",
+        "submit-busy-while-the-sell-request-runs-spinner-disabled"
+      ],
+      "notBuilt": [
+        "the-request-as-sent-inspector"
+      ]
+    }
+  },
+  "notBuiltScreens": [
+    "decisions",
+    "finding",
+    "harness",
+    "loop",
+    "not-found",
+    "plan",
+    "sessions",
+    "stats",
+    "verdict",
+    "walkthrough",
+    "wb-requests"
+  ],
+  "unmappedIds": [],
+  "nodeRulesWithoutRegion": []
+}

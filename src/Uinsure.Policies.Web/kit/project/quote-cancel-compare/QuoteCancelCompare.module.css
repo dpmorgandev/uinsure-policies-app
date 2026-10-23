@@ -1,0 +1,125 @@
+.root {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-3);
+  min-width: 0;
+  max-width: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--text-14);
+  line-height: 1.45;
+  color: var(--color-text-primary);
+}
+
+.verdict {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-3);
+  margin: 0;
+}
+
+.words {
+  font-size: var(--text-18);
+  font-weight: 700;
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.frame {
+  position: relative;
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: var(--radius);
+}
+
+.frame:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Four columns of API values do not squeeze below about 30rem: a narrower pane scrolls the table inside its frame. */
+.table {
+  width: 100%;
+  min-width: 30rem;
+  border-collapse: collapse;
+}
+
+.caption {
+  padding-bottom: var(--space-2);
+  text-align: left;
+  font-weight: 700;
+}
+
+.table thead th {
+  position: sticky;
+  top: 0;
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  vertical-align: bottom;
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  background: var(--color-surface);
+  border-bottom: 2px solid var(--color-text-secondary);
+}
+
+.table tbody th,
+.table tbody td {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.field {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums lining-nums;
+  overflow-wrap: break-word;
+}
+
+.differs {
+  font-weight: 700;
+  box-shadow: inset 4px 0 0 var(--color-error);
+}
+
+.absent {
+  display: inline-block;
+  padding: 0 var(--space-2);
+  font-family: var(--font-sans);
+  font-size: var(--text-12);
+  color: var(--color-text-secondary);
+  border: 1.5px dashed var(--color-text-secondary);
+  border-radius: var(--radius);
+}
+
+.neutral {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.icon {
+  flex: none;
+  width: 1em;
+  height: 1em;
+}
+
+@media (max-width: 40rem) {
+  .words {
+    font-size: var(--text-16);
+  }
+}

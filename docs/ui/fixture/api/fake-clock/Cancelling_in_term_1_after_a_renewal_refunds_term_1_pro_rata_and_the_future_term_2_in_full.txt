@@ -1,0 +1,51 @@
+fake-clock test, not live: tests/Uinsure.Policies.Api.Tests/CancelRenewedPolicyTests.cs:38-86
+
+    [Fact]
+    [Trait("Rule", "CANCEL-5")]
+    [Trait("Rule", "CANCEL-1c")]
+    [Trait("Rule", "CANCEL-1a")]
+    public async Task Cancelling_in_term_1_after_a_renewal_refunds_term_1_pro_rata_and_the_future_term_2_in_full()
+    {
+        const string reference = "CAN5-FUTURE-TERM";
+        var cancelOn = new DateOnly(2027, 10, 20);
+        var sold = new SellPolicyRequestBuilder(reference)
+            .WithStartDate(new DateOnly(2026, 11, 3)).WithAmount(487.39m).WithPaymentMethod("DirectDebit").Build();
+        ExpectedPolicyTerm[] terms =
+        [
+            new(new DateOnly(2026, 11, 3), new DateOnly(2027, 11, 2), "487.39", "DirectDebit"),
+            new(new DateOnly(2027, 11, 3), new DateOnly(2028, 11, 2), "512.66", "Card"),
+        ];
+        using var client = _factory.CreateClient();
+        var sale = await client.SellAndReadBack(sold, reference);
+        _factory.MoveClockTo(new DateOnly(2027, 10, 12));
+        var payments = await client.RenewAndReadBack(
+            reference,
+            new RenewalRequestBuilder().WithAmount(512.66m).WithPaymentMethod("Card").Build(),
+            sold,
+            new ExpectedRenewedPolicy(reference, "Active", 1, terms),
+            [sale.PaymentReference()]);
+
+        var body = await client.Cancel(reference, new CancellationRequestBuilder().WithDate(cancelOn).Build());
+
+        var refunds = CancellationAssert.IsCancellation(body, new ExpectedCancellation(
+            reference, cancelOn, "CANCEL-1c", "530.02",
+            [
+                new ExpectedTerm(1, "CANCEL-1c", 365, 352, 13, "17.36"),
+                new ExpectedTerm(2, "CANCEL-1a", 366, 0, 366, "512.66"),
+            ],
+            [
+                new ExpectedRefund("DirectDebit", "17.36", payments[0]!),
+                new ExpectedRefund("Card", "512.66", payments[1]!),
+            ]));
+        RenewedPolicyAssert.ReadsBack(
+            await client.ReadBack(reference),
+            sold,
+            new ExpectedRenewedPolicy(
+                reference, "Cancelled", 1, terms,
+                new ExpectedCancellationSummary(cancelOn, "CANCEL-1c", "530.02"),
+                [
+                    new ExpectedPolicyRefund(refunds[0], "DirectDebit", "17.36", payments[0]!),
+                    new ExpectedPolicyRefund(refunds[1], "Card", "512.66", payments[1]!),
+                ]),
+            payments);
+    }

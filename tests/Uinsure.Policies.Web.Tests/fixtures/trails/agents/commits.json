@@ -1,0 +1,97 @@
+{
+ "date": "2026-10-15T08:00:00Z",
+ "branch": "feature/build/F2",
+ "commits": [
+  {
+   "id": "c0",
+   "date": "2026-10-15T12:00:00Z",
+   "subject": "plan(build/F0a): F0a harness built in-session",
+   "trailers": { "Agent": "main", "Plan": "build", "Node": "F0a" },
+   "files": []
+  },
+  {
+   "id": "c1",
+   "date": "2026-10-16T09:00:00Z",
+   "subject": "plan(build/F1): F1 pending → in_progress",
+   "trailers": { "Agent": "main", "Plan": "build", "Node": "F1" },
+   "files": []
+  },
+  {
+   "id": "c2",
+   "date": "2026-10-16T12:00:00Z",
+   "subject": "test(SELL-1): red: the acceptance suite",
+   "trailers": { "Agent": "tester", "Plan": "build", "Node": "F1", "Rule": "SELL-1, SELL-2", "TDD": "red" },
+   "files": ["tests/web/e2e/F1/sell.spec.ts.fixture"]
+  },
+  {
+   "id": "c3",
+   "date": "2026-10-16T13:00:00Z",
+   "subject": "feat(F1): stub the sale route",
+   "trailers": { "Agent": "builder", "Plan": "build", "Node": "F1", "Rule": "SELL-1, SELL-2", "TDD": "stub" },
+   "files": []
+  },
+  {
+   "id": "c4",
+   "date": "2026-10-17T12:00:00Z",
+   "subject": "feat(SELL-1): green: the sale",
+   "trailers": { "Agent": "builder", "Plan": "build", "Node": "F1", "Rule": "SELL-1, SELL-2", "TDD": "green" },
+   "files": ["src/sell.txt"]
+  },
+  {
+   "id": "c5",
+   "date": "2026-10-17T12:20:00Z",
+   "subject": "refactor(SELL-1): name the reference check",
+   "trailers": { "Agent": "builder", "Plan": "build", "Node": "F1", "Rule": "SELL-1", "TDD": "refactor" },
+   "files": []
+  },
+  {
+   "id": "c6",
+   "date": "2026-10-17T13:01:00Z",
+   "subject": "plan(build/F1): attempt 1 → 2",
+   "trailers": { "Agent": "main", "Plan": "build", "Node": "F1" },
+   "files": []
+  },
+  {
+   "id": "c7",
+   "date": "2026-10-17T14:00:00Z",
+   "subject": "test(SELL-2): red: a start date 61 days ahead answers 422",
+   "trailers": { "Agent": "tester", "Plan": "build", "Node": "F1", "Rule": "SELL-2", "TDD": "red", "Fixes-Finding": "A1/I1" },
+   "files": ["tests/web/e2e/F1/sell-window.spec.ts.fixture"]
+  },
+  {
+   "id": "c8",
+   "date": "2026-10-17T15:00:00Z",
+   "subject": "fix(SELL-2): bound the start date at today + 60",
+   "trailers": { "Agent": "builder", "Plan": "build", "Node": "F1", "Rule": "SELL-2", "TDD": "green", "Fixes-Finding": "A1/I1" },
+   "files": []
+  },
+  {
+   "id": "c9",
+   "date": "2026-10-18T09:00:00Z",
+   "subject": "docs(F1): QA script",
+   "trailers": { "Agent": "tester", "Plan": "build", "Node": "F1", "Rule": "SELL-1, SELL-2" },
+   "files": ["docs/qa/build-F1.md"]
+  },
+  {
+   "id": "c10",
+   "date": "2026-10-18T10:30:00Z",
+   "subject": "plan(build/F2): F2 pending → in_progress",
+   "trailers": { "Agent": "main", "Plan": "build", "Node": "F2" },
+   "files": []
+  },
+  {
+   "id": "c11",
+   "date": "2026-10-18T12:00:00Z",
+   "subject": "feat(GET-1): green: retrieve a policy by reference",
+   "trailers": { "Agent": "builder", "Plan": "build", "Node": "F2", "Rule": "GET-1", "TDD": "green" },
+   "files": ["src/get.txt"]
+  },
+  {
+   "id": "c12",
+   "date": "2026-10-18T13:00:00Z",
+   "subject": "test(GET-1): red: an unknown reference answers 404",
+   "trailers": { "Agent": "tester", "Plan": "build", "Node": "F2", "Rule": "GET-1", "TDD": "red" },
+   "files": ["tests/web/e2e/F2/get.spec.ts.fixture"]
+  }
+ ]
+}

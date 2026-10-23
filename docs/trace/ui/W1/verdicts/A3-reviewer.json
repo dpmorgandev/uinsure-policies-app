@@ -1,0 +1,112 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T00:21:26Z",
+  "plan": "ui",
+  "node": "W1",
+  "attempt": 3,
+  "agent": "reviewer",
+  "agent_id": "a4a21bc8bb95671f3",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "W1",
+    "attempt": 3,
+    "base_sha": "4883f7915db3b6ea5d4fb8f988a4a845902e07e5",
+    "head_sha": "79eda373df1fb53fdcafcd590f11dd8b55d240f0",
+    "diff_fingerprint": "129517e25a31e422bddd14a9a33345ea7d53e506",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.red@2026-10-21T06:57:30Z (t1 acceptance)",
+      "gate.stub@2026-10-21T07:34:32Z (t2)",
+      "gate.red@2026-10-21T20:03:47Z (t4 client)",
+      "gate.green@2026-10-21T20:07:45Z (t5 client)",
+      "gate.green@2026-10-21T21:35:57Z (t6 attempt 2)",
+      "verdict(reviewer,FAIL)@2026-10-21T21:50:09Z (A2)",
+      "state(in_progress)@2026-10-21T22:31:38Z (inv-006 decided)",
+      "setup@2026-10-21T22:33:58Z (A2 route order)",
+      "setup@2026-10-21T22:34:51Z (A11Y-1 ruling)",
+      "gate.finding-red@2026-10-21T22:45:38Z",
+      "gate.green@2026-10-21T22:50:59Z (a92469e)",
+      "setup@2026-10-21T22:50:59Z (I3 ruling)",
+      "gate.green@2026-10-21T22:58:46Z (eca2b48)",
+      "gate.integrate@2026-10-22T00:08:10Z",
+      "findings(A2)@2026-10-22T00:12:13Z (I2 untestable as red)",
+      "gate.green@2026-10-22T00:17:23Z (79eda37)",
+      "gate.typecheck@2026-10-22T00:17:23Z",
+      "gate.lint@2026-10-22T00:17:23Z",
+      "gate.lint-css@2026-10-22T00:17:23Z",
+      "gate.test@2026-10-22T00:17:24Z",
+      "gate.build@2026-10-22T00:17:24Z",
+      "gate.e2e@2026-10-22T00:17:24Z",
+      "gate.audit@2026-10-22T00:17:24Z",
+      "gate.trace-check@2026-10-22T00:17:24Z",
+      "gate.scope@2026-10-22T00:17:24Z",
+      "gate.no-stubs@2026-10-22T00:17:25Z",
+      "gate.e2e-regression@2026-10-22T00:17:34Z"
+    ],
+    "rules_covered": [
+      "WB-1",
+      "WB-2",
+      "WB-3",
+      "WB-6",
+      "WB-9",
+      "BUSY-1",
+      "A11Y-1"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "WB-3",
+        "severity": "P2",
+        "file": "src/web/app/data/api.ts",
+        "line": 278,
+        "what": "A 2xx answer whose body isn't JSON returns kind 'ok' with value undefined cast to Policy. sellPolicy and getPolicy then throw on answer.value.reference, and the Sell button stays busy.",
+        "why": "The I4 fix catches the parse error but makes the 'ok' branch lie about its type. remember() dereferences .reference (lines 288 and 294), so the promise rejects. SellPolicy.send never resets inFlight, and PolicyView stays on 'waiting for the API'. BUSY-1 says 'When the process ends, the control re-enables and the result or problem appears.' WB-3 renders the answer the API gave. The configured proxy makes this unlikely, but the type should not claim a Policy it doesn't hold.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "WB-3",
+        "severity": "P2",
+        "file": "tests/web/e2e/W1/wb-3.spec.ts",
+        "line": 68,
+        "what": "Only the error summary's and the problem banner's chip hrefs are asserted. The send-anyway list's chips and the timeline's ruleApplied chip get ruleHref, but no test checks their href.",
+        "why": "RuleLinks.ts used to rewrite every chip in the document. Now that it's gone, each composite has to receive ruleHref (gate.green 00:17:23Z lists SendAnywayToggle and TermTimeline). If SendAnywayToggle (SellPolicy.tsx:393) or TermTimeline (PolicyView.tsx:86) lost the prop, those chips would fall back to '/rules/<id>', which isn't a route in the hash app, and every W1 test would still pass. WB-3: 'each violation as a rule chip that links to RULE-1 for that rule'.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R3",
+        "rule_id": "WB-3",
+        "severity": "P2",
+        "file": "src/web/app/workbench/ProblemView.tsx",
+        "line": 4,
+        "what": "The rule-page link '#/rules/' + ruleId is written four times: ProblemView.tsx:4, PolicyView.tsx:86 and SellPolicy.tsx:251 and :393.",
+        "why": "code-quality, rule of three: extract on the third occurrence when the copies change for the same reason. All four change if RULE-1's route changes. ProblemView already has a ruleHref const that it doesn't export.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "WB-2",
+        "severity": "P2",
+        "file": "src/web/app/workbench/workbench.css",
+        "line": 35,
+        "what": ".s-wb-list isn't used by any file under src/web/app since Renew, QuoteCancel and RecordClaim were deleted.",
+        "why": "code-quality slop list: dead code. 99b3e57 removed the three unbuilt screens (inv-006 recommendation 1), and their layout class stayed behind.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "A2 P1s resolved. R1/I1: routes.tsx registers only home, sell and policy. Renew.tsx, QuoteCancel.tsx and RecordClaim.tsx are deleted, and the policy view's actions region is a NotBuiltRegion. The WB-3 'screens W1 does not build' tests prove the cancel, renew and claim routes show no canned value. R2/I2: RuleLinks.ts and every MutationObserver are gone from src/web, and the composites receive ruleHref from the KG nodes integrated at 4883f79. R3/I3: wb-2.spec.ts adds five populated e2e tests (refund rows, the cancellation summary, the cancellation rung, claim rows, the claim rungs), read against the API's own GET, and wb-2.test.ts adds the 063 and 071 client tests.",
+      "A2 P2s resolved. R4/I4: ask() keeps fetch failure apart from an unreadable body, and the two 502 unit tests cover it (R1 above is the residual on the 2xx branch). R5/I5: the policy view words a problem from its status and title, and the 400 relay test proves it never says 'not found'. R6/I6: Refund, Claim and Cancellation are typed interfaces, and PolicyView has no isRecord or textOf probing left.",
+      "TDD order holds from the trailer log. The A2 reds 82086610 (I5), 4e87c8ce (I1) and 4f7f3352 (I4) precede green 99b3e576. gate.finding-red at 22:45:38Z records them failing for the right reasons (canned dates, F4-MVFJSC6LXX, 'answered 201', 'unreachable', 'not found' on a 400) on their pre-rebase SHAs. Fix commit 79eda37 carries Fixes-Finding A2/I2.",
+      "No test was deleted or weakened that I can see. The counts move only upward: e2e 100 -> 104 (+3 I1, +1 I5) -> 109 (+5 I3), and unit 150 -> 152 (+2 I4) -> 154 (+2 I3). There's no .skip, .fixme, .only or .fail under tests/web/e2e/W1 or tests/web/unit/client. I can't run git, so I couldn't diff each file at its red commit against HEAD. The match between counts and receipts is my evidence.",
+      "I3's coverage commit e9eabc7 carries TDD: green on a tester commit, under David's ruling at 22:50:59Z. Those tests passed before any code change, so they're coverage and not red-then-green. I accept the ruling. I2 has no red, which the findings event at 00:12:13Z records. The existing WB-3 chip test is the guard, and it passes at 79eda37 (gate.green 00:17:23Z).",
+      "In the I5 test, the API's real 400 (an unknown query parameter) is relayed to the page with page.route. The test's comment says the API answers 404, not 400, for a reference that fails the pattern, which contradicts the investigator's premise. So the view can't draw a 400 from the API through its own route today. The fix still removes the false 'not found' wording.",
+      "docs/ui/derived/W1/derived.json still marks regions of wb-cancel, wb-claim, wb-renew and rule as built for W1. That's the derive-screens cross-cutting-rule artefact, which inv-006 recommendation 4 (an accepted harness feature) addresses. Recommendation 1 put those screens out of W1's scope, so I don't treat it as a W1 finding.",
+      "A11Y-1 is a node rule here (David: 'keep the A11Y-1 tag as is'). The seven axe tests cover home, sell (filled, 201, 422, 400) and policy (populated, 404), in light and dark at 1440 and 390. The populated refund and claim states added in A2 aren't axe-audited. That's not required per route, but it's worth adding with W2.",
+      "gate.no-stubs: no 'not implemented' left in src/web. gate.scope: nothing under src/web/kit or tests/web/kit. No regression suite or baselines exist on origin/ui (gate.e2e-regression), and that has already gone to David."
+    ]
+  }
+}

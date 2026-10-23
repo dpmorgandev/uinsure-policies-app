@@ -1,0 +1,40 @@
+{
+  "screen": "harness",
+  "route": "/harness",
+  "regions": [
+    {
+      "name": "agents",
+      "req": ["AGENT-3"],
+      "components": ["page-header", "data-table", "agent-badge", "key-value-list"],
+      "fields": [
+        "harness.provenance",
+        "agents[*].name",
+        "agents[*].file",
+        "agents[*].model",
+        "agents[*].tools",
+        "agents[*].description",
+        "skills[*].name",
+        "skills[*].description",
+        "fixture stamp (ref, sha, utc)"
+      ]
+    },
+    {
+      "name": "hooks",
+      "req": ["AGENT-3"],
+      "components": ["data-table"],
+      "fields": [
+        "hooks[*].file",
+        "hooks[*].gates",
+        "hooks[*].purpose"
+      ]
+    }
+  ],
+  "states": [
+    { "name": "populated", "file": "populated.html", "variant": "the fixture's own harness block: 9 agents, 24 skills and 7 hooks read from .claude/ at origin/main b394466, because DATA-7's committed harness file does not exist yet" }
+  ],
+  "actions": [
+    { "label": "Show the time in UTC", "kind": "control", "to": "toggle on the page, no request" },
+    { "label": "Open Sources and provenance", "kind": "link", "to": "/about" },
+    { "label": "Open the repository on GitHub", "kind": "link", "to": "https://github.com/dpmorgandev/uinsure-policies-api" }
+  ]
+}

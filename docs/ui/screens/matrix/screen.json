@@ -1,0 +1,71 @@
+{
+  "screen": "matrix",
+  "route": "/rules",
+  "regions": [
+    {
+      "name": "filters (status, feature)",
+      "req": ["MATRIX-1"],
+      "components": ["page-header", "filter-bar", "sha-link", "status-tag"],
+      "fields": [
+        "rules[*].status",
+        "rules[*].feature",
+        "rules[*].matrix.tests.pass",
+        "rules[*].matrix.tests.total",
+        "rules[*].matrix.green",
+        "stamp.ref",
+        "stamp.sha",
+        "stamp.utc"
+      ]
+    },
+    {
+      "name": "matrix table",
+      "req": ["MATRIX-1"],
+      "components": ["data-table", "rule-chip", "sha-link", "status-tag", "not-built-yet", "sources-disagree"],
+      "fields": [
+        "rules[*].id",
+        "rules[*].title",
+        "rules[*].feature",
+        "rules[*].matrix.node",
+        "rules[*].matrix.tests.pass",
+        "rules[*].matrix.tests.total",
+        "rules[*].matrix.red",
+        "rules[*].matrix.green",
+        "rules[*].matrix.refactor",
+        "rules[*].matrix.qaStep",
+        "rules[*].matrix.signoff",
+        "rules[*].matrix.pr",
+        "events[plan=build][node=F4][kind=signoff].head",
+        "events[plan=build][node=F4][kind=signoff].ts",
+        "events[plan=build][node=F4][kind=signoff].line",
+        "events[plan=build][node=F4][kind=signoff].source",
+        "events[plan=build][node=F4][kind=signoff].detail",
+        "docs/qa/build-F4.md: Date, Commit signed off, Signature"
+      ]
+    },
+    {
+      "name": "test-count scope note (counts are per node: SELL-7 10 at F1 vs 15 traited)",
+      "req": ["DATA-4"],
+      "components": ["not-built-yet"],
+      "fields": [
+        "rules[id=SELL-7].matrix.node",
+        "rules[id=SELL-7].matrix.tests.pass",
+        "rules[id=SELL-7].matrix.tests.total",
+        "events[plan=build][node=F4][kind=signoff].detail"
+      ]
+    }
+  ],
+  "states": [
+    { "name": "populated", "file": "populated.html", "variant": "the ref's own data: all 29 rules from docs/ui/fixture/trace.json, rows numbered from 1 in matrix order" },
+    { "name": "not-built", "file": "not-built.html", "variant": "labelled placeholder from the kit: every rule is built at this ref, so no real rule or node is named" },
+    { "name": "disagreement", "file": "disagreement.html", "variant": "build/F4 signoff: loop-log signoff event (4ea2ae8) against docs/qa/build-F4.md (43f38b6)" }
+  ],
+  "actions": [
+    { "label": "Open a rule (rule chip in the Rule column and in the lead line)", "kind": "link", "to": "/rules/:ruleId" },
+    { "label": "Open a commit on GitHub (red, green, refactor SHAs)", "kind": "link", "to": "https://github.com/dpmorgandev/uinsure-policies-api/commit/:sha" },
+    { "label": "Open the pull request on GitHub (PR column)", "kind": "link", "to": "https://github.com/dpmorgandev/uinsure-policies-api/pull/:number" },
+    { "label": "Sort by Row", "kind": "control", "to": "client-side sort of the loaded rows; sends no request" },
+    { "label": "Set the Status or Feature filter", "kind": "control", "to": "client-side filter of the loaded rows; sends no request" },
+    { "label": "Clear filters", "kind": "control", "to": "client-side; sends no request" },
+    { "label": "Back to the requirements matrix (not-built state)", "kind": "link", "to": "/rules" }
+  ]
+}

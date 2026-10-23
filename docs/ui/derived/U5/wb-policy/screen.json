@@ -1,0 +1,248 @@
+{
+  "screen": "wb-policy",
+  "route": "/workbench/policies/:reference",
+  "regions": [
+    {
+      "name": "status and current term",
+      "req": [
+        "WB-2"
+      ],
+      "components": [
+        "page-header",
+        "status-tag",
+        "key-value-list"
+      ],
+      "fields": [
+        "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[role=request,path=/policies/F2-MVFJQA9DQG].responseBody.{reference,type,status,currentTermNumber,startDate,endDate,amount,hasClaims,autoRenew}",
+        "045-get-1-sold-policy-reads-back-in-full-200.json recordedAt",
+        "053-get-1-unknown-reference-404.json exchanges[role=request].{path,status} and recordedAt (api-error page: header only, every value gap)",
+        "the API on port 5080 not answering (api-unreachable): no field; the reference is a labelled placeholder",
+        "fake-clock/Cancelling_in_term_1_after_a_renewal_refunds_term_1_pro_rata_and_the_future_term_2_in_full.txt (long-content page, labelled fake-clock test, not live): reference, ExpectedRenewedPolicy(reference,\"Cancelled\",1,terms,...), the Rule traits, the test name and file:line"
+      ],
+      "built": true
+    },
+    {
+      "name": "terms timeline (terms, payments, claims, cancellation; dates the API returned only)",
+      "req": [
+        "WB-2"
+      ],
+      "components": [
+        "term-timeline",
+        "status-tag",
+        "rule-chip",
+        "money",
+        "key-value-list"
+      ],
+      "fields": [
+        "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[role=request].responseBody.terms[0].{termNumber,startDate,endDate,amount,paymentReference}",
+        "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[role=request].responseBody.payments[0].type",
+        "fake-clock txt: terms[0..1] dates, amounts and payment methods; cancelOn; ExpectedCancellation.{ruleApplied,totalRefund} (long-content page)",
+        "053 / api-unreachable pages: gap, no terms returned"
+      ],
+      "built": true
+    },
+    {
+      "name": "policyholders and property",
+      "req": [
+        "WB-2"
+      ],
+      "components": [
+        "data-table",
+        "key-value-list"
+      ],
+      "fields": [
+        "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[role=request].responseBody.policyholders[].{firstName,lastName,dateOfBirth}",
+        "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[role=request].responseBody.property.{addressLine1,addressLine2,addressLine3,postcode}",
+        "fake-clock txt (long-content page): not in the test's literals, shown as a gap"
+      ],
+      "built": true
+    },
+    {
+      "name": "payments and refunds",
+      "req": [
+        "WB-2"
+      ],
+      "components": [
+        "data-table",
+        "key-value-list"
+      ],
+      "fields": [
+        "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[role=request].responseBody.payments[].{reference,type,amount}",
+        "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[role=request].responseBody.refunds (empty list)",
+        "fake-clock txt (long-content page): payments paired to the expected terms (type, amount); ExpectedCancellation.refunds[].{type,amount}, each naming its payment by position",
+        "053 / api-unreachable pages: gap"
+      ],
+      "built": true
+    },
+    {
+      "name": "claims",
+      "req": [
+        "WB-2",
+        "WB-5"
+      ],
+      "components": [
+        "data-table",
+        "key-value-list"
+      ],
+      "fields": [
+        "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[role=request].responseBody.{claims,hasClaims} (empty list, false)",
+        "fake-clock txt (long-content page): no claim data, shown as a gap",
+        "053 / api-unreachable pages: gap"
+      ],
+      "built": true
+    },
+    {
+      "name": "cancellation: summary from GET, per-term breakdown from the logged cancel response",
+      "req": [
+        "WB-2",
+        "WB-4"
+      ],
+      "components": [
+        "key-value-list",
+        "data-table",
+        "rule-chip"
+      ],
+      "fields": [
+        "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[role=request].responseBody.cancellation (null)",
+        "fake-clock txt (long-content page): ExpectedCancellationSummary(cancelOn,\"CANCEL-1c\",\"530.02\") for the summary; ExpectedCancellation.terms[].{termNumber,ruleApplied,daysInTerm,daysUsed,unusedDays,refundAmount} for the breakdown, labelled fake-clock test, not live",
+        "no cancel response is logged for the populated, api-error or api-unreachable pages: gap"
+      ],
+      "built": true
+    },
+    {
+      "name": "record-level problem banner (404, 409)",
+      "req": [
+        "WB-3"
+      ],
+      "components": [
+        "problem-banner",
+        "rule-chip",
+        "status-tag"
+      ],
+      "fields": [
+        "053-get-1-unknown-reference-404.json exchanges[role=request].responseBody.{title,status,detail,type,instance,reference,ruleId}",
+        "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[role=request].status (200: no banner)",
+        "the API on port 5080 not answering (api-unreachable): no field; problem-banner unreachable",
+        "no 409 is in this screen's data"
+      ],
+      "built": true
+    },
+    {
+      "name": "actions: quote and cancel, record a claim, renew",
+      "req": [
+        "WB-4",
+        "WB-5"
+      ],
+      "components": [
+        "button"
+      ],
+      "fields": [
+        "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[role=request].responseBody.reference (carried into each destination)",
+        "buttons disabled on api-error and api-unreachable: no policy to act on"
+      ],
+      "built": true
+    },
+    {
+      "name": "requests that touched this policy",
+      "req": [
+        "WB-7"
+      ],
+      "components": [
+        "request-log",
+        "inspector-drawer",
+        "status-tag"
+      ],
+      "fields": [
+        "045-get-1-sold-policy-reads-back-in-full-200.json exchanges[].{role,method,path,status,responseBody}",
+        "053-get-1-unknown-reference-404.json exchanges[role=request].{method,path,status,responseBody}",
+        "no duration is recorded in either fixture: shown as 'not recorded'",
+        "api-unreachable and long-content pages: no request in the data, request-log empty with the reason"
+      ],
+      "built": false
+    }
+  ],
+  "states": [
+    {
+      "name": "populated",
+      "file": "populated.html",
+      "variant": "045-get-1-sold-policy-reads-back-in-full-200.json (recorded 2026-10-19T17:46:34Z): policy F2-MVFJQA9DQG, Pending, one term, one payment, no refunds, no claims, cancellation null"
+    },
+    {
+      "name": "api-error",
+      "file": "api-error.html",
+      "variant": "053-get-1-unknown-reference-404.json (recorded 2026-10-19T17:46:50Z): GET /policies/F2-MVFJQMPREM answered 404 under GET-1"
+    },
+    {
+      "name": "api-unreachable",
+      "file": "api-unreachable.html",
+      "variant": "no data: the API on port 5080 does not answer; problem-banner unreachable; the policy reference is a labelled placeholder"
+    },
+    {
+      "name": "long-content",
+      "file": "long-content.html",
+      "variant": "fake-clock test, not live: CancelRenewedPolicyTests.cs:38-86, policy CAN5-FUTURE-TERM, two terms, cancelled in term 1; the test name is one long unbroken identifier and the page holds two terms, two payments, two refunds and a per-term breakdown"
+    }
+  ],
+  "actions": [
+    {
+      "label": "Quote and cancel",
+      "kind": "link",
+      "to": "/workbench/policies/:reference/cancel"
+    },
+    {
+      "label": "Record a claim",
+      "kind": "link",
+      "to": "/workbench/policies/:reference/claims/new"
+    },
+    {
+      "label": "Renew",
+      "kind": "link",
+      "to": "/workbench/policies/:reference/renew"
+    },
+    {
+      "label": "Quote a cancellation (refunds empty state)",
+      "kind": "link",
+      "to": "/workbench/policies/:reference/cancel"
+    },
+    {
+      "label": "Record a claim (claims empty state)",
+      "kind": "link",
+      "to": "/workbench/policies/:reference/claims/new"
+    },
+    {
+      "label": "Try again",
+      "kind": "request",
+      "to": "repeats GET /policies/:reference"
+    },
+    {
+      "label": "Back to the workbench",
+      "kind": "link",
+      "to": "/workbench"
+    },
+    {
+      "label": "The 404 state",
+      "kind": "link",
+      "to": "/workbench/policies/:reference (api-error state)"
+    },
+    {
+      "label": "Rule chips (GET-1, CANCEL-1a, CANCEL-1c, CANCEL-5)",
+      "kind": "link",
+      "to": "/rules/:ruleId"
+    },
+    {
+      "label": "Filter requests",
+      "kind": "control",
+      "to": "filters the request log in the page, sends nothing"
+    },
+    {
+      "label": "Sort by column (#, Term)",
+      "kind": "control",
+      "to": "re-orders the table in the page, sends nothing"
+    },
+    {
+      "label": "Show requests / Hide requests",
+      "kind": "control",
+      "to": "opens or closes the inspector drawer"
+    }
+  ]
+}

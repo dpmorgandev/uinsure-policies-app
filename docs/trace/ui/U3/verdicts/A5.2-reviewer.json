@@ -1,0 +1,72 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T20:02:18Z",
+  "plan": "ui",
+  "node": "U3",
+  "attempt": 5,
+  "agent": "reviewer",
+  "agent_id": "ad5c5ab1668b49115",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U3",
+    "attempt": 5,
+    "base_sha": "7736c1cf6aa889ee81dc30b9cb55ce47f7aca59f",
+    "head_sha": "f8c3471e1a4ef0f14693ed7865786845713ce178",
+    "diff_fingerprint": "1e74ff7c69171e13fd17e733ea9bf79c259e3325",
+    "verdict": "PASS",
+    "gate_refs": [
+      "loop.jsonl:84 gate.e2e-regression (attempt 4, the set ruled intended at 5fa2f55; 489 rule tests passed at 4ab971f)",
+      "loop.jsonl:89 steer(D1,pause2)",
+      "loop.jsonl:92 gate.red at 55e5364",
+      "loop.jsonl:96 gate.test at 3b25c3c (304 passed)",
+      "loop.jsonl:98 gate.e2e at 3b25c3c (U3 109 passed)",
+      "loop.jsonl:108 gate.e2e-regression at 80b91e4",
+      "loop.jsonl:113 escalated",
+      "loop.jsonl:114 findings(A5.md)",
+      "loop.jsonl:115 gate.coverage at 048d497 OK",
+      "loop.jsonl:116 gate.e2e-regression at 048d497 (ruled set)",
+      "loop.jsonl:117 gate.e2e at 048d497 (all rule tests of every node)",
+      "loop.jsonl:118 gate.typecheck at 048d497",
+      "loop.jsonl:119 gate.lint at 048d497",
+      "loop.jsonl:120 gate.lint-css at 048d497",
+      "loop.jsonl:121 gate.test at 048d497",
+      "loop.jsonl:122 gate.build at 048d497",
+      "loop.jsonl:123 gate.audit at 048d497",
+      "loop.jsonl:124 gate.scope at 048d497",
+      "loop.jsonl:125 gate.no-stubs at 048d497",
+      "loop.jsonl:126 gate.integrate at 048d497"
+    ],
+    "rules_covered": [
+      "LOOP-1",
+      "LOOP-2",
+      "LOOP-3",
+      "LOOP-4",
+      "DATA-2"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "LOOP-4",
+        "severity": "P2",
+        "file": "docs/trace/ui/U3/packet/gates.jsonl",
+        "line": 19,
+        "what": "The gate.e2e receipt at 048d497 is marked ok:true but records exit 1 against expect 0. Its pass rests on prose about re-runs at --workers=1, and one U3 LOOP-4 test timed out on a 5s wait under load.",
+        "why": "A receipt is the reviewer's only evidence, and its ok field contradicts its own exit and expect fields. From the detail, every rule test passed in at least one run: 486/489 at --workers=2, the 3 failures passed at --workers=1, and the one A11Y-1 failure there passed 13/13 alone. None of the failures was an assertion, so this doesn't block. The U3 LOOP-4 round-A1 region test timed out on a 5-second wait under load, so it may flake in later nodes' all-node runs. A clean single run, or a separate receipt for each re-run, would make the evidence mechanical.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "David's ruling (delegated) applied: A5/R1, a single-quoted marker after a sentence end still splitting the root cause in plans.ts opensASentence, is the U7 acceptance line committed at 77f25aa, with its fix direction in findings/A5.md I1. It is not raised again. LOOP-4 is counted as covered on that basis. Every other LOOP-4 shape (double-quoted markers, mid-sentence markers, preamble and repeated markers) is covered by red tests that came before their fixes: 55e5364 then 3b25c3c, and ed3f62d/a4935b5 then 4ab971f.",
+      "A5 R2 is answered. The regression run at 048d497 (loop.jsonl:116) has 18 failures: about 4, node 8, plan 4, activity 2. That matches the set ruled intended at 5fa2f55 (:84) screen by screen. finding, loop and verdict now pass on baselines committed in 048d497, and they appear under docs/ui/baselines/{finding,loop,verdict}/.",
+      "A5 R3 is answered. gate.coverage is OK at 048d497 (:115) with findings/A5.md committed. f8c3471 only adds the gates and the packet under docs/trace.",
+      "A5/I2(b) is answered: an all-nodes rule run after the 3b25c3c compiler change exists (:117). See R1 for how its receipt is marked.",
+      "No src/web code changed after 3b25c3c. Every later commit is chore(trace) or plan, plus the baselines, and the diff fingerprint equals A5's. So the code-level gates at 3b25c3c (304 unit, 109 U3 e2e) and the earlier rounds' rule judgements on LOOP-1, LOOP-2, LOOP-3 and DATA-2 still apply.",
+      "Spot checks at HEAD: no 'not implemented' in src/web (:125); no dangerouslySetInnerHTML, innerHTML, eval or new Function in src/web; no .skip, .only or .fixme under tests/web. compiledAt takes an injected options.now with a new Date() default only at the compiler entry.",
+      "The kit's rel=noreferrer gap (A5/I4, the security finding S1) is already a U7 line and is not raised again.",
+      "The session-start git status shows src/web/test-results/ untracked, which is Playwright output not gitignored. It is not in the diff and is not a finding."
+    ]
+  }
+}

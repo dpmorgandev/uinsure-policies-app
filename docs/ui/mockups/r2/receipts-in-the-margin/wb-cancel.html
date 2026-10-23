@@ -1,0 +1,793 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quote and cancel · workbench · receipts in the margin</title>
+<style>
+:root {
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --border: #cecece;
+  --accent: #3d5a6c;
+  --text: #0b0c0c;
+  --text-2: #484949;
+  --primary: #1a65a6;
+  --error: #ca3535;
+  --success: #0f7a52;
+  --warn: #8a5a00;
+  --font-sans: "Source Sans 3", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Source Code Pro", ui-monospace, "Cascadia Code", "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+  --top: 2.75rem;
+}
+[data-theme="dark"] {
+  --bg: #17191c;
+  --surface: #1f2226;
+  --border: #3a3f45;
+  --accent: #9db7c7;
+  --text: #e8e6e1;
+  --text-2: #a9adb3;
+  --primary: #7cb3e6;
+  --error: #fa4d56;
+  --success: #42be65;
+  --warn: #e0a63a;
+}
+
+* { box-sizing: border-box; }
+html { scroll-padding-top: 4rem; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+code, pre, .mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums lining-nums; }
+code { font-size: 0.92em; }
+a { color: var(--primary); text-underline-offset: 0.15em; }
+a:focus-visible, button:focus-visible, input:focus-visible, summary:focus-visible, [tabindex]:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+.ic { width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; flex: none; vertical-align: -0.125em; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* the one line of navigation */
+.top { border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 3; }
+.top-in { max-width: 82rem; margin: 0 auto; padding: 0.6rem 1.5rem; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1.5rem; font-size: 0.9375rem; }
+.crumbs { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.25rem 0.5rem; }
+.crumbs li + li::before { content: "/"; color: var(--text-2); margin-right: 0.5rem; }
+.crumbs a[aria-current="page"] { color: var(--text); font-weight: 600; text-decoration: none; }
+
+.page { max-width: 82rem; margin: 0 auto; padding: 1.5rem 1.5rem 4rem; }
+section { margin: 0 0 3rem; }
+
+.eyebrow {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.6rem;
+  margin: 0 0 0.35rem;
+  font-size: 0.8125rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  font-weight: 600;
+}
+h1 { margin: 0 0 1.25rem; font-size: clamp(1.75rem, 3.6vw, 2.6rem); line-height: 1.15; font-weight: 650; max-width: 30ch; }
+h1 .money { font-size: 1.08em; }
+h2 { margin: 0 0 1rem; font-size: 1.5rem; line-height: 1.25; font-weight: 650; max-width: 40ch; }
+h3 { margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 650; }
+
+/* the manuscript line: sentence left, receipt right */
+.line {
+  display: grid;
+  grid-template-columns: minmax(0, 64ch) minmax(15rem, 22rem);
+  column-gap: 2.5rem;
+  align-items: start;
+  margin: 0 0 1.25rem;
+}
+.line > p, .line > .col { margin: 0; }
+.col > * + * { margin-top: 0.75rem; }
+.wide { max-width: 64rem; margin: 0 0 1.25rem; }
+.lead { font-size: 1.1875rem; }
+
+.note {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  padding: 0.5rem 0.75rem;
+  border-radius: 2px;
+  overflow-wrap: anywhere;
+}
+.note > * { margin: 0; }
+.note > * + * { margin-top: 0.4rem; }
+.note + .note { margin-top: 0.5rem; }
+.note-gap { border-left-style: dashed; border-style: dashed; color: var(--text-2); }
+.kv { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.1rem 0.6rem; }
+.kv .k { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text-2); }
+.kv .v { font-family: var(--font-mono); font-size: 1rem; font-weight: 700; color: var(--text); }
+.src { display: flex; flex-wrap: wrap; align-items: center; gap: 0.25rem 0.5rem; font-size: 0.8125rem; }
+.prov { font-family: var(--font-mono); font-size: 0.75rem; padding: 0 0.4em; border-radius: 2px; color: var(--text); }
+.prov-recorded { border: 1.5px dotted var(--accent); }
+.prov-written { border: 1.5px dashed var(--accent); }
+.prov-generated { border: 1.5px solid var(--accent); }
+.fl { font-family: var(--font-mono); font-size: 0.8125rem; }
+.chip {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-weight: 600;
+  padding: 0 0.4em;
+  border: 1px solid var(--primary);
+  border-radius: 3px;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.chip-nb { border: 1.5px dashed var(--text-2); color: var(--text-2); }
+.money, .mono-v { font-family: var(--font-mono); font-weight: 700; font-variant-numeric: tabular-nums lining-nums; }
+.val { font-family: var(--font-mono); font-size: 0.9375rem; }
+.gap { color: var(--text-2); }
+
+/* status tag: a word, a glyph, a colour; never interactive */
+.tag {
+  display: inline-flex; align-items: center; gap: 0.3em;
+  font-size: 0.8125rem; font-weight: 600; line-height: 1.35;
+  padding: 0 0.5em 0 0.35em;
+  border: 1.5px solid currentColor; border-radius: 3px;
+  white-space: nowrap;
+}
+.tag-pass { color: var(--success); }
+.tag-fail { color: var(--error); }
+.tag-warn { color: var(--warn); }
+.tag-pend { color: var(--text-2); }
+.tag-note { color: var(--text-2); }
+.tag-nb { color: var(--text-2); border-style: dashed; }
+
+/* fields */
+.field { margin: 0; max-width: 28rem; }
+.field label { display: block; font-weight: 650; }
+.field .hint { margin: 0.1rem 0 0.4rem; color: var(--text-2); font-size: 0.9375rem; }
+.field .err { margin: 0 0 0.4rem; color: var(--error); font-weight: 650; display: flex; gap: 0.4em; align-items: baseline; }
+.field input {
+  display: block; width: 100%; max-width: 14rem;
+  font-family: var(--font-mono); font-size: 1.125rem; font-variant-numeric: tabular-nums lining-nums;
+  padding: 0.45rem 0.6rem;
+  background: var(--surface); color: var(--text);
+  border: 2px solid var(--text-2); border-radius: 2px;
+}
+.field input[aria-invalid="true"] { border-color: var(--error); border-width: 3px; }
+.field input::placeholder { color: var(--text-2); opacity: 1; }
+
+/* buttons */
+.actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 0.9rem; }
+.btn {
+  display: inline-flex; align-items: center; gap: 0.5em;
+  font: inherit; font-weight: 650; font-size: 1rem;
+  padding: 0.5rem 1rem; min-height: 2.5rem;
+  border: 2px solid currentColor; border-radius: 3px;
+  background: var(--surface); color: var(--text);
+  cursor: pointer;
+}
+.btn-primary { background: var(--primary); border-color: var(--primary); color: var(--bg); }
+.btn-destructive { background: var(--error); border-color: var(--error); color: var(--bg); }
+.btn-secondary { color: var(--text); border-color: var(--text-2); }
+.btn[disabled] { cursor: not-allowed; }
+.btn.is-disabled { background: var(--bg); color: var(--text-2); border-style: dashed; border-color: var(--text-2); }
+.btn.is-busy { cursor: progress; }
+.sp-move { animation: spin 1s linear infinite; }
+.sp-still { display: none; }
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .sp-move { display: none; }
+  .sp-still { display: inline-block; }
+}
+
+/* states, each under its label */
+.state {
+  margin: 0 0 1.5rem;
+  padding: 0.9rem 1rem 0.4rem;
+  background: color-mix(in srgb, var(--accent) 6%, var(--bg));
+  border-top: 2px solid var(--accent);
+}
+.state-label {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-mono); font-size: 0.8125rem; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent);
+}
+.state .line { grid-template-columns: minmax(0, 64ch) minmax(15rem, 22rem); }
+.gapbox {
+  border: 2px dashed var(--text-2); border-radius: 3px;
+  padding: 0.6rem 0.8rem; color: var(--text-2); font-size: 0.9375rem;
+}
+.gapbox > * { margin: 0; }
+.gapbox > * + * { margin-top: 0.35rem; }
+.skel { display: block; height: 0.9rem; background: var(--border); border-radius: 2px; margin: 0.45rem 0; }
+
+/* worked sum */
+figure { margin: 0; }
+figcaption { font-size: 0.875rem; color: var(--text-2); margin-top: 0.75rem; max-width: 64ch; }
+.sum {
+  display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0.5rem 0.9rem;
+  margin: 0.5rem 0 1.5rem; padding: 1rem 1.1rem;
+  background: var(--surface); border: 1px solid var(--border); border-top: 4px solid var(--accent);
+  max-width: 44rem;
+}
+.sum .op { display: flex; flex-direction: column; align-items: flex-start; }
+.sum .n { font-family: var(--font-mono); font-size: clamp(1.4rem, 3.4vw, 2.1rem); font-weight: 700; line-height: 1.1; }
+.sum .f { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-2); }
+.sum .sign { font-family: var(--font-mono); font-size: 1.5rem; color: var(--text-2); padding-bottom: 0.35rem; }
+.sum .res .n { color: var(--accent); }
+.sum-note { flex-basis: 100%; margin: 0; font-size: 0.875rem; color: var(--text-2); }
+
+/* tables */
+table { border-collapse: collapse; width: 100%; font-size: 0.9375rem; background: var(--surface); }
+caption { text-align: left; font-weight: 650; padding: 0 0 0.4rem; background: transparent; }
+th, td { text-align: left; vertical-align: top; padding: 0.45rem 0.7rem; border-bottom: 1px solid var(--border); }
+thead th { position: sticky; top: var(--top); background: var(--surface); border-bottom: 2px solid var(--text-2); font-size: 0.8125rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-2); }
+tbody th { font-family: var(--font-mono); font-weight: 600; font-size: 0.875rem; }
+td.num, th.num { text-align: right; }
+td .val { font-size: 0.875rem; }
+.tablewrap { overflow-x: auto; }
+.tablewrap:focus-visible { outline: 3px solid var(--primary); outline-offset: 2px; }
+
+/* error summary, banner, dialog */
+.errsum {
+  border: 4px solid var(--error); background: var(--surface);
+  padding: 0.8rem 1rem; max-width: 40rem;
+}
+.errsum h3 { color: var(--text); display: flex; align-items: center; gap: 0.4em; }
+.errsum ul { margin: 0; padding-left: 1.2rem; }
+.errsum li { margin: 0.2rem 0; }
+.errsum li a { font-weight: 650; }
+.banner {
+  border: 2px solid var(--warn); border-left-width: 8px; background: var(--surface);
+  padding: 0.8rem 1rem; max-width: 40rem;
+}
+.banner > * { margin: 0; }
+.banner > * + * { margin-top: 0.4rem; }
+.banner h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4em 0.6em; }
+.dialog {
+  max-width: 36rem; background: var(--surface); color: var(--text);
+  border: 2px solid var(--text); padding: 1rem 1.2rem;
+}
+.dialog > * { margin: 0; }
+.dialog > * + * { margin-top: 0.7rem; }
+.dialog h3 { font-size: 1.25rem; }
+
+/* inspector: a light paper view, docked at the foot */
+.inspector { border-top: 4px solid var(--accent); padding-top: 0.8rem; }
+.paper {
+  background: var(--surface); border: 1px solid var(--border);
+  padding: 0.75rem 1rem; margin: 0 0 1rem; max-width: 64rem;
+}
+.paper .req { margin: 0 0 0.5rem; font-family: var(--font-mono); font-size: 0.9375rem; overflow-wrap: anywhere; display: flex; flex-wrap: wrap; gap: 0.25rem 0.8rem; align-items: center; }
+.paper pre { margin: 0; font-size: 0.875rem; line-height: 1.5; overflow-x: auto; color: var(--text); }
+.paper .kk { color: var(--text-2); }
+.paper .cm { margin: 0.5rem 0 0; font-size: 0.875rem; color: var(--text-2); }
+
+.sources ol { margin: 0; padding-left: 1.4rem; font-size: 0.9375rem; max-width: 64rem; }
+.sources li { margin: 0.35rem 0; }
+
+@media (max-width: 50rem) {
+  .page { padding: 1rem 1rem 3rem; }
+  .line, .state .line { grid-template-columns: minmax(0, 1fr); row-gap: 0.5rem; }
+  .line .note { margin-left: 1rem; }
+  .top-in { padding: 0.5rem 1rem; }
+  .state { padding: 0.8rem 0.75rem 0.3rem; }
+}
+</style>
+</head>
+<body data-screen-id="wb-cancel">
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol>
+  <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+  <symbol id="i-spin" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+</svg>
+
+<header class="top">
+  <div class="top-in">
+    <nav aria-label="Breadcrumb">
+      <ol class="crumbs">
+        <li><a href="#">Workbench</a></li>
+        <li><a href="#">Policies</a></li>
+        <li><a href="#">F3-MVEOSVDQJQ</a></li>
+        <li><a href="#" aria-current="page">Quote and cancel</a></li>
+      </ol>
+    </nav>
+    <a href="#">Read the rule in the explorer: <span class="mono">CANCEL-1c</span></a>
+  </div>
+</header>
+
+<main class="page" id="main">
+
+<!-- page-header: the question and its answer -->
+<div class="page-header">
+  <p class="eyebrow">Workbench <span aria-hidden="true">·</span> Quote and cancel <span aria-hidden="true">·</span> policy <span class="mono">F3-MVEOSVDQJQ</span></p>
+  <p class="sr">The question this page answers: if this policy is cancelled on a chosen date, how much is refunded, why, and did the cancellation agree with the quote?</p>
+  <div class="line">
+    <h1>Cancelling on <span class="mono-v">2027-01-27</span> refunds <span class="money">445.11</span> to DirectDebit.</h1>
+    <div class="col">
+      <aside class="note" aria-label="Receipt for the headline">
+        <p class="kv"><span class="k">totalRefund</span> <span class="v">445.11</span></p>
+        <p class="kv"><span class="k">cancellationDate</span> <span class="v">2027-01-27</span></p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa10">build-F3.md · step 10</a></p>
+      </aside>
+      <aside class="note note-gap" aria-label="Gap in the header">
+        <p>The policy's status and a compiled-at stamp are not in the data this page was given, so the header shows neither.</p>
+      </aside>
+    </div>
+  </div>
+  <p class="lead" style="max-width:64ch;margin:0 0 2rem">Every figure below is written as a sentence, and the field the API wrote it in sits in the margin on the same line. The figures are the recorded F3 run, step 10.</p>
+</div>
+
+<!-- REGION 1: cancellation date and quote -->
+<section data-req="WB-4" aria-labelledby="h-date">
+  <p class="eyebrow">Part 1 <span aria-hidden="true">·</span> cancellation date and quote</p>
+  <h2 id="h-date">Pick the day, then ask what it would refund</h2>
+
+  <div class="line">
+    <p>Choose the day the cancellation takes effect. The API reads one format only, <code>yyyy-MM-dd</code>, and the box shows what you type without changing it. Asking for a quote is read-only: it never saves anything.</p>
+    <aside class="note" aria-label="Receipt: the quote request">
+      <p class="kv"><span class="k">E4</span> <span class="v">GET …/cancellation-quote?cancellationDate=yyyy-MM-dd</span></p>
+      <p>Date required, strict format; read-only, never saves (<span class="fl">PolicyService.cs:92</span>).</p>
+      <p class="src"><span class="prov prov-written">written</span> <a class="fl" href="#src-inv">api-inventory.md · E4</a></p>
+    </aside>
+  </div>
+
+  <div class="line">
+    <div class="col">
+      <div class="field">
+        <label for="cancel-date">Cancellation date</label>
+        <p class="hint" id="cancel-date-hint">Write it as yyyy-MM-dd. It can't be in the past, and it can't be after the end of cover.</p>
+        <input id="cancel-date" name="cancellationDate" type="text" inputmode="numeric" autocomplete="off" value="2027-01-27" aria-describedby="cancel-date-hint">
+      </div>
+      <div class="actions" data-req="BUSY-1">
+        <button class="btn btn-secondary" type="button"><svg class="ic" aria-hidden="true"><use href="#i-receipt"/></svg>Quote again</button>
+      </div>
+    </div>
+    <aside class="note" aria-label="Receipt: the two date rules">
+      <p><a class="chip" href="#">CANCEL-3</a> <span class="gap">written:</span> Optional, defaults to today; an empty body is allowed. No past dates (422).</p>
+      <p><a class="chip" href="#">CANCEL-7</a> <span class="gap">written:</span> The date must be on or before the latest term's end, else 422.</p>
+      <p class="src"><span class="prov prov-written">written</span> <a class="fl" href="#src-req">requirements.md</a></p>
+    </aside>
+  </div>
+
+  <div class="line">
+    <p>The API answered <span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>200</span> for 2027-01-27. It checked the date against 2026-10-19, the UK today, so neither the past-date rule nor the end-of-cover rule stopped it.</p>
+    <aside class="note" aria-label="Receipt: the quote's check date">
+      <p class="kv"><span class="k">quotedOn</span> <span class="v">2026-10-19</span></p>
+      <p>The UK today the quote was checked against.</p>
+      <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa10">build-F3.md · step 10</a></p>
+    </aside>
+  </div>
+
+  <div class="state">
+    <p class="state-label">State · empty (no date typed, no quote yet)</p>
+    <div class="line">
+      <div class="col">
+        <div class="field">
+          <label for="cancel-date-empty">Cancellation date</label>
+          <p class="hint" id="cancel-date-empty-hint">Write it as yyyy-MM-dd.</p>
+          <input id="cancel-date-empty" type="text" inputmode="numeric" autocomplete="off" placeholder="yyyy-MM-dd" aria-describedby="cancel-date-empty-hint">
+        </div>
+        <div class="actions" data-req="BUSY-1">
+          <button class="btn btn-primary" type="button"><svg class="ic" aria-hidden="true"><use href="#i-receipt"/></svg>Quote the refund</button>
+        </div>
+        <div class="gapbox">
+          <p><strong>No quote yet.</strong> The worked sum in Part 2 and the cancel button in Part 3 stay empty until a quote comes back. A quote needs a date.</p>
+        </div>
+      </div>
+      <aside class="note" aria-label="Receipt: asking with no date">
+        <p>A quote sent with no date is refused.</p>
+        <p class="kv"><span class="k">status</span> <span class="v">400</span></p>
+        <p class="kv"><span class="k">errors.cancellationDate</span> <span class="v">"The cancellationDate field is required."</span></p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa22">build-F3.md · step 22 · F3-MVEOTHRWL1</a></p>
+      </aside>
+    </div>
+  </div>
+
+  <div class="state">
+    <p class="state-label">State · submitting (the quote request is running)</p>
+    <div class="line">
+      <div class="col">
+        <div class="field">
+          <label for="cancel-date-busy">Cancellation date</label>
+          <input id="cancel-date-busy" type="text" value="2027-01-27" readonly>
+        </div>
+        <div class="actions" data-req="BUSY-1">
+          <button class="btn btn-primary is-busy" type="button" disabled aria-disabled="true" aria-busy="true"><svg class="ic sp-move" aria-hidden="true"><use href="#i-spin"/></svg><svg class="ic sp-still" aria-hidden="true"><use href="#i-clock"/></svg>Quoting…</button>
+        </div>
+        <p>Asking the API for a quote for 2027-01-27. The button can't be pressed twice while it waits.</p>
+        <div aria-hidden="true">
+          <span class="skel" style="width:70%"></span>
+          <span class="skel" style="width:45%"></span>
+        </div>
+      </div>
+      <aside class="note" aria-label="Receipt: the request in flight">
+        <p class="kv"><span class="k">E4</span> <span class="v">GET …/cancellation-quote?cancellationDate=2027-01-27</span></p>
+        <p>The label changes with the spinner, so the busy state is never shown by motion alone. Under reduced motion a still clock glyph replaces the rotation.</p>
+        <p class="src"><span class="prov prov-written">written</span> <a class="fl" href="#src-inv">api-inventory.md · E4</a></p>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- REGION 2: the refund as a worked sum, per term, with the rule applied -->
+<section data-req="WB-4" aria-labelledby="h-sum">
+  <p class="eyebrow">Part 2 <span aria-hidden="true">·</span> the refund as a worked sum, per term</p>
+  <h2 id="h-sum">Why it is 445.11</h2>
+
+  <figure aria-labelledby="fig-sum-cap">
+    <div class="line">
+      <p>The term has 365 days.</p>
+      <aside class="note" aria-label="Receipt: days in term">
+        <p class="kv"><span class="k">daysInTerm</span> <span class="v">365</span></p>
+        <p>The actual days in the term, 365 or 366.</p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa10">step 10</a></p>
+      </aside>
+    </div>
+    <div class="line">
+      <p>101 of them count as used, the cancellation day included.</p>
+      <aside class="note" aria-label="Receipt: days used">
+        <p class="kv"><span class="k">daysUsed</span> <span class="v">101</span></p>
+        <p>The cancellation day counts as used.</p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa10">step 10</a></p>
+      </aside>
+    </div>
+    <div class="line">
+      <p>That leaves 264 unused.</p>
+      <aside class="note" aria-label="Receipt: unused days">
+        <p class="kv"><span class="k">unusedDays</span> <span class="v">264</span></p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa10">step 10</a></p>
+      </aside>
+    </div>
+    <div class="line">
+      <p>The cooling-off period is over, so the pro-rata rule applies: the refund is the amount paid, times the unused days, divided by the days in the term.</p>
+      <aside class="note" aria-label="Receipt: the rule applied">
+        <p class="kv"><span class="k">ruleApplied</span> <a class="chip" href="#">CANCEL-1c</a></p>
+        <p>After cooling-off → pro-rata for unused days. The cancellation day counts as used.</p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa10">step 10</a> <span class="prov prov-written">written</span> <a class="fl" href="#src-req">requirements.md</a></p>
+      </aside>
+    </div>
+    <div class="line">
+      <div class="col">
+        <p>So this term refunds 445.11. The sum:</p>
+        <div class="sum" role="group" aria-label="The sum: 615.40 times 264 divided by 365 equals 445.11">
+          <div class="op"><span class="n">615.40</span><span class="f">paid by DirectDebit</span></div>
+          <span class="sign" aria-hidden="true">&times;</span>
+          <div class="op"><span class="n">264</span><span class="f">unusedDays</span></div>
+          <span class="sign" aria-hidden="true">&divide;</span>
+          <div class="op"><span class="n">365</span><span class="f">daysInTerm</span></div>
+          <span class="sign" aria-hidden="true">=</span>
+          <div class="op res"><span class="n">445.11</span><span class="f">refundAmount</span></div>
+          <p class="sum-note">Worked out exactly, 615.40 × 264 ÷ 365 is 445.1112…; the API writes it as 445.11.</p>
+        </div>
+      </div>
+      <aside class="note" aria-label="Receipt: the refund amount">
+        <p class="kv"><span class="k">refundAmount</span> <span class="v">445.11</span></p>
+        <p>The sale was 615.40 by DirectDebit; 445.1112… is the step's own arithmetic.</p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa10">build-F3.md · step 10</a></p>
+      </aside>
+    </div>
+    <div class="line">
+      <p>It goes back to DirectDebit, the method of the payment it reverses. With one term, the total is the same 445.11.</p>
+      <aside class="note" aria-label="Receipt: the refund line and the total">
+        <p class="kv"><span class="k">refund</span> <span class="v">DirectDebit · 445.11</span></p>
+        <p class="kv"><span class="k">payment</span> <span class="v">PAY-7f24722e…</span></p>
+        <p class="kv"><span class="k">totalRefund</span> <span class="v">445.11</span></p>
+        <p>A quote's refund line has no <code>reference</code>.</p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa10">step 10</a> · <a class="chip" href="#">CANCEL-2</a></p>
+      </aside>
+    </div>
+
+    <div class="wide tablewrap" tabindex="0" role="region" aria-label="Terms table, scrollable">
+      <table>
+        <caption>The same term, field by field, as the quote wrote it (one term; default order is <code>termNumber</code>)</caption>
+        <thead>
+          <tr><th scope="col" class="num">termNumber</th><th scope="col">ruleApplied</th><th scope="col" class="num">daysInTerm</th><th scope="col" class="num">daysUsed</th><th scope="col" class="num">unusedDays</th><th scope="col" class="num">refundAmount</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row" class="num">1</th><td><a class="chip" href="#">CANCEL-1c</a></td><td class="num val">365</td><td class="num val">101</td><td class="num val">264</td><td class="num val">445.11</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <figcaption id="fig-sum-cap">Text equivalent of the sum above: term 1, rule CANCEL-1c, 365 days in the term, 101 used, 264 unused, refund 445.11, total 445.11. Source: the quote for F3-MVEOSVDQJQ, recorded in <span class="fl">docs/qa/build-F3.md</span> step 10.</figcaption>
+  </figure>
+
+  <h3 style="margin-top:2rem">The same sum under other rules, as recorded</h3>
+  <div class="line">
+    <p>On <a class="chip" href="#">CANCEL-1b</a>, cancelling one day into the term, inside the cooling-off, the rule refunds in full: 401.20. The day counts are still returned: 1 used, 364 unused, of 365.</p>
+    <aside class="note" aria-label="Receipt: a CANCEL-1b term">
+      <p class="kv"><span class="k">terms[0]</span> <span class="v">1 · CANCEL-1b · 365 · 1 · 364 · 401.20</span></p>
+      <p class="kv"><span class="k">refund</span> <span class="v">DirectDebit · 401.20</span></p>
+      <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa42">step 42 · QA-F3-TWICE</a></p>
+    </aside>
+  </div>
+  <div class="line">
+    <p>On <a class="chip" href="#">COULD-2</a>, a claim on the policy means no refund: 0.00 whatever the days. The day counts are still returned: 4 used, 361 unused, of 365. The list of refunds is empty.</p>
+    <aside class="note" aria-label="Receipt: a COULD-2 term">
+      <p class="kv"><span class="k">terms[0]</span> <span class="v">1 · COULD-2 · 365 · 4 · 361 · 0.00</span></p>
+      <p class="kv"><span class="k">totalRefund</span> <span class="v">0.00</span></p>
+      <p class="kv"><span class="k">refunds</span> <span class="v">[]</span></p>
+      <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa14">step 14 · F3-MVEOT2SE08</a></p>
+    </aside>
+  </div>
+  <div class="line">
+    <div class="gapbox">
+      <p><span class="tag tag-nb"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>not in the recorded data</span></p>
+      <p>A <span class="mono">CANCEL-1a</span> term (before the start date), an <span class="mono">UNPAID-TERM</span> term, and a policy with several terms have no response in the data this page was given. Their lines are not drawn.</p>
+    </div>
+    <span></span>
+  </div>
+</section>
+
+<!-- REGION 3: cancel with the quoted date, then quote and cancellation compared -->
+<section data-req="WB-4" aria-labelledby="h-cancel">
+  <p class="eyebrow">Part 3 <span aria-hidden="true">·</span> cancel with the quoted date, then compare</p>
+  <h2 id="h-cancel">Cancel on exactly 2027-01-27</h2>
+
+  <div class="line">
+    <div class="col">
+      <p>The cancellation is sent with the date that was quoted, 2027-01-27, and no other. Cancelling can't be repeated, so a confirmation names the date and the refund first.</p>
+      <div class="actions" data-req="BUSY-1">
+        <button class="btn btn-destructive" type="button"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>Cancel policy on 2027-01-27</button>
+      </div>
+    </div>
+    <aside class="note" aria-label="Receipt: the cancel request">
+      <p class="kv"><span class="k">E3</span> <span class="v">POST /policies/F3-MVEOSVDQJQ/cancellation</span></p>
+      <p class="kv"><span class="k">answers</span> <span class="v">201, no Location</span></p>
+      <p><a class="chip" href="#">CANCEL-4</a> cancel twice → 409, giving the original cancellation date.</p>
+      <p class="src"><span class="prov prov-written">written</span> <a class="fl" href="#src-inv">api-inventory.md · E3</a> <span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa10">step 10</a></p>
+    </aside>
+  </div>
+
+  <div class="state">
+    <p class="state-label">State · confirm dialog, open</p>
+    <div class="line">
+      <div class="dialog" role="dialog" aria-modal="false" aria-labelledby="dlg-open-h" aria-describedby="dlg-open-d">
+        <h3 id="dlg-open-h">Cancel policy F3-MVEOSVDQJQ?</h3>
+        <p id="dlg-open-d">It will be cancelled on <span class="mono-v">2027-01-27</span> and <span class="money">445.11</span> will be refunded to DirectDebit. A cancelled policy can't be cancelled again.</p>
+        <div class="actions">
+          <button class="btn btn-destructive" type="button"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>Cancel the policy</button>
+          <button class="btn btn-secondary" type="button">Keep the policy</button>
+        </div>
+      </div>
+      <aside class="note" aria-label="Receipt: what the dialog names">
+        <p class="kv"><span class="k">cancellationDate</span> <span class="v">2027-01-27</span></p>
+        <p class="kv"><span class="k">totalRefund</span> <span class="v">445.11</span></p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa10">step 10</a> · <a class="chip" href="#">CANCEL-4</a></p>
+      </aside>
+    </div>
+  </div>
+
+  <div class="state">
+    <p class="state-label">State · confirm dialog, submitting (the cancel request is running)</p>
+    <div class="line">
+      <div class="dialog" role="dialog" aria-modal="false" aria-labelledby="dlg-busy-h" aria-describedby="dlg-busy-d">
+        <h3 id="dlg-busy-h">Cancel policy F3-MVEOSVDQJQ?</h3>
+        <p id="dlg-busy-d">Cancelling on <span class="mono-v">2027-01-27</span>, refunding <span class="money">445.11</span> to DirectDebit. Waiting for the API.</p>
+        <div class="actions" data-req="BUSY-1">
+          <button class="btn btn-destructive is-busy" type="button" disabled aria-disabled="true" aria-busy="true"><svg class="ic sp-move" aria-hidden="true"><use href="#i-spin"/></svg><svg class="ic sp-still" aria-hidden="true"><use href="#i-clock"/></svg>Cancelling…</button>
+          <button class="btn btn-secondary is-disabled" type="button" disabled aria-disabled="true">Keep the policy</button>
+        </div>
+      </div>
+      <aside class="note" aria-label="Receipt: the request in flight">
+        <p class="kv"><span class="k">E3</span> <span class="v">POST …/cancellation</span></p>
+        <p>Both buttons are disabled while it runs, so the cancel can't be fired twice.</p>
+        <p class="src"><span class="prov prov-written">written</span> <a class="fl" href="#src-inv">api-inventory.md · E3</a></p>
+      </aside>
+    </div>
+  </div>
+
+  <div class="state">
+    <p class="state-label">State · quote and cancellation compared: agree (shown after the cancel answers 201)</p>
+    <div class="line">
+      <div class="col">
+        <p><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Agree</span> The cancellation matches the quote it came from: same date, same rule, same total, same term, same refund. Two fields appear on one side only, and that is expected.</p>
+      </div>
+      <aside class="note" aria-label="Receipt: the comparison">
+        <p>Cancel answered 201 with the same date, rule, terms and total; the quote's refunds are the same less their <code>reference</code>.</p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa10">build-F3.md · step 10</a></p>
+      </aside>
+    </div>
+    <div class="wide tablewrap" tabindex="0" role="region" aria-label="Quote and cancellation compared, scrollable">
+      <table>
+        <caption>Quote beside cancellation, field by field (rows in the order the API writes the fields)</caption>
+        <thead>
+          <tr><th scope="col">Field</th><th scope="col">Quote (E4)</th><th scope="col">Cancellation (E3)</th><th scope="col">Result</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">cancellationDate</th><td class="val">2027-01-27</td><td class="val">2027-01-27</td><td><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Agree</span></td></tr>
+          <tr><th scope="row">ruleApplied</th><td><a class="chip" href="#">CANCEL-1c</a></td><td><a class="chip" href="#">CANCEL-1c</a></td><td><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Agree</span></td></tr>
+          <tr><th scope="row">totalRefund</th><td class="val">445.11</td><td class="val">445.11</td><td><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Agree</span></td></tr>
+          <tr><th scope="row">terms</th><td class="val">1 · CANCEL-1c · 365 · 101 · 264 · 445.11</td><td class="val">1 · CANCEL-1c · 365 · 101 · 264 · 445.11</td><td><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Agree</span></td></tr>
+          <tr><th scope="row">refund method, amount</th><td class="val">DirectDebit · 445.11</td><td class="val">DirectDebit · 445.11</td><td><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Agree</span></td></tr>
+          <tr><th scope="row">refund payment</th><td class="val">PAY-7f24722e…</td><td class="val">PAY-7f24722e…</td><td><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>Agree</span></td></tr>
+          <tr><th scope="row">refund reference</th><td class="gap">none: a quote has no reference</td><td class="val">REF-c1b44418…</td><td><span class="tag tag-note"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>Cancel only</span></td></tr>
+          <tr><th scope="row">quotedOn</th><td class="val">2026-10-19</td><td class="gap">not in a cancellation response</td><td><span class="tag tag-note"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>Quote only</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="state">
+    <p class="state-label">State · quote and cancellation compared: differ</p>
+    <div class="gapbox">
+      <p><span class="tag tag-nb"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>not in the recorded data</span></p>
+      <p>The F3 run records no quote and cancellation that disagree, so no differing pair is drawn. A differing field would carry the word "Differ" and the <span class="mono">x</span> glyph, with both values side by side.</p>
+    </div>
+  </div>
+</section>
+
+<!-- REGION 4: problems (CANCEL-3, CANCEL-4, CANCEL-7) -->
+<section data-req="WB-3" aria-labelledby="h-problems">
+  <p class="eyebrow">Part 4 <span aria-hidden="true">·</span> problems (CANCEL-3, CANCEL-4, CANCEL-7)</p>
+  <h2 id="h-problems">When the API says no, the page says why in words</h2>
+  <p class="lead" style="max-width:64ch;margin:0 0 1.5rem">Each problem below reads its own extension field (<code>today</code>, <code>cancellationDate</code>, <code>latestEndDate</code>). None is parsed out of the <code>detail</code> text.</p>
+
+  <div class="state">
+    <p class="state-label">State · api-error, 400 (the date is not in the form)</p>
+    <div class="errsum" role="alert" tabindex="-1" aria-labelledby="es-a-h">
+      <h3 id="es-a-h"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>There is a problem</h3>
+      <ul><li><a href="#d-a">The cancellation date must be a date in the form yyyy-MM-dd.</a></li></ul>
+    </div>
+    <div class="line" style="margin-top:1rem">
+      <div class="col">
+        <div class="field">
+          <label for="d-a">Cancellation date</label>
+          <p class="hint" id="d-a-hint">Write it as yyyy-MM-dd.</p>
+          <p class="err" id="d-a-err"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg><span><span class="sr">Error: </span>The cancellation date must be a date in the form yyyy-MM-dd.</span></p>
+          <input id="d-a" type="text" value="18/11/2026" aria-invalid="true" aria-describedby="d-a-hint d-a-err">
+        </div>
+        <p>The box keeps what was typed, <span class="mono-v">18/11/2026</span>, and does not reformat it.</p>
+      </div>
+      <aside class="note" aria-label="Receipt: the 400">
+        <p class="kv"><span class="k">status</span> <span class="v">400</span></p>
+        <p class="kv"><span class="k">errors.cancellationDate</span> <span class="v">["The cancellation date must be a date in the form yyyy-MM-dd."]</span></p>
+        <p>No <code>ruleId</code>: a format fault, not a rule.</p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa48">build-F3.md · step 48 · QA-F3-SHAPE</a></p>
+      </aside>
+    </div>
+  </div>
+
+  <div class="state">
+    <p class="state-label">State · api-error, 422 CANCEL-3 (the date is in the past)</p>
+    <div class="errsum" role="alert" tabindex="-1" aria-labelledby="es-b-h">
+      <h3 id="es-b-h"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>There is a problem</h3>
+      <ul><li><a href="#d-b">Cancellation date in the past</a> <a class="chip" href="#">CANCEL-3</a></li></ul>
+    </div>
+    <div class="line" style="margin-top:1rem">
+      <div class="col">
+        <div class="field">
+          <label for="d-b">Cancellation date</label>
+          <p class="err" id="d-b-err"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg><span><span class="sr">Error: </span>2026-10-18 is before today, 2026-10-19.</span></p>
+          <input id="d-b" type="text" value="2026-10-18" aria-invalid="true" aria-describedby="d-b-err">
+        </div>
+        <p><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>Rejected</span> The quote was dated 2026-10-18, a day before today, and a cancellation can't be dated in the past.</p>
+      </div>
+      <aside class="note" aria-label="Receipt: the CANCEL-3 problem">
+        <p class="kv"><span class="k">status</span> <span class="v">422</span></p>
+        <p class="kv"><span class="k">type</span> <span class="v">/problems/cancel-3</span></p>
+        <p class="kv"><span class="k">ruleId</span> <a class="chip" href="#">CANCEL-3</a></p>
+        <p class="kv"><span class="k">today</span> <span class="v">2026-10-19</span></p>
+        <p class="kv"><span class="k">violations</span> <span class="v">[CANCEL-3]</span></p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa16">step 16 · F3-MVEOTAONJW</a></p>
+      </aside>
+    </div>
+  </div>
+
+  <div class="state">
+    <p class="state-label">State · api-error, 422 CANCEL-7 (the date is after the end of cover)</p>
+    <div class="errsum" role="alert" tabindex="-1" aria-labelledby="es-c-h">
+      <h3 id="es-c-h"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>There is a problem</h3>
+      <ul><li><a href="#d-c">Cancellation date after the end of cover</a> <a class="chip" href="#">CANCEL-7</a></li></ul>
+    </div>
+    <div class="line" style="margin-top:1rem">
+      <div class="col">
+        <div class="field">
+          <label for="d-c">Cancellation date</label>
+          <p class="err" id="d-c-err"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg><span><span class="sr">Error: </span>The latest day you can use is 2027-11-09.</span></p>
+          <input id="d-c" type="text" value="2027-11-10" aria-invalid="true" aria-describedby="d-c-err">
+        </div>
+        <p><span class="tag tag-fail"><svg class="ic" aria-hidden="true"><use href="#i-x"/></svg>Rejected</span> 2027-11-10 is the day after the cover ends. Cover runs to 2027-11-09.</p>
+      </div>
+      <aside class="note" aria-label="Receipt: the CANCEL-7 problem">
+        <p class="kv"><span class="k">status</span> <span class="v">422</span></p>
+        <p class="kv"><span class="k">type</span> <span class="v">/problems/cancel-7</span></p>
+        <p class="kv"><span class="k">latestEndDate</span> <span class="v">2027-11-09</span></p>
+        <p class="kv"><span class="k">violations</span> <span class="v">[CANCEL-7]</span></p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa21">step 21 · F3-MVEOTHOTP7</a></p>
+      </aside>
+    </div>
+  </div>
+
+  <div class="state">
+    <p class="state-label">State · api-error, 409 CANCEL-4 (already cancelled; a problem with the whole record)</p>
+    <div class="line">
+      <div class="col">
+        <div class="banner" role="alert">
+          <h3><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>Policy already cancelled <span class="tag tag-warn"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg>409</span> <a class="chip" href="#">CANCEL-4</a></h3>
+          <p>This policy was already cancelled on <span class="mono-v">2026-11-18</span>. The new date, 2026-11-28, was not used.</p>
+          <p class="val">cancellationDate 2026-11-18</p>
+        </div>
+      </div>
+      <aside class="note" aria-label="Receipt: the CANCEL-4 problem">
+        <p class="kv"><span class="k">status</span> <span class="v">409</span></p>
+        <p class="kv"><span class="k">title</span> <span class="v">"Policy already cancelled"</span></p>
+        <p class="kv"><span class="k">cancellationDate</span> <span class="v">2026-11-18</span></p>
+        <p class="kv"><span class="k">instance</span> <span class="v">/policies/F3-MVEOTAWL4W/cancellation</span></p>
+        <p>The date in the sentence is read from <code>cancellationDate</code>, never from <code>detail</code>. The API's <code>detail</code> says "The policy was already cancelled on 2026-11-18."</p>
+        <p class="src"><span class="prov prov-recorded">recorded</span> <a class="fl" href="#src-qa18">step 18 · F3-MVEOTAWL4W</a></p>
+      </aside>
+    </div>
+    <div class="gapbox">
+      <p><span class="tag tag-nb"><svg class="ic" aria-hidden="true"><use href="#i-clock"/></svg>not in the recorded data</span></p>
+      <p>Responses for 429, 500, API unreachable, and a 422 with several violations and no field path were not given to this page, so they are not drawn. The problem titles for CANCEL-3 and CANCEL-7 are also not in the data; the text above uses the problem types' names from the API inventory.</p>
+    </div>
+  </div>
+</section>
+
+<!-- REGION 5: the requests as sent (inspector) -->
+<section data-req="WB-7" aria-labelledby="h-insp" class="inspector">
+  <p class="eyebrow">Part 5 <span aria-hidden="true">·</span> the requests as sent (inspector, docked at the foot, live as each is sent)</p>
+  <h2 id="h-insp">The two requests behind this page</h2>
+
+  <div class="paper">
+    <p class="req"><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>200</span> <strong>GET</strong> /policies/F3-MVEOSVDQJQ/cancellation-quote?cancellationDate=2027-01-27</p>
+<pre>{
+  <span class="kk">"reference"</span>: "F3-MVEOSVDQJQ",
+  <span class="kk">"quotedOn"</span>: "2026-10-19",
+  <span class="kk">"cancellationDate"</span>: "2027-01-27",
+  <span class="kk">"ruleApplied"</span>: "CANCEL-1c",
+  <span class="kk">"totalRefund"</span>: 445.11,
+  <span class="kk">"terms"</span>: [
+    { <span class="kk">"termNumber"</span>: 1, <span class="kk">"ruleApplied"</span>: "CANCEL-1c", <span class="kk">"daysInTerm"</span>: 365,
+      <span class="kk">"daysUsed"</span>: 101, <span class="kk">"unusedDays"</span>: 264, <span class="kk">"refundAmount"</span>: 445.11 }
+  ]
+}</pre>
+    <p class="cm">Not drawn as JSON: the <code>refunds</code> list holds one refund (DirectDebit, 445.11, payment PAY-7f24722e…, no <code>reference</code>); its key names are not in the data this page was given. Shape and values: <a class="fl" href="#src-qa10">step 10</a>, <a class="fl" href="#src-inv">A10</a>.</p>
+  </div>
+
+  <div class="paper">
+    <p class="req"><span class="tag tag-pass"><svg class="ic" aria-hidden="true"><use href="#i-check"/></svg>201</span> <strong>POST</strong> /policies/F3-MVEOSVDQJQ/cancellation</p>
+<pre><span class="kk">request body</span>: the quoted date, 2027-01-27
+<span class="kk">response</span> {
+  <span class="kk">"reference"</span>: "F3-MVEOSVDQJQ",
+  <span class="kk">"cancellationDate"</span>: "2027-01-27",
+  <span class="kk">"ruleApplied"</span>: "CANCEL-1c",
+  <span class="kk">"totalRefund"</span>: 445.11,
+  <span class="kk">"terms"</span>: [
+    { <span class="kk">"termNumber"</span>: 1, <span class="kk">"ruleApplied"</span>: "CANCEL-1c", <span class="kk">"daysInTerm"</span>: 365,
+      <span class="kk">"daysUsed"</span>: 101, <span class="kk">"unusedDays"</span>: 264, <span class="kk">"refundAmount"</span>: 445.11 }
+  ]
+}</pre>
+    <p class="cm">Not drawn: the request body's key name, and the refund's keys; neither is in the data this page was given. The refund is REF-c1b44418…, DirectDebit, 445.11, on the same payment PAY-7f24722e…. No <code>Location</code> header. Source: <a class="fl" href="#src-qa10">step 10</a>.</p>
+  </div>
+</section>
+
+<!-- footnotes: every source -->
+<section class="sources" aria-labelledby="h-src">
+  <p class="eyebrow">Footnotes</p>
+  <h2 id="h-src">Where each figure comes from</h2>
+  <ol>
+    <li id="src-req"><span class="prov prov-written">written</span> <span class="fl">docs/requirements.md</span>: rows CANCEL-1a, CANCEL-1b, CANCEL-1c, CANCEL-2, CANCEL-3, CANCEL-4, CANCEL-7, COULD-1, COULD-2.</li>
+    <li id="src-inv"><span class="prov prov-written">written</span> <span class="fl">docs/ui/research/api-inventory.md</span>: E3, E4, A9, A10, A11, A12, and the problem types /problems/cancel-3, /problems/cancel-4, /problems/cancel-7.</li>
+    <li id="src-qa10"><span class="prov prov-recorded">recorded</span> <span class="fl">docs/qa/build-F3.md</span> step 10: quote for 2027-01-27 and cancel, policy F3-MVEOSVDQJQ, <code>quotedOn</code> 2026-10-19.</li>
+    <li id="src-qa14"><span class="prov prov-recorded">recorded</span> <span class="fl">docs/qa/build-F3.md</span> step 14: COULD-2 quote, policy F3-MVEOT2SE08.</li>
+    <li id="src-qa16"><span class="prov prov-recorded">recorded</span> <span class="fl">docs/qa/build-F3.md</span> step 16: CANCEL-3 on a quote, policy F3-MVEOTAONJW.</li>
+    <li id="src-qa18"><span class="prov prov-recorded">recorded</span> <span class="fl">docs/qa/build-F3.md</span> step 18: CANCEL-4 on a second cancel, policy F3-MVEOTAWL4W.</li>
+    <li id="src-qa21"><span class="prov prov-recorded">recorded</span> <span class="fl">docs/qa/build-F3.md</span> step 21: CANCEL-7 on a quote, policy F3-MVEOTHOTP7.</li>
+    <li id="src-qa22"><span class="prov prov-recorded">recorded</span> <span class="fl">docs/qa/build-F3.md</span> step 22: quote with no date, policy F3-MVEOTHRWL1.</li>
+    <li id="src-qa42"><span class="prov prov-recorded">recorded</span> <span class="fl">docs/qa/build-F3.md</span> step 42: CANCEL-1b cancel, policy QA-F3-TWICE.</li>
+    <li id="src-qa48"><span class="prov prov-recorded">recorded</span> <span class="fl">docs/qa/build-F3.md</span> step 48: bad date format, policy QA-F3-SHAPE.</li>
+  </ol>
+</section>
+
+</main>
+</body>
+</html>

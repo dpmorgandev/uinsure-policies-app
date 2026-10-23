@@ -1,0 +1,234 @@
+{
+  "screen": "node",
+  "route": "/plans/:planId/:nodeId",
+  "regions": [
+    {
+      "name": "completeness banner",
+      "req": [
+        "DATA-4",
+        "DATA-8"
+      ],
+      "components": [
+        "completeness-banner",
+        "sources-disagree",
+        "verify-command"
+      ],
+      "fields": [
+        "nodes[plan=build][id=F3].completeness",
+        "nodes[plan=build][id=F3].completenessReasons",
+        "nodes[plan=build][id=F0a].completeness",
+        "nodes[plan=build][id=F0a].completenessReasons",
+        "decisions[plan=build][node=F3][kind=signoff].when",
+        "decisions[plan=build][node=F3][kind=merge].when",
+        "events[plan=build][node=F6][line<=20]",
+        "events[plan=build][node=F4][kind=signoff].head",
+        "events[plan=build][node=F4][kind=signoff].ts",
+        "events[plan=build][node=F4][kind=signoff].line",
+        "events[plan=build][node=F4][kind=signoff].detail",
+        "docs/qa/build-F4.md: Date, Commit signed off, Signature"
+      ],
+      "built": true
+    },
+    {
+      "name": "rules",
+      "req": [
+        "NODE-1"
+      ],
+      "components": [
+        "rule-chip",
+        "data-table",
+        "status-tag"
+      ],
+      "fields": [
+        "nodes[plan=build][id=F3].rules",
+        "nodes[plan=build][id=F3].acceptance",
+        "nodes[plan=build][id=F0a].rules",
+        "nodes[plan=build][id=F0a].acceptance",
+        "verdicts[node=F3][agent=reviewer].round",
+        "verdicts[node=F3][agent=reviewer].rulesCovered",
+        "verdicts[node=F3][agent=reviewer].rulesMissing",
+        "verdicts[node=F3][agent=reviewer].verdict"
+      ],
+      "built": false
+    },
+    {
+      "name": "tasks",
+      "req": [
+        "NODE-1"
+      ],
+      "components": [
+        "data-table"
+      ],
+      "fields": [
+        "nodes[plan=build][id=F3].status",
+        "nodes[plan=build][id=F3].attempt",
+        "nodes[plan=build][id=F3].owner",
+        "nodes[plan=build][id=F0a].status",
+        "nodes[plan=build][id=F0a].attempt",
+        "nodes[plan=build][id=F0a].owner",
+        "events[plan=build][node=F6][kind=state].detail"
+      ],
+      "built": false
+    },
+    {
+      "name": "attempts",
+      "req": [
+        "LOOP-2"
+      ],
+      "components": [
+        "attempt-ladder",
+        "status-tag",
+        "agent-badge",
+        "verify-command",
+        "data-table"
+      ],
+      "fields": [
+        "findings[node=F3].round",
+        "findings[node=F3].id",
+        "findings[node=F3].kind",
+        "findings[node=F3].rule",
+        "findings[node=F3].layer",
+        "findings[node=F3].testable",
+        "findings[node=F3].source",
+        "findings[node=F3].fixedBy",
+        "verdicts[node=F3].round",
+        "verdicts[node=F3].agent",
+        "verdicts[node=F3].verdict",
+        "verdicts[node=F3].head",
+        "verdicts[node=F3].base",
+        "verdicts[node=F3].ts",
+        "verdicts[node=F3].rulesCovered",
+        "verdicts[node=F3].rulesMissing",
+        "decisions[plan=build][node=F3].kind",
+        "decisions[plan=build][node=F3].what",
+        "decisions[plan=build][node=F3].sha",
+        "decisions[plan=build][node=F3].when",
+        "decisions[plan=build][node=F3].evidence",
+        "events[plan=build][node=F6][line<=20].line",
+        "events[plan=build][node=F6][line<=20].attempt",
+        "events[plan=build][node=F6][line<=20].event",
+        "events[plan=build][node=F6][line<=20].gate",
+        "events[plan=build][node=F6][line<=20].exit",
+        "events[plan=build][node=F6][line<=20].expect",
+        "events[plan=build][node=F6][line<=20].ok",
+        "events[plan=build][node=F6][line<=20].head",
+        "events[plan=build][node=F6][line<=20].detail",
+        "events[plan=build][node=F4][kind=signoff].head",
+        "events[plan=build][node=F4][kind=signoff].attempt",
+        "events[plan=build][node=F4][kind=signoff].line",
+        "events[plan=build][node=F4][kind=signoff].ts",
+        "events[plan=build][node=F4][kind=signoff].detail",
+        "events[plan=build][node=F4][kind=signoff].source"
+      ],
+      "built": false
+    },
+    {
+      "name": "who touched what",
+      "req": [
+        "AGENT-1"
+      ],
+      "components": [
+        "data-table",
+        "agent-badge"
+      ],
+      "fields": [
+        "findings[node=F3].kind",
+        "findings[node=F3].file",
+        "verdicts[node=F3].agent",
+        "verdicts[node=F3].file",
+        "decisions[plan=build][node=F3][kind=signoff].evidence",
+        "decisions[plan=build][node=F3][kind=merge].evidence",
+        "nodes[plan=build][id=F0a].owner",
+        "events[plan=build][node=F6][kind=verdict].event",
+        "events[plan=build][node=F6][line<=20].source",
+        "events[plan=build][node=F4][kind=signoff].source",
+        "docs/qa/build-F4.md: Signature"
+      ],
+      "built": false
+    }
+  ],
+  "states": [
+    {
+      "name": "populated",
+      "file": "populated.html",
+      "variant": "the ref's own data: build/F3 from docs/ui/fixture/trace.json (node, verdicts, findings, decisions). Gaps drawn as gaps: task rows, the A1 red-test commit, the TDD trailer and agent of the fix commits, per-verdict findings, the Agent trailer against the hook."
+    },
+    {
+      "name": "in-flight",
+      "file": "in-flight.html",
+      "variant": "build/F6 after its first 20 loop events, cut from its loop.jsonl; not the ref's state. Title, rules, PR and dependencies are not in the cut and are drawn as gaps."
+    },
+    {
+      "name": "incomplete",
+      "file": "incomplete.html",
+      "variant": "labelled placeholder: the completeness-banner incomplete snippet exactly as the stylekit has it, attached to no real node, because no node is TRAIL INCOMPLETE at this ref; every other region empty."
+    },
+    {
+      "name": "git-only",
+      "file": "git-only.html",
+      "variant": "build/F0a, which predates the trail: git and trailers only."
+    },
+    {
+      "name": "disagreement",
+      "file": "disagreement.html",
+      "variant": "build/F4 sign-off: the loop log's signoff event (4ea2ae8, line 51) against docs/qa/build-F4.md (43f38b6); only those two sources are in the data."
+    }
+  ],
+  "actions": [
+    {
+      "label": "Open the walkthrough (primary on populated and git-only: the commits in order)",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId/commits"
+    },
+    {
+      "label": "Open the loop log (primary on in-flight and disagreement)",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId/loop"
+    },
+    {
+      "label": "Open the activity",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId/activity"
+    },
+    {
+      "label": "Switch node view (tabs: Node, Walkthrough, Loop, Activity)",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId, /commits, /loop, /activity"
+    },
+    {
+      "label": "Open a rule (rule chip in the rules region)",
+      "kind": "link",
+      "to": "/rules/:ruleId"
+    },
+    {
+      "label": "Open the plan (breadcrumbs, empty states, tasks gap)",
+      "kind": "link",
+      "to": "/plans/:planId"
+    },
+    {
+      "label": "Open a commit or the pull request on GitHub (SHA links, PR #20)",
+      "kind": "link",
+      "to": "https://github.com/dpmorgandev/uinsure-policies-api/commit/:sha, https://github.com/dpmorgandev/uinsure-policies-api/pull/:number"
+    },
+    {
+      "label": "Jump from the investigation branch back to its attempt (rejoin link)",
+      "kind": "link",
+      "to": "#attempt rung on this page"
+    },
+    {
+      "label": "Move rung to rung with J and K",
+      "kind": "control",
+      "to": "client-side keyboard focus; sends no request"
+    },
+    {
+      "label": "Copy command (verify-command)",
+      "kind": "control",
+      "to": "client-side clipboard copy; sends no request"
+    },
+    {
+      "label": "Sort a table by its first column",
+      "kind": "control",
+      "to": "client-side sort of the loaded rows; sends no request"
+    }
+  ]
+}

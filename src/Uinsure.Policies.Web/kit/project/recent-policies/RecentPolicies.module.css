@@ -1,0 +1,79 @@
+.root {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  max-width: min(34rem, 100%);
+  padding: var(--space-3) var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--text-14);
+  line-height: 1.45;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+  border-left: 4px solid var(--color-text-secondary);
+  border-radius: var(--radius);
+}
+
+.heading {
+  margin: 0;
+  font-size: var(--text-18);
+  line-height: 1.25;
+}
+
+.scope {
+  margin: 0;
+  color: var(--color-text-secondary);
+}
+
+.scope strong {
+  color: var(--color-text-primary);
+}
+
+.list {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-2) 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.reference {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-16);
+  font-weight: 700;
+  color: var(--color-primary);
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+}
+
+.reference:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+.how {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-text-secondary);
+}
+
+.icon {
+  flex: none;
+  width: 1em;
+  height: 1em;
+}

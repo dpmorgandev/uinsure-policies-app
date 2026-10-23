@@ -1,0 +1,99 @@
+{
+  "v": 1,
+  "ts": "2026-10-21T02:45:22Z",
+  "plan": "ui",
+  "node": "U0b",
+  "attempt": 5,
+  "agent": "security",
+  "agent_id": "a736035c6c76a8b7b",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U0b",
+    "attempt": 5,
+    "base_sha": "d9a461731c86691fa1e8a420b4e28abcd8b517c0",
+    "head_sha": "b6126722144b0335a1d33fedd9cd6fa7ea6c4389",
+    "diff_fingerprint": "7e39b4bfd9f2013a3332d0af5af2f9798b84e5bb",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.finding-red",
+      "gate.fix",
+      "gate.typecheck",
+      "gate.lint",
+      "gate.lint-css",
+      "gate.test",
+      "gate.build",
+      "gate.e2e",
+      "gate.e2e-regression",
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.coverage",
+      "gate.scope",
+      "gate.no-stubs",
+      "gate.qa",
+      "gate.integrate"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "W2",
+        "severity": "P2",
+        "file": "src/web/kit/primitives/sha-link/ShaLink.tsx",
+        "line": 61,
+        "what": "External GitHub anchors (ShaLink githubHref, Footer repoHref at Footer.tsx:53) carry no rel=\"noreferrer\". Carried over from A5/S1.",
+        "why": "W2 says external links carry rel=noreferrer. This is hygiene only. The href is the fixed REPO constant plus /commit/ plus the sha, there is no target=_blank, and a javascript: scheme can't get in.",
+        "route_to": "builder"
+      },
+      {
+        "id": "S2",
+        "rule_id": "W3",
+        "severity": "P2",
+        "file": "src/web/index.html",
+        "line": 6,
+        "what": "The CSP keeps default-src 'self', but style-src allows 'unsafe-inline', and base-uri, form-action and object-src are unset. Carried over from A5/S2.",
+        "why": "W3 hardening only. No third-party origin loads, and script and fonts are self-hosted. Adding base-uri 'self', form-action 'none' and object-src 'none' is cheap.",
+        "route_to": "builder"
+      },
+      {
+        "id": "S3",
+        "rule_id": "W5",
+        "severity": "P2",
+        "file": "src/web/compiler/index.ts",
+        "line": 152,
+        "what": "The activity chunk path comes from a DAG's plan_id and node id, which are not format-validated. A '..' segment would write outside src/web/public. Carried over from A5/S3.",
+        "why": "W5 and DATA-6: the compiler should write only trace.json and its chunks. The input is the repo's own reviewed docs and git, so this is hardening. Restrict ids to [A-Za-z0-9._-] and refuse '..'.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Scope since the last PASS (A5 at 07de692): the QA script docs/qa/ui-U0b.md, the merge of origin/ui d9a4617 (#66, #67), and the re-derived docs/ui/derived/U0b/overview/screen.json. I re-walked W1-W8 over the whole packet diff and the touched files in src/web, not only the delta.",
+      "The merge and the re-derive add no executable code under src/web beyond what A5 reviewed. The new files are docs (QA script, plan files, derived HTML and JSON, harness.json with a new denylist pointer, docs/trace/privacy-denylist.txt, fixture copies of the denylist). The three P2 findings are unchanged from A5 and none is new.",
+      "W1: grep over src/web for dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval(, new Function and javascript: hit only comments in MarkdownText.tsx. Activity raw, command and file, About plan titles and gap lines, and NodeHeader titles all render as React text nodes. MarkdownText gets only static constants (SNAPSHOT_LEAD, PLANS_LEAD, GLOSSARY), and its safeHref refuses non-http, non-mailto schemes. Met.",
+      "W2: the only data-derived href in app/ is the Activity commit link, `${REPO}/commit/${sha}` with REPO fixed to the github.com repository, so data can change only the path. NodeHeader hrefs are '#/plans/<plan>/<node>' internal hash routes. The footer stamp link uses a sha that readStamp checks against /^[0-9a-f]{40}$/. MarkdownText anchors carry rel=\"noopener noreferrer\". The gap on the other external anchors is S1 (P2).",
+      "W3: index.html keeps default-src 'self'. There is no remote script, font, image or style origin. Fonts come from @fontsource packages bundled by Vite. tests/web/e2e/U0b/sec-1.spec.ts asserts the CSP, no off-origin request and no CSP violation on the awkward-text fixture; gate.e2e shows 65/65 at 9d3857a. See S2 (P2).",
+      "W4: the only network reads are trace.json and one trace/<plan>/<node>/activity.json chunk, through a fetch injected into loadTrace and loadActivity. loadActivity refuses any chunk path other than that exact form for a node present in trace.json. A grep over src/web found no localStorage, sessionStorage, document.cookie, XMLHttpRequest or WebSocket. The /api proxy in vite.config.ts is dev and preview only and unused in U0b.",
+      "W5: git runs through execFileSync with no shell. resolveRef refuses a ref starting with '-'. Every git call is read-only (rev-parse, ls-tree under docs, cat-file, log). The compiler has no fetch, no http and no .claude path read; the only .claude match is a comment. process.env appears only in vite.config.ts and playwright.config.ts, for dev ports. Plans, requirements, harness, activity, loop, verdicts, README, commit subjects and trailers, and plan paths all run through the denylist scan, and a hit fails the compile without echoing the matched text. See S3 (P2).",
+      "W6: a pattern search over the QA script, the derived overview, the tests, src/web/app and src/web/compiler for absolute user paths, emails and key shapes found only fixture@example.com, noreply@anthropic.com (on the denylist's allow list) and the sk-ant- denylist pattern lines. The REPO constant names the public repository owner. package-lock.json has no non-registry resolved URL.",
+      "W7: gate.audit (runtime, omit=dev) reports 0 vulnerabilities at 9d3857a. gate.audit-dev reports 5 high, attributed in the receipt to the known dev-only braces GHSA-vfj7-8cjw-p6xm item via stylelint. I couldn't re-run npm audit and rely on the receipt's attribution. package.json pins exact versions, each with a lockfile entry from registry.npmjs.org. react-router 8.5.0 is the one runtime addition. package.json is unchanged since A5, so there is nothing new to approve in this round.",
+      "W8: loader failures reach DataNotice and the DataTable error state as plain-text reasons (HTTP status, missing file, parse message). No stack trace or server internals are shown, and there is no workbench code in U0b.",
+      "API8:2023 maps to W3 and W4 and is met. API10:2023 maps to W1 and W8 and is met.",
+      "n/a (ui node, no server code): API1:2023, API2:2023, API3:2023, API4:2023, API5:2023, API6:2023, API7:2023 and API9:2023. API1, API2 and API5 are also out of scope by design. The .NET extras (SQL, money, packages, logging, secrets) are n/a because this diff touches no C#. The 637/637 dotnet result in gate.integrate is the merge of origin/ui, not this node's code.",
+      "Gates read: the receipts at 9d3857a (the integrate and re-derive head) are all green. Typecheck, lint, lint-css, test 77/77, build, e2e 65/65, audit, coverage, scope (114 files) and no-stubs pass. gate.integrate at 6af7435 passes, with the web gates and dotnet 637/637. gate.qa passes. The finding-red then gate.fix pair (870adfb red, 57c98ee green) is consistent. The packet's head_sha b612672 is a trace-only commit after 9d3857a, so I read gates at 9d3857a as the latest code state.",
+      "The untracked src/web/test-results/ directory is not in the diff and I didn't read it. It is Playwright output, and the QA script note 5 already says generated output must not be staged."
+    ]
+  }
+}

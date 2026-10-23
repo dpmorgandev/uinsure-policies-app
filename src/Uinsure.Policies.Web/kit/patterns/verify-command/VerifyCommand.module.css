@@ -1,0 +1,28 @@
+.root {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+  max-width: 44rem;
+  font-family: var(--font-sans);
+  font-size: var(--text-16);
+  line-height: 1.5;
+  color: var(--color-text-primary);
+}
+
+.intro,
+.expect,
+.note {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.note {
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+}
+
+.root code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  font-variant-numeric: tabular-nums lining-nums;
+}

@@ -1,0 +1,27 @@
+{
+ "date": "2026-10-21T08:00:00Z",
+ "branch": "feature/build/F1",
+ "commits": [
+  {
+   "id": "c1",
+   "date": "2026-10-21T09:00:00Z",
+   "subject": "plan(build/F1): F1 pending → in_progress",
+   "trailers": { "Agent": "main", "Plan": "build", "Node": "F1" },
+   "files": []
+  },
+  {
+   "id": "c2",
+   "date": "2026-10-21T10:00:00Z",
+   "subject": "test(SELL-1): red: a sale with a new reference answers 201",
+   "trailers": { "Agent": "tester", "Plan": "build", "Node": "F1", "Rule": "SELL-1", "TDD": "red" },
+   "files": ["tests/web/e2e/F1/sell.spec.ts.fixture"]
+  },
+  {
+   "id": "c3",
+   "date": "2026-10-21T11:00:00Z",
+   "subject": "feat(SELL-1): stub: the canned sale",
+   "trailers": { "Agent": "builder", "Plan": "build", "Node": "F1", "Rule": "SELL-1", "TDD": "stub" },
+   "files": ["src/sell.txt"]
+  }
+ ]
+}

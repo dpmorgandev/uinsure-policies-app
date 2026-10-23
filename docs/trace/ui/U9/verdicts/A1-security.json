@@ -1,0 +1,75 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T02:57:42Z",
+  "plan": "ui",
+  "node": "U9",
+  "attempt": 1,
+  "agent": "security",
+  "agent_id": "a35767304b266d382",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U9",
+    "attempt": 1,
+    "base_sha": "a3420f104aebf4aaa532ee57de83ab3c67e5146e",
+    "head_sha": "a4da4458d667d3b14fe799645e5a56dfc21bbdce",
+    "diff_fingerprint": "f3a1476a62f9f33fc6e8e9ea00273f1b60c2d357",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.write",
+      "gate.audit",
+      "gate.typecheck",
+      "gate.lint",
+      "gate.test",
+      "gate.build",
+      "gate.trace-check",
+      "gate.e2e",
+      "gate.e2e-regression"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "infrastructure/README.md",
+        "line": 83,
+        "what": "README describes a deployment-token step and SWA CLI deploy in Deploy_<env>, but stage-template.yml has no such step. The diff only adds two output variables.",
+        "why": "API8 hygiene. The no-secret claim can't be verified because the token handling it describes doesn't exist. It is documentation drift, not exposure. No token, key or credential appears anywhere in the diff.",
+        "route_to": "builder"
+      },
+      {
+        "id": "S2",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "infrastructure/web/staticwebapp.config.json",
+        "line": 4,
+        "what": "globalHeaders sets only CSP and nosniff. There is no frame-ancestors, X-Frame-Options or Referrer-Policy. A meta CSP can't carry frame-ancestors.",
+        "why": "Hardening only. The header CSP matches index.html (default-src 'self', style-src 'unsafe-inline' for styles only) and loads nothing from another origin. Not blocking.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "ui node: web-security checklist walked in place of the .NET extras. Evidence node, so no src/web runtime file changed. The only src/web change is Docket.Web.esproj.",
+      "W1 met: no innerHTML, dangerouslySetInnerHTML, eval or similar in the diff. W2 met (vacuously): the diff adds no href-from-data code, so no unvalidated link can arise. W3 met: the staticwebapp.config.json CSP equals the index.html meta CSP, with no third-party origin. W4 met: the only network surface added is the same-origin /api link (linkedBackends), and no storage or cookie code was touched. W5 met (vacuously): src/web/compiler/** is untouched. W6 met: no local absolute path, personal email, key or token in the diff; activity.jsonl paths are redacted as <user> and <main>. W7 met: package.json and the lockfile are untouched, and gate.audit (npm audit --omit=dev --audit-level=high) exited 0. W8 met (vacuously): no error-handling or error-display code changed.",
+      "API8:2023 / IaC: no secrets or connection strings in the Bicep, the param files (placeholder GUID and private range 10.30.0.0/24 only) or the pipeline. The SWA module is Standard SKU with empty properties and a linkedBackends child. The pipeline e2e step runs the API on the agent against its development SQLite database. Not a production exposure.",
+      "API10:2023 met: no unsafe consumption of API answers was added.",
+      "Operational mismatch, not a security finding: the linked backend forwards /api unchanged but the API has no /api path base. infrastructure/README.md documents this, and gate.write notes it as not fixed.",
+      "n/a (ui node, no server code): API1 (no auth or tenancy), API2 (auth out of scope), API3, API4, API5 (no roles), API6, API7 (no outbound fetching), API9. No server code changed, so the .NET extras (raw SQL, money types, logging) were not reached by the diff.",
+      "Gate receipts: typecheck, lint, lint-css, unit tests (340), build, audit and trace-check all exited 0. They were run at 3925ba9, and fe637d8 since is plan-only. gate.write covers bicep build and build-params for dev, test and prod, and the pipeline schema check. e2e and visual regression were skipped by scope. Neither is a security gate for this diff."
+    ]
+  }
+}

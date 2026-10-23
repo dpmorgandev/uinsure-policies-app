@@ -1,0 +1,56 @@
+{
+  "screen": "walkthrough",
+  "route": "/plans/:planId/:nodeId/commits",
+  "regions": [
+    {
+      "name": "commit sequence",
+      "req": ["TDD-1"],
+      "components": ["breadcrumbs", "page-header", "tabs", "data-table", "sha-link", "tdd-step-tag", "agent-badge", "rule-chip"],
+      "fields": [
+        "nodes[plan=build][id=:nodeId].id",
+        "nodes[plan=build][id=:nodeId].title",
+        "nodes[plan=build][id=:nodeId].status",
+        "nodes[plan=build][id=:nodeId].attempt",
+        "nodes[plan=build][id=:nodeId].pr",
+        "nodes[plan=build][id=:nodeId].dependsOn",
+        "nodes[plan=build][id=:nodeId].completeness",
+        "nodes[plan=build][id=:nodeId].walkthrough[].n",
+        "nodes[plan=build][id=:nodeId].walkthrough[].sha",
+        "nodes[plan=build][id=:nodeId].walkthrough[].tdd",
+        "nodes[plan=build][id=:nodeId].walkthrough[].agent",
+        "nodes[plan=build][id=:nodeId].walkthrough[].rule",
+        "nodes[plan=build][id=:nodeId].walkthrough[].subject",
+        "commits[plan=build][node=:nodeId].sha",
+        "commits[plan=build][node=:nodeId].short",
+        "commits[plan=build][node=:nodeId].order",
+        "stamp.sha",
+        "stamp.utc"
+      ]
+    }
+  ],
+  "states": [
+    { "name": "populated", "file": "populated.html", "variant": "the ref's own data: nodes[plan=build][id=F3].walkthrough, 77 numbered rungs (#1 to #77), plus commits[plan=build][node=F3] for the full SHAs; one further commit, 37d856a, has order null and is named under the table, not drawn as a rung" },
+    { "name": "git-only", "file": "git-only.html", "variant": "nodes[plan=build][id=F0a], which predates the trail: done, walkthrough [], completeness OK (git-only, F0a)" }
+  ],
+  "actions": [
+    { "label": "Plans", "kind": "link", "to": "/plans/:planId" },
+    { "label": "build", "kind": "link", "to": "/plans/:planId" },
+    { "label": "Node breadcrumb", "kind": "link", "to": "/plans/:planId/:nodeId" },
+    { "label": "Node tab", "kind": "link", "to": "/plans/:planId/:nodeId" },
+    { "label": "Loop tab", "kind": "link", "to": "/plans/:planId/:nodeId/loop" },
+    { "label": "Activity tab", "kind": "link", "to": "/plans/:planId/:nodeId/activity" },
+    { "label": "Go to the first red, #5", "kind": "link", "to": "#rung-5 on this page" },
+    { "label": "Go to the first green, #42", "kind": "link", "to": "#rung-42 on this page" },
+    { "label": "Go to the last rung, #77", "kind": "link", "to": "#rung-77 on this page" },
+    { "label": "Sort by #", "kind": "control", "to": "reverses the order of the rows in view; sends no request" },
+    { "label": "Commit SHA", "kind": "link", "to": "GitHub commit page at that SHA" },
+    { "label": "Rule chip", "kind": "link", "to": "/rules/:ruleId" },
+    { "label": "PR number", "kind": "link", "to": "GitHub pull request page" },
+    { "label": "Back to the plan", "kind": "link", "to": "/plans/:planId" },
+    { "label": "Back to the node", "kind": "link", "to": "/plans/:planId/:nodeId" },
+    { "label": "Show UTC time", "kind": "control", "to": "toggles the time zone of the snapshot timestamp; sends no request" },
+    { "label": "Search", "kind": "control", "to": "finds a rule ID, node, SHA or path; leaves this page" },
+    { "label": "Sources and provenance", "kind": "link", "to": "/about" },
+    { "label": "Repository on GitHub", "kind": "link", "to": "GitHub repository" }
+  ]
+}

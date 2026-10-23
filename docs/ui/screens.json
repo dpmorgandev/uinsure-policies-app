@@ -1,0 +1,1872 @@
+{
+  "version": "2.0",
+  "generatedAt": "2026-10-19",
+  "generatedBy": "main session, round 2: explorer from docs/ui/research/ (P, C, M, D) and the workbench from prior-art-workbench.md (B) and api-inventory.md (E, A); style-agnostic",
+  "app": {
+    "appId": "docket-webapp",
+    "appName": "Docket",
+    "appType": "webapp",
+    "viewports": [
+      1440,
+      1280,
+      390
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "primaryNav": [
+      "overview",
+      "matrix",
+      "plan",
+      "decisions",
+      "about",
+      "wb-home"
+    ],
+    "globalComponents": [
+      "app-shell",
+      "top-bar",
+      "primary-nav",
+      "search",
+      "theme-toggle",
+      "compiled-at-stamp",
+      "footer",
+      "inspector-drawer"
+    ],
+    "iconsVerified": [
+      "git-commit-horizontal",
+      "git-branch",
+      "git-merge",
+      "git-pull-request",
+      "flask-conical",
+      "shield",
+      "bug",
+      "gavel",
+      "bot",
+      "clock",
+      "check",
+      "external-link",
+      "file-code",
+      "chart-gantt",
+      "user",
+      "x",
+      "triangle-alert"
+    ],
+    "iconsToVerify": [
+      "search",
+      "copy",
+      "sun",
+      "moon",
+      "info",
+      "arrow-left",
+      "chevron-down",
+      "list-tree",
+      "file-plus",
+      "calendar-range",
+      "receipt",
+      "refresh-cw",
+      "terminal",
+      "history",
+      "circle-alert",
+      "toggle-right"
+    ],
+    "states": {
+      "loading": "trace.json (or a lazy chunk such as a diff) is being fetched",
+      "error": "trace.json failed to load or failed its schema check; names what failed, never a blank page",
+      "empty": "the entity exists but has no items (e.g. F0b's Rules table, findings: [])",
+      "in-flight": "the node is in progress (F3 at the snapshot): shows what exists, marked in progress",
+      "incomplete": "TRAIL INCOMPLETE: <reasons>, shown verbatim and first",
+      "git-only": "OK (git-only, F0a): no loop, activity or verdicts, by design",
+      "not-built": "the rule or node isn't built yet: the not-built-yet pattern, never a failure",
+      "disagreement": "two sources disagree (e.g. README 'merge pending' vs a merged event): both shown, the event-derived value first",
+      "redacted": "<user>, <outside-repo>, <root> kept and labelled as redactions",
+      "long-content": "root causes 1-3k chars, details up to ~600, commands truncated at ~200: collapsed with a full-text disclosure",
+      "api-error": "the API answered with a problem (400/404/409/422/429/500): rendered from its ProblemDetails, never a generic failure",
+      "api-unreachable": "the API is not running or the proxy failed: says so, names the base URL, and how to start it",
+      "api-not-built": "the endpoint is not in the API yet: the not-built-yet pattern, never a failure",
+      "submitting": "a process is running (a request, a quote, a lazy load): the control that started it shows a spinner, says what is happening, and is disabled until it ends; the form keeps its values (BUSY-1)"
+    },
+    "screens": [
+      {
+        "id": "overview",
+        "file": "overview.html",
+        "route": "/",
+        "name": "Overview",
+        "description": "Answers 'was this really test-driven, and was the AI really checked?' from the data, every figure linking to its source.",
+        "section": "overview",
+        "priority": "MUST",
+        "requirements": [
+          "NAV-1",
+          "DATA-3",
+          "DATA-4",
+          "HITL-1",
+          "VERIFY-1",
+          "DAG-1",
+          "NAV-4",
+          "THEME-1"
+        ],
+        "data": [
+          "D1",
+          "D3",
+          "D5",
+          "D6",
+          "D9",
+          "D12"
+        ],
+        "components": [
+          "page-header",
+          "receipt-figure",
+          "status-tag",
+          "rule-chip",
+          "completeness-banner",
+          "dag-graph",
+          "dag-table",
+          "human-decision-row",
+          "verify-command",
+          "not-built-yet",
+          "search",
+          "theme-toggle"
+        ],
+        "icons": [
+          "check",
+          "x",
+          "clock",
+          "gavel",
+          "flask-conical",
+          "git-pull-request"
+        ],
+        "flows": [
+          "FL-1",
+          "FL-2",
+          "FL-4",
+          "FL-6",
+          "FL-8"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "in-flight",
+          "not-built"
+        ],
+        "regions": [
+          {
+            "name": "headline answer",
+            "req": [
+              "NAV-1"
+            ]
+          },
+          {
+            "name": "receipt figures (rules built/total, tests passing, nodes done, attempts and FAILs, human decisions)",
+            "req": [
+              "NAV-1",
+              "VERIFY-1"
+            ]
+          },
+          {
+            "name": "build plan at a glance",
+            "req": [
+              "DAG-1"
+            ]
+          },
+          {
+            "name": "latest human decisions",
+            "req": [
+              "HITL-1"
+            ]
+          },
+          {
+            "name": "compiled-at stamp",
+            "req": [
+              "DATA-3"
+            ]
+          },
+          {
+            "name": "top bar: search and theme toggle (global; tagged here once)",
+            "req": [
+              "NAV-4",
+              "THEME-1"
+            ]
+          },
+          {
+            "name": "trail completeness: TRAIL INCOMPLETE reasons verbatim, \"not built yet\", and F0a as git-only",
+            "req": [
+              "DATA-4"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "matrix",
+        "file": "matrix.html",
+        "route": "/rules",
+        "name": "Requirements matrix",
+        "description": "Every rule in requirements.md with its node, tests, red/green/refactor commits, QA step, sign-off and PR; filterable by status and feature.",
+        "section": "requirements",
+        "priority": "MUST",
+        "requirements": [
+          "MATRIX-1",
+          "DATA-4"
+        ],
+        "data": [
+          "D1",
+          "D11",
+          "D12",
+          "D14"
+        ],
+        "components": [
+          "page-header",
+          "filter-bar",
+          "data-table",
+          "rule-chip",
+          "sha-link",
+          "status-tag",
+          "not-built-yet",
+          "sources-disagree"
+        ],
+        "icons": [
+          "git-commit-horizontal",
+          "git-pull-request",
+          "check",
+          "clock"
+        ],
+        "flows": [
+          "FL-1"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "not-built",
+          "disagreement"
+        ],
+        "regions": [
+          {
+            "name": "filters (status, feature)",
+            "req": [
+              "MATRIX-1"
+            ]
+          },
+          {
+            "name": "matrix table",
+            "req": [
+              "MATRIX-1"
+            ]
+          },
+          {
+            "name": "test-count scope note (counts are per node: SELL-7 10 at F1 vs 15 traited)",
+            "req": [
+              "DATA-4"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "rule",
+        "file": "rule.html",
+        "route": "/rules/:ruleId",
+        "name": "Rule",
+        "description": "One rule end to end: its text and agreed interpretation, status codes, tests, commits in TDD order with red before green visible, QA step, sign-off and PR.",
+        "section": "requirements",
+        "priority": "MUST",
+        "requirements": [
+          "RULE-1",
+          "RULE-2",
+          "RULE-3",
+          "VERIFY-1",
+          "NAV-3",
+          "HITL-1",
+          "BUSY-1"
+        ],
+        "data": [
+          "D1",
+          "D8",
+          "D11",
+          "D12",
+          "D14"
+        ],
+        "components": [
+          "page-header",
+          "breadcrumbs",
+          "rule-chip",
+          "rule-evidence",
+          "sha-link",
+          "status-tag",
+          "key-value-list",
+          "diff-viewer",
+          "verify-command",
+          "not-built-yet",
+          "provenance-label",
+          "spinner",
+          "rung-spine"
+        ],
+        "icons": [
+          "flask-conical",
+          "git-commit-horizontal",
+          "git-pull-request",
+          "gavel",
+          "check",
+          "x",
+          "external-link"
+        ],
+        "flows": [
+          "FL-1",
+          "FL-4",
+          "FL-5",
+          "FL-7"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "not-built",
+          "long-content",
+          "submitting"
+        ],
+        "regions": [
+          {
+            "name": "rule text and agreed interpretation",
+            "req": [
+              "RULE-1"
+            ]
+          },
+          {
+            "name": "signature: red-before-green evidence (custody chain / TDD ticks / chronology, per style)",
+            "req": [
+              "RULE-2"
+            ]
+          },
+          {
+            "name": "tests (count and scope)",
+            "req": [
+              "RULE-1"
+            ]
+          },
+          {
+            "name": "QA step and sign-off",
+            "req": [
+              "RULE-1",
+              "HITL-1"
+            ]
+          },
+          {
+            "name": "red and green diffs (lazy)",
+            "req": [
+              "RULE-3"
+            ]
+          },
+          {
+            "name": "verify it yourself",
+            "req": [
+              "VERIFY-1"
+            ]
+          },
+          {
+            "name": "load diff, busy while the diff chunk loads",
+            "req": [
+              "BUSY-1"
+            ]
+          },
+          {
+            "name": "links out: commit SHAs, PR numbers and file:line references, to GitHub at that SHA",
+            "req": [
+              "NAV-3"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "plan",
+        "file": "plan.html",
+        "route": "/plans/:planId",
+        "name": "Plan",
+        "description": "A plan's nodes as a dependency graph coloured by status with a text equivalent; for an investigation (inv-001) its question, hypothesis, findings and recommendations.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": [
+          "DAG-1",
+          "LOOP-2"
+        ],
+        "data": [
+          "D2",
+          "D3"
+        ],
+        "components": [
+          "page-header",
+          "dag-graph",
+          "dag-table",
+          "status-tag",
+          "key-value-list",
+          "markdown-text"
+        ],
+        "icons": [
+          "git-branch",
+          "check",
+          "clock"
+        ],
+        "flows": [
+          "FL-2"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "in-flight",
+          "not-built"
+        ],
+        "regions": [
+          {
+            "name": "plan header (status, approval, requirements rev)",
+            "req": [
+              "DAG-1"
+            ]
+          },
+          {
+            "name": "node graph and its table",
+            "req": [
+              "DAG-1"
+            ]
+          },
+          {
+            "name": "investigation body (inv-* plans only)",
+            "req": [
+              "LOOP-2"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "node",
+        "file": "node.html",
+        "route": "/plans/:planId/:nodeId",
+        "name": "Node",
+        "description": "One feature node: completeness first, then rules, tasks with status, attempts, PR and merge, and links to its walkthrough, loop and activity.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": [
+          "NODE-1",
+          "DATA-4",
+          "AGENT-1",
+          "DATA-8",
+          "LOOP-2"
+        ],
+        "data": [
+          "D3",
+          "D4",
+          "D5",
+          "D8",
+          "D14"
+        ],
+        "components": [
+          "page-header",
+          "breadcrumbs",
+          "completeness-banner",
+          "tabs",
+          "data-table",
+          "status-tag",
+          "rule-chip",
+          "attempt-ladder",
+          "agent-badge",
+          "sources-disagree",
+          "verify-command"
+        ],
+        "icons": [
+          "check",
+          "x",
+          "clock",
+          "git-merge",
+          "git-pull-request",
+          "bot",
+          "user"
+        ],
+        "flows": [
+          "FL-2",
+          "FL-3",
+          "FL-4",
+          "FL-5",
+          "FL-6",
+          "FL-7",
+          "FL-8"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "empty",
+          "in-flight",
+          "incomplete",
+          "git-only",
+          "disagreement"
+        ],
+        "regions": [
+          {
+            "name": "completeness banner",
+            "req": [
+              "DATA-4",
+              "DATA-8"
+            ]
+          },
+          {
+            "name": "rules",
+            "req": [
+              "NODE-1"
+            ]
+          },
+          {
+            "name": "tasks",
+            "req": [
+              "NODE-1"
+            ]
+          },
+          {
+            "name": "attempts",
+            "req": [
+              "LOOP-2"
+            ]
+          },
+          {
+            "name": "who touched what",
+            "req": [
+              "AGENT-1"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "walkthrough",
+        "file": "walkthrough.html",
+        "route": "/plans/:planId/:nodeId/commits",
+        "name": "Walkthrough",
+        "description": "Every commit of the node in order, by TDD step and author agent, with the commit subject in the agent's words.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": [
+          "TDD-1"
+        ],
+        "data": [
+          "D8"
+        ],
+        "components": [
+          "page-header",
+          "breadcrumbs",
+          "tabs",
+          "data-table",
+          "sha-link",
+          "tdd-step-tag",
+          "agent-badge",
+          "rule-chip"
+        ],
+        "icons": [
+          "git-commit-horizontal",
+          "bot",
+          "user"
+        ],
+        "flows": [
+          "FL-7"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "empty",
+          "git-only"
+        ],
+        "regions": [
+          {
+            "name": "commit sequence",
+            "req": [
+              "TDD-1"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "loop",
+        "file": "loop.html",
+        "route": "/plans/:planId/:nodeId/loop",
+        "name": "Loop",
+        "description": "Every gate and state event: command, exit code, expected outcome, ok, detail; FAILs stand out; attempts as a ladder from FAIL to fix.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": [
+          "LOOP-1",
+          "LOOP-2"
+        ],
+        "data": [
+          "D5",
+          "D6"
+        ],
+        "components": [
+          "page-header",
+          "breadcrumbs",
+          "tabs",
+          "attempt-ladder",
+          "gate-row",
+          "status-tag",
+          "code-block",
+          "disclosure"
+        ],
+        "icons": [
+          "check",
+          "x",
+          "triangle-alert",
+          "clock"
+        ],
+        "flows": [
+          "FL-2",
+          "FL-7"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "empty",
+          "in-flight",
+          "git-only",
+          "long-content"
+        ],
+        "regions": [
+          {
+            "name": "attempt ladder",
+            "req": [
+              "LOOP-2"
+            ]
+          },
+          {
+            "name": "gate timeline",
+            "req": [
+              "LOOP-1"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "verdict",
+        "file": "verdict.html",
+        "route": "/plans/:planId/:nodeId/verdicts/:round/:agent",
+        "name": "Verdict",
+        "description": "A reviewer or security verdict rendered from its JSON: PASS or FAIL, gate refs, head SHA, diff fingerprint, rules covered and missing, findings; raw JSON one click away.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": [
+          "LOOP-3",
+          "DATA-2"
+        ],
+        "data": [
+          "D9"
+        ],
+        "components": [
+          "page-header",
+          "breadcrumbs",
+          "verdict-card",
+          "status-tag",
+          "file-line-link",
+          "sha-link",
+          "json-viewer",
+          "provenance-label"
+        ],
+        "icons": [
+          "gavel",
+          "shield",
+          "check",
+          "x",
+          "file-code"
+        ],
+        "flows": [
+          "FL-2"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "empty",
+          "long-content"
+        ],
+        "regions": [
+          {
+            "name": "verdict summary",
+            "req": [
+              "LOOP-3"
+            ]
+          },
+          {
+            "name": "findings",
+            "req": [
+              "LOOP-3"
+            ]
+          },
+          {
+            "name": "raw JSON",
+            "req": [
+              "LOOP-3",
+              "DATA-2"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "finding",
+        "file": "finding.html",
+        "route": "/plans/:planId/:nodeId/findings/:round",
+        "name": "Finding",
+        "description": "An investigator round: each finding's symptom and cause, files, fix direction, suggested test, testable or not, and the commit that fixed it.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": [
+          "LOOP-4",
+          "LOOP-2"
+        ],
+        "data": [
+          "D10",
+          "D8"
+        ],
+        "components": [
+          "page-header",
+          "breadcrumbs",
+          "finding-card",
+          "file-line-link",
+          "sha-link",
+          "status-tag",
+          "disclosure",
+          "provenance-label",
+          "json-viewer"
+        ],
+        "icons": [
+          "bug",
+          "file-code",
+          "git-commit-horizontal",
+          "check"
+        ],
+        "flows": [
+          "FL-2",
+          "FL-4"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "long-content"
+        ],
+        "regions": [
+          {
+            "name": "findings",
+            "req": [
+              "LOOP-4"
+            ]
+          },
+          {
+            "name": "fixed by",
+            "req": [
+              "LOOP-4",
+              "LOOP-2"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "activity",
+        "file": "activity.html",
+        "route": "/plans/:planId/:nodeId/activity",
+        "name": "Activity",
+        "description": "Per-agent lanes of the hook log: tool, file and command over time, filterable by agent, with redactions labelled.",
+        "section": "plans",
+        "priority": "SHOULD",
+        "requirements": [
+          "AGENT-1",
+          "AGENT-2",
+          "A11Y-1"
+        ],
+        "data": [
+          "D7",
+          "D8"
+        ],
+        "components": [
+          "page-header",
+          "breadcrumbs",
+          "tabs",
+          "filter-bar",
+          "agent-lanes",
+          "agent-badge",
+          "redaction-token",
+          "data-table"
+        ],
+        "icons": [
+          "bot",
+          "user",
+          "file-code",
+          "clock"
+        ],
+        "flows": [
+          "FL-3"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "empty",
+          "git-only",
+          "redacted",
+          "long-content"
+        ],
+        "regions": [
+          {
+            "name": "agent lanes",
+            "req": [
+              "AGENT-2"
+            ]
+          },
+          {
+            "name": "event table (text equivalent)",
+            "req": [
+              "AGENT-2",
+              "A11Y-1"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "commit",
+        "file": "commit.html",
+        "route": "/commits/:sha",
+        "name": "Commit",
+        "description": "One commit: subject, trailers (Agent, Plan, Node, Rule, TDD, Fixes-Finding), the agent the hook saw, the files it touched, its diff, and links out.",
+        "section": "plans",
+        "priority": "MUST",
+        "requirements": [
+          "NAV-2",
+          "NAV-3",
+          "AGENT-1",
+          "RULE-3"
+        ],
+        "data": [
+          "D8",
+          "D7"
+        ],
+        "components": [
+          "page-header",
+          "breadcrumbs",
+          "key-value-list",
+          "tdd-step-tag",
+          "agent-badge",
+          "rule-chip",
+          "diff-viewer",
+          "sources-disagree",
+          "verify-command"
+        ],
+        "icons": [
+          "git-commit-horizontal",
+          "bot",
+          "external-link",
+          "check",
+          "x"
+        ],
+        "flows": [
+          "FL-1",
+          "FL-2",
+          "FL-3",
+          "FL-4",
+          "FL-5"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "disagreement",
+          "long-content"
+        ],
+        "regions": [
+          {
+            "name": "commit header and trailers",
+            "req": [
+              "NAV-2"
+            ]
+          },
+          {
+            "name": "trailer agent vs hook agent",
+            "req": [
+              "AGENT-1"
+            ]
+          },
+          {
+            "name": "diff (lazy)",
+            "req": [
+              "RULE-3"
+            ]
+          },
+          {
+            "name": "links out",
+            "req": [
+              "NAV-3"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "decisions",
+        "file": "decisions.html",
+        "route": "/decisions",
+        "name": "Human decisions",
+        "description": "Every point David decided, across nodes: pause 1, pause 2, steers, rulings, sign-offs and merges, each linked to its evidence.",
+        "section": "decisions",
+        "priority": "MUST",
+        "requirements": [
+          "HITL-1"
+        ],
+        "data": [
+          "D6",
+          "D10",
+          "D12",
+          "D14"
+        ],
+        "components": [
+          "page-header",
+          "filter-bar",
+          "human-decision-row",
+          "status-tag",
+          "sha-link",
+          "rule-chip"
+        ],
+        "icons": [
+          "user",
+          "gavel",
+          "check",
+          "git-merge"
+        ],
+        "flows": [
+          "FL-4"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "empty"
+        ],
+        "regions": [
+          {
+            "name": "decision list",
+            "req": [
+              "HITL-1"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "about",
+        "file": "about.html",
+        "route": "/about",
+        "name": "How to read this",
+        "description": "How the trail is made and how to read it: provenance labels, completeness, the compiled-at stamp, a glossary, and the git commands that re-verify everything.",
+        "section": "about",
+        "priority": "MUST",
+        "requirements": [
+          "DATA-2",
+          "DATA-3",
+          "VERIFY-1",
+          "A11Y-1",
+          "NAV-5"
+        ],
+        "data": [
+          "D1",
+          "D6",
+          "D9",
+          "D10"
+        ],
+        "components": [
+          "page-header",
+          "provenance-label",
+          "status-tag",
+          "markdown-text",
+          "verify-command",
+          "document-page"
+        ],
+        "icons": [
+          "check",
+          "x",
+          "clock",
+          "triangle-alert"
+        ],
+        "flows": [
+          "FL-6"
+        ],
+        "states": [
+          "loading",
+          "error"
+        ],
+        "regions": [
+          {
+            "name": "provenance labels",
+            "req": [
+              "DATA-2"
+            ]
+          },
+          {
+            "name": "glossary and status legend",
+            "req": [
+              "A11Y-1"
+            ]
+          },
+          {
+            "name": "re-verify with git",
+            "req": [
+              "VERIFY-1"
+            ]
+          },
+          {
+            "name": "guided tour entry: one rule end to end (COULD)",
+            "req": [
+              "NAV-5"
+            ]
+          },
+          {
+            "name": "compiled-at stamp: the commit SHA and UTC time trace.json was compiled from",
+            "req": [
+              "DATA-3"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "harness",
+        "file": "harness.html",
+        "route": "/harness",
+        "name": "Harness",
+        "description": "The agents, their tools, preloaded skills and never-dos, and the hooks and what each guards, from the generated harness file.",
+        "section": "about",
+        "priority": "SHOULD",
+        "requirements": [
+          "AGENT-3"
+        ],
+        "data": [
+          "harness file (DATA-7; does not exist yet, emitted by render-trace.mjs)"
+        ],
+        "components": [
+          "page-header",
+          "data-table",
+          "agent-badge",
+          "key-value-list"
+        ],
+        "icons": [
+          "bot",
+          "shield",
+          "file-code"
+        ],
+        "flows": [
+          "FL-6"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "empty"
+        ],
+        "regions": [
+          {
+            "name": "agents",
+            "req": [
+              "AGENT-3"
+            ]
+          },
+          {
+            "name": "hooks",
+            "req": [
+              "AGENT-3"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "sessions",
+        "file": "sessions.html",
+        "route": "/sessions/:file?",
+        "name": "Sessions",
+        "description": "The context snapshot chain as a timeline across days: where work stood at each hand-off and what came next.",
+        "section": "about",
+        "priority": "COULD",
+        "requirements": [
+          "CTX-1",
+          "NAV-2"
+        ],
+        "data": [
+          "D13"
+        ],
+        "components": [
+          "page-header",
+          "data-table",
+          "timestamp",
+          "markdown-text"
+        ],
+        "icons": [
+          "clock",
+          "chart-gantt"
+        ],
+        "flows": [
+          "FL-8"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "empty"
+        ],
+        "regions": [
+          {
+            "name": "snapshot timeline",
+            "req": [
+              "CTX-1"
+            ]
+          },
+          {
+            "name": "one snapshot, open at its own URL (/sessions/:file)",
+            "req": [
+              "NAV-2"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "stats",
+        "file": "stats.html",
+        "route": "/stats",
+        "name": "Delivery stats",
+        "description": "Commits per agent, attempts per node and elapsed time per node from trail timestamps, shown as facts with their sources, never as scores.",
+        "section": "overview",
+        "priority": "COULD",
+        "requirements": [
+          "STATS-1"
+        ],
+        "data": [
+          "D3",
+          "D5",
+          "D6",
+          "D8"
+        ],
+        "components": [
+          "page-header",
+          "data-table",
+          "receipt-figure",
+          "agent-badge"
+        ],
+        "icons": [
+          "bot",
+          "clock",
+          "chart-gantt"
+        ],
+        "flows": [
+          "FL-8"
+        ],
+        "states": [
+          "loading",
+          "error",
+          "in-flight"
+        ],
+        "regions": [
+          {
+            "name": "facts per agent and node",
+            "req": [
+              "STATS-1"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "id": "not-found",
+        "file": "not-found.html",
+        "route": "*",
+        "name": "Not found",
+        "description": "Names what was asked for (a rule, node, SHA or round that isn't in this snapshot) and links to the overview, the matrix and search.",
+        "section": "overview",
+        "priority": "MUST",
+        "requirements": [
+          "NAV-2"
+        ],
+        "data": [],
+        "components": [
+          "page-header",
+          "empty-state",
+          "search"
+        ],
+        "icons": [
+          "triangle-alert"
+        ],
+        "flows": [
+          "FL-9"
+        ],
+        "states": [],
+        "regions": [
+          {
+            "name": "what was asked for, and where to go",
+            "req": [
+              "NAV-2"
+            ]
+          }
+        ],
+        "scope": "explorer"
+      },
+      {
+        "scope": "workbench",
+        "priority": "MUST",
+        "id": "wb-home",
+        "route": "/workbench",
+        "name": "Workbench",
+        "section": "workbench",
+        "description": "Start here: open a policy by reference, sell a new one, or come back to a recent one.",
+        "requirements": [
+          "WB-2",
+          "WB-9",
+          "WB-1",
+          "BUSY-1"
+        ],
+        "data": [
+          "E2",
+          "A1"
+        ],
+        "components": [
+          "page-header",
+          "text-input",
+          "button",
+          "recent-policies",
+          "empty-state",
+          "spinner",
+          "problem-banner"
+        ],
+        "icons": [
+          "search",
+          "file-plus",
+          "history"
+        ],
+        "flows": [
+          "FL-10",
+          "FL-16"
+        ],
+        "states": [
+          "empty",
+          "api-unreachable",
+          "submitting"
+        ],
+        "regions": [
+          {
+            "name": "open a policy by reference",
+            "req": [
+              "WB-2"
+            ]
+          },
+          {
+            "name": "sell a new policy (entry)",
+            "req": [
+              "WB-1"
+            ]
+          },
+          {
+            "name": "recent policies, kept in this browser",
+            "req": [
+              "WB-9"
+            ]
+          },
+          {
+            "name": "open by reference, busy while the policy loads",
+            "req": [
+              "BUSY-1"
+            ]
+          }
+        ],
+        "file": "wb-home.html"
+      },
+      {
+        "scope": "workbench",
+        "priority": "MUST",
+        "id": "wb-sell",
+        "route": "/workbench/sell",
+        "name": "Sell a policy",
+        "section": "workbench",
+        "description": "Every field of the sell request, 1 to 3 policyholders, the reference as the API will store it, and every problem the API returns, each linked to its rule.",
+        "requirements": [
+          "WB-1",
+          "WB-3",
+          "WB-6",
+          "WB-7",
+          "BUSY-1"
+        ],
+        "data": [
+          "E1",
+          "A1",
+          "A3",
+          "A4",
+          "A12",
+          "A13"
+        ],
+        "components": [
+          "page-header",
+          "form-section",
+          "field",
+          "text-input",
+          "date-input",
+          "money-input",
+          "select",
+          "radio-group",
+          "switch",
+          "repeatable-group",
+          "reference-preview",
+          "constraint-hint",
+          "error-summary",
+          "inline-error",
+          "rule-chip",
+          "send-anyway-toggle",
+          "button",
+          "inspector-drawer",
+          "spinner",
+          "problem-banner"
+        ],
+        "icons": [
+          "file-plus",
+          "circle-alert",
+          "toggle-right",
+          "terminal"
+        ],
+        "flows": [
+          "FL-10",
+          "FL-11",
+          "FL-15"
+        ],
+        "states": [
+          "submitting",
+          "api-error",
+          "api-unreachable"
+        ],
+        "regions": [
+          {
+            "name": "policy fields (reference, type, start date, amount, payment method, auto-renew)",
+            "req": [
+              "WB-1"
+            ]
+          },
+          {
+            "name": "reference as stored (normalisation preview)",
+            "req": [
+              "WB-1"
+            ]
+          },
+          {
+            "name": "policyholders, 1 to 3",
+            "req": [
+              "WB-1"
+            ]
+          },
+          {
+            "name": "property",
+            "req": [
+              "WB-1"
+            ]
+          },
+          {
+            "name": "error summary: every problem, each linked to its field and its rule",
+            "req": [
+              "WB-3"
+            ]
+          },
+          {
+            "name": "send it anyway (client checks off)",
+            "req": [
+              "WB-6"
+            ]
+          },
+          {
+            "name": "the request as sent (inspector)",
+            "req": [
+              "WB-7"
+            ]
+          },
+          {
+            "name": "submit, busy while the sell request runs (spinner, disabled)",
+            "req": [
+              "BUSY-1"
+            ]
+          }
+        ],
+        "file": "wb-sell.html"
+      },
+      {
+        "scope": "workbench",
+        "priority": "MUST",
+        "id": "wb-policy",
+        "route": "/workbench/policies/:reference",
+        "name": "Policy",
+        "section": "workbench",
+        "description": "One policy as the API returns it: status, current term, the terms on one dated timeline, holders, property, payments, refunds, claims and any cancellation. Shows only what the API says; nothing is computed in the client.",
+        "requirements": [
+          "WB-2",
+          "WB-3",
+          "WB-4",
+          "WB-5",
+          "WB-7"
+        ],
+        "data": [
+          "E2",
+          "A1",
+          "A2",
+          "A3",
+          "A4",
+          "A5",
+          "A6",
+          "A7",
+          "A8",
+          "A12"
+        ],
+        "components": [
+          "page-header",
+          "status-tag",
+          "term-timeline",
+          "key-value-list",
+          "data-table",
+          "money",
+          "problem-banner",
+          "rule-chip",
+          "button",
+          "request-log",
+          "sources-disagree",
+          "inspector-drawer"
+        ],
+        "icons": [
+          "calendar-range",
+          "receipt",
+          "circle-alert",
+          "history"
+        ],
+        "flows": [
+          "FL-10",
+          "FL-12",
+          "FL-13",
+          "FL-14",
+          "FL-16"
+        ],
+        "states": [
+          "loading",
+          "api-error",
+          "api-unreachable",
+          "empty",
+          "long-content"
+        ],
+        "regions": [
+          {
+            "name": "status and current term",
+            "req": [
+              "WB-2"
+            ]
+          },
+          {
+            "name": "terms timeline (terms, payments, claims, cancellation; dates the API returned only)",
+            "req": [
+              "WB-2"
+            ]
+          },
+          {
+            "name": "policyholders and property",
+            "req": [
+              "WB-2"
+            ]
+          },
+          {
+            "name": "payments and refunds",
+            "req": [
+              "WB-2"
+            ]
+          },
+          {
+            "name": "claims",
+            "req": [
+              "WB-2",
+              "WB-5"
+            ]
+          },
+          {
+            "name": "cancellation: summary from GET, per-term breakdown from the logged cancel response",
+            "req": [
+              "WB-2",
+              "WB-4"
+            ]
+          },
+          {
+            "name": "record-level problem banner (404, 409)",
+            "req": [
+              "WB-3"
+            ]
+          },
+          {
+            "name": "actions: quote and cancel, record a claim, renew",
+            "req": [
+              "WB-4",
+              "WB-5"
+            ]
+          },
+          {
+            "name": "requests that touched this policy",
+            "req": [
+              "WB-7"
+            ]
+          }
+        ],
+        "file": "wb-policy.html"
+      },
+      {
+        "scope": "workbench",
+        "priority": "MUST",
+        "id": "wb-cancel",
+        "route": "/workbench/policies/:reference/cancel",
+        "name": "Quote and cancel",
+        "section": "workbench",
+        "description": "Quote a cancellation date, see the refund as a worked sum per term with the rule applied, then cancel with exactly the quoted date and see that the two agree.",
+        "requirements": [
+          "WB-4",
+          "WB-3",
+          "WB-7",
+          "BUSY-1"
+        ],
+        "data": [
+          "E3",
+          "E4",
+          "A9",
+          "A10",
+          "A11",
+          "A12"
+        ],
+        "components": [
+          "page-header",
+          "field",
+          "date-input",
+          "button",
+          "refund-worked-sum",
+          "rule-chip",
+          "money",
+          "quote-cancel-compare",
+          "confirm-dialog",
+          "error-summary",
+          "problem-banner",
+          "inspector-drawer",
+          "spinner",
+          "rung-spine"
+        ],
+        "icons": [
+          "receipt",
+          "circle-alert",
+          "check",
+          "x"
+        ],
+        "flows": [
+          "FL-12",
+          "FL-13"
+        ],
+        "states": [
+          "submitting",
+          "api-error",
+          "api-unreachable",
+          "empty"
+        ],
+        "regions": [
+          {
+            "name": "cancellation date and quote",
+            "req": [
+              "WB-4"
+            ]
+          },
+          {
+            "name": "the refund as a worked sum, per term, with the rule applied",
+            "req": [
+              "WB-4"
+            ]
+          },
+          {
+            "name": "cancel with the quoted date, then quote and cancellation compared",
+            "req": [
+              "WB-4"
+            ]
+          },
+          {
+            "name": "problems (CANCEL-3, CANCEL-4, CANCEL-7)",
+            "req": [
+              "WB-3"
+            ]
+          },
+          {
+            "name": "the requests as sent (inspector)",
+            "req": [
+              "WB-7"
+            ]
+          },
+          {
+            "name": "quote and cancel actions, each busy while its request runs",
+            "req": [
+              "BUSY-1"
+            ]
+          }
+        ],
+        "file": "wb-cancel.html"
+      },
+      {
+        "scope": "workbench",
+        "priority": "MUST",
+        "id": "wb-claim",
+        "route": "/workbench/policies/:reference/claims/new",
+        "name": "Record a claim",
+        "section": "workbench",
+        "description": "Record a claim, then quote again: the refund drops to 0.00 under COULD-2, shown as before and after.",
+        "requirements": [
+          "WB-5",
+          "WB-3",
+          "BUSY-1"
+        ],
+        "data": [
+          "E5",
+          "E4",
+          "A7",
+          "A10",
+          "A12"
+        ],
+        "components": [
+          "page-header",
+          "field",
+          "date-input",
+          "text-area",
+          "button",
+          "refund-worked-sum",
+          "error-summary",
+          "problem-banner",
+          "rule-chip",
+          "inspector-drawer",
+          "spinner",
+          "rung-spine"
+        ],
+        "icons": [
+          "receipt",
+          "circle-alert"
+        ],
+        "flows": [
+          "FL-13"
+        ],
+        "states": [
+          "submitting",
+          "api-error",
+          "api-unreachable"
+        ],
+        "regions": [
+          {
+            "name": "claim date and description",
+            "req": [
+              "WB-5"
+            ]
+          },
+          {
+            "name": "refund before and after the claim (two quotes)",
+            "req": [
+              "WB-5"
+            ]
+          },
+          {
+            "name": "problems (COULD-2a, COULD-2b, COULD-2c)",
+            "req": [
+              "WB-3"
+            ]
+          },
+          {
+            "name": "record claim, busy while the request and the two quotes run",
+            "req": [
+              "BUSY-1"
+            ]
+          }
+        ],
+        "file": "wb-claim.html"
+      },
+      {
+        "scope": "workbench",
+        "priority": "MUST",
+        "id": "wb-renew",
+        "route": "/workbench/policies/:reference/renew",
+        "name": "Renew",
+        "section": "workbench",
+        "description": "Renew inside the window (E6): the amount, and the payment method, which defaults from the current term on an auto-renewing policy and must not be sent when it does not auto-renew; Cheque is refused for an auto-renewing renewal. The window is shown only when the API states it (a single-rule RENEW-1/2 problem), never computed. Success returns the full policy with the new term last.",
+        "requirements": [
+          "WB-5",
+          "WB-3",
+          "WB-2",
+          "BUSY-1"
+        ],
+        "data": [
+          "E6",
+          "A1",
+          "A2",
+          "A5",
+          "A15",
+          "A16"
+        ],
+        "components": [
+          "page-header",
+          "field",
+          "money-input",
+          "select",
+          "button",
+          "error-summary",
+          "rule-chip",
+          "spinner",
+          "inspector-drawer",
+          "problem-banner",
+          "term-timeline"
+        ],
+        "icons": [
+          "refresh-cw",
+          "circle-alert"
+        ],
+        "flows": [
+          "FL-14"
+        ],
+        "states": [
+          "submitting",
+          "api-error",
+          "api-unreachable"
+        ],
+        "regions": [
+          {
+            "name": "renewal amount and payment method (default shown from the current term; omitted when auto-renew is off)",
+            "req": [
+              "WB-5"
+            ]
+          },
+          {
+            "name": "problems (RENEW-1/2 with its window, RENEW-3b, RENEW-5, RENEW-6, COULD-3; several at once listed, not placed)",
+            "req": [
+              "WB-3"
+            ]
+          },
+          {
+            "name": "the new term, last on the timeline",
+            "req": [
+              "WB-5",
+              "WB-2"
+            ]
+          },
+          {
+            "name": "renew, busy while the request runs",
+            "req": [
+              "BUSY-1"
+            ]
+          }
+        ],
+        "file": "wb-renew.html"
+      },
+      {
+        "scope": "workbench",
+        "priority": "COULD",
+        "id": "wb-requests",
+        "route": "/workbench/requests",
+        "name": "Requests",
+        "section": "workbench",
+        "description": "Every request this browser sent, newest first: method, path, status, duration, the exact request and response, and a copyable curl.",
+        "requirements": [
+          "WB-7"
+        ],
+        "data": [
+          "E1",
+          "E2",
+          "E3",
+          "E4",
+          "E5",
+          "E6",
+          "A12",
+          "A13",
+          "A14"
+        ],
+        "components": [
+          "page-header",
+          "request-log",
+          "http-exchange",
+          "filter-bar",
+          "json-viewer",
+          "code-block",
+          "empty-state"
+        ],
+        "icons": [
+          "terminal",
+          "copy",
+          "history"
+        ],
+        "flows": [
+          "FL-15"
+        ],
+        "states": [
+          "empty",
+          "long-content"
+        ],
+        "regions": [
+          {
+            "name": "request log",
+            "req": [
+              "WB-7"
+            ]
+          },
+          {
+            "name": "one exchange: request, response, status line, curl",
+            "req": [
+              "WB-7"
+            ]
+          }
+        ],
+        "file": "wb-requests.html"
+      }
+    ],
+    "scopes": {
+      "explorer": "the trace explorer: how the API was built, from the trail (built first)",
+      "workbench": "the policy workbench: a client for the API as built, same origin through the dev proxy (built second, after F4)"
+    },
+    "notOnScreens": [
+      {
+        "id": "DATA-1",
+        "reason": "the compiler and trace.json have no screen of their own",
+        "verifiedBy": "trace-data.spec.md schema; compiler unit tests over fixture trails"
+      },
+      {
+        "id": "DATA-5",
+        "reason": "privacy is a build-time property of trace.json",
+        "verifiedBy": "the compiler fails the build on a denylist match; a known-bad fixture test"
+      },
+      {
+        "id": "DATA-6",
+        "reason": "read-only access is a property of the compiler",
+        "verifiedBy": "a compiler test asserting the repo is unchanged after a compile"
+      },
+      {
+        "id": "DATA-7",
+        "reason": "the compiler's input boundary (docs/ and git only)",
+        "verifiedBy": "a compiler test that fails on any read under .claude/; the harness screen shows the emitted file"
+      },
+      {
+        "id": "RESP-1",
+        "reason": "a property of every screen",
+        "verifiedBy": "the screenshot sweep at 1440 and 390 on every design stage and node"
+      },
+      {
+        "id": "PERF-1",
+        "reason": "load time, not a region",
+        "verifiedBy": "a web-testing perf budget on the static build"
+      },
+      {
+        "id": "HONEST-1",
+        "reason": "a property of every number on every screen",
+        "verifiedBy": "design lint and G16 on artifacts; the design fixture at G4; review at each pause"
+      },
+      {
+        "id": "BRAND-1",
+        "reason": "an absence, on every screen",
+        "verifiedBy": "the design lint and each screenshot review"
+      },
+      {
+        "id": "SEC-1",
+        "reason": "rendering safety and CSP, on every screen",
+        "verifiedBy": "security agent web checks; a CSP header test; the markdown sanitiser's tests"
+      },
+      {
+        "id": "WB-8",
+        "reason": "cut (David, 2026-10-19): the workbench stays inside the current API; the ID is kept so it is not reused",
+        "verifiedBy": "no screen lists WB-8; coverage.mjs accounts for it here"
+      }
+    ]
+  }
+}

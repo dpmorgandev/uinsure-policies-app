@@ -1,0 +1,134 @@
+{
+ "item": "CANCEL-7 · quote the day after the end → 422",
+ "folder": "F3 Cancel / rule violations",
+ "rule": "CANCEL-7",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:47:44Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "328"
+   },
+   "requestBody": {
+    "reference": "F3-MVFJRRR9DU",
+    "type": "Household",
+    "startDate": "2026-11-10",
+    "amount": 296.85,
+    "autoRenew": true,
+    "paymentMethod": "Cheque",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:42 GMT",
+    "server": "Kestrel",
+    "location": "/policies/F3-MVFJRRR9DU",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F3-MVFJRRR9DU",
+    "type": "Household",
+    "status": "Pending",
+    "currentTermNumber": 1,
+    "startDate": "2026-11-10",
+    "endDate": "2027-11-09",
+    "amount": 296.85,
+    "hasClaims": false,
+    "autoRenew": true,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-11-10",
+      "endDate": "2027-11-09",
+      "amount": 296.85,
+      "paymentReference": "PAY-ccd1815615694aeaae32b65ce899e558"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-ccd1815615694aeaae32b65ce899e558",
+      "type": "Cheque",
+      "amount": 296.85
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F3-MVFJRRR9DU/cancellation-quote?cancellationDate=2027-11-10",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 422,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:47:43 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/cancel-7",
+    "title": "Cancellation date after the end of cover",
+    "status": 422,
+    "detail": "The cancellation date must be on or before the end of cover, 2027-11-09.",
+    "instance": "/policies/F3-MVFJRRR9DU/cancellation-quote",
+    "traceId": "00-b3c6717394b334b343760f31978fc7b8-4d8ccdf4643ad529-00",
+    "ruleId": "CANCEL-7",
+    "latestEndDate": "2027-11-09",
+    "violations": [
+     {
+      "ruleId": "CANCEL-7",
+      "detail": "The cancellation date must be on or before the end of cover, 2027-11-09."
+     }
+    ]
+   }
+  }
+ ]
+}

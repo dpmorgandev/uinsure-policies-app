@@ -1,0 +1,86 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T01:59:33Z",
+  "plan": "ui",
+  "node": "W1",
+  "attempt": 3,
+  "agent": "reviewer",
+  "agent_id": "a8b8ffae66a116d5e",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "W1",
+    "attempt": 3,
+    "base_sha": "fa18658f714d3f424da3819c53fea510bfb6fc74",
+    "head_sha": "f2e5cecb93d2c2ba8950dae93465507cc5ee6e7d",
+    "diff_fingerprint": "c689ee20a9cd3c188a1ab6090735c52e91da38d0",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "verdict(reviewer,PASS)@2026-10-22T00:21:37Z (A3)",
+      "setup@2026-10-22T00:53:18Z (t12 held for the regression-suite PR)",
+      "setup@2026-10-22T00:53:19Z (A3 P2s R1-R4 carried into W2)",
+      "setup@2026-10-22T01:21:58Z (App.tsx and Frame.tsx conflict, union ruling)",
+      "gate.integrate@2026-10-22T01:28:44Z (onto 346db32: W1 nav parity 106/109)",
+      "setup@2026-10-22T01:29:25Z (U1 hitl->done first)",
+      "gate.integrate@2026-10-22T01:42:38Z (onto fa18658, re-derived 6ed7aba, W1 109/109)",
+      "gate.red@2026-10-22T01:50:39Z (t12 regression specs, 80 tests listed)",
+      "gate.refactor@2026-10-22T01:55:39Z (t13 snapshotPathTemplate; dry run: 80 fail only on the missing baseline)",
+      "gate.typecheck@2026-10-22T01:55:39Z",
+      "gate.lint@2026-10-22T01:55:39Z",
+      "gate.lint-css@2026-10-22T01:55:40Z",
+      "gate.test@2026-10-22T01:55:40Z (215/215)",
+      "gate.build@2026-10-22T01:55:40Z",
+      "gate.e2e@2026-10-22T01:55:40Z (W1 109/109)",
+      "gate.e2e-regression@2026-10-22T01:55:40Z (no baselines, nothing run)",
+      "gate.audit@2026-10-22T01:55:40Z",
+      "gate.trace-check@2026-10-22T01:55:41Z",
+      "gate.scope@2026-10-22T01:55:41Z (117 files, 0 outside)",
+      "gate.no-stubs@2026-10-22T01:55:41Z",
+      "gate.qa@2026-10-22T00:37:44Z (t10, pre-rebase)"
+    ],
+    "rules_covered": [
+      "WB-1",
+      "WB-2",
+      "WB-3",
+      "WB-6",
+      "WB-9",
+      "BUSY-1",
+      "A11Y-1"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "WB-9",
+        "severity": "P1",
+        "file": "tests/web/e2e/U1/support/parity.ts",
+        "line": 48,
+        "what": "W1 makes Workbench a nav link, but U1's six expectShell parity tests still compare the nav exactly to U1's reference, where Workbench is not built yet. No gate ran U1's e2e at this head.",
+        "why": "Frame.tsx:20 now draws Workbench with href '#/workbench'. docs/ui/derived/U1/overview/populated.html (and every U1 reference) draws it as kit-not-built-yet. U1's shellOf (parity.ts:43-52) compares navLinks and navNotBuilt with no filter, so the shell tests in nav-1:160, matrix-1:246, rule-1:242, nav-3:217 and data-4:234 and :242 cannot match. U0b already handles this case: its parity goes through settledNav and built.ts, which read the newest derived reference. U1's parity has no such step. This is the same failure as gate.integrate 01:28:44Z (W1's nav parity breaking when U1 made the matrix a link), in the other direction. Every e2e receipt after the rebase covers tests/web/e2e/W1 only, so nothing shows this fails or passes. I got it from reading the code, not from a run. If W1 merges as it is, the ui branch will likely carry a red U1 suite. Fix options, and the choice needs a ruling because these are U1's files: apply U0b's built.ts pattern to U1's parity, or rule that earlier nodes' parity suites are replaced by the regression baselines and stop running them. Either way, a gate should then run every node's e2e suite at head.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "WB-1",
+        "severity": "P2",
+        "file": "docs/qa/ui-W1.md",
+        "line": 5,
+        "what": "The QA script's 'Commit under test: 8ed2ccf' is a pre-rebase SHA. It isn't in this branch's trailer log, and the script predates the U1 union in the shell.",
+        "why": "The web-testing QA template asks for the commit under test. After the rebases onto 346db32 and fa18658, 8ed2ccf no longer names anything David can check out. The script was written at t10, before U1's nav and routes came into App.tsx and Frame.tsx, so its steps were never checked against the shell at head. The script does tell the tester to record the SHA they test, so this doesn't block.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "What changed since A3 at 79eda37: the rebase onto fa18658, the union in App.tsx and Frame.tsx, the re-derived reference 6ed7aba, the regression specs 168bc3b and snapshotPathTemplate efba17d. W1's own behaviour code in api.ts, the workbench screens and the W1 specs isn't touched by these commits. The W1 e2e count holds at 109/109 and the unit count goes from 154 to 215, which is U1's tests arriving from base. The diff list shows no change under tests/web/e2e/U0b or U1.",
+      "The union in Frame.tsx and App.tsx is coherent. U1's matrix, rule, node and commit matches are kept. The workbench title and current nav item come from workbenchRoutes, the workbench routes sit before the '*' not-built route, and the current item checks matrix||rule ahead of workbench. That order can't collide, because no workbench path starts with /rules or /plans.",
+      "Regression specs: there are 10 files and 80 tests, titled '<screen> · <state> <width> <theme>', each calling toHaveScreenshot([screen, '<state>-<width>-<theme>.png']) at 1440 and 390, light and dark, as web-testing asks. The data is fixed: the design fixture's trace.json, recorded API answers through page.route, page.clock.setFixedTime, and en-GB and Europe/London. Any unrecorded /api/ request is aborted. No random or time-of-day data. The red reason is right: gate.refactor 01:55:39Z records a dry run where all 80 fail only on the missing baseline.",
+      "snapshotPathTemplate '{testDir}/../../../docs/ui/baselines/{arg}{ext}' resolves from tests/web/e2e to docs/ui/baselines/<screen>/<state>-<width>-<theme>.png. No other spec in tests/web calls toHaveScreenshot, so the global template can't move anyone else's snapshots. It landed as a web-builder 'refactor' rather than at stub, because the task was added late (plan amendment a53bf81). I accept that: it's config only, with no behaviour change.",
+      "Small point, not a finding: regression.ts says each test waits for 'the state's own marker', but the populated, error and unreachable states wait on networkidle (idle). toHaveScreenshot's own stability retry covers the gap. A content marker would read more honestly next to the comment.",
+      "The leaving-out of wb-cancel, wb-claim and wb-renew from the regression suite matches inv-006 recommendation 1: those routes fall to the not-built page in W1.",
+      "TDD order hasn't changed since A3, and the new red 168bc3b comes before refactor efba17d. gate.no-stubs at efba17d: none. HEAD f2e5cec is a plan-status commit only.",
+      "A3's P2s R1-R4 (the 2xx non-JSON answer typed as Policy, the send-anyway and timeline chip hrefs untested, '#/rules/' written four times, the dead .s-wb-list) are still in the code. David ruled at 00:53:19Z to carry them into W2, so I don't raise them again here.",
+      "Every W1 rule is still met by W1's own suite at head (gate.e2e 01:55:40Z 109/109, gate.test 215/215). The FAIL is for R1, a likely break in U1's suite after merge, not for a W1 rule's acceptance."
+    ]
+  }
+}

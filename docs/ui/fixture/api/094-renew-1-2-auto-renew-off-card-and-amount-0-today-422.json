@@ -1,0 +1,210 @@
+{
+ "item": "RENEW-1/2 · auto-renew off, Card and amount 0, today → 422",
+ "folder": "F4 Renew / rule violations",
+ "rule": "RENEW-1/2",
+ "provenance": "recorded",
+ "recordedAt": "2026-10-19T17:48:14Z",
+ "postmanExit": 0,
+ "exchanges": [
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "327"
+   },
+   "requestBody": {
+    "reference": "F4-MVFJSFG0NG",
+    "type": "Household",
+    "startDate": "2026-10-19",
+    "amount": 333.27,
+    "autoRenew": false,
+    "paymentMethod": "Card",
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    }
+   },
+   "status": 201,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:48:13 GMT",
+    "server": "Kestrel",
+    "location": "/policies/F4-MVFJSFG0NG",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F4-MVFJSFG0NG",
+    "type": "Household",
+    "status": "Active",
+    "currentTermNumber": 1,
+    "startDate": "2026-10-19",
+    "endDate": "2027-10-18",
+    "amount": 333.27,
+    "hasClaims": false,
+    "autoRenew": false,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-10-19",
+      "endDate": "2027-10-18",
+      "amount": 333.27,
+      "paymentReference": "PAY-8948cb720a8744b79c3a0f1d8df198ec"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-8948cb720a8744b79c3a0f1d8df198ec",
+      "type": "Card",
+      "amount": 333.27
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  },
+  {
+   "role": "setup",
+   "method": "POST",
+   "path": "/policies/F4-MVFJSFG0NG/renewals",
+   "requestHeaders": {
+    "content-type": "application/json",
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive",
+    "content-length": "44"
+   },
+   "requestBody": {
+    "amount": 0,
+    "paymentMethod": "Card"
+   },
+   "status": 422,
+   "responseHeaders": {
+    "content-type": "application/problem+json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:48:13 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "type": "/problems/renew-1-2",
+    "title": "Outside the renewal window",
+    "status": 422,
+    "detail": "3 rules failed.",
+    "instance": "/policies/F4-MVFJSFG0NG/renewals",
+    "traceId": "00-5e150262ff1724a1b6afa83f210a586f-04d8a8740e2caf81-00",
+    "ruleId": "RENEW-1/2",
+    "violations": [
+     {
+      "ruleId": "RENEW-1/2",
+      "detail": "A policy can be renewed from 2027-09-18 to 2027-10-18."
+     },
+     {
+      "ruleId": "RENEW-3b",
+      "detail": "The policy does not auto-renew, so the renewal is unpaid and takes no payment method."
+     },
+     {
+      "ruleId": "RENEW-5",
+      "detail": "The renewal amount must be greater than 0."
+     }
+    ]
+   }
+  },
+  {
+   "role": "request",
+   "method": "GET",
+   "path": "/policies/F4-MVFJSFG0NG",
+   "requestHeaders": {
+    "user-agent": "PostmanRuntime/7.56.1",
+    "accept": "*/*",
+    "cache-control": "no-cache",
+    "host": "127.0.0.1:57293",
+    "accept-encoding": "gzip, deflate, br",
+    "connection": "keep-alive"
+   },
+   "requestBody": null,
+   "status": 200,
+   "responseHeaders": {
+    "content-type": "application/json; charset=utf-8",
+    "date": "Mon, 19 Oct 2026 17:48:13 GMT",
+    "server": "Kestrel",
+    "transfer-encoding": "chunked"
+   },
+   "responseBody": {
+    "reference": "F4-MVFJSFG0NG",
+    "type": "Household",
+    "status": "Active",
+    "currentTermNumber": 1,
+    "startDate": "2026-10-19",
+    "endDate": "2027-10-18",
+    "amount": 333.27,
+    "hasClaims": false,
+    "autoRenew": false,
+    "policyholders": [
+     {
+      "firstName": "Katherine",
+      "lastName": "Johnson",
+      "dateOfBirth": "1981-08-26"
+     }
+    ],
+    "property": {
+     "addressLine1": "48 Quay St",
+     "addressLine2": "Unit 5",
+     "addressLine3": null,
+     "postcode": "M3 4LZ"
+    },
+    "terms": [
+     {
+      "termNumber": 1,
+      "startDate": "2026-10-19",
+      "endDate": "2027-10-18",
+      "amount": 333.27,
+      "paymentReference": "PAY-8948cb720a8744b79c3a0f1d8df198ec"
+     }
+    ],
+    "payments": [
+     {
+      "reference": "PAY-8948cb720a8744b79c3a0f1d8df198ec",
+      "type": "Card",
+      "amount": 333.27
+     }
+    ],
+    "refunds": [],
+    "claims": [],
+    "cancellation": null
+   }
+  }
+ ]
+}

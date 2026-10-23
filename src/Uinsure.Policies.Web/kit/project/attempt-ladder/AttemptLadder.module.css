@@ -1,0 +1,125 @@
+.receipt {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.receipt p {
+  margin: 0;
+}
+
+.rounds {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-14);
+  font-weight: 600;
+  background: var(--color-accent);
+  border-radius: var(--radius);
+}
+
+.count {
+  font-size: var(--text-14);
+  color: var(--color-text-secondary);
+}
+
+.steps {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  gap: var(--space-3);
+  padding-bottom: var(--space-3);
+}
+
+/* The chain: a line from each step's marker to the next. */
+.step::before {
+  content: "";
+  position: absolute;
+  top: 1.75rem;
+  bottom: 0;
+  left: 1.75rem;
+  border-left: 2px solid var(--color-border);
+}
+
+.step:last-child::before {
+  display: none;
+}
+
+.step:last-child {
+  padding-bottom: 0;
+}
+
+.marker {
+  position: relative;
+  z-index: 1;
+  align-self: start;
+  padding: var(--space-1);
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  font-weight: 700;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums lining-nums;
+  text-align: center;
+  color: var(--color-text-primary);
+  background: var(--color-background);
+  border: 2px solid var(--color-text-secondary);
+  border-radius: var(--radius);
+}
+
+.body {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.stageLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+}
+
+.stage {
+  font-size: var(--text-12);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+}
+
+.round {
+  padding: 0 var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-12);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  border: 1.5px solid var(--color-text-secondary);
+  border-radius: var(--radius);
+}
+
+.turn {
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-14);
+  font-weight: 600;
+  background: var(--color-accent);
+  border-radius: var(--radius);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 40rem) {
+  .step {
+    grid-template-columns: 3rem minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+
+  .step::before {
+    left: 1.5rem;
+  }
+}

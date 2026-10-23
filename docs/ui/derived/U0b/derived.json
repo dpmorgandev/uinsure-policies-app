@@ -1,0 +1,75 @@
+{
+  "node": "U0b",
+  "builtNodes": [
+    "U0a",
+    "U0b"
+  ],
+  "screens": {
+    "about": {
+      "built": [
+        "glossary-and-status-legend",
+        "compiled-at-stamp-the-commit-sha-and-utc-time-trace-json-was-compiled-from"
+      ],
+      "notBuilt": [
+        "provenance-labels",
+        "re-verify-with-git",
+        "guided-tour-entry-one-rule-end-to-end-could"
+      ]
+    },
+    "activity": {
+      "built": [
+        "event-table-text-equivalent"
+      ],
+      "notBuilt": [
+        "agent-lanes"
+      ]
+    },
+    "overview": {
+      "built": [
+        "compiled-at-stamp",
+        "top-bar-search-and-theme-toggle-global-tagged-here-once"
+      ],
+      "notBuilt": [
+        "headline-answer",
+        "receipt-figures-rules-built-total-tests-passing-nodes-done-attempts-and-fails-human-decisions",
+        "build-plan-at-a-glance",
+        "latest-human-decisions",
+        "trail-completeness-trail-incomplete-reasons-verbatim-not-built-yet-and-f0a-as-git-only"
+      ]
+    }
+  },
+  "notBuiltScreens": [
+    "commit",
+    "decisions",
+    "finding",
+    "harness",
+    "loop",
+    "matrix",
+    "node",
+    "not-found",
+    "plan",
+    "rule",
+    "sessions",
+    "stats",
+    "verdict",
+    "walkthrough",
+    "wb-cancel",
+    "wb-claim",
+    "wb-home",
+    "wb-policy",
+    "wb-renew",
+    "wb-requests",
+    "wb-sell"
+  ],
+  "unmappedIds": [],
+  "nodeRulesWithoutRegion": [
+    "DATA-1",
+    "DATA-5",
+    "DATA-6",
+    "DATA-7",
+    "SEC-1",
+    "BRAND-1",
+    "HONEST-1",
+    "RESP-1"
+  ]
+}

@@ -1,0 +1,80 @@
+.root {
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0 0 var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  border-left: 6px solid var(--color-error);
+  font-family: var(--font-sans);
+  overflow-wrap: anywhere;
+}
+
+/* A dashed rule drawn as short, fine dashes: a 6px dashed border renders as heavy blocks. */
+.root[data-kind="unreachable"] {
+  border-left-color: transparent;
+  background:
+    repeating-linear-gradient(to bottom, var(--color-error) 0 0.5rem, transparent 0.5rem 0.875rem) left top / 4px 100% no-repeat border-box,
+    var(--color-surface);
+}
+
+.title {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-2);
+  color: var(--color-error);
+  font-size: var(--text-18);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.icon {
+  flex: none;
+  width: 1.25em;
+  height: 1.25em;
+  margin-top: 0.1em;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.tags:empty {
+  display: none;
+}
+
+.detail {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-16);
+  line-height: 1.5;
+}
+
+.ext {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: var(--space-1) var(--space-4);
+  margin: var(--space-3) 0 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-14);
+  font-variant-numeric: tabular-nums lining-nums;
+}
+
+.pair {
+  display: contents;
+}
+
+.pair dt {
+  color: var(--color-text-secondary);
+}
+
+.pair dd {
+  margin: 0;
+}
+
+.actions {
+  margin-top: var(--space-3);
+}
