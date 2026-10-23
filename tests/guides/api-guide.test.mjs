@@ -150,3 +150,12 @@ test("LRN-5 A1/I3: every response recorded in receipts.md has its own curl comma
   }
   assert.deepEqual(orphans, [], "each recorded response is preceded by its own `Command: \\`curl … <url>\\`` line");
 });
+
+test("LRN-5 A1/I4: every non-curl command in the guide is exactly a receipted command", () => {
+  const commands = guideCommands(read(guidePath)).filter((c) => !c.text.startsWith("curl "));
+  assert.ok(commands.length > 0, "the guide shows dotnet, postman, node and bicep commands");
+
+  const receipted = receiptCommands(read(receiptsPath));
+  const unreceipted = commands.filter((c) => !isReceipted(c.text, receipted)).map((c) => `index.html:${c.line} ${c.text}`);
+  assert.deepEqual(unreceipted, [], "every command shown must be the command that was run, as receipts.md records it");
+});
