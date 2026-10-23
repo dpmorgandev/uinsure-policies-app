@@ -9,13 +9,21 @@ afterEach(cleanup);
 
 describe('top-bar examples', () => {
   it('has exactly the catalogued states', () => {
-    expect(examples.map((e) => e.state)).toEqual(['pop', 'pop, with the Search combobox in the search slot']);
+    expect(examples.map((e) => e.state)).toEqual(['pop']);
   });
 
   it.each(examples)('renders the example: $state', ({ element }) => {
     const { container } = render(element);
     expect(container.querySelector('header')).not.toBeNull();
-    expect(screen.getByRole('link', { name: 'Docket' })).toBeTruthy();
+    expect(screen.getAllByRole('link', { name: 'Docket' }).length).toBeGreaterThan(0);
+  });
+
+  it('pop shows the bar with the Search combobox in the slot and the bar with its own plain input', () => {
+    const [pop] = examples;
+    const { container } = render(pop.element);
+    expect(container.querySelectorAll('header')).toHaveLength(2);
+    expect(screen.getByRole('combobox', { name: 'Jump to a rule, node, SHA or path' })).toBeTruthy();
+    expect(screen.getByRole('searchbox')).toBeTruthy();
   });
 });
 
