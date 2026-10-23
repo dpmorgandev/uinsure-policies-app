@@ -9,6 +9,11 @@ export type AgentName =
   | 'security'
   | 'investigator'
   | 'git'
+  | 'web-tester'
+  | 'web-builder'
+  | 'kit-builder'
+  | 'ui-designer'
+  | 'creative-director'
   | 'david';
 
 export interface AgentBadgeProps {

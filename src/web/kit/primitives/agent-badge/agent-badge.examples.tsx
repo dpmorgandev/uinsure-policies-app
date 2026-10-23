@@ -2,7 +2,21 @@ import type { JSX } from 'react';
 import { AgentBadge } from './AgentBadge';
 import type { AgentName } from './AgentBadge';
 
-const AGENTS: AgentName[] = ['main', 'tester', 'builder', 'reviewer', 'security', 'investigator', 'git', 'david'];
+const AGENTS: AgentName[] = [
+  'main',
+  'tester',
+  'builder',
+  'reviewer',
+  'security',
+  'investigator',
+  'git',
+  'web-tester',
+  'web-builder',
+  'kit-builder',
+  'ui-designer',
+  'creative-director',
+  'david',
+];
 
 const row = { display: 'flex', flexWrap: 'wrap', gap: 'var(--space-3)', alignItems: 'center' } as const;
 

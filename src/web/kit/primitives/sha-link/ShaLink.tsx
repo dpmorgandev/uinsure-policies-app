@@ -45,6 +45,7 @@ export function ShaLink({ sha, fullSha, href, githubHref, disagreement, missingL
         <a
           className={`${styles.sha} ${styles.link}`}
           href={primary}
+          rel={!href && githubHref ? 'noreferrer' : undefined}
           title={fullSha}
           aria-describedby={describedBy}
           aria-label={separateGithub ? undefined : githubHref ? github : undefined}
@@ -58,7 +59,7 @@ export function ShaLink({ sha, fullSha, href, githubHref, disagreement, missingL
         </span>
       )}
       {separateGithub ? (
-        <a className={`${styles.ext} ${styles.link}`} href={githubHref} aria-label={github}>
+        <a className={`${styles.ext} ${styles.link}`} href={githubHref} rel="noreferrer" aria-label={github}>
           <ExternalLink className={styles.icon} aria-hidden="true" focusable="false" />
         </a>
       ) : null}
