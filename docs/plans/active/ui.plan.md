@@ -90,6 +90,12 @@ David, 2026-10-22, before the 2026-10-23 demo: U7 is built as a demo slice ("pro
 - The activity populated shot at 390 holds at least the first records, so a change to them is caught (U7 review A1 R1, HONEST-1)
 - When the re-read after a 201 cancel fails, the header's policy status is marked as read before the cancel, not shown as current (U7 review A1 R2, WB-4)
 - The cancel screen's unreachable ': ''' status fallbacks go, or render the not-returned state (U7 review A1 R3, HONEST-1)
+- → U10: the renew screen's term default lands in the amount field while the person is typing, and the two texts join ('527.18544.10'); RenewPolicy never merges a default into a typed amount. This is the trigger behind W3's 'amount null' (W3 A4 I6, U8 A1 I2); U8 now sends such text as typed, so the API's 400 answers it (U8 whole suite, 2026-10-23, WB-5)
+- → U10: U5's STATS-1 'F1's last verdict reads PASS at A1' failed once in the whole suite: the facts region was not drawn within 5s (U8 whole suite, 2026-10-23, STATS-1)
+- → U10: W3's wb-5 claim and renewal specs fail under --repeat-each or beside another session's Playwright run, sharing one API and its data; each test owns its data, or the spec runs serially (U8 repeat run, 2026-10-23, WB-5)
+- → U10: the workbench request log is still uncapped for the life of the page; publish() no longer re-copies settled exchanges (U8 security A1 note, WB-7)
+- → U10: U7's two pinned NAV-5 tour tests time out under --repeat-each 5 with parallel workers: the trace load is starved; openTour waits for the trace before any test reads a stop (U8 red, 2026-10-23, NAV-5)
+- → U10: RenewPolicy's amountToSend tests a clean number with Number(), which reads '0x10' as 16 and '1e2' as 100; a decimal pattern decides what is sent as a number (U8 review A2 R1, WB-5, HONEST-1)
 
 ## Attempt log
 (none)

@@ -18,7 +18,12 @@ const watchers = new Set<() => void>();
 const loggedFetch = loggingFetch((input, init) => fetch(input, init), requestLog);
 
 function publish(): void {
-  logSnapshot = requestLog.map((entry) => ({ ...entry }));
+  // Only an exchange still waiting is copied afresh; a settled one is kept as the same object.
+  const before = logSnapshot;
+  logSnapshot = requestLog.map((entry, index) => {
+    const seen = before[index];
+    return seen !== undefined && seen.status !== null ? seen : { ...entry };
+  });
   watchers.forEach((watcher) => watcher());
 }
 

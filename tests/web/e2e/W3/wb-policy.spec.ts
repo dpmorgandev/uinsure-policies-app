@@ -34,6 +34,13 @@ for (const s of Object.values(policyStates)) {
     await expect.poll(async () => regionNamed(await read(), ACTIONS)?.req ?? null).toEqual(['WB-4', 'WB-5']);
   });
 
+  // U8 (W3 review A4 R1, David D1): the actions region draws the reference's kit Buttons, not only links.
+  test(`WB-5 · parity: wb-policy ${s.state}'s actions region carries the reference's catalogued components, the kit Button`, async ({ page }) => {
+    const { reference, read } = await openAgainstReference(page, s);
+    expect(regionNamed(reference, ACTIONS)?.comps, 'the W3 reference draws the actions as kit Buttons').toEqual(['button']);
+    await expect.poll(async () => regionNamed(await read(), ACTIONS)?.comps ?? null).toEqual(['button']);
+  });
+
   test(`WB-7 · parity: wb-policy ${s.state}'s requests-that-touched-this-policy region is built, tagged WB-7, with the request-log`, async ({
     page,
   }) => {
