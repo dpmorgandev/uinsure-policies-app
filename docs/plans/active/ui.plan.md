@@ -95,6 +95,7 @@ David, 2026-10-22, before the 2026-10-23 demo: U7 is built as a demo slice ("pro
 - → U10: W3's wb-5 claim and renewal specs fail under --repeat-each or beside another session's Playwright run, sharing one API and its data; each test owns its data, or the spec runs serially (U8 repeat run, 2026-10-23, WB-5)
 - → U10: the workbench request log is still uncapped for the life of the page; publish() no longer re-copies settled exchanges (U8 security A1 note, WB-7)
 - → U10: U7's two pinned NAV-5 tour tests time out under --repeat-each 5 with parallel workers: the trace load is starved; openTour waits for the trace before any test reads a stop (U8 red, 2026-10-23, NAV-5)
+- → U10: RenewPolicy's amountToSend tests a clean number with Number(), which reads '0x10' as 16 and '1e2' as 100; a decimal pattern decides what is sent as a number (U8 review A2 R1, WB-5, HONEST-1)
 
 ## Attempt log
 (none)

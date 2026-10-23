@@ -1,0 +1,59 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T04:34:45Z",
+  "plan": "ui",
+  "node": "U8",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a53be4d3f124d92a4",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U8",
+    "attempt": 2,
+    "base_sha": "a3420f104aebf4aaa532ee57de83ab3c67e5146e",
+    "head_sha": "6109dd980bacaa76f1393577445e10f63d0248c5",
+    "diff_fingerprint": "9ec121cfd7aa5084db70efe8e2a79524757142e7",
+    "verdict": "PASS",
+    "gate_refs": [
+      "loop.jsonl:30 gate.red",
+      "loop.jsonl:31 gate.typecheck",
+      "loop.jsonl:32 gate.lint",
+      "loop.jsonl:33 gate.lint-css",
+      "loop.jsonl:34 gate.test",
+      "loop.jsonl:35 gate.build",
+      "loop.jsonl:36 gate.e2e",
+      "loop.jsonl:37 gate.e2e-regression",
+      "loop.jsonl:38 gate.audit",
+      "loop.jsonl:40 gate.coverage",
+      "loop.jsonl:41 gate.scope (not ok)",
+      "loop.jsonl:42 gate.no-stubs",
+      "loop.jsonl:43 gate.scope",
+      "loop.jsonl:44 gate.axe",
+      "loop.jsonl:45 gate.green"
+    ],
+    "rules_covered": [],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "WB-5",
+        "severity": "P2",
+        "file": "src/web/app/workbench/renew/RenewPolicy.tsx",
+        "line": 28,
+        "what": "amountToSend checks a 'clean number' with Number(), which also reads hex, binary and exponent text: '0x10' goes out as 16 and '1e2' as 100, numbers nobody typed.",
+        "why": "Finding I2 and its delegated ruling say an amount that is not a clean number is sent as typed, so the API's 400 answers it (HONEST-1: no invented value). The function's own doc comment promises the same. Number() accepts 0x/0b/0o and exponent forms, so those few inputs still get converted on the page. The red tests pin only 'abc' and '', so they can't catch this. It's an edge case and doesn't block, but the check should be a decimal pattern, not Number.isFinite.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Rules-less node: judged on the 13 U8 acceptance lines in docs/plans/active/ui.dag.yaml:454-466. All A1 findings are closed. I1 (P1): loggingFetch (src/web/app/data/api.ts:440-445) now awaits the body before it sets status, headers and body together. publish()'s 'status !== null means settled' reuse (browser.ts:25) is now sound, so line 12 holds without the race. I2 (P1): RenewPolicy no longer sends Number(text), so no null or 0 is invented. Line 9b is now fixed (null can't be sent) and explained (ui.plan.md:93 names the trigger: the term default joining typed text). I3: gate.axe recorded at loop.jsonl:44, 7 passed. I4: termMethod has one merged JSDoc (RenewPolicy.tsx:19). I5: the hint says 'Defaults from term N' only when termMethod gives a method (RenewPolicy.tsx:159).",
+      "TDD order: finding-red commits 9a665fc (WB-7), c6d948a (WB-5) and c4f8973 (HONEST-1) come before fix 53f68cd. All carry Agent/Plan/Node/Rule/TDD and Fixes-Finding. gate.red (loop.jsonl:30) records 4/4 failing on assertions at c4f8973, and the reasons match the fixes. 53f68cd stages only src/web/app/data/api.ts and RenewPolicy.tsx (activity.jsonl:312). No test was edited after red.",
+      "Tests: wb-7-log-concurrent holds A's body stream open while B is sent and answered. Under the old ordering this deterministically leaves A with status 200 and body null, so it really detects I1. wb-5-renew-amount reads the amount off the wire text and can tell '' and 'abc' apart from 0 and null. honest-1-renew-method-hint waits for the Payment method field, which renders only after the read, so it doesn't pass before data arrives.",
+      "Process: in attempt 2, web-builder changed src through Bash (a python string replace and sed -i, activity.jsonl:302-303) rather than Edit. activity.jsonl therefore keeps only truncated commands, not file paths, for this fix, and per-tool edit hooks don't see it. The committed result is in scope, but the orchestrator may want to hold builders to Edit/Write.",
+      "The suite is not green at HEAD. gate.green (loop.jsonl:45) records exit 1 with ok true: 2 e2e failures (the W3 wb-5 renewal spec, where the amount joins the term default, and U5 STATS-1's facts-region timeout), plus 16 regression shots deferred. David carried them to U10 ('add debt to u10 so we can finish here', ui.plan.md:93-97, commit 6109dd9). I accept the ruling. But the W3 failure is a real RenewPolicy defect (a default merged into a typed amount): U8 explained it, did not fix it, and only stopped it turning into null. The request log also stays uncapped (line 12 is met through its 'or' branch).",
+      "Plan state: t2 and t3 are now 'skipped' (ui.dag.yaml:469-470), which settles A1's plan-state note. gate.no-stubs (loop.jsonl:42): no 'not implemented' in src/web. The diff uses no banned time or rounding API."
+    ]
+  }
+}

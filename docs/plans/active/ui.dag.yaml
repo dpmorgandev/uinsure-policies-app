@@ -471,7 +471,7 @@ nodes:
       - {id: t4, role: builder, step: green, layer: screen, rules: [], title: "The fixes for every U8 acceptance line; whole acceptance suite green … all layers", status: done}
       - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: skipped}
       - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, the regression, rule coverage, diff scope", status: done}
-      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
       - {id: t8, role: tester, step: qa, layer: null, rules: [], after: [t6], title: "QA script docs/qa/ui-U8.md, beside review", status: pending}
       - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: pending}
       - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; baselines; chore(trace) commit", status: pending}
