@@ -1,0 +1,219 @@
+plan_id: bug-002
+kind: bug
+title: "What main still holds after #121 (inv-009)"
+status: approved
+created: 2026-10-23
+approved_by: david
+approved_on: 2026-10-23
+requirements_rev: 4ec5810
+parent: inv-009
+nodes:
+  - id: N1
+    title: "A fresh clone F5s straight into Docket"
+    kind: bug
+    owner: loop
+    depends_on: []
+    rules: [DATA-1]
+    cuttable: false
+    budget: 3h
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/bug-002-N1.md
+    trace: docs/trace/bug-002/N1/
+    acceptance:
+      - "On a clone with no node_modules, the web launch path restores packages before Vite starts, or stops naming npm ci in src/Uinsure.Policies.Web (inv-009 #1, I1)"
+      - "The dev server answers on its port before the trail compile ends; /trace.json says it is compiling until then, and serves the compiled trail after (I4)"
+      - "Under vite preview a failed compile is reported on the console and /trace.json answers 503, or preview never compiles (inv-009 #12, I17)"
+      - "package.json declares the Node minimum in engines and src/Uinsure.Policies.Web/.nvmrc names it (I5)"
+      - "The reproduction test fails on the merge base and passes at the PR head"
+      - "The full suite and the rule-coverage check pass"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [DATA-1], title: "Reproduction: a fresh clone has no restore in the launch path, the port refuses connections during the compile, and preview hides a failed compile; fails on main (unit/toolchain)", status: pending}
+      - {id: t2, role: builder, step: stub, layer: compiler, rules: [], title: "No stub: every route this node touches already exists", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the reproduction tests red against main; go or change", status: pending}
+      - {id: t4, role: builder, step: green, layer: compiler, rules: [DATA-1], title: "Launch path restore or named stop, listen-first trace-on-start, preview report or skip, engines and .nvmrc", status: pending}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with the suite green", status: pending}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "Every gate for the node, recorded with receipts", status: pending}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [DATA-1], title: "QA script docs/qa/bug-002-N1.md: a fresh clone F5s into Docket", status: pending}
+      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: pending}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md, README and matrix; chore(trace) commit; completeness check passes", status: pending}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: pending}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and the running app", status: pending}
+      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
+  - id: N2
+    title: "The workbench shows the request it sent and the response it got"
+    kind: bug
+    owner: loop
+    depends_on: []
+    rules: [WB-7]
+    cuttable: false
+    budget: 3h
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/bug-002-N2.md
+    trace: docs/trace/bug-002/N2/
+    acceptance:
+      - "Sell and Cancel show the request as sent and the response got in place of the not-built-yet inspector region, pinned by an e2e per screen (inv-009 #2, I7, I8)"
+      - "On wb-claim the requests drawer never overlaps the Record this claim button and the contentinfo footer is the last box below main (inv-009 #5, I11)"
+      - "After a send on every workbench screen, the latest request and response are visible without a further click (inv-009 #6, I12)"
+      - "JSON request and response bodies are indented in the drawer; non-JSON bodies show as received; the logged wire text stays exact (inv-009 #7, I13)"
+      - "The reproduction test fails on the merge base and passes at the PR head"
+      - "The full suite and the rule-coverage check pass"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-7], title: "Reproduction: the Sell and Cancel inspector regions are not built, the drawer starts closed after a send, rides over the claim section, and prints bodies on one line; fails on main (e2e and unit)", status: pending}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No stub: every route this node touches already exists", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the reproduction tests red against main; go or change", status: pending}
+      - {id: t4, role: builder, step: green, layer: screen, rules: [WB-7], title: "The inspector on Sell and Cancel, the drawer open after a send, mounted at form level, bodies indented for display", status: pending}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with the suite green", status: pending}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "Every gate for the node, recorded with receipts", status: pending}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [WB-7], title: "QA script docs/qa/bug-002-N2.md: send on each workbench screen and read the request and response", status: pending}
+      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: pending}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md, README and matrix; chore(trace) commit; completeness check passes", status: pending}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: pending}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and the running app", status: pending}
+      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
+  - id: N3
+    title: "The workbench says what the API answered"
+    kind: bug
+    owner: loop
+    depends_on: [N2]
+    rules: [WB-1, BUSY-1, HONEST-1]
+    cuttable: false
+    budget: 3h
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/bug-002-N3.md
+    trace: docs/trace/bug-002/N3/
+    acceptance:
+      - "After a sale the Sell header Status reads the status the API returned; before any answer it says nothing has been sold yet, never \"not in this screen's data\"; Cancel shows the policy status the API holds (inv-009 #3, I9)"
+      - "On a 201 sale, focus moves to the answer stating the 201 and the stored reference, from the Send button (inv-009 #4, I10; David: focus, not a redirect)"
+      - "When the re-read after a 201 cancel fails, the header marks the status as read before the cancel; no rung receipt reads \"answered ,\" (inv-009 #18, I24)"
+      - "The reproduction test fails on the merge base and passes at the PR head"
+      - "The full suite and the rule-coverage check pass"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-1, BUSY-1, HONEST-1], title: "Reproduction: Sell Status reads not in this screen's data after a 201, focus stays at Send, and Cancel shows an unmarked stale status and \"answered ,\"; fails on main (unit and e2e)", status: pending}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No stub: every route this node touches already exists", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the reproduction tests red against main; go or change", status: pending}
+      - {id: t4, role: builder, step: green, layer: screen, rules: [WB-1, BUSY-1, HONEST-1], title: "Status bound on Sell and Cancel, focus to the sale answer, the failed re-read marked and not-returned drawn", status: pending}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with the suite green", status: pending}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "Every gate for the node, recorded with receipts", status: pending}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [WB-1, BUSY-1, HONEST-1], title: "QA script docs/qa/bug-002-N3.md: sell, cancel, and read what each header says", status: pending}
+      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: pending}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md, README and matrix; chore(trace) commit; completeness check passes", status: pending}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: pending}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and the running app", status: pending}
+      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
+  - id: N4
+    title: "The explorer has no region still marked not built yet"
+    kind: feature
+    owner: loop
+    depends_on: []
+    rules: [DATA-4, AGENT-2, DAG-1]
+    cuttable: false
+    budget: 3h
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/bug-002-N4.md
+    trace: docs/trace/bug-002/N4/
+    acceptance:
+      - "Matrix Step 3 draws the test-count scope note from trace.json per-node counts, with no not-built-yet marker (inv-009 #8, I6)"
+      - "The undrawn-lines notice on the activity screen is a kit component, added by the in-node kit gap with at most one catalog state, and agent-2.spec.ts runs without fixme and passes (inv-009 #10, I15)"
+      - "With two plans in trace.json, the Plan nav entry offers every plan before or without landing on the build plan (inv-009 #11, I16)"
+      - "The reproduction test fails on the merge base and passes at the PR head"
+      - "The full suite and the rule-coverage check pass"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [DATA-4, AGENT-2, DAG-1], title: "Reproduction: the matrix scope note is not built, agent-2.spec.ts without fixme fails, and the Plan nav opens build only; fails on main (e2e)", status: pending}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No stub: every route this node touches already exists", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the reproduction tests red against main; go or change", status: pending}
+      - {id: t4, role: builder, step: green, layer: screen, rules: [DATA-4, AGENT-2, DAG-1], title: "The scope note from trace.json, the notice from the kit (in-node kit gap), the Plan nav over every plan", status: pending}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with the suite green", status: pending}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "Every gate for the node, recorded with receipts", status: pending}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [DATA-4, AGENT-2, DAG-1], title: "QA script docs/qa/bug-002-N4.md: the matrix, the activity notice and the Plan nav", status: pending}
+      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: pending}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md, README and matrix; chore(trace) commit; completeness check passes", status: pending}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: pending}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and the running app", status: pending}
+      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
+  - id: N5
+    title: "A null policyholder is a 400, and the API carries its version"
+    kind: bug
+    owner: loop
+    depends_on: []
+    rules: [SELL-4]
+    cuttable: false
+    budget: 3h
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/bug-002-N5.md
+    trace: docs/trace/bug-002/N5/
+    acceptance:
+      - "POST /policies with a null element in policyholders (alone, or among valid holders) returns 400 ValidationProblemDetails keyed policyholders[i], no ruleId, and creates no policy (inv-009 #17, I23)"
+      - "The API project declares one version, and /openapi/v1.json info.version equals it (inv-009 #16, I21)"
+      - "The reproduction test fails on the merge base and passes at the PR head"
+      - "The full suite and the rule-coverage check pass"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [SELL-4], title: "Reproduction: POST /policies with policyholders [null] and [valid, null] returns 500, and OpenAPI info.version is the generator default; fails on main. Postman requests in F1 Sell rule violations", status: pending}
+      - {id: t2, role: builder, step: stub, layer: api, rules: [], title: "No stub: every route this node touches already exists", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the reproduction tests red against main; go or change", status: pending}
+      - {id: t4, role: builder, step: green, layer: api, rules: [SELL-4], title: "SellPolicyRequest reports each null policyholder element as a 400 before mapping; <Version> in the API csproj carried by an OpenAPI document transformer", status: pending}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with the suite green", status: pending}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "Every gate for the node, recorded with receipts", status: pending}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [SELL-4], title: "QA script docs/qa/bug-002-N5.md", status: pending}
+      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: pending}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md, README and matrix; chore(trace) commit; completeness check passes", status: pending}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: pending}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and the running app", status: pending}
+      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
+  - id: N6
+    title: "The guides, the README and the plan state match main"
+    kind: docs
+    owner: loop
+    depends_on: [N1, N2, N3, N4, N5]
+    rules: []
+    cuttable: false
+    budget: 3h
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/bug-002-N6.md
+    trace: docs/trace/bug-002/N6/
+    acceptance:
+      - "The API guide holds no \"not on this branch\" callout; its launch and test sections and counts are reprinted from a run on main (inv-009 #13, I18)"
+      - "api-guide.spec.md allows one diagram per big idea and the API guide draws one per big idea (inv-009 #14, I19; David: draw them)"
+      - "The UI guide carries F8 R6-R12 and the A2.2 cd-chain note, fixed (inv-009 #15, I20)"
+      - "The README says the API and web profile is picked once per machine (inv-009 #1, I2)"
+      - "build.dag.yaml shows F7 and F8 done with pr 119, ui.dag.yaml shows U10 done with pr 116; tasks that never ran are skipped, not done (inv-009 #9, I14)"
+      - "Both PDFs are reprinted from the HTML on the PR head"
+      - "The full suite and the guide checks pass"
+    tasks:
+      - {id: t1, role: builder, step: write, layer: null, rules: [], title: "Reprint the API guide against main, one diagram per big idea and the spec amended, the UI guide P2s, the README line, both PDFs", status: pending}
+      - {id: t2, role: orchestrator, step: gates, layer: null, rules: [], title: "Guide checks, privacy scan, PDFs reprinted, full suite; the plan-state commit recorded", status: pending}
+      - {id: t3, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t4, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/bug-002-N6.md: read each changed section against main", status: pending}
+      - {id: t5, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: pending}
+      - {id: t6, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md, README and matrix; chore(trace) commit; completeness check passes", status: pending}
+      - {id: t7, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: pending}
+      - {id: t8, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and the printed guides", status: pending}
+      - {id: t9, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
