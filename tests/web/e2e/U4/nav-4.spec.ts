@@ -6,7 +6,7 @@
 // same region (U0b's expectRegionControlsInTopBar, here given U4's reference through its derived path).
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { auditEverywhere, compileAgents, openOnFixture, route, searchField, searchOptions, shaOf, short } from './support/app';
+import { REPO, auditEverywhere, compileAgents, openOnFixture, route, searchField, searchOptions, shaOf, short, snapshotOf } from './support/app';
 import type { CompiledTrail } from './support/app';
 import { expectRegionControlsInTopBar } from '../U0b/support/parity';
 import { overview } from './support/parity';
@@ -59,6 +59,19 @@ test('NAV-4 · typing the first five characters of a SHA offers its commit, whic
 test('NAV-4 · typing part of a file path offers the path', async ({ page }) => {
   await typeIn(page, route.overview, 'sell.txt');
   await expect(searchOptions(page).and(page.locator('[data-kind="path"]')).filter({ hasText: 'src/sell.txt' })).toHaveCount(1);
+});
+
+test('NAV-4 · choosing the src/sell.txt path opens that file on GitHub at the snapshot SHA', async ({ page, context }) => {
+  // A3 I1/I4: github.com is never fetched; the popup's request is caught and answered here.
+  await context.route('https://github.com/**', (r) => r.fulfill({ status: 200, contentType: 'text/plain', body: 'caught' }));
+  await typeIn(page, route.overview, 'sell.txt');
+  const option = searchOptions(page).and(page.locator('[data-kind="path"]')).filter({ hasText: 'src/sell.txt' });
+  await expect(option).toHaveCount(1);
+  const popup = context.waitForEvent('page');
+  await option.click();
+  const opened = await popup;
+  await opened.waitForURL(/^https:\/\/github\.com\//);
+  expect(opened.url()).toBe(`${REPO}/blob/${snapshotOf(fixture.compiled).sha}/src/sell.txt`);
 });
 
 test('NAV-4 · a query nothing matches says no rule, node, SHA or path matches it', async ({ page }) => {

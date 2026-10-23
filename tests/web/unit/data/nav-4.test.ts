@@ -59,6 +59,15 @@ describe('the index', () => {
       expect.arrayContaining(['src/Uinsure.Policies.Domain/StartDate.cs', 'docs/trace/build/F1/verdicts/A1-reviewer.json', 'docs/qa/build-F1.md']),
     );
   });
+
+  test("NAV-4 · a path's entry links to the file itself, a repo-relative path, not an in-app '#/files/' route", () => {
+    // A3 I1/I4: the path's link is what its consumer opens on GitHub at the snapshot SHA (REPO/blob/<sha>/<path>),
+    // so it ends in the path as trace.json names it, unencoded, and holds no hash route the app doesn't serve.
+    const entry = searchIndex(trace).find((e) => e.kind === 'path' && e.label === 'src/Uinsure.Policies.Domain/StartDate.cs');
+    expect(entry, 'the finding file is in the index').toBeDefined();
+    expect(entry?.href).not.toContain('#');
+    expect(entry?.href.endsWith('src/Uinsure.Policies.Domain/StartDate.cs'), `the link ends in the file's path: ${entry?.href}`).toBe(true);
+  });
 });
 
 describe('a query', () => {
