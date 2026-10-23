@@ -74,6 +74,17 @@ test('NAV-4 · choosing the src/sell.txt path opens that file on GitHub at the s
   expect(opened.url()).toBe(`${REPO}/blob/${snapshotOf(fixture.compiled).sha}/src/sell.txt`);
 });
 
+test('NAV-4 · ArrowDown makes the build/F2 node option active and Enter opens the node page, with no pointer', async ({ page }) => {
+  // A3 I5: the choice is made by keyboard only.
+  await typeIn(page, route.overview, 'build/F2');
+  const option = searchOptions(page).and(page.locator('[data-kind="node"]')).filter({ hasText: 'build/F2' });
+  await expect(option).toHaveCount(1);
+  await searchField(page).press('ArrowDown');
+  await expect(option).toHaveAttribute('aria-selected', 'true');
+  await searchField(page).press('Enter');
+  await expect(page).toHaveURL(/#\/plans\/build\/F2$/);
+});
+
 test('NAV-4 · a query nothing matches says no rule, node, SHA or path matches it', async ({ page }) => {
   await typeIn(page, route.overview, 'ZZ-99');
   await expect(searchOptions(page)).toHaveCount(0);
