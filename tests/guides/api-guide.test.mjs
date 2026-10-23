@@ -201,3 +201,14 @@ test("A1/I9: no receipted command passes both --launch-profile and --no-launch-p
     .map((c) => `receipts.md:${c.line} ${c.text}`);
   assert.deepEqual(contradictory, [], "a receipt runs with a launch profile or without one, never both");
 });
+
+const scalarRoutes = (text) =>
+  [...new Set([...text.matchAll(/(?:https?:\/\/[^\s/"'<>`]+)?(\/scalar(?:\/[\w.-]+)*)/g)].map((m) => m[1]))].sort();
+
+test("LRN-5 A1/I10: the guide names one Scalar URL, and it is the one the receipted call used", () => {
+  const inGuide = scalarRoutes(read(guidePath));
+  assert.equal(inGuide.length, 1, `the prose and the command must name the same Scalar route (found ${inGuide.join(", ")})`);
+
+  const inReceipts = scalarRoutes(read(receiptsPath));
+  assert.deepEqual(inReceipts, inGuide, "the Scalar route the guide names is the one receipts.md records calling");
+});
