@@ -1,0 +1,3 @@
+The request log table shows an unanswered or pending request as pending, never status 0 (W3 review A2 R5, WB-7, HONEST-1)
+
+In the kit: request-log's RequestLogEntry.status is a number and the table draws String(status), so a request with no answer yet can only show as 0. An entry whose status is not yet known draws a pending status in the status column, inside the existing populated state; the filter matches it by the word pending.

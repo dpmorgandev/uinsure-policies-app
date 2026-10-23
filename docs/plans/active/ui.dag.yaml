@@ -463,8 +463,9 @@ nodes:
       - "routes.tsx's doc comment no longer says cancel falls to the not-built page (W3 review A4 R7, WB-5)"
       - "tests/web/e2e/W1/support/parity.ts has no orphan nav-settle comment block (W3 review A4 R8)"
       - "The workbench request log is capped, or publish() stops re-copying the whole log on every exchange (W3 security A4 S1, WB-7)"
+      - "U7's NAV-5 tour tests wait for the tour's Rule stop to name a rule before reading it: the Walkthrough test read #/rules before the trace loaded and failed 2 of 6 runs (U8 red, 2026-10-23)"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance and unit tests for every U8 acceptance line … and unit tests", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance and unit tests for every U8 acceptance line … and unit tests", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the U8 acceptance tests; go or change", status: pending}
       - {id: t4, role: builder, step: green, layer: screen, rules: [], title: "The fixes for every U8 acceptance line; whole acceptance suite green … all layers", status: pending}
