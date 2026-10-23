@@ -405,7 +405,7 @@ nodes:
     rules: []
     cuttable: true
     budget: null
-    status: in_progress
+    status: hitl
     attempt: 1
     branch: feature/ui/U7
     worktree: .claude/worktrees/ui-U7
