@@ -1,0 +1,66 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T22:52:31Z",
+  "plan": "ui",
+  "node": "W3",
+  "attempt": 5,
+  "agent": "reviewer",
+  "agent_id": "a12dd41ff20d9145f",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "W3",
+    "attempt": 5,
+    "base_sha": "209fd0aa2f16cef6aed8be921f9d57061da58a06",
+    "head_sha": "456d435da0a968b8e9091393bd45880f64b86409",
+    "diff_fingerprint": "77cbd2eb455b2f867e7967ce6a9d3bdee522ab1e",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gates.jsonl:27 gate.typecheck ok (343c270)",
+      "gates.jsonl:28 gate.lint ok (343c270)",
+      "gates.jsonl:29 gate.build ok (343c270)",
+      "gates.jsonl:30 gate.test 338 passed (343c270)",
+      "gates.jsonl:31 gate.lint-css ok (343c270)",
+      "gates.jsonl:32 gate.e2e 220 passed, 2 contention re-runs at --workers=1 (343c270)",
+      "gates.jsonl:33 gate.e2e-regression known set (343c270)",
+      "gates.jsonl:34 gate.trace-check ok (343c270)",
+      "gates.jsonl:35 gate.integrate ok (343c270)",
+      "gates.jsonl:36 gate.audit ok (343c270)",
+      "gates.jsonl:24 gate.no-stub no match (acf5685)",
+      "gates.jsonl:37 gate.qa ok (456d435)",
+      "loop.jsonl:76 verdict(security,PASS) A4",
+      "loop.jsonl:79 escalated attempt 5",
+      "loop.jsonl:80 steer(D1,pause2)",
+      "loop.jsonl:82 gate.qa (456d435)",
+      "loop.jsonl:83 findings A4.md",
+      "loop.jsonl:84 findings D1.md"
+    ],
+    "rules_covered": [
+      "WB-5",
+      "WB-7"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "WB-7",
+        "severity": "P2",
+        "file": "docs/qa/ui-W3.md",
+        "line": 240,
+        "what": "The QA script still sends W3's carries to U7: note 3c (:240), note 3g (:251) and the sign-off's 'Pass with U7 lines' (:296). D1 moved them to U8.",
+        "why": "e06cd22 was written before 456d435. That commit moved A2 R4-R6 out of U7 and into U8 (ui.dag.yaml:500-502), and U7 (:415-464) no longer holds them. If David signs off 'with U7 lines' at pause 2, he is pointed at the wrong node. The U7 mentions at :109 (gitignore, U7:418) and :212 (activity, U7:426/438) are correct.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "Scope. The diff fingerprint is the same as at A4 (343c270). The commits since then are 0cc269e (plan), e06cd22 (QA) and 456d435 (plan), and all three fall outside the fingerprint. So src/ and tests/ are byte-for-byte the code A4 judged. Its receipts at 343c270 (gates.jsonl:27-36) still apply, and nothing new needed a gate.",
+      "Rules. WB-5 and WB-7 count as covered on the evidence A4 recorded: the COULD-2 quote drops to 0 after a claim, the COULD-3 cheque refusal, the RENEW-1/2 window, the page.route 201 renewal with its literal term dates, and loggingFetch keeping headers and the raw text of both bodies. The two gaps that kept them missing at A4 (R1 actions-region components, R2 substring path match) are U8 acceptance lines by David's ruling D1 (loop.jsonl:80; ui.dag.yaml:497-498). As instructed, I have not raised them again. 'Covered' here means covered with D1's carries open in U8, not that the gaps are closed.",
+      "U8 plan commit 456d435. U8 (ui.dag.yaml:481-519) has one line for each of A4 R1-R8 and S1, plus A2 R4-R6: twelve lines, matching D1.md I1-I12 one to one. Each line names its finding and rule, and each says what has to be true, so U8's red step can test it. depends_on [W3] is right. rules: [] and the task shape follow U7's tech-debt pattern. None of the lines is duplicated in U7.",
+      "QA script e06cd22. Every node rule has step rows (WB-5 and WB-7). The script ends with a sign-off block and the commands to run the app on W3's ports (4180/5090, position 10). Steps that the code is predicted not to meet (note 3: actions are links, status 0, no curl, Try again re-reads only) still state what the acceptance asks for, and note 3 names the line for each, which is honest. Note 6 says plainly that the tester did not run the steps.",
+      "The 'Commit under test: 343c270' line is right, because 456d435 changes only plan state. Pause 2 should still record the SHA actually tested.",
+      "Trailers. The plan commits (0cc269e, 456d435) carry Agent, Plan and Node but no Rule or TDD trailer. That matches how plan state commits are written elsewhere in this trail, so I have not raised it.",
+      "Leftovers. gate.no-stub (gates.jsonl:24, at acf5685) found no match. Only a merge separates that head from 343c270, and the code fingerprint is unchanged since A4. No banned time or rounding API is in the diff (A4)."
+    ]
+  }
+}

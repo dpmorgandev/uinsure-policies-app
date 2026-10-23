@@ -1,0 +1,68 @@
+{
+  "v": 1,
+  "ts": "2026-10-22T22:38:26Z",
+  "plan": "ui",
+  "node": "W3",
+  "attempt": 4,
+  "agent": "security",
+  "agent_id": "a44928d4a641575e6",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "W3",
+    "attempt": 4,
+    "base_sha": "209fd0aa2f16cef6aed8be921f9d57061da58a06",
+    "head_sha": "343c2709312189ac527427a888f791e03039e348",
+    "diff_fingerprint": "77cbd2eb455b2f867e7967ce6a9d3bdee522ab1e",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.typecheck",
+      "gate.lint",
+      "gate.build",
+      "gate.test",
+      "gate.lint-css",
+      "gate.e2e",
+      "gate.e2e-regression",
+      "gate.integrate",
+      "gate.audit"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "W4",
+        "severity": "P2",
+        "file": "src/web/app/workbench/browser.ts",
+        "line": 15,
+        "what": "The request log keeps every exchange, with full headers and bodies, for the life of the page. It has no cap, and publish() re-copies the whole array on each send and each answer.",
+        "why": "Hardening only. The log is memory-only and holds no cookies or auth, but it grows without bound in a long session and each copy costs more as it grows. WB-7 asks for no cap, so this does not block. Consider a cap or a note for U7.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "W1: grep of src/web/app and src/web/kit finds no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function. Request and response bodies, headers and API problem text render through React text nodes (HttpExchange, JsonViewer, ProblemView). MarkdownText's only hit is a comment saying it does not use dangerouslySetInnerHTML.",
+      "W2: every href this diff adds is an internal hash or route. They are #/workbench/policies/<encodeURIComponent(reference)>, the cancel, claims/new and renew routes, and #/rules/<ruleId>. There is no javascript: and no data-supplied URL. The only external URL in src/web/app is the REPO constant, which is pre-existing.",
+      "W3: src/web/index.html still has CSP default-src 'self'; style-src 'self' 'unsafe-inline'. The 'unsafe-inline' for styles is pre-existing and not in this diff. No third-party origin is added.",
+      "W4: the new client calls (recordClaim, renewPolicy, quoteCancellation, getPolicy) go only to /api/policies/... through the one logging fetch. The only storage touched is the existing recent-policies localStorage (WB-9). There is no cookie, sessionStorage or other storage access. The log is a module-level in-memory array and is never persisted or sent anywhere. The headers it records are the page's content-type and the response headers; this app has no auth or cookies, so nothing sensitive is captured. Added after the last verdict: headers and exact wire text are kept and shown, and the display is text-only.",
+      "W5: n/a, the diff does not touch src/web/compiler. Listed under rules_covered because there is nothing for it to fail on.",
+      "W6: no local absolute path, personal email, key or token in the src/web diff or the test files. The docs/ui/derived/W3 fixtures hold only GitHub URLs built from SHAs and the trace's sign-off name. A grep of the whole packet diff for secret-like words hit only static rung-spine fixture markup. The untracked src/web/test-results/ directory in git status is not in the diff and should stay uncommitted.",
+      "W7: the diff touches no package.json or lockfile. gate.audit (omit=dev, high) exited 0 with runtime clean; dev shows 5 high, the known stylelint/micromatch/braces chain. The last gate.audit event is at head acf5685. The only commit after it is the U5 merge, which the diff does not show touching package files.",
+      "W8: failure paths show only the API's own problem fields (status, title, detail, ruleId) or 'The API did not answer'. There is no stack trace, no exception message and no server internals.",
+      "API8:2023 covers W3 and W4. API10:2023 covers W1 and W8. API1, API2, API3, API4, API5, API6, API7 and the .NET extras are n/a: ui node, no server code in the diff.",
+      "gate.e2e at this head had 2 contention failures at 2 workers that passed at 1 worker. gate.e2e-regression has the known set, with wb-policy x12 being W3's intended change awaiting a baseline ruling. Neither is a security matter."
+    ]
+  }
+}

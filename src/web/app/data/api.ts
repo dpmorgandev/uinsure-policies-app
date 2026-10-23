@@ -280,7 +280,7 @@ async function ask<T = Policy>(deps: ApiDeps, url: string, init?: RequestInit): 
 }
 
 export async function sellPolicy(deps: ApiDeps, body: SellRequest): Promise<ApiAnswer<Policy>> {
-  const answer = await ask(deps, '/api/policies', {
+  const answer = await ask<Policy>(deps, '/api/policies', {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
@@ -290,7 +290,7 @@ export async function sellPolicy(deps: ApiDeps, body: SellRequest): Promise<ApiA
 }
 
 export async function getPolicy(deps: ApiDeps, reference: string): Promise<ApiAnswer<Policy>> {
-  const answer = await ask(deps, `/api/policies/${encodeURIComponent(reference)}`);
+  const answer = await ask<Policy>(deps, `/api/policies/${encodeURIComponent(reference)}`);
   if (answer.kind === 'ok' && answer.status === 200) remember(deps.storage, answer.value.reference, 'opened');
   return answer;
 }
@@ -326,6 +326,19 @@ function remember(storage: RecentStore | null, reference: string, how: RecentEnt
   } catch {
     // storage full or refused: the list just doesn't grow.
   }
+}
+
+export interface ClaimRequest {
+  claimDate: string;
+  description?: string;
+}
+
+export interface RecordedClaim {
+  reference: string;
+  policyReference: string;
+  claimDate: string;
+  description: string | null;
+  hasClaims: boolean;
 }
 
 export interface CancellationTerm {
@@ -375,4 +388,58 @@ export async function cancelPolicy(deps: ApiDeps, reference: string, cancellatio
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({ cancellationDate }),
   });
+}
+
+export interface RenewalRequest {
+  amount: number;
+  paymentMethod?: PaymentMethod;
+}
+
+export interface LoggedExchange {
+  method: string;
+  path: string;
+  /** The headers the page set, by lower-case name. */
+  requestHeaders: Record<string, string>;
+  /** The body as the exact text sent. */
+  requestBody: string | null;
+  status: number | null;
+  /** The headers the page received, by lower-case name. Null until an answer comes. */
+  responseHeaders: Record<string, string> | null;
+  /** The body as the exact text received. */
+  responseBody: string | null;
+}
+
+function postJson(body: unknown): RequestInit {
+  return { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) };
+}
+
+export function recordClaim(deps: ApiDeps, reference: string, body: ClaimRequest): Promise<ApiAnswer<RecordedClaim>> {
+  return ask<RecordedClaim>(deps, `/api/policies/${encodeURIComponent(reference)}/claims`, postJson(body));
+}
+
+export function renewPolicy(deps: ApiDeps, reference: string, body: RenewalRequest): Promise<ApiAnswer<Policy>> {
+  return ask<Policy>(deps, `/api/policies/${encodeURIComponent(reference)}/renewals`, postJson(body));
+}
+
+const headersOf = (headers: Headers | HeadersInit | undefined): Record<string, string> => Object.fromEntries(new Headers(headers).entries());
+
+/** WB-7: keeps each exchange as it went over the wire, in send order, and hands the response on unread. */
+export function loggingFetch(fetch: Fetch, log: LoggedExchange[]): Fetch {
+  return async (input, init) => {
+    const entry: LoggedExchange = {
+      method: init?.method ?? 'GET',
+      path: input,
+      requestHeaders: headersOf(init?.headers),
+      requestBody: typeof init?.body === 'string' ? init.body : null,
+      status: null,
+      responseHeaders: null,
+      responseBody: null,
+    };
+    log.push(entry);
+    const response = await fetch(input, init);
+    entry.status = response.status;
+    entry.responseHeaders = headersOf(response.headers);
+    entry.responseBody = await response.clone().text();
+    return response;
+  };
 }

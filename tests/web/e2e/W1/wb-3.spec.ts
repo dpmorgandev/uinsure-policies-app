@@ -176,36 +176,9 @@ test.describe('404', () => {
   });
 });
 
-// inv-006 I1: W1 doesn't build the renew and claim screens (W3 does), so their routes fall to the not-built page.
-// Opened on a policy the live API sold, before any request, they show no value the API didn't return for it: no
-// recorded reference, date or amount, no answer to a request that was never sent, no problem. W2 builds the cancel
-// screen; its pre-quote honesty check lives in tests/web/e2e/W2/wb-4.spec.ts (W2 A1/I1).
-test.describe('screens W1 does not build', () => {
-  /** A reference, payment, refund or claim reference in the recorded design fixture's shape (F4-MVFJSC6LXX, PAY-…). */
-  const RECORDED_REFERENCE = /\b(F\d-[A-Z0-9]{10}|(PAY|REF)-[0-9a-f]{32}|CLM-[A-Z0-9-]+)\b/;
-
-  for (const [name, path, reference] of [
-    ['renew', route.renew, 'W1-UNBUILT-RNW'],
-    ['record a claim', route.claim, 'W1-UNBUILT-CLM'],
-  ] as const) {
-    test(`WB-3 · the ${name} route shows no canned value and no other policy's reference`, async ({ page, api }) => {
-      void api;
-      const policy = await sellThroughApi(requestOf(sellForm(reference)));
-      const seen = watchApi(page);
-      await page.goto(path(policy.reference));
-      const main = page.getByRole('main');
-      await expect(main, 'the route is not built yet').toContainText('not built yet', live);
-      const text = await main.innerText();
-      expect(text, "no reference but the route's own policy's").not.toMatch(RECORDED_REFERENCE);
-      expect(await datesShown(page), 'no date: the page asked the API for none').toEqual([]);
-      expect(seen.map((e) => `${e.method} ${e.path}`), 'setup: the page sent no request').toEqual([]);
-      expect(text, 'no answer to a request that was never sent').not.toMatch(/\banswered \d{3}\b/);
-      await expect(main.getByRole('alert'), 'no problem: no request was sent').toHaveCount(0);
-      await expect(main.locator('a[href*="/rules/"]'), 'no rule chip: the API named no rule').toHaveCount(0);
-    });
-  }
-});
-
+// inv-006 I1 drew W1's unbuilt workbench routes as honest not-built pages. All three are built now, so the
+// list is gone: W2 builds quote and cancel (its pre-quote honesty check: tests/web/e2e/W2/wb-4.spec.ts, W2 A1/I1),
+// W3 builds renew and record a claim (W3's WB-5 tests). Resolved in W3's integrate of W2 (David: union).
 test.describe('parity', () => {
   for (const s of [sellStates.error, policyStates.error]) {
     test(`WB-3 · parity: the ${s.label} keeps its reference's regions in order, the unbuilt ones as not built yet`, async ({ page }) => {
