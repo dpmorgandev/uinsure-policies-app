@@ -168,10 +168,12 @@ stages:
                         --query properties.apiKey --output tsv)
                       echo "##vso[task.setvariable variable=swaDeploymentToken;issecret=true]$token"
 
-                # The web artifact is downloaded into $(Pipeline.Workspace)/web by the deployment job. The CLI is
-                # pinned and reads the token only from its environment, never from the command line.
+                # The web and swa-cli artifacts are downloaded into $(Pipeline.Workspace) by the deployment job.
+                # npm ci installs the CLI from its lockfile, so every package is pinned with its integrity hash;
+                # it reads the token only from its environment, never from the command line.
                 - script: |
-                    npx --yes @azure/static-web-apps-cli@2.0.2 deploy $(Pipeline.Workspace)/web --env production
+                    npm ci --prefix $(Pipeline.Workspace)/swa-cli --ignore-scripts
+                    $(Pipeline.Workspace)/swa-cli/node_modules/.bin/swa deploy $(Pipeline.Workspace)/web --env production
                   displayName: Deploy web
                   env:
                     SWA_CLI_DEPLOYMENT_TOKEN: $(swaDeploymentToken)

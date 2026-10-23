@@ -572,10 +572,10 @@ nodes:
     rules: []
     cuttable: true
     budget: null
-    status: pending
-    attempt: 0
-    branch: null
-    worktree: null
+    status: hitl
+    attempt: 2
+    branch: feature/ui/U10
+    worktree: .claude/worktrees/ui-U10
     pr: null
     qa: docs/qa/ui-U10.md
     trace: docs/trace/ui/U10/
@@ -591,18 +591,22 @@ nodes:
       - "One-key F5 (U9 steer D2, moved here by David 2026-10-23): in the 'API and web' profile Visual Studio runs Docket.Web's debug target and never its StartupCommand, so the Edge target opens on a 4170 nothing serves. David's verified fix: a launch.json configuration 'Vite dev server' (type node, request launch, cwd the project, program node_modules/vite/bin/vite.js, args --port 4170 --strictPort --open) named as Docket.Web's DebugTarget in Uinsure.Policies.slnLaunch. The LaunchProfileTests D1 test that requires a browser target is changed red first to require a target that runs Vite on the StartupCommand's port; the Edge configuration stays for Start New Instance; README.md and docs/qa/ui-U9.md say what F5 opens (the default browser via --open, not a VS-attached Edge window); David's F5 is the check"
       - "U4's trail carries its merged(ce05465) event, which the trail-tail route could not carry (U4 cleanup, 2026-10-23): the event is in local commit 2abcc5b on feature/ui/U4 (docs/trace/ui/U4/loop.jsonl), kept so it can be cherry-picked"
       - "Plan switcher (David 2026-10-23, U9 Pause 2: 'how do i swap to see the ui plan in docket?'): the Plan nav entry no longer always opens the build plan (src/web/app/shell/Frame.tsx:113 picks the plan of kind build). It offers every plan in trace.json (build, ui and the investigations), each opening #/plans/<id>, from kit components only, with a unit test and an e2e test that a ui plan link reaches #/plans/ui"
+      - "Trace on start (David 2026-10-23: 'Does trace need to be run when we start the project in vs if yes can we add it to u10'): the compiler writes src/Uinsure.Policies.Web/public/trace.json, which is ignored, so a fresh clone has none and Docket shows 'Could not load trace.json'. Starting the dev server (F5's Vite dev server target, the StartupCommand and npx vite) compiles the trail first, so a fresh clone opens on the trail with no manual npm run trace; a failed compile is reported in the console and the page, never a silent empty trail; tested red first"
       - "Every check passes on the renamed tree: dotnet build and test, typecheck, unit, e2e, regression, the harness self-test, render-trace check for every ui node"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Architecture test that fails until the rename: the web project sits at src/Uinsure.Policies.Web and its tests at tests/Uinsure.Policies.Web.Tests, the slnx lists them there (the web project in the /src/ folder), and no live file outside the committed trail names src/web or tests/web", status: pending}
-      - {id: t2, role: builder, step: stub, layer: null, rules: [], title: "No stub: a rename has no route to stub (skipped)", status: pending}
-      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the red test; go or change", status: pending}
-      - {id: t4, role: builder, step: green, layer: null, rules: [], title: "git mv both folders; update every live reference outside the harness and the committed trail; the test passes", status: pending}
-      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: pending}
-      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "dotnet build and test, typecheck, unit, CSS lint, e2e, the full visual regression for every screen (deferred to here from each node, David 2026-10-23; baseline: rulings at this Pause 2), harness self-test, render-trace check for every ui node; diff scope", status: pending}
-      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
-      - {id: t8, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U10.md", status: pending}
-      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: pending}
-      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; chore(trace) commit", status: pending}
-      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
-      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: open the solution in VS, F5 starts API and web, run the QA script, then sign off", status: pending}
-      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "One red suite for every U10 acceptance line: the rename architecture test (paths, slnx /src/ folder, no live src/web or tests/web), LaunchProfileTests D2 (the debug target runs Vite on the StartupCommand port), the plan switcher unit and e2e tests, trace on start, the U8, U4 and U9 carries (Renew merge, amountToSend, log cap, STATS-1, NAV-5, wb-5 isolation, the 22 re-derived shell parity tests, rel=noreferrer)", status: done}
+      - {id: t2, role: builder, step: stub, layer: null, rules: [], title: "Stub skipped under delegation (A5); a rename has no route to stub", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1 skipped under delegation (A5)", status: skipped}
+      - {id: t4, role: builder, step: green, layer: null, rules: [], title: "Plan switcher: the Plan nav offers every plan in trace.json from kit components, each opening #/plans/<id>; its unit and e2e tests pass", status: done}
+      - {id: t5, role: builder, step: green, layer: null, rules: [], title: "Trace on start: the dev server compiles the trail before it serves, F5 Vite dev server target included; its tests pass", status: done}
+      - {id: t6, role: builder, step: green, layer: null, rules: [], title: "The carries: one-key F5 (Vite dev server DebugTarget, README and QA wording), the U8, U4 and U9 debt lines; their tests pass", status: done}
+      - {id: t7, role: builder, step: green, layer: null, rules: [], title: "Rename last: git mv both folders; update every live reference outside the harness and the committed trail; the whole suite passes", status: done}
+      - {id: t8, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: skipped}
+      - {id: t9, role: orchestrator, step: gates, layer: null, rules: [], title: "dotnet build and test, typecheck, unit, CSS lint, e2e, the full visual regression for every screen (deferred here, David 2026-10-23; baselines ruled at Pause 2), harness self-test, render-trace check for every ui node; diff scope", status: done}
+      - {id: t10, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t11, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U10.md", status: done}
+      - {id: t12, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui if it moved; every check on the post-integrate HEAD", status: done}
+      - {id: t13, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; chore(trace) commit", status: done}
+      - {id: t14, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
+      - {id: t15, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: F5 on a fresh clone starts API and web on the trail, run the QA script, then sign off (delegated)", status: pending}
+      - {id: t16, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}

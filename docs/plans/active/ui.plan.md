@@ -96,6 +96,7 @@ David, 2026-10-22, before the 2026-10-23 demo: U7 is built as a demo slice ("pro
 - → U10: the workbench request log is still uncapped for the life of the page; publish() no longer re-copies settled exchanges (U8 security A1 note, WB-7)
 - → U10: U7's two pinned NAV-5 tour tests time out under --repeat-each 5 with parallel workers: the trace load is starved; openTour waits for the trace before any test reads a stop (U8 red, 2026-10-23, NAV-5)
 - → U10: RenewPolicy's amountToSend tests a clean number with Number(), which reads '0x10' as 16 and '1e2' as 100; a decimal pattern decides what is sent as a number (U8 review A2 R1, WB-5, HONEST-1)
+- Carried past U10 (orchestrator ruling under the deadline, 2026-10-23): the undrawn-lines notice (s-events-note) becomes a kit state or component, not screen markup (U4 A2 R2, AGENT-2); it needs a kit notice state through /kit-gap, and tests/Uinsure.Policies.Web.Tests/e2e/U10/agent-2.spec.ts is test.fixme until then (U10 review A1 R4)
 
 ## Attempt log
 (none)

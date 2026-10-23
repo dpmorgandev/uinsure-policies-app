@@ -49,7 +49,9 @@ check(any(s.get("stage") == "Build" for s in pipeline["stages"]), "missing Build
 web_stage = next((s for s in pipeline["stages"] if s.get("stage") == "Web"), None)
 web_text = json.dumps(web_stage) if web_stage else ""
 check(web_stage is not None and web_stage.get("dependsOn") == "Build", "Web stage must depend on Build")
-for needle in ("npm --prefix src/web ci", "run typecheck", "run lint", "run lint:css", "run test", "run trace", "run build", "run e2e", "staticwebapp.config.json"):
+check(re.search(r"run lint(?!:)", web_text) is not None, "Web stage must run: run lint (not only lint:css)")
+check("timeout " in web_text, "The e2e wait for the API must be bounded")
+for needle in ("npm --prefix src/Uinsure.Policies.Web ci", "run typecheck", "run lint:css", "run test", "run trace", "run build", "run e2e", "staticwebapp.config.json"):
     check(needle in web_text, f"Web stage must run: {needle}")
 
 # Build stage: build, test, idempotent script.
@@ -274,11 +276,11 @@ token_script = token_steps[0].get("inputs", {}).get("inlineScript", "") if token
 token_var = re.search(r"##vso\[task\.setvariable variable=(\w+);issecret=true\]", token_script)
 check(token_var is not None, "A1/I1: the token step must set its variable with issecret=true")
 check("$(webSiteName)" in token_script, "A1/I1: the token must be read from the site named by $(webSiteName)")
-swa_steps = [s for s in steps if "static-web-apps-cli" in json.dumps(s)]
+swa_steps = [s for s in steps if "swa-cli/node_modules/.bin/swa" in json.dumps(s)]
 check(len(swa_steps) == 1, "A1/I1: exactly one step must run the Static Web Apps CLI")
 swa = swa_steps[0] if swa_steps else {}
 swa_script = swa.get("script", "")
-check(re.search(r"@azure/static-web-apps-cli@\d+\.\d+\.\d+\b", swa_script) is not None, "A1/I1: the SWA CLI must be pinned to an exact version")
+check("npx --yes" not in swa_script and "npm ci --prefix $(Pipeline.Workspace)/swa-cli" in swa_script, "A2/S1: the SWA CLI must be installed by npm ci from its lockfile, never npx --yes")
 check("/web" in swa_script and " deploy " in swa_script, "A1/I1: the SWA CLI must deploy the 'web' artifact")
 token_ref = f"$({token_var.group(1)})" if token_var else None
 check(token_ref is not None and token_ref in swa.get("env", {}).values(), "A1/I1: the SWA CLI step must take the token through env")

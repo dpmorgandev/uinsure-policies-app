@@ -1,0 +1,8 @@
+{
+  "name": "swa-cli-deploy",
+  "private": true,
+  "description": "The Static Web Apps CLI for the deploy stage, installed by npm ci from package-lock.json",
+  "dependencies": {
+    "@azure/static-web-apps-cli": "2.0.2"
+  }
+}

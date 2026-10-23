@@ -1,0 +1,79 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T11:43:01Z",
+  "plan": "ui",
+  "node": "U10",
+  "attempt": 1,
+  "agent": "security",
+  "agent_id": "ae0e25e94db15a3ce",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U10",
+    "attempt": 1,
+    "base_sha": "c1a280dad9cbd61ca09aef6fe862a1ce13f63dfc",
+    "head_sha": "5ac63435bf09623da4b1e2d638042a4905649efc",
+    "diff_fingerprint": "2f2bed2b1d6721129b9327291e4ea6685182059d",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.red",
+      "gate.green"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "infrastructure/pipelines/stage-template.yml",
+        "line": 174,
+        "what": "The SWA deployment token is in the environment of the step that also runs `npm ci` for about 370 packages on a privileged self-hosted agent.",
+        "why": "--ignore-scripts blocks install scripts, so this is hardening only. Run `npm ci` in its own step, with no token env, and keep the token only on the `swa deploy` step.",
+        "route_to": "builder"
+      },
+      {
+        "id": "S2",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "infrastructure/pipelines/swa-cli/package-lock.json",
+        "what": "The new SWA CLI lockfile has no audit receipt. The only `npm audit` in the gate event covers src/Uinsure.Policies.Web, not infrastructure/pipelines/swa-cli.",
+        "why": "W7 supply chain: the lock is now the install surface on a privileged deploy agent. Add an `npm audit --prefix infrastructure/pipelines/swa-cli --audit-level=high` step to the Web stage or a gate. Not blocking.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "API1:2023 n/a: ui node, no server code (no auth or tenancy).",
+      "API2:2023 n/a: ui node, no server code (auth out of scope).",
+      "API3:2023 n/a: ui node, no server code.",
+      "API4:2023 n/a: ui node, no server code. The client request log is capped at 1000 exchanges in browser.ts. The cap splices oldest-first, and loggingFetch mutates entries by reference, so eviction is safe.",
+      "API5:2023 n/a: ui node, no server code (no roles).",
+      "API6:2023 n/a: ui node, no server code.",
+      "API7:2023 n/a: ui node. The compiler has no network access, and the only fetch calls in the app are to relative /api/* and trace.json paths.",
+      "API9:2023 n/a: ui node, no server code.",
+      "API8:2023 met. staticwebapp.config.json adds frame-ancestors 'none' and Referrer-Policy: no-referrer to the existing CSP and nosniff. The CSP keeps default-src 'self', so there is no third-party origin. No secrets or local paths appear in the diff (greps for keys, tokens, user names and personal email were clean).",
+      "API10:2023 met. W1 grep over src/Uinsure.Policies.Web found no innerHTML, dangerouslySetInnerHTML (only a comment saying it is not used), eval or document.write. MarkdownText refuses non-allowlisted schemes.",
+      "SEC-1 referrer coverage has four layers. The SWA header is Referrer-Policy: no-referrer. index.html carries <meta name=referrer content=no-referrer>. The kit anchors carry rel=noreferrer. SiteSearch uses window.open(..., '_blank', 'noreferrer'). Gaps: kitchen-sink.html has neither a CSP nor a referrer meta, and the SWA header is not exercised by e2e, because dev and preview ignore staticwebapp.config.json. kitchen-sink.html is shipped in dist and is covered only by the SWA global headers.",
+      "Vite trace-on-start plugin: git runs through execFileSync with fixed args and no shell. It is skipped in mode 'test' and compiles only HEAD. A failed compile prints file:line plus a fixed reason (privacy.ts does not echo the matched text). /trace.json and /trace/* then return a constant 503 body, and no stale file is served. server.fs.allow=../.. is unchanged from before. Output goes to public/, which is now git-ignored, so the compiled trail is not committed.",
+      "SearchEntry split into route and repoPath (SiteSearch.tsx:20-21): a path opens only via blobUrl on the fixed github.com REPO. The raw-path fallback is reachable only when the trace is not ready, and the index is empty then. W2 holds.",
+      "SWA CLI lockfile: all 372 entries resolve to https://registry.npmjs.org/ with an sha512 integrity value. There are no git, http or file sources, and the deprecated notices were stripped without touching hashes. The deploy runs `npm ci --ignore-scripts`, the token reaches the CLI only through env, and `npx --yes` is gone (check-pipeline.py now enforces this). keytar is the only hasInstallScript package. Under --ignore-scripts its native binary is not built, which is good for security but may break `swa deploy` at runtime. I could not verify that, and it is a functional concern, not a security one.",
+      "stylelint 18.0.0-next.0 (prerelease, devDependency): the version is exact, it has a lockfile integrity entry and it is dev-only (never in dist). The lock diff removes micromatch, braces, fast-glob and globby, so the known dev-only GHSA-vfj7-8cjw-p6xm item in the web-security skill W7 no longer applies. That skill text is now stale and should be updated by the harness owner. The gate.green event shows `npm audit --omit=dev --audit-level=high` with exit 0 (runtime deps). The dev-tree audit result is not recorded in the gate event, so I cannot confirm the new tree has no high in dev.",
+      "W5: grep found no network calls, no .claude reads and no process.env in the compiler. The privacy denylist is unchanged.",
+      "W6: no local absolute paths or personal emails in the diff (grep clean).",
+      "W8: the dev-server error text is a constant, and the workbench problem display is unchanged.",
+      "The diff is mostly an 850-file rename (src/web to src/Uinsure.Policies.Web, tests/web to tests/Uinsure.Policies.Web.Tests). The harness hook path updates (guard-bash.mjs, roles.mjs) only retarget the allowlists and do not loosen them."
+    ]
+  }
+}

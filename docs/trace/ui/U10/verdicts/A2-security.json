@@ -1,0 +1,78 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T12:05:39Z",
+  "plan": "ui",
+  "node": "U10",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a797448d541342b67",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U10",
+    "attempt": 2,
+    "base_sha": "c1a280dad9cbd61ca09aef6fe862a1ce13f63dfc",
+    "head_sha": "dbc81b2aa33b61300be5f48636f01e64d806c75d",
+    "diff_fingerprint": "2810a06e696b7788fbd4c3cbcd35def86276bf1d",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.red",
+      "gate.green",
+      "gate.web",
+      "gate.e2e",
+      "gate.integrate"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "infrastructure/pipelines/stage-template.yml",
+        "line": 175,
+        "what": "The SWA deployment token is in the env of the step that also runs `npm ci` for about 370 packages on a privileged self-hosted agent.",
+        "why": "Unchanged from A1. --ignore-scripts blocks install scripts, so this is hardening only. Run `npm ci` in its own step with no token env, and keep the token only on the `swa deploy` step.",
+        "route_to": "builder"
+      },
+      {
+        "id": "S2",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "infrastructure/pipelines/swa-cli/package-lock.json",
+        "what": "The SWA CLI lockfile has no audit receipt. gate.web's `npm audit` covers src/Uinsure.Policies.Web, not infrastructure/pipelines/swa-cli.",
+        "why": "Unchanged from A1. W7 supply chain: the lockfile is the install surface on a privileged deploy agent. Add `npm audit --prefix infrastructure/pipelines/swa-cli --audit-level=high` to the Web stage or a gate. Not blocking.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Revision of A1: the verdict stays PASS with the same two P2s, S1 and S2. You said only README.md, docs/qa/ui-U10.md, ui.plan.md and trail files changed since A1, with no code. I did not recompute the diff or the fingerprint myself. I confirmed that stage-template.yml still has the token env on the `npm ci` step (lines 175-179). I also confirmed that the W1 grep over src/Uinsure.Policies.Web, excluding node_modules and dist, still finds only the comment in MarkdownText.tsx:7.",
+      "W7 dev audit: the A1 note said the dev-tree result wasn't recorded. gate.web (attempt 2, head f842db4) now records `npm audit --audit-level=high` with audit_dev '0 vulnerabilities'. No high-severity item is open in dev, and the known GHSA-vfj7-8cjw-p6xm item no longer applies after the stylelint 18 prerelease removed braces. Runtime audit: gate.green recorded `npm audit --omit=dev --audit-level=high` with exit 0.",
+      "W7 follow-up: the web-security skill text for the stylelint/braces dev-only item is stale and the harness owner should update it. This is not a finding against the node.",
+      "The gate.web receipt's head is f842db4, one trail commit before HEAD dbc81b2. By your account, the later commit changed no code, so the receipt stands.",
+      "API1:2023 n/a: ui node, no server code (no auth or tenancy).",
+      "API2:2023 n/a: ui node, no server code (auth out of scope).",
+      "API3:2023 n/a: ui node, no server code.",
+      "API4:2023 n/a: ui node, no server code. The client request log cap from A1 is unchanged.",
+      "API5:2023 n/a: ui node, no server code (no roles).",
+      "API6:2023 n/a: ui node, no server code.",
+      "API7:2023 n/a: ui node. The compiler has no network access, and the app fetches only relative /api/* and trace.json paths.",
+      "API9:2023 n/a: ui node, no server code.",
+      "API8:2023 met (W3/W4). The security headers, CSP and referrer layers are as in A1. Residual from A1: kitchen-sink.html has no CSP or referrer meta, and the SWA header is not exercised in e2e.",
+      "API10:2023 met (W1/W8). MarkdownText refuses non-allowlisted schemes, and the workbench problem display is unchanged.",
+      "W5/W6: no change since A1, where the greps were clean. This revision only covered the README, QA doc, plan and trail files."
+    ]
+  }
+}
