@@ -158,7 +158,7 @@
         "no duration is recorded in either fixture: shown as 'not recorded'",
         "api-unreachable and long-content pages: no request in the data, request-log empty with the reason"
       ],
-      "built": false
+      "built": true
     }
   ],
   "states": [

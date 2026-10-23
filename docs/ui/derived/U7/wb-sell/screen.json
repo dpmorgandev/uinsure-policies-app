@@ -139,7 +139,7 @@
         "021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.exchanges[role=setup].{method,path,requestBody,status,responseBody}",
         "021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.exchanges[role=request].{status,responseBody.ruleId}"
       ],
-      "built": false
+      "built": true
     }
   ],
   "states": [
