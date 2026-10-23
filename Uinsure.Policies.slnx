@@ -21,6 +21,7 @@
     <File Path="infrastructure/modules/monitoring.bicep" />
     <File Path="infrastructure/modules/network.bicep" />
     <File Path="infrastructure/modules/sql.bicep" />
+    <File Path="infrastructure/modules/staticwebapp.bicep" />
   </Folder>
   <Folder Name="/infrastructure/params/">
     <File Path="infrastructure/params/dev.bicepparam" />
@@ -32,6 +33,12 @@
     <File Path="infrastructure/pipelines/check-pipeline.py" />
     <File Path="infrastructure/pipelines/pipeline.schema.json" />
     <File Path="infrastructure/pipelines/stage-template.yml" />
+  </Folder>
+  <Folder Name="/infrastructure/pipelines/swa-cli/">
+    <File Path="infrastructure/pipelines/swa-cli/package.json" />
+  </Folder>
+  <Folder Name="/infrastructure/web/">
+    <File Path="infrastructure/web/staticwebapp.config.json" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/Uinsure.Policies.Api/Uinsure.Policies.Api.csproj" />

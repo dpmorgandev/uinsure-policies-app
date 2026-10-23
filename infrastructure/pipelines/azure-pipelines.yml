@@ -109,7 +109,7 @@ stages:
           - script: |
               npx --prefix src/web playwright install --with-deps chromium
               dotnet run --project src/Uinsure.Policies.Api --urls http://localhost:5080 &
-              until curl --fail --silent http://localhost:5080/health/live; do sleep 2; done
+              timeout 120 bash -c 'until curl --fail --silent http://localhost:5080/health/live; do sleep 2; done'
               npm --prefix src/web run e2e
             displayName: Web end-to-end tests against the API
 
@@ -118,6 +118,11 @@ stages:
               cp -r src/web/dist/. $(Build.ArtifactStagingDirectory)/web/
               cp infrastructure/web/staticwebapp.config.json $(Build.ArtifactStagingDirectory)/web/
             displayName: Package web build with the static host settings
+
+          # The deploy installs the Static Web Apps CLI from this lockfile (npm ci), never npx --yes.
+          - publish: infrastructure/pipelines/swa-cli
+            artifact: swa-cli
+            displayName: Publish the SWA CLI lockfile
 
           - publish: $(Build.ArtifactStagingDirectory)/web
             artifact: web

@@ -15,10 +15,10 @@ renewed from a browser. It is React, TypeScript and Vite.
 
 **In Visual Studio:** open `Uinsure.Policies.slnx` and choose the **API and web** startup profile (it is in
 `Uinsure.Policies.slnLaunch`, beside the solution). F5 starts the API on port 5080, which opens its own browser
-tab on `/health/live`, and the web dev server on `http://localhost:4170`, with an Edge debug window on that
-address. The dev server proxies `/api` to the API. The web project is excluded from the solution build,
-so `dotnet build` never runs npm. Run `npm ci` and `npm run trace` in `src/web` once first: the explorer reads
-`trace.json`, and without it shows "trace.json could not be read".
+tab on `/health/live`, and the web dev server on `http://localhost:4170`, which opens Docket in your default
+browser (Vite's `--open`; it is not a debugger-attached window). The dev server compiles `trace.json` from git
+history each time it starts, and proxies `/api` to the API. The web project is excluded from the solution
+build, so `dotnet build` never runs npm. Run `npm ci` in `src/web` once first.
 
 **From the command line:**
 
@@ -106,7 +106,8 @@ document and the Scalar UI describe every route (see below).
 
 ## How to run it
 
-**Prerequisites:** the .NET 10 SDK (`global.json` pins 10.0.100 with `rollForward` set to `latestFeature`).
+**Prerequisites:** the .NET 10 SDK (`global.json` pins 10.0.100 with `rollForward` set to `latestFeature`), and
+Node 22.22 or later for Docket (jsdom, react-router and undici warn on older 22.x releases).
 The Postman CLI or the Postman app is only needed for the Postman collection. Visual Studio is optional.
 
 **On Windows, clone to a short path** such as `C:\src\uinsure-policies`. The SQLite native library is copied

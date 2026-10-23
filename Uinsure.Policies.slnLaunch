@@ -10,7 +10,7 @@
       {
         "Path": "src\\web\\Docket.Web.esproj",
         "Action": "Start",
-        "DebugTarget": "localhost (Edge)"
+        "DebugTarget": "Vite dev server"
       }
     ]
   }

@@ -91,9 +91,9 @@ origin, so the browser makes no cross-origin call and the page's Content-Securit
   `Deploy_<env>` then deploys that artifact (`deploy $(Pipeline.Workspace)/web --env production`) and, in the step
   "Smoke test the site root", runs `curl --fail` against `https://$(webHostName)/`.
 - **Configured, not tested.** None of this has run: the token step, the CLI deploy and the site smoke test are
-  schema-checked, and `check-pipeline.py` asserts that they exist in that order, that the CLI is version-pinned
-  and that the token reaches it only through `env`. Nothing was run against Azure. The self-hosted deploy
-  agents need Node (for `npx`).
+  schema-checked, and `check-pipeline.py` asserts that they exist in that order, that the CLI is installed by
+  `npm ci` from its own lockfile (`pipelines/swa-cli/`) and that the token reaches it only through `env`. Nothing was run against Azure. The self-hosted deploy
+  agents need Node 22.22 or later and npm.
 - **Known mismatch, not fixed here.** A linked backend forwards `/api/...` to the App Service unchanged, but the
   API's routes have no `/api` prefix (the dev server and preview proxy strip it). The API would need a path base of
   `/api` for the deployed host to reach it. That is an API change, outside this node.
@@ -143,7 +143,7 @@ would pause the what-if stage first.
 None of this exists and none of it can be checked from the repo.
 
 - **Three self-hosted agent pools**, `policies-dev-vnet`, `policies-test-vnet`, `policies-prod-vnet`. Their
-  agents need `az`, `jq`, go-sqlcmd (`sqlcmd`) and `curl`. **The agent hosts are privileged**: they can reach
+  agents need `az`, `jq`, go-sqlcmd (`sqlcmd`), `curl`, and Node 22.22 or later with npm (the Static Web Apps CLI). **The agent hosts are privileged**: they can reach
   the private SQL endpoint and run with the service connections. The CI trigger is `main` only with
   `pr: none`; nothing in the YAML limits a manual run to `main` (see setup step 6).
 - **Network peering and DNS.** The agents' network must be peered to (or be) `vnet-policies-<env>` and resolve
