@@ -9,7 +9,6 @@ const KINDS: Record<string, DecisionKind> = {
   pause1: 'pause-1',
   pause2: 'pause-2',
   steer: 'steer',
-  ruling: 'ruling',
   signoff: 'sign-off',
   merge: 'merge',
 };

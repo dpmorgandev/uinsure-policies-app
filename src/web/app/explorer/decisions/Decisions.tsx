@@ -17,7 +17,6 @@ const KIND_WORDS: [string, string][] = [
   ['pause1', 'Pause 1'],
   ['pause2', 'Pause 2'],
   ['steer', 'Steer'],
-  ['ruling', 'Ruling'],
   ['signoff', 'Sign-off'],
   ['merge', 'Merge'],
 ];
@@ -69,6 +68,7 @@ export function Decisions() {
         ids={[{ label: 'Recorded', value: `${all.length} decisions in ${nodes.size} ${nodes.size === 1 ? 'node' : 'nodes'}` }]}
         compiledAt={trace.snapshot.utc}
       />
+      <p className="s-u5-note">Rulings aren't recorded as loop events, so they aren't listed here; they appear only in the free text of a loop line.</p>
       <FilterBar
         filters={definitions}
         onChange={(id, value) => setFilters((current) => ({ ...current, [id]: value }))}
