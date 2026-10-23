@@ -530,7 +530,7 @@ nodes:
     qa: docs/qa/ui-U10.md
     trace: docs/trace/ui/U10/
     acceptance:
-      - "David 2026-10-23: the web project is named like the others. git mv keeps history; the U9 .esproj and solution folder follow the new path"
+      - "David 2026-10-23: the web project is named like the others. git mv keeps history; the U9 .esproj and solution folder follow the new path. In Uinsure.Policies.slnx the web project sits in the /src/ solution folder beside the other src projects, not in its own /web/ folder (David 2026-10-23, U9 Pause 2)"
       - "Every live reference moves: configs, scripts, CI, docs, README, CLAUDE.md and the harness (skills, specs, scripts, hooks, agents). The harness edits are the orchestrator's, through a harness/<slug> PR into main"
       - "Trail records already committed (docs/trace/**, packets, verdicts) keep src/web: they are receipts. The compiler, render-trace and the checks accept both paths"
       - "Runs last, after every other ui node has landed, so no node in flight conflicts with the move"
@@ -538,7 +538,7 @@ nodes:
       - "U9 carries (P2): check-pipeline.py asks the deploy template for the Static Web Apps deploy, and its run lint needle no longer matches lint:css alone (review A1 R6); the CI e2e wait is bounded and the regression specs are kept off the Linux agent or given per-platform baselines (R7); staticwebapp.config.json sets frame-ancestors and Referrer-Policy (security A1 S2); the solution lists staticwebapp.bicep and staticwebapp.config.json, and src/web/public/ is ignored (U9 QA note 3); the deploy agent prerequisites name Node (review A2 R1); the SWA CLI is installed from a lockfile or with integrity, not npx --yes (security A2 S1)"
       - "Every check passes on the renamed tree: dotnet build and test, typecheck, unit, e2e, regression, the harness self-test, render-trace check for every ui node"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Architecture test that fails until the rename: the web project sits at src/Uinsure.Policies.Web and its tests at tests/Uinsure.Policies.Web.Tests, the slnx lists them there, and no live file outside the committed trail names src/web or tests/web", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Architecture test that fails until the rename: the web project sits at src/Uinsure.Policies.Web and its tests at tests/Uinsure.Policies.Web.Tests, the slnx lists them there (the web project in the /src/ folder), and no live file outside the committed trail names src/web or tests/web", status: pending}
       - {id: t2, role: builder, step: stub, layer: null, rules: [], title: "No stub: a rename has no route to stub (skipped)", status: pending}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the red test; go or change", status: pending}
       - {id: t4, role: builder, step: green, layer: null, rules: [], title: "git mv both folders; update every live reference outside the harness and the committed trail; the test passes", status: pending}
