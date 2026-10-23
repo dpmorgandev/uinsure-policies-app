@@ -1,0 +1,2 @@
+{"v":1,"ts":"2026-10-23T01:17:28Z","plan":"ui","node":"U8","attempt":1,"source":"orchestrator","event":"setup","detail":"feature/ui/U8 from origin/ui a3420f1; W3 carries (12 lines); ports 4182/5092"}
+{"v":1,"ts":"2026-10-23T01:17:28Z","plan":"ui","node":"U8","attempt":1,"source":"orchestrator","event":"state(in_progress)","detail":"attempt 1"}
