@@ -1,0 +1,89 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T00:52:02Z",
+  "plan": "ui",
+  "node": "U7",
+  "attempt": 1,
+  "agent": "reviewer",
+  "agent_id": "a0d333ed52a3ce608",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U7",
+    "attempt": 1,
+    "base_sha": "aad3a7189ffe1192035bf043add80291deb4712a",
+    "head_sha": "e4250a95af269d620d95ab44434068e7db064193",
+    "diff_fingerprint": "39a31dfc8901043f203587036e8b6a5a9b41c758",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.integrate@982e30f (loop.jsonl:45)",
+      "verdict(reviewer,PASS,A1) (loop.jsonl:43)",
+      "verdict(security,PASS,A1) (loop.jsonl:44)",
+      "steer(D1,pause1) (loop.jsonl:4)",
+      "gate.red@d7b3b7a",
+      "gate.red@f0e8787",
+      "gate.green@8845f75",
+      "gate.typecheck@2e6d3e2",
+      "gate.lint@2e6d3e2",
+      "gate.lint-css@2e6d3e2",
+      "gate.test@2e6d3e2",
+      "gate.build@2e6d3e2",
+      "gate.e2e@2e6d3e2",
+      "gate.e2e-regression@2e6d3e2",
+      "gate.coverage@2e6d3e2",
+      "gate.scope@2e6d3e2",
+      "gate.no-stubs@2e6d3e2"
+    ],
+    "rules_covered": [
+      "SEC-1",
+      "NAV-5",
+      "DAG-1",
+      "HONEST-1",
+      "WB-4"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "HONEST-1",
+        "severity": "P2",
+        "file": "tests/web/e2e/regression/activity.spec.ts",
+        "line": 13,
+        "what": "Carried from A1. The bounded populated-390 baselines end above the first activity record, so a change to the records at 390 isn't caught.",
+        "why": "Acceptance line 2 asks for a bounded shot, and that is met. But web-testing says a regression spec photographs the state on fixed data, and at 390 the shot shows no record. The new baselines (populated-390-{light,dark}.png) are byte-identical in this round. The line is already in ui.plan.md 'Carried past the demo' (U7 review A1 R1).",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "WB-4",
+        "severity": "P2",
+        "file": "src/web/app/workbench/cancel/CancelPolicy.tsx",
+        "line": 108,
+        "what": "Carried from A1. If the WB-4 re-read after a 201 fails, the header keeps the status from before the cancel, unlabelled, beside 'Cancelled on'.",
+        "why": "Acceptance line 5 (the header status is 'the one the API holds now') and HONEST-1. When again.kind !== 'ok', nothing marks the status as stale. This code is unchanged in this round. The line is already in ui.plan.md 'Carried past the demo' (U7 review A1 R2).",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "HONEST-1",
+        "severity": "P2",
+        "file": "src/web/app/workbench/cancel/CancelPolicy.tsx",
+        "line": 166,
+        "what": "Carried from A1. The ': ''' status fallbacks at lines 166 and 195 can't be reached; if they were, the page would print 'answered , ...' instead of a not-returned label.",
+        "why": "The code-quality slop list counts dead branches, and react-web HONEST-1 says missing data renders as the kit's empty state, never a blank. This code is unchanged in this round. The line is already in ui.plan.md 'Carried past the demo' (U7 review A1 R3).",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Re-review after merge e640508 (origin/ui aad3a71, W3 #105). The new base is aad3a71, so diff.patch is U7 against a ui that already holds W3, and any W3 line the merge dropped would show as a deletion. I checked all 122 deleted lines. None is a W3 line. They fall into five groups: (1) U7's own acceptance and task lines in ui.dag.yaml, (2) generated U5 README, walkthrough and matrix headers replaced by U5's trail tail, (3) U5 derived.json and wb-* notBuilt entries moving to built in U5's own W2 re-derive (7f43284), (4) U7's own green and red edits in About.tsx, u3Routes.tsx, CancelPolicy.tsx, index.html, activity.spec.ts and regression.ts, and (5) the nested packet diff.",
+      "ui.dag.yaml after the conflict resolution. U8 ('Tech debt: W3's carries') appears only as unchanged context at the end of the U7 hunk. At HEAD it has all 12 acceptance lines, depends_on [W3], status pending and t1-t13, so it is identical to the base. W3's own entry isn't touched. U7 has its 8 acceptance lines, as at A1, and lean tasks t1-t13 (t2, t3 and t5 skipped). The 40 U7 lines removed from the original acceptance all appear word for word in ui.plan.md under 'Carried past the demo', with the per-link rel line split out as its own line. The other DAG changes are U5 hitl→done with pr 103 (from U5's trail tail) and U6 cut with decided_by: david. Both add to the base and don't conflict with W3.",
+      "src/ and tests/ didn't change in this round. The hunks for About.tsx, u3Routes.tsx, CancelPolicy.tsx, index.html, the U7 specs, regression.ts and dag-1.test.tsx are line for line what A1 reviewed. Only the index base hashes moved with the new base. W3's workbench routes still register through workbenchRoutes, which U7 doesn't touch (App.tsx:26-28). DAG-1's 'no route path registered twice' test now also covers W3's routes, and it passed in the integrate run.",
+      "Evidence for this round is the single gate.integrate receipt at 982e30f: unit 1387/1387 and e2e 792/792 (2179 passed, 0 failed). There are no separate typecheck, lint, no-stubs or coverage receipts after the merge, and none at e4250a9. The commits after 982e30f (8fb17b1, e4250a9) are trace and plan bookkeeping only. That leaves a small gap: Playwright's vite build doesn't type-check, so a type error brought in by the merge would only show in the gates before PR. It is not a finding, because U7's src files are unchanged and W3 was gated in its own node.",
+      "The unit count rose from 325 at 2e6d3e2 to 1387 at 982e30f. That is far more than one node's tests. I can't check the count without running commands. The orchestrator should confirm the whole-suite command and project scope match the earlier gate.test before quoting the figure at pause 2.",
+      "TDD order is unchanged from A1: red commits 4bb77b1, 7d6db67, 9f2a4a9, 864df0d, 53e75e8 and f0e8787 all come before green d7489cb. No test file changed after its red commit, apart from the f0e8787 SEC-1 replacement made under steer D1 at pause 1, which A1 already judged.",
+      "The generated docs/trace/ui/U7/README.md still reads 'status: in_progress', because it was rendered at 00:45:40 before the e4250a9 hitl commit. This is trace bookkeeping only. A re-render at the PR step corrects it.",
+      "R1-R3 are A1's P2s, restated because the code they point at is unchanged at HEAD. All three are already lines in ui.plan.md 'Carried past the demo'. I wrote and changed nothing in this review."
+    ]
+  }
+}
