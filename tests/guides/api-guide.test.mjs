@@ -212,3 +212,23 @@ test("LRN-5 A1/I10: the guide names one Scalar URL, and it is the one the receip
   const inReceipts = scalarRoutes(read(receiptsPath));
   assert.deepEqual(inReceipts, inGuide, "the Scalar route the guide names is the one receipts.md records calling");
 });
+
+const NAMED_COLOURS =
+  /\b(white|black|red|green|blue|gray|grey|silver|yellow|orange|purple|navy|maroon|teal|olive|lime|aqua|fuchsia|pink|brown)\b/i;
+
+test("STY-1 A1/I11: guide.css takes every colour from a design token, never a literal", () => {
+  const css = read("docs/guides/assets/guide.css").replace(/\/\*[\s\S]*?\*\//g, (c) => c.replace(/[^\n]/g, " "));
+  const literals = [];
+  css.split("\n").forEach((text, i) => {
+    for (const m of text.matchAll(/([\w-]+)\s*:\s*([^;{}]+)/g)) {
+      const value = m[2].replace(/var\([^)]*\)/g, "");
+      const property = m[1].toLowerCase();
+      const raw =
+        value.match(/#[0-9a-f]{3,8}\b/i) ??
+        value.match(/\b(rgba?|hsla?|hwb|lab|lch|oklab|oklch|color)\(/i) ??
+        (/(color|background|border|outline|fill|stroke|shadow)/.test(property) ? value.match(NAMED_COLOURS) : null);
+      if (raw) literals.push(`guide.css:${i + 1} ${property}: ${raw[0]}`);
+    }
+  });
+  assert.deepEqual(literals, [], "a colour outside var(--color-*) is a raw value; a missing token is a kit gap");
+});
