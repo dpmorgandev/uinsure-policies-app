@@ -6,7 +6,7 @@ Shared by F7 (API guide) and F8 (UI guide). Requirements: `docs/documentation-re
 
 | Path | Role |
 |---|---|
-| `docs/guides/assets/tokens.css` | Docket's tokens, copied unedited from `origin/ui:src/web/kit/tokens/tokens.css` (STY-1) |
+| `docs/guides/assets/tokens.css` | Docket's tokens, copied unedited from `src/Uinsure.Policies.Web/kit/tokens/tokens.css` (STY-1) |
 | `docs/guides/assets/fonts/` | Five Atkinson Hyperlegible latin woff2 files, copied unedited from `origin/ui:docs/ui/stylekit/fonts/`: Next 400, 600, 700 and Mono 400, 700. Renamed to `next-<weight>.woff2` and `mono-<weight>.woff2` only |
 | `docs/guides/assets/guide.css` | Imports the tokens, declares the fonts, defines the components below |
 | `docs/guides/template.html` | One example of every component, with a comment naming the LRN id it serves |
@@ -48,10 +48,9 @@ Lists have three items, or four at most (LRN-3); longer ones are grouped under l
 No new package. `print.mjs` uses the Playwright already installed for the web tests, and looks for the `playwright` package directory in this order:
 
 1. `PLAYWRIGHT_MODULE` (path to the package directory, relative or absolute)
-2. `src/Uinsure.Policies.Web/node_modules/playwright` (the name after the ui plan's U10 rename)
-3. `src/web/node_modules/playwright` (this branch's layout)
+2. `src/Uinsure.Policies.Web/node_modules/playwright`
 
-If none exists it exits with code 2 and says to run `npm --prefix src/web ci` (`src/Uinsure.Policies.Web` after U10). Chromium must be installed (`npx playwright install chromium`).
+If neither exists it exits with code 2 and says to run `npm --prefix src/Uinsure.Policies.Web ci`. Chromium must be installed (`npx playwright install chromium`).
 
 ## Proof
 

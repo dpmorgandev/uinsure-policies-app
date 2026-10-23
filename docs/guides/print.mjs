@@ -19,11 +19,10 @@ if (!(guide in outputs)) {
 const candidates = [
   process.env.PLAYWRIGHT_MODULE && resolve(process.env.PLAYWRIGHT_MODULE),
   join(root, "src/Uinsure.Policies.Web/node_modules/playwright"),
-  join(root, "src/web/node_modules/playwright"),
 ].filter(Boolean);
 const found = candidates.find((dir) => existsSync(join(dir, "package.json")));
 if (!found) {
-  console.error("Playwright not found. Run `npm --prefix src/web ci` (`src/Uinsure.Policies.Web` after the ui plan's U10 rename), or set PLAYWRIGHT_MODULE.");
+  console.error("Playwright not found. Run `npm --prefix src/Uinsure.Policies.Web ci`, or set PLAYWRIGHT_MODULE.");
   process.exit(2);
 }
 const { chromium } = createRequire(join(found, "package.json"))(found);
