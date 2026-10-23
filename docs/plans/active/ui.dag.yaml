@@ -504,10 +504,10 @@ nodes:
       - "infrastructure/README.md documents the Static Web App, the web stage and their configured-not-tested notes, in the style of its App Service sections"
       - "README.md says what Docket is (the trail explorer and the workbench) and how to run it: Visual Studio F5 for API and web together, or the CLI (API, npm run trace, build, preview)"
       - "The stale matrix rows are re-rendered: no cell reads undefined (build/F4, ui/U0b), and U0b's sign-off cells match its trail; a chore(trace) commit"
-      - "Diff scope: infrastructure/**, the .esproj and launch settings under src/web/, src/web/vite.config.ts, Uinsure.Policies.slnx, README.md, docs/trace/**, docs/qa/ui-U9.md, the plan files"
+      - "Diff scope: infrastructure/**, the .esproj and launch settings under src/web/, src/web/vite.config.ts, Uinsure.Policies.slnx, Uinsure.Policies.slnx.slnLaunch, README.md, docs/trace/**, docs/qa/ui-U9.md, the plan files"
     tasks:
       - {id: t1, role: builder, step: write, layer: null, rules: [], title: "staticwebapp.bicep, main.bicep wiring, three param files; the web build, test and deploy stages; the static build settings; the .esproj, web solution folder and API + web launch; infrastructure/README.md and README.md", status: pending}
-      - {id: t2, role: orchestrator, step: gates, layer: null, rules: [], title: "bicep build and build-params exit 0 for dev, test and prod; pipeline schema check; dotnet build of the slnx runs no npm; typecheck, unit, build, e2e and regression still green; render-trace check; no matrix cell reads undefined; diff scope", status: pending}
+      - {id: t2, role: orchestrator, step: gates, layer: null, rules: [], title: "Scoped (David 2026-10-23): bicep build and build-params for dev, test and prod; pipeline schema check; dotnet build of the slnx runs no npm; typecheck, lint, unit and build; render-trace check; no matrix cell reads undefined; diff scope. No app runtime file changed, so no full e2e; the visual regression is deferred to U10", status: pending}
       - {id: t3, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
       - {id: t4, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U9.md", status: pending}
       - {id: t5, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: pending}
@@ -542,7 +542,7 @@ nodes:
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the red test; go or change", status: pending}
       - {id: t4, role: builder, step: green, layer: null, rules: [], title: "git mv both folders; update every live reference outside the harness and the committed trail; the test passes", status: pending}
       - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: pending}
-      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "dotnet build and test, typecheck, unit, CSS lint, e2e, regression, harness self-test, render-trace check for every ui node; diff scope", status: pending}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "dotnet build and test, typecheck, unit, CSS lint, e2e, the full visual regression for every screen (deferred to here from each node, David 2026-10-23; baseline: rulings at this Pause 2), harness self-test, render-trace check for every ui node; diff scope", status: pending}
       - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
       - {id: t8, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U10.md", status: pending}
       - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: pending}
