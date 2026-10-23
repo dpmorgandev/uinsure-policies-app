@@ -137,6 +137,9 @@ async function ask(url: string): Promise<Answer | null> {
 const isTrace = (a: Answer | null): boolean => a !== null && a.status === 200 && a.text.includes('"schemaVersion"');
 const shaOf = (a: Answer): string | undefined => (JSON.parse(a.text) as { compiledAt?: { sha?: string } }).compiledAt?.sha;
 const pause = (ms: number): Promise<void> => new Promise((done) => setTimeout(done, ms));
+const escape = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+/** Matches output that names every one of `parts`, in any order: stderr and stdout are two pipes, read in no fixed order. */
+const namesAll = (...parts: string[]): RegExp => new RegExp(parts.map((p) => `(?=[\\s\\S]*${escape(p)})`).join(''));
 
 /** Adds `count` empty commits, each with a full set of loop trailers, on the trail's branch, in one git process. */
 function addCommits(root: string, count: number): void {
@@ -260,6 +263,7 @@ describe('a fresh clone F5s straight into Docket', () => {
     const run = await preview(failing);
     try {
       expect(run.up, `the preview server still starts, so the page can say what failed\n${run.running.output()}`).toBe(true);
+      await run.running.waitFor(namesAll(`${ACTIVITY}:2`, `${LOOP}:3`), 30_000);
       const said = run.running.output();
       expect(said, 'preview compiles, so the console names the failed compile and each problem by file and line').toContain(`${ACTIVITY}:2`);
       expect(said).toContain(`${LOOP}:3`);

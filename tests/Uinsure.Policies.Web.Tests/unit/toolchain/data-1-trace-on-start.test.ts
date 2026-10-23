@@ -56,10 +56,18 @@ interface Started {
   url: string | null;
   /** Everything it printed so far, stdout and stderr, colour codes removed. */
   output(): string;
+  /** Resolves when the output matches, or with false when the server exits or the time runs out first. */
+  waitFor(pattern: RegExp, ms: number): Promise<boolean>;
   stop(): Promise<void>;
 }
 
 const ANSI = /\u001b\[[0-9;]*m/g;
+/** How long the console may take to show every problem after 'Local:': stderr and stdout are two pipes, read in no fixed order. */
+const PROBLEMS_TIMEOUT = 30_000;
+
+const escape = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+/** Matches output that names every one of `parts`, in any order. */
+const namesAll = (...parts: string[]): RegExp => new RegExp(parts.map((p) => `(?=[\\s\\S]*${escape(p)})`).join(''));
 
 /** Starts Vite in `web` as `npx vite` does (its bin, its own config), on a port the OS gives. */
 async function startVite(web: string): Promise<Started> {
@@ -88,6 +96,26 @@ async function startVite(web: string): Promise<Started> {
       done(null);
     });
   });
+  const waitFor = (pattern: RegExp, ms: number): Promise<boolean> =>
+    new Promise((done) => {
+      if (pattern.test(output())) return done(true);
+      const timer = setTimeout(() => finish(false), ms);
+      const look = (): void => {
+        if (pattern.test(output())) finish(true);
+      };
+      const finish = (found: boolean): void => {
+        clearTimeout(timer);
+        server.stdout?.off('data', look);
+        server.stderr?.off('data', look);
+        server.off('close', ended);
+        done(found);
+      };
+      const ended = (): void => finish(pattern.test(output()));
+      server.stdout?.on('data', look);
+      server.stderr?.on('data', look);
+      if (server.exitCode !== null) return finish(pattern.test(output()));
+      server.on('close', ended);
+    });
   const stop = async (): Promise<void> => {
     if (server.exitCode !== null) return;
     const exited = new Promise<void>((done) => server.on('exit', () => done()));
@@ -95,7 +123,7 @@ async function startVite(web: string): Promise<Started> {
     else server.kill();
     await exited;
   };
-  return { server, url, output, stop };
+  return { server, url, output, waitFor, stop };
 }
 
 async function onFreshTree(trail: Trail, check: (started: Started) => Promise<void>): Promise<void> {
@@ -133,6 +161,7 @@ describe('the dev server compiles the trail before it serves', () => {
     const trail = replayTrail('privacy-hit', (root) => placeHits(root));
     await onFreshTree(trail, async (started) => {
       expect(started.url, `the dev server still starts, so the page can say what failed\n${started.output()}`).not.toBeNull();
+      await started.waitFor(namesAll(`${ACTIVITY}:2`, `${LOOP}:3`), PROBLEMS_TIMEOUT);
       const said = started.output();
       expect(said, 'the console names the failed compile and each problem by file and line').toContain(`${ACTIVITY}:2`);
       expect(said).toContain(`${LOOP}:3`);
