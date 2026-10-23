@@ -107,3 +107,25 @@ test("LRN-5 A1/I1: every curl command in the guide is well formed and is a recei
   const unreceipted = curls.filter((c) => !isReceipted(c.text, receipted)).map((c) => `index.html:${c.line} ${c.text.slice(0, 60)}`);
   assert.deepEqual(unreceipted, [], "every curl command shown must match a `Command:` line in receipts.md");
 });
+
+const squash = (s) => s.trim().replace(/\s+/g, " ");
+
+test("LRN-5 A1/I2: every line of every captured output in the guide appears in receipts.md", () => {
+  const receiptLines = read(receiptsPath).split("\n").map(squash).filter(Boolean);
+  const outputs = pres(read(guidePath)).filter((el) => hasClass(el, "output"));
+  assert.ok(outputs.length > 0, "the guide shows captured outputs");
+
+  const missing = outputs.flatMap((el) =>
+    decode(el.inner)
+      .split("\n")
+      .map((text, i) => ({ text: squash(text), line: el.line + i }))
+      .filter((o) => o.text !== "")
+      .filter((o) =>
+        o.text.includes("…")
+          ? !receiptLines.some((r) => elisionPattern(o.text, false).test(r))
+          : !receiptLines.some((r) => r.includes(o.text)),
+      )
+      .map((o) => `index.html:${o.line} ${o.text.slice(0, 60)}`),
+  );
+  assert.deepEqual(missing, [], "every output line shown must be copied from a receipts.md entry");
+});
