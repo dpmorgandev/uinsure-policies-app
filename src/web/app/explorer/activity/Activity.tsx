@@ -93,6 +93,14 @@ function lanesOf(trace: Trace, records: ActivityRecord[]): Lane[] {
   return [...lanes].map(([agent, events]) => ({ agent, events }));
 }
 
+/** AGENT-2: the lines no lane draws (an agent outside the kit's list, or none), counted by what the log says. */
+function undrawnNotice(records: ActivityRecord[]): string | null {
+  const undrawn = records.filter((record) => agentOf(record.agent) === null);
+  if (undrawn.length === 0) return null;
+  const names = [...new Set(undrawn.map((record) => record.agent ?? 'no agent'))];
+  return `${undrawn.length} ${undrawn.length === 1 ? 'line is' : 'lines are'} not drawn as lanes: ${names.join(', ')}. They are in the table below.`;
+}
+
 function EventTable({ trace, plan, node, result }: { trace: Trace; plan: string; node: string; result: ChunkLoad<ActivityRecord> | null }) {
   const key = `${plan}/${node}`;
   const rows: EventRow[] =
@@ -142,6 +150,7 @@ function ActivityBody({ trace, plan, node }: { trace: Trace; plan: string; node:
   const gitOnly = trace.nodes.find((n) => n.plan === plan && n.id === node)?.completeness?.includes('git-only') ?? false;
   const records = result?.state === 'ready' ? result.records : [];
   const shown = records.filter((record) => passes(record, filters));
+  const undrawn = undrawnNotice(shown);
   const definitions: FilterDefinition[] = [
     { id: 'agent', label: 'Agent', options: distinct(records.map((r) => r.agent)), value: filters.agent },
     { id: 'tool', label: 'Tool', options: distinct(records.map((r) => r.tool)), value: filters.tool },
@@ -163,6 +172,7 @@ function ActivityBody({ trace, plan, node }: { trace: Trace; plan: string; node:
               totalCount={records.length}
               noun="lines"
             />
+            {undrawn === null ? null : <p className="s-events-note">{undrawn}</p>}
             <AgentLanes lanes={lanesOf(trace, shown)} gitOnly={gitOnly} />
           </>
         )}
