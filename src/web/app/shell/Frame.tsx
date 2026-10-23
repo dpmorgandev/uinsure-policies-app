@@ -70,7 +70,9 @@ export function Frame() {
   const verdict = useMatch('/plans/:planId/:nodeId/verdicts/:round/:agent');
   const finding = useMatch('/plans/:planId/:nodeId/findings/:round');
   const planPage = useMatch('/plans/:planId');
-  const sessions = useMatch('/sessions');
+  const sessionList = useMatch('/sessions');
+  const sessionOpen = useMatch('/sessions/:file');
+  const sessions = sessionList ?? sessionOpen;
   const decisions = useMatch('/decisions');
   const harness = useMatch('/harness');
   const stats = useMatch('/stats');
@@ -93,7 +95,7 @@ export function Frame() {
     [overview !== null, 'Overview'],
     [workbench !== undefined, workbench?.title ?? ''],
   ];
-  const title = titles.find(([matched]) => matched)?.[1] ?? 'Not built yet';
+  const title = titles.find(([matched]) => matched)?.[1] ?? 'Not found';
   // Sessions and the harness are read as "about" the project; the delivery stats sit under the overview.
   const current =
     about || sessions || harness

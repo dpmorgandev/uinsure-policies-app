@@ -18,6 +18,7 @@ import type { Snapshot, Trace, TraceCommit, TraceRule } from '../../data/trace';
 import { agentOf } from '../../shell/agents';
 import { DataNotice } from '../../shell/DataNotice';
 import { blobUrl, commitUrl, pullUrl } from '../../shell/repo';
+import { NotFound } from '../../shell/NotFound';
 import { Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
 import { commitOfShort, fullShaOf, ruleCommits, ruleStatusTag, testsText } from '../ruleFacts';
@@ -310,12 +311,6 @@ export function Rule() {
   const { trace } = useShell();
   if (trace.state !== 'ready') return <DataNotice trace={trace} />;
   const rule = trace.trace.rules.find((candidate) => candidate.id === ruleId);
-  if (rule === undefined) {
-    return (
-      <NotBuiltYet kind="region" name={`rule ${ruleId}`} back={{ href: '#/rules', label: 'Back to the requirements matrix' }}>
-        requirements.md in this snapshot has no rule with that ID.
-      </NotBuiltYet>
-    );
-  }
+  if (rule === undefined) return <NotFound asked={`/rules/${ruleId}`} />;
   return <RulePage trace={trace.trace} snapshot={trace.snapshot} rule={rule} />;
 }

@@ -8,6 +8,7 @@ import { Stats } from './stats/Stats';
 export const u5Routes = (
   <>
     <Route path="sessions" element={<Sessions />} />
+    <Route path="sessions/:file" element={<Sessions />} />
     <Route path="harness" element={<Harness />} />
     <Route path="decisions" element={<Decisions />} />
     <Route path="stats" element={<Stats />} />

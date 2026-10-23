@@ -1,25 +1,27 @@
 import { useParams } from 'react-router';
-import { KeyValueList, NotBuiltYet, RuleChip, ShaLink, VerifyCommand } from '../../../kit';
+import { KeyValueList, RuleChip, ShaLink, VerifyCommand } from '../../../kit';
 import type { Trace, TraceCommit } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
 import { commitUrl } from '../../shell/repo';
-import { NotBuiltRegion, Rung } from '../../shell/Rung';
+import { NotFound } from '../../shell/NotFound';
+import { Rung } from '../../shell/Rung';
 import { chipStatus, ruleHref } from '../../shell/ruleLinks';
 import { useShell } from '../../shell/ShellContext';
 import { CommitDiff } from '../diff/CommitDiff';
 import { useDiffs } from '../diff/useDiffs';
+import { CommitHeader } from './CommitHeader';
 import { TrailerVsHook } from './TrailerVsHook';
 import '../explorer.css';
 
 const linkOut = (sha: string) => <ShaLink sha={sha.slice(0, 7)} fullSha={sha} githubHref={commitUrl(sha)} />;
 
-function CommitPage({ trace, commit }: { trace: Trace; commit: TraceCommit }) {
+function CommitPage({ trace, commit, stamp }: { trace: Trace; commit: TraceCommit; stamp: string }) {
   const diffs = useDiffs(trace);
   const diff = diffs.stateOf(commit.sha);
   const parents = commit.parents ?? [];
   return (
     <>
-      <NotBuiltRegion region="commit-header-and-trailers" name="commit header and trailers" />
+      <CommitHeader trace={trace} commit={commit} stamp={stamp} />
       <TrailerVsHook commit={commit} />
       <Rung region="diff-lazy" req="RULE-3" ordinal="Step 3" heading="Diff">
         <CommitDiff commit={commit} state={diff} onLoad={diffs.load} />
@@ -83,8 +85,6 @@ export function Commit() {
   const { trace: loaded } = useShell();
   if (loaded.state !== 'ready') return <DataNotice trace={loaded} />;
   const commit = sha.length < 7 ? undefined : loaded.trace.commits.find((candidate) => candidate.sha.startsWith(sha));
-  if (commit === undefined) {
-    return <NotBuiltYet kind="region" name={`commit ${sha.slice(0, 7)}`} back={{ href: '#/', label: 'Back to the overview' }} />;
-  }
-  return <CommitPage trace={loaded.trace} commit={commit} />;
+  if (commit === undefined) return <NotFound asked={`/commits/${sha}`} />;
+  return <CommitPage trace={loaded.trace} commit={commit} stamp={loaded.snapshot.utc} />;
 }
