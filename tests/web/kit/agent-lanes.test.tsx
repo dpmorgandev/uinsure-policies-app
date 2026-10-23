@@ -136,8 +136,60 @@ describe('AgentLanes', () => {
   it('one agent: a single lane', () => {
     render(byState('one agent'));
     expect(screen.getByRole('region', { name: 'Agent lanes' }).getAttribute('data-state')).toBe('one agent');
-    expect(screen.getByRole('list', { name: 'tester rungs' })).toBeTruthy();
+    expect(screen.getByRole('list', { name: 'reviewer rungs' })).toBeTruthy();
     expect(screen.queryByRole('list', { name: 'builder rungs' })).toBeNull();
+  });
+
+  it('AGENT-2: a tick names its tool and file as visible text, beside #n and the TDD step', () => {
+    render(byState('one agent'));
+    const tick = within(screen.getByRole('list', { name: 'reviewer rungs' })).getByRole('listitem');
+    expect(tick.textContent).toContain('#7');
+    expect(tick.textContent).toContain('Read · src/sell.txt');
+    expect(tick.textContent).toContain('no TDD trailer');
+    expect(within(tick).getByText('Read · src/sell.txt').className).not.toMatch(/srOnly/);
+  });
+
+  it('AGENT-2: the text-equivalent table carries the same tool and file in their own columns', () => {
+    render(byState('one agent'));
+    const table = screen.getByRole('table', { name: /Activity by agent/ });
+    expect(within(table).getAllByRole('columnheader').map((h) => h.textContent)).toEqual([
+      'Rung',
+      'Agent',
+      'TDD',
+      'Tool',
+      'File',
+      'SHA',
+      'What it did',
+    ]);
+    expect(within(table).getByRole('cell', { name: 'Read' })).toBeTruthy();
+    expect(within(table).getByRole('cell', { name: 'src/sell.txt' })).toBeTruthy();
+  });
+
+  it('a tick with only a tool, or only a file, shows what it has; a commit-only table has no Tool or File column', () => {
+    render(
+      <AgentLanes
+        lanes={[
+          {
+            agent: 'builder',
+            events: [
+              { n: 1, tool: 'Edit', label: 'x' },
+              { n: 2, file: 'src/sell.txt', label: 'y' },
+              { n: 3, tdd: 'green', label: 'z' },
+            ],
+          },
+        ]}
+      />,
+    );
+    const ticks = within(screen.getByRole('list', { name: 'builder rungs' })).getAllByRole('listitem');
+    expect(ticks[0]!.textContent).toContain('Edit');
+    expect(ticks[0]!.textContent).not.toContain('·');
+    expect(ticks[1]!.textContent).toContain('src/sell.txt');
+    expect(ticks[2]!.textContent).toBe('#3green');
+    cleanup();
+    render(byState('pop'));
+    const table = screen.getByRole('table', { name: /Activity by agent/ });
+    expect(within(table).queryByRole('columnheader', { name: 'Tool' })).toBeNull();
+    expect(within(table).queryByRole('columnheader', { name: 'File' })).toBeNull();
   });
 
   it('empty: says so, with no lanes and no table', () => {

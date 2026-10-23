@@ -28,6 +28,17 @@ describe('ShaLink', () => {
     expect(screen.getByRole('link', { name: 'Commit af38b4b on GitHub' }).getAttribute('href')).toBe(GITHUB);
   });
 
+  it('marks every GitHub link rel="noreferrer", and leaves the in-app link alone', () => {
+    render(<ShaLink sha="af38b4b" fullSha={FULL} href="#r33" githubHref={GITHUB} />);
+    expect(screen.getByRole('link', { name: 'Commit af38b4b on GitHub' }).getAttribute('rel')).toBe('noreferrer');
+    expect(screen.getByRole('link', { name: 'af38b4b' }).getAttribute('rel')).toBeNull();
+  });
+
+  it('marks the single GitHub link rel="noreferrer" when no commit page is given', () => {
+    render(<ShaLink sha="94a7473" githubHref="https://github.com/dpmorgandev/uinsure-policies-api/commit/94a7473" />);
+    expect(screen.getByRole('link').getAttribute('rel')).toBe('noreferrer');
+  });
+
   it('makes the full SHA available on hover and to assistive technology', () => {
     render(<ShaLink sha="af38b4b" fullSha={FULL} href="#r33" githubHref={GITHUB} />);
     const link = screen.getByRole('link', { name: 'af38b4b' });

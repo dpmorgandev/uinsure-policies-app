@@ -24,8 +24,17 @@ describe("the activity chunk keeps each line's attempt", () => {
       expect(r.error, thrown(r)).toBeUndefined();
       const chunk = activity(r, 'build', 'F1');
       expect(chunk?.map((l) => l.attempt), 'each entry carries activity.jsonl lines 1-5 attempt 1').toEqual([1, 1, 1, 1, 1]);
-      // Each entry, field by field, as its log line holds it (the line number is its position in the log).
-      const fromLog = logLines(trail.root).map((record, i) => FIELDS.map((f) => (f === 'line' ? i + 1 : record[f])));
+      // Each entry, field by field, as its log line holds it (the line number is its position in the log). The
+      // commit object also carries the commit's own TDD trailer (AGENT-2), exactly as commits.json records it:
+      // c0 and c4 have none (null), c1 red, c2 stub, c3 green.
+      const TDD = [null, 'red', 'stub', 'green', null];
+      const fromLog = logLines(trail.root).map((record, i) =>
+        FIELDS.map((f) => {
+          if (f === 'line') return i + 1;
+          if (f === 'commit') return { ...(record[f] as Record<string, unknown>), tdd: TDD[i] };
+          return record[f];
+        }),
+      );
       expect(chunk?.map((l) => FIELDS.map((f) => l[f]))).toEqual(fromLog);
     } finally {
       trail.cleanup();

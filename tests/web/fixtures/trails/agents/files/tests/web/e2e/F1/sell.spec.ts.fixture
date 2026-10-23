@@ -1,0 +1,6 @@
+import { test, expect } from '@playwright/test';
+
+test('SELL-1 · a sale with a new reference answers 201', async () => { expect(1).toBe(1); });
+test('SELL-1 · a second sale with the same reference answers 409', async () => { expect(1).toBe(1); });
+test('SELL-2 · a start date of today answers 201', async () => { expect(1).toBe(1); });
+test('SELL-2 · a start date of today + 60 answers 201', async () => { expect(1).toBe(1); });

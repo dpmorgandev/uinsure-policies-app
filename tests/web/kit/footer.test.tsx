@@ -35,6 +35,13 @@ describe('Footer', () => {
     );
   });
 
+  it('draws the repository link with rel="noreferrer" and leaves the in-app provenance link without it', () => {
+    render(<Footer {...props} />);
+    expect(screen.getByRole('link', { name: 'Repository on GitHub' }).getAttribute('rel')).toBe('noreferrer');
+    expect(screen.getByRole('link', { name: 'Commit 94a7473 on GitHub' }).getAttribute('rel')).toBe('noreferrer');
+    expect(screen.getByRole('link', { name: 'Sources and provenance' }).getAttribute('rel')).toBeNull();
+  });
+
   it('accepts its own words for the two links', () => {
     render(<Footer {...props} provenanceLabel="How this was compiled" repoLabel="Source" />);
     expect(screen.getByRole('link', { name: 'How this was compiled' })).toBeTruthy();

@@ -1,8 +1,11 @@
-import { DataTable, PageHeader, Timestamp } from '../../../kit';
+import type { ReactNode } from 'react';
+import { useParams } from 'react-router';
+import { DataTable, MarkdownText, PageHeader, Timestamp } from '../../../kit';
 import type { DataTableColumn } from '../../../kit';
+import { entityUrl } from '../../data/trace';
 import type { TraceSession } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
-import { NotBuiltRegion } from '../../shell/Rung';
+import { NotFound } from '../../shell/NotFound';
 import { useShell } from '../../shell/ShellContext';
 import '../u5.css';
 
@@ -14,7 +17,12 @@ interface Row extends TraceSession {
 
 const columns: DataTableColumn<Row>[] = [
   { id: 'ref', header: 'Ref', rowHeader: true, cell: (row) => `#${row.position}` },
-  { id: 'slug', header: 'Snapshot', mono: true, cell: (row) => row.slug ?? row.file },
+  {
+    id: 'slug',
+    header: 'Snapshot',
+    mono: true,
+    cell: (row) => <a href={entityUrl({ kind: 'session', file: row.file })}>{row.slug ?? row.file}</a>,
+  },
   { id: 'saved', header: 'Saved', cell: (row) => <Timestamp value={row.ts} /> },
   {
     id: 'node',
@@ -38,11 +46,18 @@ function daysOf(rows: Row[]): { date: string; rows: Row[] }[] {
   return days;
 }
 
+/** The URL segment of a snapshot: its file name without the folder or the extension. */
+const slugOf = (file: string): string => file.replace(/^.*\//, '').replace(/\.md$/, '');
+
 export function Sessions() {
   const { trace } = useShell();
+  const { file } = useParams();
   if (trace.state !== 'ready') return <DataNotice trace={trace} />;
   const rows: Row[] = trace.trace.sessions.map((session, index) => ({ ...session, id: session.file, position: index + 1 }));
   const latest = rows[rows.length - 1];
+  // /sessions/:file opens that snapshot; /sessions opens the latest.
+  const open = file === undefined ? latest : rows.find((row) => slugOf(row.file) === file);
+  if (file !== undefined && open === undefined) return <NotFound asked={`/sessions/${file}`} />;
   return (
     <>
       <section className="s-u5-region" data-region="snapshot-timeline" data-req="CTX-1">
@@ -81,10 +96,35 @@ export function Sessions() {
           </div>
         ))}
       </section>
-      <NotBuiltRegion
-        region="one-snapshot-open-at-its-own-url-sessions-file"
-        name="one snapshot, open at its own URL (/sessions/:file)"
-      />
+      {open === undefined ? null : <OpenSnapshot row={open} />}
     </>
+  );
+}
+
+const fields = (row: Row): { id: string; field: string; value: ReactNode }[] => [
+  { id: 'file', field: 'File', value: row.file },
+  { id: 'saved', field: 'Saved', value: <Timestamp value={row.ts} /> },
+  { id: 'slug', field: 'Slug', value: row.slug ?? 'not recorded' },
+  { id: 'node', field: 'Plan and node', value: row.plan && row.node ? `${row.plan}/${row.node}` : 'not recorded' },
+  { id: 'status', field: 'Status', value: row.status ?? 'not recorded' },
+  { id: 'next', field: 'Next action', value: row.nextAction === null ? 'not recorded' : <MarkdownText source={row.nextAction} /> },
+];
+
+const openColumns: DataTableColumn<ReturnType<typeof fields>[number]>[] = [
+  { id: 'field', header: 'Field', rowHeader: true, cell: (item) => item.field },
+  { id: 'value', header: 'Value', mono: true, wrap: 'anywhere', cell: (item) => item.value },
+];
+
+/** NAV-2: one snapshot's header fields, open at its own URL. */
+function OpenSnapshot({ row }: { row: Row }) {
+  return (
+    <section className="s-u5-region" data-region="one-snapshot-open-at-its-own-url-sessions-file" data-req="NAV-2">
+      <h2 className="s-u5-head">{`One snapshot, open: #${row.position} ${row.slug ?? row.file}`}</h2>
+      <DataTable
+        caption={`Header fields of snapshot #${row.position}, as its front matter records them.`}
+        rows={fields(row)}
+        columns={openColumns}
+      />
+    </section>
   );
 }

@@ -1,0 +1,5 @@
+Two things in the primitives-a batch stop ui node U4 from drawing its rules honestly (U4 review A1, R2 and S2).
+
+1. AgentBadge's AgentName knows only the build plan's agents (main, tester, builder, reviewer, security, investigator, git, david). The ui plan's trails record web-tester, web-builder, kit-builder, ui-designer and creative-director, and AgentLanes takes its lane agent from AgentName, so those agents can't be drawn as named lanes (AGENT-2) without printing a name the trail doesn't hold (HONEST-1). AgentName must take those five ui-plan agents as well, each drawn by its own name, as the others are. Keep every existing agent and the badge's look; add no state (the "each agent" example lists every name).
+
+2. ShaLink's GitHub link has no rel="noreferrer". Every external link the kit draws carries rel="noreferrer" (web-security W2); add it, and change nothing else about the link.

@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import type { FormEvent } from 'react';
+import type { FormEvent, ReactNode } from 'react';
 import { Search } from 'lucide-react';
 import { Button } from '../../primitives/button/Button';
 import { TextInput } from '../../primitives/text-input/TextInput';
@@ -20,6 +20,12 @@ export interface TopBarProps {
   /** Names the search box for assistive technology. */
   searchLabel?: string;
   searchPlaceholder?: string;
+  /**
+   * The site search, drawn where the bar's own search box sits. Give it the kit Search combobox
+   * (it carries its own label and `search` landmark). When given, the plain box, its button and the
+   * `onSearch`, `searching`, `defaultQuery`, `searchLabel` and `searchPlaceholder` props are not used.
+   */
+  search?: ReactNode;
   /** Controlled theme choice. Leave out to let the toggle hold its own. */
   theme?: ThemeChoice;
   defaultTheme?: ThemeChoice;
@@ -35,6 +41,7 @@ export function TopBar({
   searching = false,
   searchLabel = 'Search rules, nodes, SHAs and file paths',
   searchPlaceholder = 'Rule ID, node, SHA or path',
+  search,
   theme,
   defaultTheme,
   onThemeChange,
@@ -54,33 +61,37 @@ export function TopBar({
         <a className={styles.name} href={homeHref}>
           {appName}
         </a>
-        <form className={styles.search} role="search" aria-label="Find" onSubmit={handleSubmit}>
-          <label className={styles.srOnly} htmlFor={inputId}>
-            {searchLabel}
-          </label>
-          <div className={styles.field}>
-            <TextInput
-              id={inputId}
-              name="q"
-              type="search"
-              mono
-              autoComplete="off"
-              spellCheck={false}
-              placeholder={searchPlaceholder}
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
-          </div>
-          <Button
-            type="submit"
-            variant="primary"
-            icon={<Search size="1em" aria-hidden="true" />}
-            busy={searching}
-            busyLabel="Searching…"
-          >
-            Search
-          </Button>
-        </form>
+        {search !== undefined && search !== null ? (
+          <div className={styles.slot}>{search}</div>
+        ) : (
+          <form className={styles.search} role="search" aria-label="Find" onSubmit={handleSubmit}>
+            <label className={styles.srOnly} htmlFor={inputId}>
+              {searchLabel}
+            </label>
+            <div className={styles.field}>
+              <TextInput
+                id={inputId}
+                name="q"
+                type="search"
+                mono
+                autoComplete="off"
+                spellCheck={false}
+                placeholder={searchPlaceholder}
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </div>
+            <Button
+              type="submit"
+              variant="primary"
+              icon={<Search size="1em" aria-hidden="true" />}
+              busy={searching}
+              busyLabel="Searching…"
+            >
+              Search
+            </Button>
+          </form>
+        )}
         <div className={styles.theme}>
           <ThemeToggle value={theme} defaultValue={defaultTheme} onChange={onThemeChange} />
         </div>

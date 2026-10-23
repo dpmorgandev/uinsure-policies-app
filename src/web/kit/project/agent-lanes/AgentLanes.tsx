@@ -11,6 +11,10 @@ export interface LaneEvent {
   n: number;
   /** What it did, in the commit's own words. */
   label: string;
+  /** The tool the event used (Read, Edit, Bash, ...). Drawn as visible text on the tick and in the table. */
+  tool?: string | null;
+  /** The file the event touched, or the command it ran. Drawn as visible text beside the tool. */
+  file?: string | null;
   /** The commit's TDD trailer: red, stub, green, refactor. Leave out when it has none. */
   tdd?: string | null;
   sha?: string | null;
@@ -48,6 +52,16 @@ function stepOf(event: LaneEvent): string | undefined {
   return event.tdd === undefined || event.tdd === null || event.tdd === '' ? undefined : event.tdd;
 }
 
+function present(value: string | null | undefined): string | undefined {
+  return value === undefined || value === null || value === '' ? undefined : value;
+}
+
+/** "Read · src/sell.txt": the tool and the file (or command), whichever the event has. */
+function touchedOf(event: LaneEvent): string | undefined {
+  const parts = [present(event.tool), present(event.file)].filter((part): part is string => part !== undefined);
+  return parts.length === 0 ? undefined : parts.join(' · ');
+}
+
 /**
  * Per-agent lanes of activity. Position along a lane is rung order (the walkthrough row), never clock time, and
  * the same events are in a table as the text equivalent.
@@ -77,6 +91,9 @@ export function AgentLanes({ lanes, gitOnly = false, tableOpen = false }: AgentL
     (a, b) => a - b,
   );
   const column = (n: number) => positions.indexOf(n) + 1;
+  // When any event names a tool or a file, the ticks carry that text, so they are too wide to share narrow columns:
+  // each lane wraps its ticks in rung order instead, and the table gains Tool and File columns.
+  const labelled = withEvents.some((lane) => lane.events.some((event) => touchedOf(event) !== undefined));
   const rows = withEvents
     .flatMap((lane) => lane.events.map((event) => ({ agent: lane.agent, event })))
     .sort((a, b) => a.event.n - b.event.n);
@@ -89,7 +106,11 @@ export function AgentLanes({ lanes, gitOnly = false, tableOpen = false }: AgentL
         more lines instead, still in rung order.
       </p>
       <div className={styles.scroll} role="region" aria-label="Agent lanes, by rung" tabIndex={0}>
-        <ul className={styles.lanes} style={{ '--cols': positions.length } as CSSProperties}>
+        <ul
+          className={[styles.lanes, labelled ? styles.wrapped : ''].filter(Boolean).join(' ')}
+          style={{ '--cols': positions.length } as CSSProperties}
+          data-labelled={labelled ? 'true' : undefined}
+        >
           {withEvents.map((lane) => (
             <li key={lane.agent} className={styles.lane}>
               <div className={styles.who}>
@@ -99,6 +120,7 @@ export function AgentLanes({ lanes, gitOnly = false, tableOpen = false }: AgentL
                 {lane.events.map((event) => {
                   const step = stepOf(event);
                   const Glyph = (step ? GLYPHS[step] : undefined) ?? Minus;
+                  const touched = touchedOf(event);
                   return (
                     <li
                       key={event.n}
@@ -110,6 +132,7 @@ export function AgentLanes({ lanes, gitOnly = false, tableOpen = false }: AgentL
                     >
                       <Glyph className={styles.icon} aria-hidden="true" focusable="false" />
                       <span className={styles.n}>{`#${event.n}`}</span>
+                      {touched ? <span className={styles.touched}>{touched}</span> : null}
                       <span className={styles.srOnly}>{step ?? 'no TDD trailer'}</span>
                     </li>
                   );
@@ -129,6 +152,8 @@ export function AgentLanes({ lanes, gitOnly = false, tableOpen = false }: AgentL
                   <th scope="col">Rung</th>
                   <th scope="col">Agent</th>
                   <th scope="col">TDD</th>
+                  {labelled ? <th scope="col">Tool</th> : null}
+                  {labelled ? <th scope="col">File</th> : null}
                   <th scope="col">SHA</th>
                   <th scope="col">What it did</th>
                 </tr>
@@ -139,6 +164,12 @@ export function AgentLanes({ lanes, gitOnly = false, tableOpen = false }: AgentL
                     <th scope="row" className={styles.cellMono}>{`#${event.n}`}</th>
                     <td className={styles.cellMono}>{agent}</td>
                     <td className={styles.cellTdd}>{stepOf(event) ?? <span className={styles.absent}>none</span>}</td>
+                    {labelled ? (
+                      <td className={styles.cellMono}>{present(event.tool) ?? <span className={styles.absent}>no tool</span>}</td>
+                    ) : null}
+                    {labelled ? (
+                      <td className={styles.cellFile}>{present(event.file) ?? <span className={styles.absent}>no file</span>}</td>
+                    ) : null}
                     <td className={styles.cellMono}>{event.sha ?? <span className={styles.absent}>no SHA</span>}</td>
                     <td className={styles.cellWhat}>{event.label}</td>
                   </tr>
