@@ -143,6 +143,8 @@ t3 runs every command on the F7 branch at HEAD and records each in `docs/guides/
 
 A number that appears in the guide without a matching line in `receipts.md` fails t4.
 
+The guide check runs with `node --test docs/guides/api/check.test.mjs`.
+
 ## 5. Acceptance
 
 1. §1 holds at least 25 questions in three reader groups. Met at 30.

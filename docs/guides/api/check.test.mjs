@@ -1,5 +1,5 @@
 // Guide checks for the API user guide (F7, failure route A1).
-// Run: node --test tests/guides/api-guide.test.mjs
+// Run: node --test docs/guides/api/check.test.mjs
 //
 // Each test reproduces one finding of docs/trace/build/F7/findings/A1.md and names it (<rule> <round>/<id>).
 // Conventions read from the sources themselves:
@@ -14,7 +14,7 @@ import { tmpdir } from "node:os";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 const read = (path) => readFileSync(resolve(root, path), "utf8").replace(/\r\n/g, "\n");
 
 const guidePath = "docs/guides/api/index.html";
