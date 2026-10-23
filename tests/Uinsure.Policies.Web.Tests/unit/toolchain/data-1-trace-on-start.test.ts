@@ -9,12 +9,14 @@
 //   complete     compiles clean (tests/Uinsure.Policies.Web.Tests/fixtures/trails/complete/README.md): /trace.json is the trail at its HEAD
 //   privacy-hit  fails the compile on two denylisted values (privacy-hit/README.md): activity.jsonl line 2 and
 //                loop.jsonl line 3 are named in the console, no trace.json is served, and the page is still served
+//   complete, compiled  the middleware answers only for regular files under /trace and never throws: a malformed
+//                %-escape elsewhere is left to Vite, one under /trace is a 4xx, and a directory is a 404 (A2/I3, I4)
 import { spawn } from 'node:child_process';
 import type { ChildProcess } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, rmdirSync, symlinkSync, unlinkSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, test } from 'vitest';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { ACTIVITY, LOOP, placeHits, replayTrail } from '../compiler/support/trail';
 import type { Trail } from '../compiler/support/trail';
 
@@ -171,5 +173,40 @@ describe('the dev server compiles the trail before it serves', () => {
       const page = await fetch(started.url ?? '', { headers: { accept: 'text/html' } });
       expect(page.status, 'the page is served, so Docket can say the trail could not be loaded').toBe(200);
     });
+  }, SLOW);
+});
+
+describe('once compiled, the dev server answers only for files under /trace, and never a 500', () => {
+  // One server for these requests: the `complete` trail, compiled ('Local:' is printed once the compile ends).
+  let trail: Trail | undefined;
+  let web: string | undefined;
+  let started: Started | undefined;
+  beforeAll(async () => {
+    trail = replayTrail('complete');
+    web = freshWebTree(trail.root);
+    started = await startVite(web);
+  }, SLOW);
+  afterAll(async () => {
+    await started?.stop();
+    if (web !== undefined) unlinkModules(web);
+    trail?.cleanup();
+  }, SLOW);
+
+  /** GETs `path` (sent as written, its %-escapes untouched) from the running server. */
+  async function get(path: string): Promise<{ status: number; text: string }> {
+    expect(started?.url, `setup: Vite starts on the complete trail and says where\n${started?.output() ?? ''}`).toBeTruthy();
+    const answer = await fetch(`${started?.url ?? ''}${path}`);
+    return { status: answer.status, text: await answer.text() };
+  }
+
+  test('DATA-1 · a malformed %-escape outside /trace (GET /src/%E0%A4%A) is left to Vite, never a 500', async () => {
+    const answer = await get('src/%E0%A4%A');
+    expect(answer.status, `the trace middleware does not decode a path it does not serve: ${answer.status} ${answer.text.slice(0, 200)}`).not.toBe(500);
+  }, SLOW);
+
+  test('DATA-1 · a malformed %-escape under /trace (GET /trace/%E0%A4%A) answers 4xx, never a 500', async () => {
+    const answer = await get('trace/%E0%A4%A');
+    expect(answer.status, `a path that cannot be decoded is refused: ${answer.status} ${answer.text.slice(0, 200)}`).toBeGreaterThanOrEqual(400);
+    expect(answer.status, `as the client's fault: ${answer.status} ${answer.text.slice(0, 200)}`).toBeLessThan(500);
   }, SLOW);
 });
