@@ -209,4 +209,13 @@ describe('once compiled, the dev server answers only for files under /trace, and
     expect(answer.status, `a path that cannot be decoded is refused: ${answer.status} ${answer.text.slice(0, 200)}`).toBeGreaterThanOrEqual(400);
     expect(answer.status, `as the client's fault: ${answer.status} ${answer.text.slice(0, 200)}`).toBeLessThan(500);
   }, SLOW);
+
+  test.each([['/trace/', 'trace/'], ['/trace/build/', 'trace/build/']])(
+    'DATA-1 · a directory under public/ (GET %s) answers 404, never a 500',
+    async (_name, path) => {
+      const answer = await get(path);
+      expect(answer.status, `only regular files under public/ are served: ${answer.status} ${answer.text.slice(0, 200)}`).toBe(404);
+    },
+    SLOW,
+  );
 });
