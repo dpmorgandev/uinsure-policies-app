@@ -398,7 +398,7 @@ nodes:
     trace: docs/trace/build/F7/
     acceptance:
       - "docs/specs/guide-format.spec.md and docs/specs/api-guide.spec.md exist; api-guide opens with a question bank of at least 25 reader questions (assessor, developer, user), each answered in the guide (docs/documentation-requirements.md §3, §8.1)"
-      - "API_UserGuide.pdf at the root is printed by node docs/guides/print.mjs from docs/guides/api/index.html and covers every item in documentation-requirements §6, in the LRN layout and STY styling (§4, §5)"
+      - "API_UserGuide.pdf at the root is printed by node docs/guides/print.mjs from docs/guides/api/index.html and covers every item in documentation-requirements §6, in the LRN layout and STY styling (§4, §4b, §5)"
       - "Every command shown was run on the node branch and every output, count and test number is copied from that run, recorded in docs/trace/build/F7/; every path:line link resolves at HEAD; the privacy scan passes on the HTML, assets and PDF text (§8.3, §8.4, §8.6)"
     tasks:
       - {id: t1, role: builder, step: write, layer: null, rules: [], title: "docs/specs/guide-format.spec.md, and docs/guides/assets (Docket tokens, fonts, guide.css), the template and print.mjs, proven on a test page", status: pending}
@@ -429,7 +429,7 @@ nodes:
     trace: docs/trace/build/F8/
     acceptance:
       - "docs/specs/ui-guide.spec.md exists and opens with a question bank of at least 25 reader questions (assessor, developer, user), each answered in the guide (docs/documentation-requirements.md §3, §8.1)"
-      - "UI_UserGuide.pdf at the root is printed by node docs/guides/print.mjs from docs/guides/ui/index.html with F7's format, and covers every item in documentation-requirements §7: every shipped screen with a highlighted screenshot, its regions, rule ids, numbered steps and the code that draws it"
+      - "UI_UserGuide.pdf at the root is printed by node docs/guides/print.mjs from docs/guides/ui/index.html with F7's format, and covers every item in documentation-requirements §7: every shipped screen with a highlighted screenshot, its regions, rule ids, numbered steps and the code that draws it; running the tests by hand per §4b"
       - "Screenshots come from the final app after U10; highlight markers are measured from region tags, never hand-placed; every path:line link resolves at HEAD; the privacy scan passes on the HTML, assets and PDF text (§4 LRN-6, §8.4–§8.6)"
     tasks:
       - {id: t1, role: builder, step: write, layer: null, rules: [], title: "docs/specs/ui-guide.spec.md: the reader question bank first, then research with path:line citations, the region-tag audit, outline and acceptance", status: pending}

@@ -72,6 +72,26 @@ Both guides use one layout, built to teach and not just to be looked things up i
 | LRN-10 | **"Why" callouts** state each design decision as the choice made, the alternative and the reason. |
 | LRN-11 | **Troubleshooting:** a closing table of symptom, cause and fix, built from the problems actually met during the build: the trails' findings, and `docs/lessons.md` where it exists. |
 
+## 4b. Running the tests by hand (MAN)
+
+David, 2026-10-23: "In both the UI and API user guide it should also be clear how we can manually run the
+collections of tests, whether Postman, VS or Playwright." Both guides carry a section called **"Run the tests
+yourself"**. It covers every runner the guide's half uses. Each runner gets numbered steps (LRN-5), a screenshot
+of the tool at the point where a reader acts, and the real result of a run.
+
+| ID | Requirement |
+|----|-------------|
+| MAN-1 | **Postman app.** Import `tests/postman/Uinsure.Policies.postman_collection.json` and `local.postman_environment.json`. Select the environment, start the API, run the whole collection in the Collection Runner, run one folder or one request, and read the test results. Explain what each folder covers, and which rule IDs. |
+| MAN-2 | **Postman CLI.** `postman collection run …` with the environment, no login needed. It runs the whole collection or a single folder, and the guide shows how to read its summary. |
+| MAN-3 | **Visual Studio.** Open `Uinsure.Policies.slnx`. In Test Explorer: run all tests, run one project, filter by the `Rule` trait to run one rule's tests, debug a test, and read a failure. Use the U9 launch profile to start the API (and the web app) for Postman. |
+| MAN-4 | **`dotnet test` from the command line.** Run all tests, run one project, and run a single rule with `--filter "Rule=<id>"`. |
+| MAN-5 | **Playwright.** Install its browsers. Then cover: `npm run e2e` (it starts its own API and app), UI mode (`--ui`), headed and debug runs, running a single spec, a single test or tag such as one rule ID or one screen, the visual-regression suite and updating its baselines (with the warning that baselines are only updated deliberately), and opening the HTML report and trace viewer. |
+| MAN-6 | **Vitest.** Run the unit tests once, in watch mode, and for a single file. |
+| MAN-7 | **A comparison table** of every runner, with columns for what it tests, when to use it, its command or click path, what it needs running first, and how long it takes (a measured run). |
+
+Placement: the API guide (F7) carries MAN-1 to MAN-4 in full, and points to the UI guide for MAN-5 and MAN-6. The UI
+guide (F8) carries MAN-5 and MAN-6 in full, plus MAN-1 for the requests the workbench sends. Both guides carry MAN-7.
+
 ## 5. Styling (STY)
 
 | ID | Requirement |
@@ -167,7 +187,8 @@ Both guides use one layout, built to teach and not just to be looked things up i
 
 1. The spec opens with a question bank of at least 25 reader questions, grouped by reader: assessor, developer
    and user. Every question is answered in the guide.
-2. Every LRN requirement is met.
+2. Every LRN requirement is met, and so is every MAN requirement placed in that guide (§4b). David can run each
+   test collection by hand, in each tool, by following the guide alone.
 3. **Receipts, not hand-typed claims.** Every command in the guide was run on the node's branch. Every output,
    count and test number shown is copied from that run, which is recorded in the node's trace. Nothing is typed in
    from memory.
