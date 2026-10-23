@@ -69,6 +69,9 @@ public sealed class LaunchProfileTests
     // D2 (U10): in the 'API and web' profile Visual Studio runs Docket.Web's DebugTarget and never its
     // StartupCommand, so a browser target opens on a port nothing serves. The DebugTarget names a launch.json
     // configuration of type node that runs Vite itself, on the StartupCommand's port, failing rather than moving.
+    // DATA-1 (bug-002 N1): the program is the guarded entry scripts/dev.mjs, not vite.js directly. On a clone
+    // with no node_modules it names `npm ci` instead of failing on a missing module, and otherwise it imports
+    // node_modules/vite/bin/vite.js in the same process, so the configuration still runs Vite itself.
     [Fact]
     public void API_and_web_profile_debugs_the_web_app_in_a_node_configuration_that_runs_Vite_on_the_StartupCommand_port_with_strictPort()
     {
@@ -82,7 +85,7 @@ public sealed class LaunchProfileTests
         Assert.True(configuration.TryGetProperty("cwd", out var cwd), "The Vite configuration sets no cwd; its program path is relative to the project.");
         Assert.Equal("${workspaceFolder}", cwd.GetString()?.Replace('\\', '/').TrimEnd('/'));
         Assert.True(configuration.TryGetProperty("program", out var program), "The Vite configuration names no program.");
-        Assert.Equal("node_modules/vite/bin/vite.js", ProjectRelative(program.GetString()));
+        Assert.Equal("scripts/dev.mjs", ProjectRelative(program.GetString()));
 
         var args = Arguments(configuration);
         Assert.Equal(port, ArgumentValue(args, "--port"));
