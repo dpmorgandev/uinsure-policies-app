@@ -48,3 +48,4 @@
 {"v":1,"ts":"2026-10-23T05:18:37Z","plan":"ui","node":"U9","attempt":2,"source":"orchestrator","event":"verdict(security,PASS,docs/trace/ui/U9/verdicts/D1-security.json)","head":"ca43c93"}
 {"v":1,"ts":"2026-10-23T05:18:52Z","plan":"ui","node":"U9","attempt":2,"source":"orchestrator","event":"verdict(reviewer,PASS,docs/trace/ui/U9/verdicts/A2.2-reviewer.json)","head":"ca43c93","detail":"supersedes the previous event: the hook files the D1 round as A2.2, not D1"}
 {"v":1,"ts":"2026-10-23T05:18:52Z","plan":"ui","node":"U9","attempt":2,"source":"orchestrator","event":"verdict(security,PASS,docs/trace/ui/U9/verdicts/A2.2-security.json)","head":"ca43c93","detail":"supersedes the previous event: the hook files the D1 round as A2.2, not D1"}
+{"v":1,"ts":"2026-10-23T05:19:40Z","plan":"ui","node":"U9","attempt":2,"source":"orchestrator","event":"trace.rendered(ok)","head":"a7d102b7fcd7091d4b5301fef11538ad53d26d8a"}
