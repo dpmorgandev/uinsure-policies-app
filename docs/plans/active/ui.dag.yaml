@@ -485,11 +485,11 @@ nodes:
     rules: []
     cuttable: true
     budget: null
-    status: hitl
+    status: done
     attempt: 2
     branch: feature/ui/U9
     worktree: .claude/worktrees/ui-U9
-    pr: null
+    pr: 111
     qa: docs/qa/ui-U9.md
     trace: docs/trace/ui/U9/
     acceptance:
@@ -511,8 +511,8 @@ nodes:
       - {id: t4, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U9.md", status: done}
       - {id: t5, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: done}
       - {id: t6, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; chore(trace) commit", status: done}
-      - {id: t7, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
-      - {id: t8, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md and the QA script", status: pending}
+      - {id: t7, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
+      - {id: t8, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md and the QA script", status: done}
       - {id: t9, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
   - id: U10
     title: "Rename: src/web to src/Uinsure.Policies.Web, tests/web to tests/Uinsure.Policies.Web.Tests"
