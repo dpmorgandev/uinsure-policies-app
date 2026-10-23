@@ -21,7 +21,7 @@
         "084-could-2a-claim-dated-tomorrow-422.json exchanges[role=request].responseBody.{reference,status,terms[0].startDate,terms[0].endDate} (api-error page)",
         "the API at localhost:5080 not answering (api-unreachable): no field"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "refund before and after the claim (two quotes)",
@@ -42,7 +42,7 @@
         "the quote before the claim: not in the data (shown as a gap)",
         "084-could-2a-claim-dated-tomorrow-422.json exchanges[path=/policies/F3-MVFJRZIXM3/claims].{status,requestBody.claimDate,responseBody.ruleId} and exchanges[role=request].responseBody.{hasClaims,claims} (api-error page)"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "problems (COULD-2a, COULD-2b, COULD-2c)",

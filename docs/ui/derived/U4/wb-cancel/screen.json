@@ -94,7 +94,7 @@
         "069-could-1-quote-changes-nothing-200.json exchanges[path=/policies/F3-MVFJRBS7C7/cancellation-quote?cancellationDate=2026-12-02].{method,path,status,responseBody}",
         "076-cancel-4-cancel-twice-409.json exchanges[role=request].{method,path,requestBody,status,responseBody}"
       ],
-      "built": false
+      "built": true
     }
   ],
   "states": [

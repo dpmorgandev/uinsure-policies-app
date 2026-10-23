@@ -23,7 +23,7 @@
         "094-renew-1-2-auto-renew-off-card-and-amount-0-today-422.json {item,provenance,recordedAt}",
         "the API not answering (api-unreachable): no field"
       ],
-      "built": false
+      "built": true
     },
     {
       "name": "problems (RENEW-1/2 with its window, RENEW-3b, RENEW-5, RENEW-6, COULD-3; several at once listed, not placed)",

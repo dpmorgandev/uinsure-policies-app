@@ -8,8 +8,10 @@
     "U3",
     "U4",
     "U5",
+    "U7",
     "W1",
-    "W2"
+    "W2",
+    "W3"
   ],
   "screens": {
     "about": {
@@ -155,21 +157,19 @@
         "quote-and-cancel-actions-each-busy-while-its-request-runs",
         "problems-cancel-3-cancel-4-cancel-7",
         "the-refund-as-a-worked-sum-per-term-with-the-rule-applied",
-        "cancel-with-the-quoted-date-then-quote-and-cancellation-compared"
-      ],
-      "notBuilt": [
+        "cancel-with-the-quoted-date-then-quote-and-cancellation-compared",
         "the-requests-as-sent-inspector"
-      ]
+      ],
+      "notBuilt": []
     },
     "wb-claim": {
       "built": [
+        "claim-date-and-description",
+        "refund-before-and-after-the-claim-two-quotes",
         "problems-could-2a-could-2b-could-2c",
         "record-claim-busy-while-the-request-and-the-two-quotes-run"
       ],
-      "notBuilt": [
-        "claim-date-and-description",
-        "refund-before-and-after-the-claim-two-quotes"
-      ]
+      "notBuilt": []
     },
     "wb-home": {
       "built": [
@@ -189,21 +189,26 @@
         "claims",
         "cancellation-summary-from-get-per-term-breakdown-from-the-logged-cancel-response",
         "record-level-problem-banner-404-409",
-        "actions-quote-and-cancel-record-a-claim-renew"
-      ],
-      "notBuilt": [
+        "actions-quote-and-cancel-record-a-claim-renew",
         "requests-that-touched-this-policy"
-      ]
+      ],
+      "notBuilt": []
     },
     "wb-renew": {
       "built": [
+        "renewal-amount-and-payment-method-default-shown-from-the-current-term-omitted-when-auto-renew-is-off",
         "problems-renew-1-2-with-its-window-renew-3b-renew-5-renew-6-could-3-several-at-once-listed-not-placed",
         "the-new-term-last-on-the-timeline",
         "renew-busy-while-the-request-runs"
       ],
-      "notBuilt": [
-        "renewal-amount-and-payment-method-default-shown-from-the-current-term-omitted-when-auto-renew-is-off"
-      ]
+      "notBuilt": []
+    },
+    "wb-requests": {
+      "built": [
+        "request-log",
+        "one-exchange-request-response-status-line-curl"
+      ],
+      "notBuilt": []
     },
     "wb-sell": {
       "built": [
@@ -213,16 +218,13 @@
         "policyholders-1-to-3",
         "property",
         "send-it-anyway-client-checks-off",
-        "submit-busy-while-the-sell-request-runs-spinner-disabled"
-      ],
-      "notBuilt": [
+        "submit-busy-while-the-sell-request-runs-spinner-disabled",
         "the-request-as-sent-inspector"
-      ]
+      ],
+      "notBuilt": []
     }
   },
-  "notBuiltScreens": [
-    "wb-requests"
-  ],
+  "notBuiltScreens": [],
   "unmappedIds": [],
   "nodeRulesWithoutRegion": [
     "PERF-1"
