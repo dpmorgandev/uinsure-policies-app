@@ -1,0 +1,54 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T12:42:02Z",
+  "plan": "build",
+  "node": "F8",
+  "attempt": 1,
+  "agent": "security",
+  "agent_id": "af2511b4acdcfa216",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "build",
+    "node_id": "F8",
+    "attempt": 1,
+    "base_sha": "f041f019e9a55ae31055c71adf589c9a2db56d81",
+    "head_sha": "ee7ba59be43733bc5e8acc16d534d94d1c6c9c9a",
+    "diff_fingerprint": "4f2eec2316d156ebe079ddef190bc32486404b3f",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.write f8gate.sh (build/F8 attempt 1, head c60b521, exit 0, ok)"
+    ],
+    "rules_covered": [
+      "API3:2023",
+      "API4:2023",
+      "API6:2023",
+      "API8:2023",
+      "API9:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "docs/guides/ui/shots/ex-decisions.png",
+        "what": "A public screenshot shows the first name \"David\" in the Decisions screen's question line (\"What did David decide...\").",
+        "why": "Privacy hygiene, not blocking on a docs node. It is the app's own on-screen text and not a path, email or key. David should confirm that a first name in a public repo is acceptable. PR note only.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Scope: I judged delta.patch (b1253d2..HEAD) only. It touches docs/specs, docs/guides/ui, UI_UserGuide.pdf and trail files, and no src/ or tests/.",
+      "API1, API2, API5: n/a, auth and roles are out of scope. API7: n/a, no outbound fetching in src/, and the diff changes no src/. API10: n/a, no upstream APIs.",
+      "API3, API4, API6, API8 and API9 are marked covered because the diff has no server code, DTOs, SQL, packages or logging for them to reach. Nothing in the guide weakens any of them.",
+      "NET extras: no raw SQL, no money type changes, no package changes and no secrets in the diff. A grep of the text files in docs/guides/ui and of the spec found no drive-letter or /Users or /home paths, no emails, no \"nagro\", no keys and no private-key blocks. The only hits were localhost URLs, which are fine.",
+      "capture.mjs: no child_process, exec or spawn. Its only network calls are fetch of <app-url>/trace.json and the browser driving that app URL, and the app URL is a CLI or env argument. The Playwright path comes from PLAYWRIGHT_MODULE or repo-relative candidates. Output paths are derived from import.meta.url. It writes only to docs/guides/ui/shots. The run suffix keeps its test data to its own references.",
+      "build.mjs: no shelling out and no network. It reads WEB_SRC, which the header says is read only and never written into the output, plus the manifest and run-output.json. It writes only index.html. It HTML-escapes every extracted code line and manifest string through esc(). The remaining unescaped insertions come from literals in the script itself, so they are not an injection path.",
+      "index.html: it has no script tags, no external origin, and no file:// or absolute path. Its only links are repo-relative, and the style sheet is ../assets/guide.css. The PDF has no local-path, file:///, email or \"nagro\" byte hits. I could not inspect compressed PDF streams. The orchestrator's gate reports the PDF bytes free of local paths, so I rely on that for the compressed content.",
+      "Screenshots: I viewed ex-session.png and ex-decisions.png and the others were not opened. The first shows a Not found page, and the host or any path appears nowhere on it. I did not open the remaining 36 PNGs. The gate and the compiler's privacy denylist (DATA-5) cover them.",
+      "The guide's instructions are safe. Every command is local: npm ci/build/preview, dotnet run, curl to localhost, the Postman CLI and Playwright. It tells the reader to update visual baselines only deliberately. It tells no one to disable a check, to run anything remote or to use credentials. The Static Web App is described as evidence only, never deployed.",
+      "Non-security observation for the PR: the guide's \"One session snapshot\" shot (ex-session) captured a Not found page, not a snapshot. The text under it describes a snapshot view. The builder's disclosed gaps (the renew success path, commands shown without output, one dark shot, four untagged regions) are noted and not security issues."
+    ]
+  }
+}

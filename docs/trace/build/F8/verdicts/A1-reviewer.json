@@ -1,0 +1,157 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T12:47:32Z",
+  "plan": "build",
+  "node": "F8",
+  "attempt": 1,
+  "agent": "reviewer",
+  "agent_id": "ad620b48f8f507348",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "build",
+    "node_id": "F8",
+    "attempt": 1,
+    "base_sha": "f041f019e9a55ae31055c71adf589c9a2db56d81",
+    "head_sha": "ee7ba59be43733bc5e8acc16d534d94d1c6c9c9a",
+    "diff_fingerprint": "4f2eec2316d156ebe079ddef190bc32486404b3f",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "docs/trace/build/F8/loop.jsonl gate.write 2026-10-23T12:34:36Z (f8gate.sh, head c60b521, exit 0)"
+    ],
+    "rules_covered": [],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "LRN-5",
+        "severity": "P1",
+        "file": "docs/guides/ui/index.html",
+        "line": 28,
+        "what": "The 'Run it' steps go ci, build, preview, then 'The Overview', with no 'npm run trace'. On a fresh clone the build has no trace.json, so the explorer shows its data notice, not the Overview.",
+        "why": "§7 Run it (static build) and LRN-5 (what you should see). In U10, src/Uinsure.Policies.Web/.gitignore ignores public/. traceOnStart in vite.config.ts applies only to 'serve', and the 'build' script is plain 'vite build'. The pipeline's Web stage runs 'run trace' before 'run build'. As printed, step 4's expected screen is false. The fix is in the guide's own troubleshooting row, not in the steps.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "LRN-5",
+        "severity": "P1",
+        "file": "docs/guides/ui/index.html",
+        "line": 30,
+        "what": "The printed reader commands target the capture ports. curl hits 4186/5096 right after the guide starts 4170/5080, and the Postman CLI line forces baseUrl=http://localhost:5096. Both fail as printed.",
+        "why": "David's P1 bar is a printed command that fails as printed. §2 step 2 starts the API on 5080 and the preview on 4170, and MAN-1 step 2 says to start the API on 5080. Then §2 step 3 (curl 4186, 5096) and MAN-2 (line 246, --env-var baseUrl=...5096) hit ports nothing is listening on. The receipts are real (activity.jsonl), but they belong in the output block, not in the command the reader runs.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "MAN-5",
+        "severity": "P1",
+        "file": "docs/guides/ui/index.html",
+        "line": 260,
+        "what": "'npx playwright show-report' and 'a trace opens in the trace viewer' don't hold: playwright.config.ts sets no html reporter (the default is list) and no use.trace. No report or trace is ever written.",
+        "why": "MAN-5 requires opening the HTML report and the trace viewer. In U10, src/Uinsure.Policies.Web/playwright.config.ts has no 'reporter' and no 'trace', so 'npm run e2e' writes no playwright-report folder. show-report then finds no report, and the claim about the trace viewer is false. This was marked 'not run', but the disclosure covers the missing output, not a command that can't work.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "MAN-6",
+        "severity": "P1",
+        "file": "docs/guides/ui/index.html",
+        "line": 261,
+        "what": "The npx playwright and npx vitest lines run from the repo root, which has no package.json, so npx can't reach the pinned @playwright/test 1.62.0 or vitest 5.0.5.",
+        "why": "Static evidence; these commands weren't run. The --config src/Uinsure.Policies.Web/... paths mean the root is the working directory. The U10 root has no package.json, so npx would offer to download an unpinned playwright or vitest. The specs resolve @playwright/test through the web project's tsconfig paths, and a second Playwright copy refuses to run the tests. 'npx playwright install chromium' (line 260) may also install browsers for the wrong version. The fix is to run them from src/Uinsure.Policies.Web or through npm --prefix ... exec.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R5",
+        "rule_id": "LRN-6",
+        "severity": "P2",
+        "file": "docs/guides/ui/build.mjs",
+        "line": 90,
+        "what": "The One rule step 2 says '(marker 2)', but the ex-rule figure has only marker 1. The marker text is hand-typed in build.mjs, not taken from the manifest.",
+        "why": "LRN-6 says markers are measured, never placed by hand. Hand-typed marker references drift from the measured set in the same way.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R6",
+        "rule_id": "LRN-5",
+        "severity": "P2",
+        "file": "docs/guides/ui/index.html",
+        "line": 30,
+        "what": "The commands use POSIX-only syntax (DOCKET_API_PORT=5080 npm ..., curl -o /dev/null) and don't name Git Bash, so PowerShell or cmd reject them.",
+        "why": "LRN-5 asks for the exact command. The guide points its Windows/Visual Studio reader at these commands. The repo's other docs share the sh convention, so this doesn't block, but the guide should name the shell.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R7",
+        "rule_id": "LRN-9",
+        "severity": "P2",
+        "file": "docs/guides/ui/index.html",
+        "line": 39,
+        "what": "Some code extracts are under 3 real lines: Docket.Web.esproj:4 is one line, and RequestLogPage.tsx:23 is two lines plus a blank.",
+        "why": "LRN-9: a short extract of 3 to 12 real lines. Every cited path:line resolves in U10 dbc81b2. I spot-checked Overview:134, Rule:309, PolicyView:325, RenewPolicy:61, NotFound:9, Stats:161 and Sessions:52.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R8",
+        "rule_id": "LRN-6",
+        "severity": "P2",
+        "file": "docs/guides/ui/build.mjs",
+        "line": 30,
+        "what": "The region keys are de-slugged and cut at 88 characters, for example 'Receipt figures rules built total tests passing nodes done attempts and fails human deci…'. They're hard to read in the PDF.",
+        "why": "LRN-6: the key explains each numbered region. The labels are correctly measured, but the generated text needs a readable name, such as the region's heading.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R9",
+        "rule_id": "MAN-7",
+        "severity": "P2",
+        "file": "docs/guides/ui/index.html",
+        "line": 263,
+        "what": "Gaps in the runner sections: MAN-1 has no Postman app screenshot and no rule IDs per folder, MAN-5 has no command to run or update the regression suite, and MAN-7 is 'Not measured' for 4 of 5 runners.",
+        "why": "§4b asks for a screenshot per runner and measured times, and MAN-1 asks for each folder's rule IDs. This is within David's short-form ruling, so it's a note for the PR.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R10",
+        "rule_id": "LRN-11",
+        "severity": "P2",
+        "file": "docs/guides/ui/index.html",
+        "line": 279,
+        "what": "Layout gaps: 2 SVG diagrams for 6 big ideas, no 'Check your understanding' in §10, and troubleshooting drawn from the capture session rather than trail findings or docs/lessons.md.",
+        "why": "LRN-4 asks for one diagram per big idea, LRN-7 for a check table per section, and LRN-11 for the trail's own problems. Within the short form, so not blocking.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R11",
+        "rule_id": "LRN-6",
+        "severity": "P2",
+        "file": "docs/specs/ui-guide.spec.md",
+        "line": 73,
+        "what": "The 4 untagged regions (shell, confirm dialog, requests drawer, problem banner) are listed but left unmarked, not highlighted from the screen contract's region map.",
+        "why": "§10.1 says a region without a tag is highlighted from the contract's region map, and the gap is listed. Only the listing half was done. Disclosed.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R12",
+        "rule_id": "§8.3",
+        "severity": "P2",
+        "file": "docs/trace/build/F8/packet/gates.jsonl",
+        "line": 1,
+        "what": "t4 is marked done, but the gate receipt doesn't record that the PDF reprints from its HTML or a full-suite run. 51 pages is also one over §9's 40-50.",
+        "why": "t4's title asks for 'the PDF reprints from its HTML ... full suite green'. Gates are scoped by David's ruling, and nothing in src/ or tests/ changed, so this is a note only.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "I judged only delta.patch (b1253d2..HEAD). F7 (PR #115) was out of scope.",
+      "§7 coverage is complete end to end. It covers what Docket is and who it's for, run it (static build, dev server via the VS/esproj profile, alongside the API, SWA as evidence only, themes, deep links), and all 18 explorer and 7 workbench screens. Each screen has measured markers, regions with rule IDs, steps and a path:line extract. Also present: all eight workflows, the unreachable, 4xx, 422 and empty states, accessibility, Understand it, and troubleshooting.",
+      "Disclosed gaps, graded. The renew success path is 422 only, which is acceptable, and the guide explains why (real clock, RENEW-1/2). One dark shot is acceptable. The 4 untagged regions are R11. The Playwright, Vitest and VS commands are marked 'not run', which is acceptable for missing output, but R3 and R4 are commands that cannot work as printed.",
+      "The receipts check out: manifest statuses (201, 409, 422, 404, 200, 201, 422, 201, 422) match the guide text. The Postman CLI summary in run-output.json matches activity.jsonl 12:19:56, and the curl 200/200 receipt matches 12:12:59.",
+      "Privacy: no absolute path, e-mail or private name in docs/guides/ui or the spec. 'David' is the repo owner's first name, already used across docs. activity.jsonl carries home-relative ~/.claude/jobs/<id>/tmp paths with no username, and the privacy scan passed on it.",
+      "Checked in U10 dbc81b2: the 'http' launch profile, the 'API and web' slnLaunch profile, the default '/' search shortcut, the System/Light/Dark theme, the Linux regression testIgnore and staticwebapp.config.json all exist as the guide says.",
+      "F6b was set done on this branch at David's ruling (ee7ba59). I'm noting it, not raising it as a defect.",
+      "Lighter-loop ruling: R1-R4 are P1 because each is a printed procedure that fails as printed. They're small text fixes in build.mjs, then a rebuild and reprint. R5-R12 are P2 notes for the PR with no fix round."
+    ]
+  }
+}
