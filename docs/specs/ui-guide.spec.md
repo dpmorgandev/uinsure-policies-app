@@ -94,4 +94,4 @@ The renew success path (needs a policy inside its window), a Visual Studio scree
 
 ## 6. Short form (David, 2026-10-23)
 
-Shortened: the tour (one shot per screen, few steps), workflows (lists pointing at the tour), error states, accessibility, the "understand it" topics, troubleshooting. Run the tests yourself: commands and one real Postman run; no per-runner screenshots. Dropped: per-step workflow captures, receipts file, QA script.
+Nothing in §7 is dropped (David, amendment): every screen, workflow, error state and topic is covered, with shortened depth. Not run in this form: Playwright, Vitest and Visual Studio (commands shown, marked not run); one real Postman CLI run is shown.

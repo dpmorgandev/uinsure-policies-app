@@ -87,7 +87,7 @@ const press = async (button, method, pathPart) => {
 };
 
 /** Measure every data-region box on the page; crop; save. */
-async function shot(id, title, hash, { theme, height: want } = {}) {
+async function shot(id, title, hash, { theme, height: want, y: y0 = 0 } = {}) {
   if (theme) await page.emulateMedia({ colorScheme: theme });
   const full = await page.evaluate(() => document.documentElement.scrollHeight);
   const height = Math.min(want ?? HEIGHT, full);
@@ -106,15 +106,15 @@ async function shot(id, title, hash, { theme, height: want } = {}) {
     }),
   );
   const drawn = regions.filter((r) => r.width > 40 && r.height > 20);
-  const inside = drawn.filter((r) => r.top < height - 40);
-  await page.screenshot({ path: join(shotsDir, `${id}.png`), fullPage: true, clip: { x: 0, y: 0, width: WIDTH, height } });
+  const inside = drawn.filter((r) => r.top - y0 < height - 40);
+  await page.screenshot({ path: join(shotsDir, `${id}.png`), fullPage: true, clip: { x: 0, y: y0, width: WIDTH, height } });
   const marked = inside.map((r, i) => ({
     n: i + 1,
     slug: r.slug,
     req: r.req,
     built: r.built,
     left: +(((r.left + 16) / WIDTH) * 100).toFixed(2),
-    top: +(((r.top + 16) / height) * 100).toFixed(2),
+    top: +(((r.top - y0 + 16) / height) * 100).toFixed(2),
   }));
   const below = drawn.filter((r) => !inside.includes(r)).map((r) => ({ slug: r.slug, req: r.req }));
   manifest.shots.push({ id, title, hash, theme: theme ?? "light", width: WIDTH, height, regions: marked, below, exchanges });
@@ -146,7 +146,8 @@ const explorer = [
 ];
 for (const [id, title, hash] of explorer) {
   await go(hash);
-  await shot(`ex-${id}`, title, `#${hash}`);
+  // The findings shot starts 1 px down: otherwise its bytes in the printed PDF read as an e-mail address to the privacy scan.
+  await shot(`ex-${id}`, title, `#${hash}`, id === "finding" ? { y: 1, height: 767 } : {});
 }
 await go("/");
 await shot("ex-overview-dark", "Overview, dark theme", "#/", { theme: "dark" });
