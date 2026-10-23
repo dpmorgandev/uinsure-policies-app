@@ -64,7 +64,7 @@ function ReVerify({ sha, short }: { sha: string; short: string }) {
       <VerifyCommand
         command={`git log -n 20 --format="%h %(trailers:key=TDD,valueonly) %s" ${sha}`}
         intro="This lists the 20 commits up to the snapshot, each with its TDD trailer."
-        expect="Expect red, stub, green or refactor beside each commit the loop made, and nothing beside a commit it did not."
+        expect="Expect scaffold, red, stub, green or refactor beside each commit the loop made, and nothing beside a commit it did not."
       />
     </>
   );
