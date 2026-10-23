@@ -97,6 +97,24 @@ test.describe('the overview', () => {
   });
 });
 
+test.describe('links out', () => {
+  // A3 I9 (security S2, W2): every anchor that leaves the app for GitHub carries rel noreferrer (react-web SEC-1).
+  for (const [label, path] of [
+    ['the decisions page', route.decisions],
+    ['the commit page of c9', 'c9'],
+  ] as const) {
+    test(`SEC-1 · every GitHub link on ${label} has a rel that includes noreferrer`, async ({ page }) => {
+      const at = path === 'c9' ? route.commit(short(shaOf(fixture, 'c9'))) : path;
+      await openRegion(page, fixture, at, path === 'c9' ? 'commit-header-and-trailers' : DECISION_LIST);
+      const links = page.locator('a[href^="https://github.com/"]');
+      await expect.poll(() => links.count(), 'the page links out to GitHub').toBeGreaterThan(0);
+      const rels = await links.evaluateAll((as) => as.map((a) => ({ href: a.getAttribute('href') ?? '', rel: a.getAttribute('rel') ?? '' })));
+      const missing = rels.filter(({ rel }) => !rel.split(/\s+/).includes('noreferrer')).map(({ href }) => href);
+      expect(missing, 'GitHub links without rel noreferrer').toEqual([]);
+    });
+  }
+});
+
 test.describe('parity', () => {
   test("HITL-1 · parity: the decisions page's regions in order", async ({ page }) => {
     await expectRegionsInOrder(page, decisions);
