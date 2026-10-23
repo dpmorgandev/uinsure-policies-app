@@ -30,6 +30,9 @@ param sqlAdminGroupObjectId string
 @description('Address range of the self-hosted deployment agents, allowed to reach SQL on 1433.')
 param agentAddressPrefix string
 
+@description('Region of the Static Web App, which is not offered in every region.')
+param webLocation string = 'westeurope'
+
 var suffix = '${workload}-${environmentName}'
 var tags = {
   workload: workload
@@ -94,7 +97,21 @@ module app 'modules/appservice.bicep' = {
   }
 }
 
+module web 'modules/staticwebapp.bicep' = {
+  scope: rg
+  name: 'web'
+  params: {
+    suffix: suffix
+    location: webLocation
+    tags: tags
+    backendResourceId: app.outputs.appId
+    backendRegion: location
+  }
+}
+
 output resourceGroupName string = rg.name
+output webSiteName string = web.outputs.siteName
+output webHostName string = web.outputs.hostName
 output appName string = app.outputs.appName
 output appHostName string = app.outputs.hostName
 output sqlServerFqdn string = sql.outputs.serverFqdn

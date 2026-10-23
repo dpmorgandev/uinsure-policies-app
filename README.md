@@ -6,6 +6,31 @@ SQL Server when deployed), problem-details errors (RFC 9457) and OpenAPI with Sc
 with TDD, one feature at a time. Every rule, its ID and the interpretation taken for it are in
 [docs/requirements.md](docs/requirements.md).
 
+## Docket (the web app)
+
+Docket lives in `src/web`. It has two parts: the **trail explorer**, which reads the compiled build trail
+(`trace.json`: plans, nodes, rules, tests and verdicts) and shows how each rule was built, and the
+**workbench**, which calls this API (`/api/...`) so a policy can be sold, retrieved, cancelled, claimed on and
+renewed from a browser. It is React, TypeScript and Vite.
+
+**In Visual Studio:** open `Uinsure.Policies.slnx` and choose the **API and web** startup profile (it is in
+`Uinsure.Policies.slnLaunch`, beside the solution). F5 starts the API on port 5080, which opens its own browser
+tab on `/health/live`, and the web dev server on `http://localhost:4170`, with an Edge debug window on that
+address. The dev server proxies `/api` to the API. The web project is excluded from the solution build,
+so `dotnet build` never runs npm. Run `npm ci` and `npm run trace` in `src/web` once first: the explorer reads
+`trace.json`, and without it shows "trace.json could not be read".
+
+**From the command line:**
+
+```sh
+dotnet run --project src/Uinsure.Policies.Api --launch-profile http   # the API, port 5080
+cd src/web
+npm ci
+npm run trace      # compile trace.json from git history
+npm run build
+npm run preview    # http://localhost:4173, /api proxied to port 5080 (set DOCKET_API_PORT to change it)
+```
+
 ## The API
 
 | Route | What | Success |
@@ -122,7 +147,8 @@ postman collection run tests/postman/Uinsure.Policies.postman_collection.json \
    **Switch Views → Folder View**.
 2. **Run the API:** set **Uinsure.Policies.Api** as the startup project, pick the **http** launch profile and
    press **Ctrl+F5**. A browser opens on `/health/live` and shows `Healthy`. F5 also works, but a breakpoint
-   pauses every request behind it.
+   pauses every request behind it. To run the API and the Docket web app together, choose the **API and web**
+   profile instead (see the Docket section above).
 3. **Run the tests:** **Test → Test Explorer**, then **Run All Tests** (Ctrl+R, A). The tests group by project.
    Right-click a project, class or test to run just that. Tests for a rule carry a `Rule` trait with its ID,
    so **Group By → Traits** lists them per rule.

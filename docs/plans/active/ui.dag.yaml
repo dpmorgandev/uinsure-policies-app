@@ -527,3 +527,82 @@ nodes:
       - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
       - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: check the fixes from the QA script, then sign off", status: done}
       - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: U9
+    title: "Docket ships: Azure Static Web Apps in the Bicep, web CI, Visual Studio launch, README"
+    kind: evidence
+    owner: loop
+    depends_on: []
+    rules: []
+    cuttable: true
+    budget: null
+    status: done
+    attempt: 2
+    branch: feature/ui/U9
+    worktree: .claude/worktrees/ui-U9
+    pr: 111
+    qa: docs/qa/ui-U9.md
+    trace: docs/trace/ui/U9/
+    acceptance:
+      - "Replaces U6 (cut by David 2026-10-23: one Azure hosting story, not GitHub Pages): a hand-written infrastructure/modules/staticwebapp.bicep, wired into main.bicep beside the App Service"
+      - "The Static Web App links the App Service as its backend, same origin, so the CSP stays default-src 'self'. The linked backend forwards /api unchanged and the API has no /api prefix: a documented gap in infrastructure/README.md, not fixed (David 2026-10-23, U9 review A1 R3: evidence only, never deployed)"
+      - "The static build's settings and deep links on the host (routes fall back to index.html); trace.json is compiled before the build"
+      - "bicep build and bicep build-params succeed for dev, test and prod; the pipeline gains a web build and deploy stage from the existing stage template; pipeline schema check passes"
+      - "No secrets (deployment token from the resource, never in params); az never run; nothing deployed"
+      - "Visual Studio (David 2026-10-23): the web app is a project in Uinsure.Policies.slnx (a JavaScript SDK .esproj in a web solution folder), and one launch profile starts the API and the web app together (multiple startup projects, the web app's dev server proxying /api to the API's port)"
+      - "dotnet build Uinsure.Policies.slnx -warnaserror and dotnet test --solution stay as they are: the .esproj is excluded from the solution build, so pre-commit and pre-push never run npm"
+      - "CI for the web app (David 2026-10-23): the Azure pipeline gains a web build and test stage (npm ci, typecheck, lint, CSS lint, unit, the trace compile, build; Playwright against the API in the test stage) from the existing stage template, before the Static Web Apps deploy. Every pipeline and IaC file lives under infrastructure/, and nothing goes in .github/workflows; project-local tooling such as git hooks stays where it is"
+      - "infrastructure/README.md documents the Static Web App, the web stage and their configured-not-tested notes, in the style of its App Service sections"
+      - "README.md says what Docket is (the trail explorer and the workbench) and how to run it: Visual Studio F5 for API and web together, or the CLI (API, npm run trace, build, preview)"
+      - "Diff scope: infrastructure/**, the .esproj and launch settings under src/web/, src/web/vite.config.ts, Uinsure.Policies.slnx, Uinsure.Policies.slnLaunch (the name Visual Studio reads: the solution base name, D1 I1), src/web/.vscode/launch.json, tests/Uinsure.Policies.Architecture.Tests/LaunchProfileTests.cs (D1 red tests), README.md, docs/trace/**, docs/qa/ui-U9.md, the plan files"
+    tasks:
+      - {id: t1, role: builder, step: write, layer: null, rules: [], title: "staticwebapp.bicep, main.bicep wiring, three param files; the web build, test and deploy stages; the static build settings; the .esproj, web solution folder and API + web launch; infrastructure/README.md and README.md", status: done}
+      - {id: t2, role: orchestrator, step: gates, layer: null, rules: [], title: "Scoped (David 2026-10-23): bicep build and build-params for dev, test and prod; pipeline schema check; dotnet build of the slnx runs no npm; typecheck, lint, unit and build; render-trace check; diff scope. No app runtime file changed, so no full e2e; the visual regression is deferred to U10", status: done}
+      - {id: t3, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
+      - {id: t4, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U9.md", status: done}
+      - {id: t5, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: done}
+      - {id: t6, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; chore(trace) commit", status: done}
+      - {id: t7, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
+      - {id: t8, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md and the QA script", status: done}
+      - {id: t9, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+  - id: U10
+    title: "Rename: src/web to src/Uinsure.Policies.Web, tests/web to tests/Uinsure.Policies.Web.Tests"
+    kind: feature
+    owner: loop
+    depends_on: [U4, U7, U8, U9]
+    rules: []
+    cuttable: true
+    budget: null
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/ui-U10.md
+    trace: docs/trace/ui/U10/
+    acceptance:
+      - "David 2026-10-23: the web project is named like the others. git mv keeps history; the U9 .esproj and solution folder follow the new path. In Uinsure.Policies.slnx the web project sits in the /src/ solution folder beside the other src projects, not in its own /web/ folder (David 2026-10-23, U9 Pause 2)"
+      - "Every live reference moves: configs, scripts, CI, docs, README, CLAUDE.md and the harness (skills, specs, scripts, hooks, agents). The harness edits are the orchestrator's, through a harness/<slug> PR into main"
+      - "Trail records already committed (docs/trace/**, packets, verdicts) keep src/web: they are receipts. The compiler, render-trace and the checks accept both paths"
+      - "Runs last, after every other ui node has landed, so no node in flight conflicts with the move"
+      - "The stale matrix rows are re-rendered (moved from U9, 2026-10-23: render-trace finds a node's commits as origin/<base>..HEAD, so a merged node can't be re-rendered; a harness change first gives render an explicit range): no cell reads undefined (build/F4, ui/U0b), and U0b's sign-off cells match its trail"
+      - "U9 carries (P2): check-pipeline.py asks the deploy template for the Static Web Apps deploy, and its run lint needle no longer matches lint:css alone (review A1 R6); the CI e2e wait is bounded and the regression specs are kept off the Linux agent or given per-platform baselines (R7); staticwebapp.config.json sets frame-ancestors and Referrer-Policy (security A1 S2); the solution lists staticwebapp.bicep and staticwebapp.config.json, and src/web/public/ is ignored (U9 QA note 3); the deploy agent prerequisites name Node (review A2 R1); the SWA CLI is installed from a lockfile or with integrity, not npx --yes (security A2 S1); D1 round (A2.2): docs/qa/ui-U9.md steps 25, 28 and note 1 and its header match the deploy steps be687b6 added (review R1), the README's measured test count is re-measured (R2), and orchestrator fix commits carry a TDD trailer (R3); stylelint is upgraded past the braces advisory GHSA-vfj7-8cjw-p6xm (5 high, dev only; the shipped audit --omit=dev is clean), and the prerequisites name Node 22.22 or later (jsdom, react-router and undici warn on 22.18, David's npm ci 2026-10-23)"
+      - "U8 carries (W3 and U8 debt, David 2026-10-23 'add debt to u10 so we can finish here'; ui.plan.md 'Carried past the demo'): the Renew screen never merges the term default into an amount the person is typing, so the two texts can't join ('527.18544.10'), the 'amount null' trigger (W3 A4 I6, U8 A1 I2); U5 STATS-1 'F1's last verdict reads PASS at A1' draws the facts region within 5s every run; the W3 wb-5 claim and renewal specs pass under --repeat-each and beside another session's run (no shared API data); the workbench request log is capped for the life of the page; U7's two pinned NAV-5 tour tests pass under --repeat-each 5 (openTour waits for the trace); RenewPolicy's amountToSend decides what is sent as a number with a decimal pattern, not Number(), which reads '0x10' as 16 and '1e2' as 100 (U8 review A2 R1, WB-5, HONEST-1)"
+      - "U4 carries (David 2026-10-23 'add to u10 any debt to u10 so we can finish here'; U4 trail gate.e2e at d7888d1): the earlier nodes' shell parity e2e tests are re-derived for the U4 shell (the kit Search combobox in the top bar, the Human decisions nav entry, the footer link rel=noreferrer), 22 tests: BRAND-1 x3, DATA-4 x2, MATRIX-1, NAV-3, NAV-1, RULE-1, DAG-1, NODE-1, RULE-3, TDD-1 x2, LOOP-1..4, AGENT-3, CTX-1, STATS-1, WB-1, WB-2, WB-9; HONEST-1 'every unbuilt screen's route shows not-built-yet' and A11Y-1 'an unbuilt screen's page has no axe violation' are re-pointed or retired, since U4 built the last explorer screens; DATA-1 'the app shows the trail it is served as trace.json' sees the fixture's real row count (10, not 5; likely U4's new build/F3 lines in the agents fixture); RESP-1 'on a short page the footer sits at the bottom of the window' and WB-3 'the renew route' and 'the record a claim route shows no canned value' are diagnosed first, as possible real U4 regressions (the taller top bar, or routes hitting not-found or search), and fixed; the deferred visual regression's baseline ruling covers U4's new top bar on every page, and re-baselines activity (U7's activity/populated-390-light.png) and wb-policy (W3's 12 wb-policy/*.png), taken at the U4 integrate without the top-bar search. U4 A2 P2s: FileLineLink, ReceiptFigure, PageHeader's id link and RuleEvidence's qa/pr links get rel=noreferrer, or U7's referrer policy is confirmed to cover them (security A2 S3, SEC-1); nav-4.spec.ts:40's title says click, not Enter (review A2 R1, NAV-4); the undrawn-lines notice (s-events-note) becomes a kit state or component, not screen markup (R2, AGENT-1); SearchEntry.href is split into a route and a repo path (R3, NAV-4)"
+      - "One-key F5 (U9 steer D2, moved here by David 2026-10-23): in the 'API and web' profile Visual Studio runs Docket.Web's debug target and never its StartupCommand, so the Edge target opens on a 4170 nothing serves. David's verified fix: a launch.json configuration 'Vite dev server' (type node, request launch, cwd the project, program node_modules/vite/bin/vite.js, args --port 4170 --strictPort --open) named as Docket.Web's DebugTarget in Uinsure.Policies.slnLaunch. The LaunchProfileTests D1 test that requires a browser target is changed red first to require a target that runs Vite on the StartupCommand's port; the Edge configuration stays for Start New Instance; README.md and docs/qa/ui-U9.md say what F5 opens (the default browser via --open, not a VS-attached Edge window); David's F5 is the check"
+      - "U4's trail carries its merged(ce05465) event, which the trail-tail route could not carry (U4 cleanup, 2026-10-23): the event is in local commit 2abcc5b on feature/ui/U4 (docs/trace/ui/U4/loop.jsonl), kept so it can be cherry-picked"
+      - "Plan switcher (David 2026-10-23, U9 Pause 2: 'how do i swap to see the ui plan in docket?'): the Plan nav entry no longer always opens the build plan (src/web/app/shell/Frame.tsx:113 picks the plan of kind build). It offers every plan in trace.json (build, ui and the investigations), each opening #/plans/<id>, from kit components only, with a unit test and an e2e test that a ui plan link reaches #/plans/ui"
+      - "Every check passes on the renamed tree: dotnet build and test, typecheck, unit, e2e, regression, the harness self-test, render-trace check for every ui node"
+    tasks:
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Architecture test that fails until the rename: the web project sits at src/Uinsure.Policies.Web and its tests at tests/Uinsure.Policies.Web.Tests, the slnx lists them there (the web project in the /src/ folder), and no live file outside the committed trail names src/web or tests/web", status: pending}
+      - {id: t2, role: builder, step: stub, layer: null, rules: [], title: "No stub: a rename has no route to stub (skipped)", status: pending}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the red test; go or change", status: pending}
+      - {id: t4, role: builder, step: green, layer: null, rules: [], title: "git mv both folders; update every live reference outside the harness and the committed trail; the test passes", status: pending}
+      - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: pending}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "dotnet build and test, typecheck, unit, CSS lint, e2e, the full visual regression for every screen (deferred to here from each node, David 2026-10-23; baseline: rulings at this Pause 2), harness self-test, render-trace check for every ui node; diff scope", status: pending}
+      - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t8, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U10.md", status: pending}
+      - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: pending}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; chore(trace) commit", status: pending}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: open the solution in VS, F5 starts API and web, run the QA script, then sign off", status: pending}
+      - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}

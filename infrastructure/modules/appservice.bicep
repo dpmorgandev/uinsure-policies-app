@@ -71,6 +71,7 @@ resource ftpCredentialsPolicy 'Microsoft.Web/sites/basicPublishingCredentialsPol
   properties: { allow: false }
 }
 
+output appId string = app.id
 output appName string = app.name
 output hostName string = app.properties.defaultHostName
 output clientId string = identity.properties.clientId
