@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>GUIDE TITLE</title>
+<link rel="stylesheet" href="../assets/guide.css">
+</head>
+<body>
+
+<!-- LRN-1 cover, then the front sheet: five to seven big ideas, each opening with a bold cue word -->
+<section class="cover">
+  <h1>GUIDE TITLE</h1>
+  <p>One-line purpose. Who it is for.</p>
+</section>
+<section class="front">
+  <h2>The big ideas</h2>
+  <ol>
+    <li><strong>Cue.</strong> The idea in one sentence.</li>
+  </ol>
+</section>
+
+<!-- One section per topic. LRN-2: headline, summary, then the in-depth layer. -->
+<section>
+  <h2>Section title</h2>
+  <p class="headline">One-line headline.</p>
+  <p class="summary">Two to four sentences.</p>
+  <details class="depth" open><summary>In depth</summary>
+
+    <!-- LRN-4: one inline SVG diagram per big idea, in Docket's palette (use the CSS variables) -->
+    <figure>
+      <svg viewBox="0 0 300 60" role="img" aria-label="Diagram">
+        <rect x="2" y="10" width="120" height="40" fill="var(--color-accent)" stroke="var(--color-primary)"/>
+        <text x="62" y="35" text-anchor="middle" font-size="12" fill="var(--color-text-primary)">Request</text>
+        <path d="M122 30h50" stroke="var(--color-primary)" stroke-width="2"/>
+        <rect x="172" y="10" width="120" height="40" fill="var(--color-accent)" stroke="var(--color-primary)"/>
+        <text x="232" y="35" text-anchor="middle" font-size="12" fill="var(--color-text-primary)">Response</text>
+      </svg>
+      <figcaption>Figure caption.</figcaption>
+    </figure>
+
+    <!-- LRN-5: numbered steps; action, exact command, and what you should see (captured output) -->
+    <ol class="steps">
+      <li class="step">Run the command.
+        <pre>dotnet test --solution Uinsure.Policies.slnx</pre>
+        <div class="see">Captured output from the run.</div>
+        <pre class="output">OUTPUT COPIED FROM THE RUN</pre>
+      </li>
+    </ol>
+
+    <!-- LRN-9: code reference, path:line link and 3 to 12 real lines -->
+    <div class="extract">
+      <a class="ref" href="../../src/Uinsure.Policies.Domain/Common/Money.cs#L1">src/Uinsure.Policies.Domain/Common/Money.cs:1</a>
+      <pre>REAL LINES</pre>
+    </div>
+
+    <!-- LRN-3 and STY-3: rule chips; LRN-10: why callout; status callouts: warn, error, ok -->
+    <p>Rule <span class="chip">CANCEL-1a</span></p>
+    <div class="callout"><span class="label">Why</span> Choice made. Alternative. Reason.</div>
+    <div class="callout warn"><span class="label">Warning</span> Text.</div>
+
+    <!-- LRN-6: screenshot with markers; left and top are percentages measured from region tags -->
+    <figure>
+      <div class="shot"><img src="" alt="Screen"><span class="marker" style="left: 10%; top: 10%">1</span></div>
+      <figcaption>1 Region name.</figcaption>
+    </figure>
+
+    <!-- LRN-8: comparison table -->
+    <table><thead><tr><th>Thing</th><th>Use when</th></tr></thead><tbody><tr><td>A</td><td>B</td></tr></tbody></table>
+  </details>
+
+  <!-- LRN-7: check your understanding -->
+  <h3>Check your understanding</h3>
+  <table class="check"><thead><tr><th>Question</th><th>Answer</th></tr></thead><tbody><tr><td>Q</td><td>A</td></tr></tbody></table>
+</section>
+
+<!-- LRN-11: closing troubleshooting table -->
+<section>
+  <h2>Troubleshooting</h2>
+  <table><thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead><tbody><tr><td>S</td><td>C</td><td>F</td></tr></tbody></table>
+</section>
+
+</body>
+</html>

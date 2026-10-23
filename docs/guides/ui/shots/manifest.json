@@ -1,0 +1,1529 @@
+{
+  "viewport": {
+    "width": 1024,
+    "height": 768
+  },
+  "run": "Y8DAW",
+  "refs": {
+    "sold": "UIG-Y8DAW-A",
+    "claim": "UIG-Y8DAW-B",
+    "renew": "UIG-Y8DAW-C"
+  },
+  "trace": {
+    "plan": "build",
+    "node": "F1",
+    "commit": "7d3f791",
+    "round": "A1",
+    "agent": "reviewer",
+    "session": "docs/context/20261017-221833-f0a-t18-smoke.md"
+  },
+  "shots": [
+    {
+      "id": "ex-overview",
+      "title": "Overview",
+      "hash": "#/",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "headline-answer",
+          "req": "NAV-1",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        },
+        {
+          "n": 2,
+          "slug": "receipt-figures-rules-built-total-tests-passing-nodes-done-attempts-and-fails-human-decisions",
+          "req": "NAV-1 VERIFY-1",
+          "built": true,
+          "left": 3.91,
+          "top": 93.38
+        }
+      ],
+      "below": [
+        {
+          "slug": "build-plan-at-a-glance",
+          "req": "DAG-1"
+        },
+        {
+          "slug": "latest-human-decisions",
+          "req": "HITL-1"
+        },
+        {
+          "slug": "compiled-at-stamp",
+          "req": "DATA-3"
+        },
+        {
+          "slug": "top-bar-search-and-theme-toggle-global-tagged-here-once",
+          "req": "NAV-4 THEME-1"
+        },
+        {
+          "slug": "trail-completeness-trail-incomplete-reasons-verbatim-not-built-yet-and-f0a-as-git-only",
+          "req": "DATA-4"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "ex-about",
+      "title": "How to read this",
+      "hash": "#/about",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "provenance-labels",
+          "req": "DATA-2",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [
+        {
+          "slug": "glossary-and-status-legend",
+          "req": "A11Y-1"
+        },
+        {
+          "slug": "re-verify-with-git",
+          "req": "VERIFY-1"
+        },
+        {
+          "slug": "guided-tour-entry-one-rule-end-to-end-could",
+          "req": "NAV-5"
+        },
+        {
+          "slug": "compiled-at-stamp-the-commit-sha-and-utc-time-trace-json-was-compiled-from",
+          "req": "DATA-3"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "ex-rules",
+      "title": "Requirements matrix",
+      "hash": "#/rules",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "filters-status-feature",
+          "req": "MATRIX-1",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        },
+        {
+          "n": 2,
+          "slug": "matrix-table",
+          "req": "MATRIX-1",
+          "built": true,
+          "left": 3.91,
+          "top": 79.03
+        }
+      ],
+      "below": [
+        {
+          "slug": "test-count-scope-note-counts-are-per-node-sell-7-10-at-f1-vs-15-traited",
+          "req": "DATA-4"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "ex-rule",
+      "title": "One rule",
+      "hash": "#/rules/CANCEL-1b",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "rule-text-and-agreed-interpretation",
+          "req": "RULE-1",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [
+        {
+          "slug": "signature-red-before-green-evidence-custody-chain-tdd-ticks-chronology-per-style",
+          "req": "RULE-2"
+        },
+        {
+          "slug": "tests-count-and-scope",
+          "req": "RULE-1"
+        },
+        {
+          "slug": "qa-step-and-sign-off",
+          "req": "RULE-1 HITL-1"
+        },
+        {
+          "slug": "red-and-green-diffs-lazy",
+          "req": "RULE-3"
+        },
+        {
+          "slug": "verify-it-yourself",
+          "req": "VERIFY-1"
+        },
+        {
+          "slug": "load-diff-busy-while-the-diff-chunk-loads",
+          "req": "BUSY-1"
+        },
+        {
+          "slug": "links-out-commit-shas-pr-numbers-and-file-line-references-to-github-at-that-sha",
+          "req": "NAV-3"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "ex-plan",
+      "title": "A plan",
+      "hash": "#/plans/build",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "plan-header-status-approval-requirements-rev",
+          "req": "DAG-1",
+          "built": true,
+          "left": 3.91,
+          "top": 37.24
+        },
+        {
+          "n": 2,
+          "slug": "node-graph-and-its-table",
+          "req": "DAG-1",
+          "built": true,
+          "left": 3.91,
+          "top": 70.08
+        }
+      ],
+      "below": [
+        {
+          "slug": "investigation-body-inv-plans-only",
+          "req": "LOOP-2"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "ex-node",
+      "title": "A node",
+      "hash": "#/plans/build/F1",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "completeness-banner",
+          "req": "DATA-4 DATA-8",
+          "built": true,
+          "left": 3.91,
+          "top": 61.4
+        },
+        {
+          "n": 2,
+          "slug": "rules",
+          "req": "NODE-1",
+          "built": true,
+          "left": 3.91,
+          "top": 85.88
+        }
+      ],
+      "below": [
+        {
+          "slug": "tasks",
+          "req": "NODE-1"
+        },
+        {
+          "slug": "attempts",
+          "req": "LOOP-2"
+        },
+        {
+          "slug": "who-touched-what",
+          "req": "AGENT-1"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "ex-walkthrough",
+      "title": "A node's walkthrough",
+      "hash": "#/plans/build/F1/commits",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "commit-sequence",
+          "req": "TDD-1",
+          "built": true,
+          "left": 3.91,
+          "top": 61.4
+        }
+      ],
+      "below": [],
+      "exchanges": []
+    },
+    {
+      "id": "ex-commit",
+      "title": "One commit",
+      "hash": "#/commits/7d3f7914e32e01f4a4a3d4a6d75dcfe60f94d668",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "commit-header-and-trailers",
+          "req": "NAV-2",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        },
+        {
+          "n": 2,
+          "slug": "trailer-agent-vs-hook-agent",
+          "req": "AGENT-1",
+          "built": true,
+          "left": 3.91,
+          "top": 90.02
+        }
+      ],
+      "below": [
+        {
+          "slug": "diff-lazy",
+          "req": "RULE-3"
+        },
+        {
+          "slug": "links-out",
+          "req": "NAV-3"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "ex-loop",
+      "title": "A node's loop",
+      "hash": "#/plans/build/F1/loop",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "attempt-ladder",
+          "req": "LOOP-2",
+          "built": true,
+          "left": 3.91,
+          "top": 61.4
+        }
+      ],
+      "below": [
+        {
+          "slug": "gate-timeline",
+          "req": "LOOP-1"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "ex-activity",
+      "title": "A node's activity",
+      "hash": "#/plans/build/F1/activity",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "agent-lanes",
+          "req": "AGENT-2",
+          "built": true,
+          "left": 3.91,
+          "top": 61.4
+        }
+      ],
+      "below": [
+        {
+          "slug": "event-table-text-equivalent",
+          "req": "AGENT-2 A11Y-1"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "ex-verdict",
+      "title": "A verdict",
+      "hash": "#/plans/build/F1/verdicts/A1/reviewer",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "verdict-summary",
+          "req": "LOOP-3",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [
+        {
+          "slug": "findings",
+          "req": "LOOP-3"
+        },
+        {
+          "slug": "raw-json",
+          "req": "LOOP-3 DATA-2"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "ex-finding",
+      "title": "A findings round",
+      "hash": "#/plans/build/F1/findings/A1",
+      "theme": "light",
+      "width": 1024,
+      "height": 767,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "findings",
+          "req": "LOOP-4",
+          "built": true,
+          "left": 3.91,
+          "top": 30.9
+        }
+      ],
+      "below": [
+        {
+          "slug": "fixed-by",
+          "req": "LOOP-4 LOOP-2"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "ex-sessions",
+      "title": "Sessions",
+      "hash": "#/sessions",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "snapshot-timeline",
+          "req": "CTX-1",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [
+        {
+          "slug": "one-snapshot-open-at-its-own-url-sessions-file",
+          "req": "NAV-2"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "ex-session",
+      "title": "One session snapshot",
+      "hash": "#/sessions/20261017-221833-f0a-t18-smoke.md",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "what-was-asked-for-and-where-to-go",
+          "req": "NAV-2",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [],
+      "exchanges": []
+    },
+    {
+      "id": "ex-harness",
+      "title": "The harness",
+      "hash": "#/harness",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "agents",
+          "req": "AGENT-3",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [
+        {
+          "slug": "hooks",
+          "req": "AGENT-3"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "ex-decisions",
+      "title": "Human decisions",
+      "hash": "#/decisions",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "decision-list",
+          "req": "HITL-1",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [],
+      "exchanges": []
+    },
+    {
+      "id": "ex-stats",
+      "title": "Stats",
+      "hash": "#/stats",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "facts-per-agent-and-node",
+          "req": "STATS-1",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [],
+      "exchanges": []
+    },
+    {
+      "id": "ex-not-found",
+      "title": "Not found",
+      "hash": "#/no/such/page",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "what-was-asked-for-and-where-to-go",
+          "req": "NAV-2",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [],
+      "exchanges": []
+    },
+    {
+      "id": "ex-overview-dark",
+      "title": "Overview, dark theme",
+      "hash": "#/",
+      "theme": "dark",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "headline-answer",
+          "req": "NAV-1",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        },
+        {
+          "n": 2,
+          "slug": "receipt-figures-rules-built-total-tests-passing-nodes-done-attempts-and-fails-human-decisions",
+          "req": "NAV-1 VERIFY-1",
+          "built": true,
+          "left": 3.91,
+          "top": 93.38
+        }
+      ],
+      "below": [
+        {
+          "slug": "build-plan-at-a-glance",
+          "req": "DAG-1"
+        },
+        {
+          "slug": "latest-human-decisions",
+          "req": "HITL-1"
+        },
+        {
+          "slug": "compiled-at-stamp",
+          "req": "DATA-3"
+        },
+        {
+          "slug": "top-bar-search-and-theme-toggle-global-tagged-here-once",
+          "req": "NAV-4 THEME-1"
+        },
+        {
+          "slug": "trail-completeness-trail-incomplete-reasons-verbatim-not-built-yet-and-f0a-as-git-only",
+          "req": "DATA-4"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "wb-home-empty",
+      "title": "Workbench home, nothing opened yet",
+      "hash": "#/workbench",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "open-a-policy-by-reference",
+          "req": "WB-2",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [
+        {
+          "slug": "open-by-reference-busy-while-the-policy-loads",
+          "req": "BUSY-1"
+        },
+        {
+          "slug": "sell-a-new-policy-entry",
+          "req": "WB-1"
+        },
+        {
+          "slug": "recent-policies-kept-in-this-browser",
+          "req": "WB-9"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "wb-requests-empty",
+      "title": "Request log before any request",
+      "hash": "#/workbench/requests",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "request-log",
+          "req": "WB-7",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        },
+        {
+          "n": 2,
+          "slug": "one-exchange-request-response-status-line-curl",
+          "req": "WB-7",
+          "built": true,
+          "left": 3.91,
+          "top": 88.08
+        }
+      ],
+      "below": [],
+      "exchanges": []
+    },
+    {
+      "id": "wb-sell-empty",
+      "title": "Sell form, empty",
+      "hash": "#/workbench/sell",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "error-summary-every-problem-each-linked-to-its-field-and-its-rule",
+          "req": "WB-3",
+          "built": true,
+          "left": 3.91,
+          "top": 62.65
+        },
+        {
+          "n": 2,
+          "slug": "policy-fields-reference-type-start-date-amount-payment-method-auto-renew",
+          "req": "WB-1",
+          "built": true,
+          "left": 3.91,
+          "top": 76.18
+        }
+      ],
+      "below": [
+        {
+          "slug": "reference-as-stored-normalisation-preview",
+          "req": "WB-1"
+        },
+        {
+          "slug": "policyholders-1-to-3",
+          "req": "WB-1"
+        },
+        {
+          "slug": "property",
+          "req": "WB-1"
+        },
+        {
+          "slug": "send-it-anyway-client-checks-off",
+          "req": "WB-6"
+        },
+        {
+          "slug": "submit-busy-while-the-sell-request-runs-spinner-disabled",
+          "req": "BUSY-1"
+        },
+        {
+          "slug": "the-request-as-sent-inspector",
+          "req": null
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "wb-sell-client-error",
+      "title": "Sell form, its own check stops a bad reference before anything is sent",
+      "hash": "#/workbench/sell",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "error-summary-every-problem-each-linked-to-its-field-and-its-rule",
+          "req": "WB-3",
+          "built": true,
+          "left": 3.91,
+          "top": 62.65
+        },
+        {
+          "n": 2,
+          "slug": "policy-fields-reference-type-start-date-amount-payment-method-auto-renew",
+          "req": "WB-1",
+          "built": true,
+          "left": 3.91,
+          "top": 86.93
+        }
+      ],
+      "below": [
+        {
+          "slug": "reference-as-stored-normalisation-preview",
+          "req": "WB-1"
+        },
+        {
+          "slug": "policyholders-1-to-3",
+          "req": "WB-1"
+        },
+        {
+          "slug": "property",
+          "req": "WB-1"
+        },
+        {
+          "slug": "send-it-anyway-client-checks-off",
+          "req": "WB-6"
+        },
+        {
+          "slug": "submit-busy-while-the-sell-request-runs-spinner-disabled",
+          "req": "BUSY-1"
+        },
+        {
+          "slug": "the-request-as-sent-inspector",
+          "req": null
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "wb-sell-422",
+      "title": "Sell form, send anyway: the API refuses a backdated start",
+      "hash": "#/workbench/sell",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "error-summary-every-problem-each-linked-to-its-field-and-its-rule",
+          "req": "WB-3",
+          "built": true,
+          "left": 3.91,
+          "top": 62.65
+        },
+        {
+          "n": 2,
+          "slug": "policy-fields-reference-type-start-date-amount-payment-method-auto-renew",
+          "req": "WB-1",
+          "built": true,
+          "left": 3.91,
+          "top": 86.93
+        }
+      ],
+      "below": [
+        {
+          "slug": "reference-as-stored-normalisation-preview",
+          "req": "WB-1"
+        },
+        {
+          "slug": "policyholders-1-to-3",
+          "req": "WB-1"
+        },
+        {
+          "slug": "property",
+          "req": "WB-1"
+        },
+        {
+          "slug": "send-it-anyway-client-checks-off",
+          "req": "WB-6"
+        },
+        {
+          "slug": "submit-busy-while-the-sell-request-runs-spinner-disabled",
+          "req": "BUSY-1"
+        },
+        {
+          "slug": "the-request-as-sent-inspector",
+          "req": null
+        }
+      ],
+      "exchanges": [
+        {
+          "method": "POST",
+          "path": "/policies",
+          "status": 422
+        }
+      ]
+    },
+    {
+      "id": "wb-sell-filled",
+      "title": "Sell form, filled in with two policyholders",
+      "hash": "#/workbench/sell",
+      "theme": "light",
+      "width": 1024,
+      "height": 1100,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "error-summary-every-problem-each-linked-to-its-field-and-its-rule",
+          "req": "WB-3",
+          "built": true,
+          "left": 3.91,
+          "top": 43.74
+        },
+        {
+          "n": 2,
+          "slug": "policy-fields-reference-type-start-date-amount-payment-method-auto-renew",
+          "req": "WB-1",
+          "built": true,
+          "left": 3.91,
+          "top": 60.69
+        }
+      ],
+      "below": [
+        {
+          "slug": "reference-as-stored-normalisation-preview",
+          "req": "WB-1"
+        },
+        {
+          "slug": "policyholders-1-to-3",
+          "req": "WB-1"
+        },
+        {
+          "slug": "property",
+          "req": "WB-1"
+        },
+        {
+          "slug": "send-it-anyway-client-checks-off",
+          "req": "WB-6"
+        },
+        {
+          "slug": "submit-busy-while-the-sell-request-runs-spinner-disabled",
+          "req": "BUSY-1"
+        },
+        {
+          "slug": "the-request-as-sent-inspector",
+          "req": null
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "wb-sell-sold",
+      "title": "Sell form, the API accepted the policy",
+      "hash": "#/workbench/sell",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "error-summary-every-problem-each-linked-to-its-field-and-its-rule",
+          "req": "WB-3",
+          "built": true,
+          "left": 3.91,
+          "top": 67.45
+        },
+        {
+          "n": 2,
+          "slug": "policy-fields-reference-type-start-date-amount-payment-method-auto-renew",
+          "req": "WB-1",
+          "built": true,
+          "left": 3.91,
+          "top": 80.98
+        }
+      ],
+      "below": [
+        {
+          "slug": "reference-as-stored-normalisation-preview",
+          "req": "WB-1"
+        },
+        {
+          "slug": "policyholders-1-to-3",
+          "req": "WB-1"
+        },
+        {
+          "slug": "property",
+          "req": "WB-1"
+        },
+        {
+          "slug": "send-it-anyway-client-checks-off",
+          "req": "WB-6"
+        },
+        {
+          "slug": "submit-busy-while-the-sell-request-runs-spinner-disabled",
+          "req": "BUSY-1"
+        },
+        {
+          "slug": "the-request-as-sent-inspector",
+          "req": null
+        }
+      ],
+      "exchanges": [
+        {
+          "method": "POST",
+          "path": "/policies",
+          "status": 201
+        }
+      ]
+    },
+    {
+      "id": "wb-sell-409",
+      "title": "Sell form, the same reference again is refused (SELL-1, 409)",
+      "hash": "#/workbench/sell",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "error-summary-every-problem-each-linked-to-its-field-and-its-rule",
+          "req": "WB-3",
+          "built": true,
+          "left": 3.91,
+          "top": 62.65
+        },
+        {
+          "n": 2,
+          "slug": "policy-fields-reference-type-start-date-amount-payment-method-auto-renew",
+          "req": "WB-1",
+          "built": true,
+          "left": 3.91,
+          "top": 87.94
+        }
+      ],
+      "below": [
+        {
+          "slug": "reference-as-stored-normalisation-preview",
+          "req": "WB-1"
+        },
+        {
+          "slug": "policyholders-1-to-3",
+          "req": "WB-1"
+        },
+        {
+          "slug": "property",
+          "req": "WB-1"
+        },
+        {
+          "slug": "send-it-anyway-client-checks-off",
+          "req": "WB-6"
+        },
+        {
+          "slug": "submit-busy-while-the-sell-request-runs-spinner-disabled",
+          "req": "BUSY-1"
+        },
+        {
+          "slug": "the-request-as-sent-inspector",
+          "req": null
+        }
+      ],
+      "exchanges": [
+        {
+          "method": "POST",
+          "path": "/policies",
+          "status": 409
+        }
+      ]
+    },
+    {
+      "id": "wb-policy",
+      "title": "Policy view",
+      "hash": "#/workbench/policies/UIG-Y8DAW-A",
+      "theme": "light",
+      "width": 1024,
+      "height": 1000,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "status-and-current-term",
+          "req": "WB-2",
+          "built": true,
+          "left": 3.91,
+          "top": 23.8
+        },
+        {
+          "n": 2,
+          "slug": "terms-timeline-terms-payments-claims-cancellation-dates-the-api-returned-only",
+          "req": "WB-2",
+          "built": true,
+          "left": 3.91,
+          "top": 77.53
+        }
+      ],
+      "below": [
+        {
+          "slug": "policyholders-and-property",
+          "req": "WB-2"
+        },
+        {
+          "slug": "payments-and-refunds",
+          "req": "WB-2"
+        },
+        {
+          "slug": "claims",
+          "req": "WB-2 WB-5"
+        },
+        {
+          "slug": "cancellation-summary-from-get-per-term-breakdown-from-the-logged-cancel-response",
+          "req": "WB-2 WB-4"
+        },
+        {
+          "slug": "record-level-problem-banner-404-409",
+          "req": "WB-3"
+        },
+        {
+          "slug": "actions-quote-and-cancel-record-a-claim-renew",
+          "req": "WB-4 WB-5"
+        },
+        {
+          "slug": "requests-that-touched-this-policy",
+          "req": "WB-7"
+        }
+      ],
+      "exchanges": [
+        {
+          "method": "GET",
+          "path": "/policies/UIG-Y8DAW-A",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "id": "wb-home-recent",
+      "title": "Workbench home, with a recent policy",
+      "hash": "#/workbench",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "open-a-policy-by-reference",
+          "req": "WB-2",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [
+        {
+          "slug": "open-by-reference-busy-while-the-policy-loads",
+          "req": "BUSY-1"
+        },
+        {
+          "slug": "sell-a-new-policy-entry",
+          "req": "WB-1"
+        },
+        {
+          "slug": "recent-policies-kept-in-this-browser",
+          "req": "WB-9"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "wb-home-404",
+      "title": "Workbench home, opening a policy that does not exist (GET-1, 404)",
+      "hash": "#/workbench",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "open-a-policy-by-reference",
+          "req": "WB-2",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [
+        {
+          "slug": "open-by-reference-busy-while-the-policy-loads",
+          "req": "BUSY-1"
+        },
+        {
+          "slug": "sell-a-new-policy-entry",
+          "req": "WB-1"
+        },
+        {
+          "slug": "recent-policies-kept-in-this-browser",
+          "req": "WB-9"
+        }
+      ],
+      "exchanges": [
+        {
+          "method": "GET",
+          "path": "/policies/NO-SUCH-1",
+          "status": 404
+        }
+      ]
+    },
+    {
+      "id": "wb-cancel-quoted",
+      "title": "Cancel screen, the quote for the date",
+      "hash": "#/workbench/policies/UIG-Y8DAW-A/cancel",
+      "theme": "light",
+      "width": 1024,
+      "height": 1100,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "cancellation-date-and-quote",
+          "req": "WB-4",
+          "built": true,
+          "left": 3.91,
+          "top": 21.64
+        },
+        {
+          "n": 2,
+          "slug": "quote-and-cancel-actions-each-busy-while-its-request-runs",
+          "req": "BUSY-1",
+          "built": true,
+          "left": 3.91,
+          "top": 59.52
+        },
+        {
+          "n": 3,
+          "slug": "problems-cancel-3-cancel-4-cancel-7",
+          "req": "WB-3",
+          "built": true,
+          "left": 3.91,
+          "top": 74.8
+        },
+        {
+          "n": 4,
+          "slug": "the-refund-as-a-worked-sum-per-term-with-the-rule-applied",
+          "req": "WB-4",
+          "built": true,
+          "left": 3.91,
+          "top": 94.07
+        }
+      ],
+      "below": [
+        {
+          "slug": "cancel-with-the-quoted-date-then-quote-and-cancellation-compared",
+          "req": "WB-4"
+        },
+        {
+          "slug": "the-requests-as-sent-inspector",
+          "req": null
+        }
+      ],
+      "exchanges": [
+        {
+          "method": "GET",
+          "path": "/policies/UIG-Y8DAW-A",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/policies/UIG-Y8DAW-A/cancellation-quote",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "id": "wb-cancel-confirm",
+      "title": "Cancel screen, the confirmation",
+      "hash": "#/workbench/policies/UIG-Y8DAW-A/cancel",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "cancellation-date-and-quote",
+          "req": "WB-4",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        },
+        {
+          "n": 2,
+          "slug": "quote-and-cancel-actions-each-busy-while-its-request-runs",
+          "req": "BUSY-1",
+          "built": true,
+          "left": 3.91,
+          "top": 85.26
+        }
+      ],
+      "below": [
+        {
+          "slug": "problems-cancel-3-cancel-4-cancel-7",
+          "req": "WB-3"
+        },
+        {
+          "slug": "the-refund-as-a-worked-sum-per-term-with-the-rule-applied",
+          "req": "WB-4"
+        },
+        {
+          "slug": "cancel-with-the-quoted-date-then-quote-and-cancellation-compared",
+          "req": "WB-4"
+        },
+        {
+          "slug": "the-requests-as-sent-inspector",
+          "req": null
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "wb-cancel-done",
+      "title": "Cancel screen, cancelled",
+      "hash": "#/workbench/policies/UIG-Y8DAW-A/cancel",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "cancellation-date-and-quote",
+          "req": "WB-4",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        },
+        {
+          "n": 2,
+          "slug": "quote-and-cancel-actions-each-busy-while-its-request-runs",
+          "req": "BUSY-1",
+          "built": true,
+          "left": 3.91,
+          "top": 85.26
+        },
+        {
+          "n": 3,
+          "slug": "problems-cancel-3-cancel-4-cancel-7",
+          "req": "WB-3",
+          "built": true,
+          "left": 3.91,
+          "top": 96.19
+        }
+      ],
+      "below": [
+        {
+          "slug": "the-refund-as-a-worked-sum-per-term-with-the-rule-applied",
+          "req": "WB-4"
+        },
+        {
+          "slug": "cancel-with-the-quoted-date-then-quote-and-cancellation-compared",
+          "req": "WB-4"
+        },
+        {
+          "slug": "the-requests-as-sent-inspector",
+          "req": null
+        }
+      ],
+      "exchanges": [
+        {
+          "method": "POST",
+          "path": "/policies/UIG-Y8DAW-A/cancellation",
+          "status": 201
+        },
+        {
+          "method": "GET",
+          "path": "/policies/UIG-Y8DAW-A",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "id": "wb-claim-422",
+      "title": "Record a claim, a future date is refused (COULD-2a, 422)",
+      "hash": "#/workbench/policies/UIG-Y8DAW-B/claims/new",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "claim-date-and-description",
+          "req": "WB-5",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [
+        {
+          "slug": "refund-before-and-after-the-claim-two-quotes",
+          "req": "WB-5"
+        },
+        {
+          "slug": "problems-could-2a-could-2b-could-2c",
+          "req": "WB-3"
+        },
+        {
+          "slug": "record-claim-busy-while-the-request-and-the-two-quotes-run",
+          "req": "BUSY-1"
+        }
+      ],
+      "exchanges": [
+        {
+          "method": "POST",
+          "path": "/policies",
+          "status": 201
+        },
+        {
+          "method": "GET",
+          "path": "/policies/UIG-Y8DAW-B",
+          "status": 200
+        },
+        {
+          "method": "GET",
+          "path": "/policies/UIG-Y8DAW-B/cancellation-quote",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/policies/UIG-Y8DAW-B/claims",
+          "status": 422
+        }
+      ]
+    },
+    {
+      "id": "wb-claim-done",
+      "title": "Record a claim, recorded, with the refund before and after",
+      "hash": "#/workbench/policies/UIG-Y8DAW-B/claims/new",
+      "theme": "light",
+      "width": 1024,
+      "height": 1100,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "claim-date-and-description",
+          "req": "WB-5",
+          "built": true,
+          "left": 3.91,
+          "top": 21.64
+        },
+        {
+          "n": 2,
+          "slug": "refund-before-and-after-the-claim-two-quotes",
+          "req": "WB-5",
+          "built": true,
+          "left": 3.91,
+          "top": 81.74
+        }
+      ],
+      "below": [
+        {
+          "slug": "problems-could-2a-could-2b-could-2c",
+          "req": "WB-3"
+        },
+        {
+          "slug": "record-claim-busy-while-the-request-and-the-two-quotes-run",
+          "req": "BUSY-1"
+        }
+      ],
+      "exchanges": [
+        {
+          "method": "GET",
+          "path": "/policies/UIG-Y8DAW-B/cancellation-quote",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/policies/UIG-Y8DAW-B/claims",
+          "status": 201
+        },
+        {
+          "method": "GET",
+          "path": "/policies/UIG-Y8DAW-B/cancellation-quote",
+          "status": 200
+        }
+      ]
+    },
+    {
+      "id": "wb-renew-422",
+      "title": "Renew screen, the API refuses (RENEW-1 and RENEW-2, 422)",
+      "hash": "#/workbench/policies/UIG-Y8DAW-C/renew",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "renewal-amount-and-payment-method-default-shown-from-the-current-term-omitted-when-auto-renew-is-off",
+          "req": "WB-5",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [
+        {
+          "slug": "problems-renew-1-2-with-its-window-renew-3b-renew-5-renew-6-could-3-several-at-once-listed-not-placed",
+          "req": "WB-3"
+        },
+        {
+          "slug": "the-new-term-last-on-the-timeline",
+          "req": "WB-5 WB-2"
+        },
+        {
+          "slug": "renew-busy-while-the-request-runs",
+          "req": "BUSY-1"
+        }
+      ],
+      "exchanges": [
+        {
+          "method": "POST",
+          "path": "/policies",
+          "status": 201
+        },
+        {
+          "method": "GET",
+          "path": "/policies/UIG-Y8DAW-C",
+          "status": 200
+        },
+        {
+          "method": "POST",
+          "path": "/policies/UIG-Y8DAW-C/renewals",
+          "status": 422
+        }
+      ]
+    },
+    {
+      "id": "wb-requests",
+      "title": "Request log with one exchange open",
+      "hash": "#/workbench/requests",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "request-log",
+          "req": "WB-7",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [
+        {
+          "slug": "one-exchange-request-response-status-line-curl",
+          "req": "WB-7"
+        }
+      ],
+      "exchanges": []
+    },
+    {
+      "id": "wb-unreachable",
+      "title": "Workbench home, the API unreachable",
+      "hash": "#/workbench",
+      "theme": "light",
+      "width": 1024,
+      "height": 768,
+      "regions": [
+        {
+          "n": 1,
+          "slug": "open-a-policy-by-reference",
+          "req": "WB-2",
+          "built": true,
+          "left": 3.91,
+          "top": 30.99
+        }
+      ],
+      "below": [
+        {
+          "slug": "open-by-reference-busy-while-the-policy-loads",
+          "req": "BUSY-1"
+        },
+        {
+          "slug": "sell-a-new-policy-entry",
+          "req": "WB-1"
+        },
+        {
+          "slug": "recent-policies-kept-in-this-browser",
+          "req": "WB-9"
+        }
+      ],
+      "exchanges": []
+    }
+  ],
+  "refusedSellStatus": 422,
+  "soldStatus": 201,
+  "duplicateStatus": 409,
+  "notFoundStatus": 404,
+  "cancelDate": "2026-12-02",
+  "quoteStatus": 200,
+  "cancelStatus": 201,
+  "claimRefusedStatus": 422,
+  "claimStatus": 201,
+  "renewStatus": 422
+}

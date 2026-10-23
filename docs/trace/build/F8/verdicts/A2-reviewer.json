@@ -1,0 +1,46 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T13:28:17Z",
+  "plan": "build",
+  "node": "F8",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a04494d3d25aa1269",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "build",
+    "node_id": "F8",
+    "attempt": 2,
+    "base_sha": "f041f019e9a55ae31055c71adf589c9a2db56d81",
+    "head_sha": "7caa0af3f1e1b21f6ccb249c71fa3cbb7a73425f",
+    "diff_fingerprint": "4ec51e9acce5ba5cc64b5ce80fde83802ec5a796",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "docs/trace/build/F8/loop.jsonl line 4 gate.write 2026-10-23T12:34:36Z (f8gate.sh, head c60b521, exit 0); this is the only gate event in loop.jsonl, and none covers 7caa0af"
+    ],
+    "rules_covered": [],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R13",
+        "rule_id": "MAN-5",
+        "severity": "P1",
+        "file": "docs/guides/ui/index.html",
+        "line": 261,
+        "what": "The R4 fix runs 'npm --prefix ... exec -- playwright test --config playwright.config.ts' from the repo root, which has no playwright.config.ts. It still fails as printed.",
+        "why": "The fix only half works. Outside workspace mode, npm exec takes the binary from the prefix's node_modules/.bin, so the pinned 1.62.0 is used and that part of R4 is closed. It still runs the command in the caller's directory (runPath = process.cwd()), not in the prefix. So '--config playwright.config.ts' resolves to <root>/playwright.config.ts. The U10 export has none: the only one is src/Uinsure.Policies.Web/playwright.config.ts (testDir '../../tests/...'). The same applies to the new R3 line '... --reporter=html --trace on' and then 'exec -- playwright show-report'. The HTML reporter writes playwright-report next to the config, while show-report looks in the caller's directory. MAN-6 has the same problem: 'exec -- vitest --config vite.config.ts' and the '../../tests/Uinsure.Policies.Web.Tests/unit/client/wb-1.test.ts' filter are both relative to the root, not to the web project. 'exec -- playwright install chromium' and the troubleshooting row are fine, because they take no path. This is static evidence and none of it was run, but it meets David's P1 bar: a printed command that fails as printed. The same lines are in build.mjs at lines 39, 40 and 45.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "R1 is closed. index.html section 2 now has 'npm --prefix src/Uinsure.Policies.Web run trace' between ci and build. package.json has 'trace': 'node compiler/index.ts --ref HEAD', and the 'build' script is plain 'vite build', so this order is right.",
+      "R2 is closed. The curl lines now hit 4170/ and 5080/health/live, and the Postman CLI line uses --env-var baseUrl=http://localhost:5080. The capture ports 4186 and 5096 appear only in the step-2 output note, which is the right place for them. The curl output block still shows the 200/200 captured on 4186 and 5096, and the 'captured from that running copy' text says so.",
+      "R3 is closed in its claim but not in its command. The text no longer promises a trace viewer. It now says the config uses the list reporter, which matches: playwright.config.ts has no 'reporter' and no 'use.trace'. --reporter=html and --trace on are both valid Playwright CLI flags. The working-directory problem in the command is R13.",
+      "R4 is half closed. All npx calls are gone and now go through npm --prefix ... exec, which reaches the pinned binaries. The config and filter paths are still relative to the root, which is R13.",
+      "R5 is closed. The One rule step 2 no longer says '(marker 2)' in either build.mjs or index.html, and the figure shows marker 1 only.",
+      "I judged only delta-A1.patch. R6-R12 stand as PR notes under the lighter-loop ruling, and I haven't raised them again.",
+      "On npm exec's working directory: I'm confident but I haven't run it. If David's environment shows that npm --prefix exec runs in the prefix, R13 falls away and R1-R5 are all closed."
+    ]
+  }
+}

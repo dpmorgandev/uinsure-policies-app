@@ -1,0 +1,56 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T11:42:10Z",
+  "plan": "build",
+  "node": "F7",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a3f6a7122abf86731",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "build",
+    "node_id": "F7",
+    "attempt": 2,
+    "base_sha": "f041f019e9a55ae31055c71adf589c9a2db56d81",
+    "head_sha": "282ec25c1b8492a7506e327ab16c32770a142703",
+    "diff_fingerprint": "33c93bb1b772e9ad6a41b67d8bb0b133d686099d",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.guide head 64eb680 (attempt 2: privacy scan of index.html, receipts.md, run-receipts.sh, fill-guide.mjs; PDF reprint)",
+      "gate.green head 64eb680 (api-guide.test.mjs 12/12)",
+      "gate.build head 64eb680 (exit 0)",
+      "gate.test head 64eb680 (637/637)",
+      "gate.guide head d7b43af (attempt 1: PDF bytes free of local paths)"
+    ],
+    "rules_covered": [
+      "API3:2023",
+      "API4:2023",
+      "API6:2023",
+      "API8:2023",
+      "API9:2023",
+      "NET-SQL",
+      "NET-Money",
+      "NET-Packages",
+      "NET-Secrets",
+      "NET-Logging"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Scope: docs-only diff (docs/guides, docs/specs, tests/guides, plan, QA and trail files, PDF). No file under src/ or any csproj or package manifest changed, so no code or package surface was added.",
+      "API1:2023 n/a: no auth or tenancy, the reference is the only key. The guide says so (index.html line 97, U10 rows).",
+      "API2:2023 n/a: authentication is out of scope.",
+      "API5:2023 n/a: no roles.",
+      "API7:2023 n/a: no outbound URL fetching. The diff adds no HttpClient. run-receipts.sh only curls localhost:5080.",
+      "API10:2023 n/a: no upstream APIs.",
+      "API3, API4, API6, API8, API9 are met by the diff in the sense that it changes none of the code behind them. The guide's security statements match the skill: 429 with Retry-After, a 413 for bodies over 65,536 bytes, /problems/https-required, no authentication and no WAF are stated openly (index.html lines 97, 112, 485, 490, 1014, 1059-1060). The 429, 500 and 413 cases are marked as not provoked live.",
+      "Privacy (repo goes public): case-insensitive greps over docs/guides, tests/guides and the diff found no local user name, personal email, drive-letter path, /c/Users path or file:// URL. receipts.md shows <repo> in place of the checkout path, and run-receipts.sh also scrubs the home directory to <home>. The only drive path is C:\\src\\uinsure-policies (index.html line 1054), a generic example clone path. All sample data is fictional (Lovelace, Hopper, EX1 1AA, EX2 2BB). The only external URL is the RFC 9110 problem type string. No script tags, remote assets or remote fonts in the guide HTML or CSS.",
+      "Secrets: the diff greps for Password, AccountKey, keys, tokens, Bearer and BEGIN blocks gave one hit, a sentence saying the app has no secrets (managed identity). Receipts hold no credential. The Postman cloud login message is only a notice.",
+      "Logging and SQL: R5 and R10 show only start-up lines and one exception line (Database:Provider must be Sqlite or SqlServer), with no request bodies and no personal data. Policyholder names and dates of birth in receipts are fictional sample data.",
+      "Scripts a reader may run: run-receipts.sh evals only command strings fixed in the script and takes no external input. It deletes only src/Uinsure.Policies.Api/policies.development.db*, migrate.sql, main.json and its own mktemp directory. It stops the process on port 5080 through taskkill on that PID. The header documents the preconditions (port 5080 free, no development DB). fill-guide.mjs reads receipts.md and writes index.html with &, < and > escaped, so receipt text cannot inject HTML. tests/guides/api-guide.test.mjs uses spawnSync only on the repo's own print.mjs in a sandbox, with no network use. print.mjs strips hrefs so no file:// path reaches the PDF.",
+      "Limit of my check on API_UserGuide.pdf: my tools read only the uncompressed PDF header, not the compressed content streams. The header shows Title 'Uinsure Policies API: user guide', Creator Chromium and Producer Skia/PDF, with no Author field and no path. The PDF is rendered from index.html, which I found clean, and the orchestrator's gate.guide events record a PDF byte check for local paths (attempt 1 at d7b43af; the attempt 2 event lists the HTML, receipts and script scans and the reprint).",
+      "Known harness note, not a finding: a stale sentence in receipts.md says 'HEAD 8dbfdef', while the A1 fix is 64eb680. The scripts and receipts were not re-captured since that note. This is hygiene for the reviewer, not a security matter."
+    ]
+  }
+}
