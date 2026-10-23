@@ -69,7 +69,7 @@ running it by hand against another branch (see the branch control step in [One-t
    (hosted agent, no environment, so it runs unapproved), then **`Deploy_<env>`** (self-hosted pool
    `policies-<env>-vnet`, the only stage on the environment `policies-<env>`). Deploy runs the infrastructure
    deployment, applies the migration script with `sqlcmd`, creates the app's database user (by SID, with
-   `db_datareader` and `db_datawriter` only), deploys the zip, deploys the web artifact to the Static Web App, and smoke-tests the site and `/health/ready` with `curl`.
+   `db_datareader` and `db_datawriter` only), deploys the zip, reads the Static Web App's deployment token, deploys the web artifact with the Static Web Apps CLI, then smoke-tests the site root and `/health/ready` with `curl --fail`.
 
 ## The Static Web App
 
@@ -80,15 +80,20 @@ origin, so the browser makes no cross-origin call and the page's Content-Securit
 - **Host settings.** `infrastructure/web/staticwebapp.config.json` sets the deep-link fallback (routes rewrite to
   `index.html`; assets, JSON files and `kitchen-sink.html` are excluded) and repeats the CSP as a header. The Web
   stage copies it into the build artifact.
-- **No secret in the repo.** The deployment token is read from the resource at deploy time
-  (`az staticwebapp secrets list`), set as a masked pipeline variable and passed to the pinned Static Web Apps
-  CLI in an environment variable. It is in no parameter file or variable group.
+- **No secret in the repo.** The step "Read the Static Web App deployment token" runs
+  `az staticwebapp secrets list` on the ARM connection, against the site named by `$(webSiteName)`, and sets the
+  variable `swaDeploymentToken` with `issecret=true`, so the log masks it. The step "Deploy web" passes it to the
+  CLI (`@azure/static-web-apps-cli@2.0.2`, run with `npx`) only as the step's `SWA_CLI_DEPLOYMENT_TOKEN`
+  environment variable, never on the command line. It is in no parameter file or variable group.
 - **The web stage.** A `Web` stage runs after `Build` and before `dev`, on a hosted agent: `npm ci`, typecheck,
   lint, CSS lint, unit tests, the trace compile (`npm run trace`, which reads git history, so the checkout is
   full-depth), the build, and Playwright against the API started on the agent. It publishes a `web` artifact.
-  `Deploy_<env>` then deploys that artifact with the Static Web Apps CLI and smoke-tests the site's root.
-- **Configured, not tested.** None of this has run: the stage, the token step and the CLI deploy are
-  schema-checked and read by eye only. The self-hosted deploy agents need Node (for `npx`).
+  `Deploy_<env>` then deploys that artifact (`deploy $(Pipeline.Workspace)/web --env production`) and, in the step
+  "Smoke test the site root", runs `curl --fail` against `https://$(webHostName)/`.
+- **Configured, not tested.** None of this has run: the token step, the CLI deploy and the site smoke test are
+  schema-checked, and `check-pipeline.py` asserts that they exist in that order, that the CLI is version-pinned
+  and that the token reaches it only through `env`. Nothing was run against Azure. The self-hosted deploy
+  agents need Node (for `npx`).
 - **Known mismatch, not fixed here.** A linked backend forwards `/api/...` to the App Service unchanged, but the
   API's routes have no `/api` prefix (the dev server and preview proxy strip it). The API would need a path base of
   `/api` for the deployed host to reach it. That is an API change, outside this node.

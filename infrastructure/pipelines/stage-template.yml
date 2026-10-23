@@ -153,6 +153,35 @@ stages:
                         --src-path $(drop)/app.zip \
                         --type zip
 
+                # The Static Web App's deployment token is read from the resource at run time on the ARM connection.
+                # It becomes a secret variable (masked in logs); it is in no parameter, variable group or file.
+                - task: AzureCLI@2
+                  displayName: Read the Static Web App deployment token
+                  inputs:
+                    azureSubscription: ${{ parameters.azureServiceConnection }}
+                    scriptType: bash
+                    scriptLocation: inlineScript
+                    inlineScript: |
+                      token=$(az staticwebapp secrets list \
+                        --name "$(webSiteName)" \
+                        --resource-group "$(resourceGroupName)" \
+                        --query properties.apiKey --output tsv)
+                      echo "##vso[task.setvariable variable=swaDeploymentToken;issecret=true]$token"
+
+                # The web artifact is downloaded into $(Pipeline.Workspace)/web by the deployment job. The CLI is
+                # pinned and reads the token only from its environment, never from the command line.
+                - script: |
+                    npx --yes @azure/static-web-apps-cli@2.0.2 deploy $(Pipeline.Workspace)/web --env production
+                  displayName: Deploy web
+                  env:
+                    SWA_CLI_DEPLOYMENT_TOKEN: $(swaDeploymentToken)
+
+                - script: |
+                    curl --fail --silent --show-error \
+                      --retry 10 --retry-delay 15 --retry-all-errors \
+                      https://$(webHostName)/
+                  displayName: Smoke test the site root
+
                 - script: |
                     curl --fail --silent --show-error \
                       --retry 10 --retry-delay 15 --retry-all-errors \
