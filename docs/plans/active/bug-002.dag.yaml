@@ -16,7 +16,7 @@ nodes:
     rules: [DATA-1]
     cuttable: false
     budget: 3h
-    status: investigating
+    status: in_progress
     attempt: 3
     branch: bug/bug-002/N1
     worktree: .claude/worktrees/bug-002-N1
