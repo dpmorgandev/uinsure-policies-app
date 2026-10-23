@@ -8,7 +8,7 @@
         "DebugTarget": "http"
       },
       {
-        "Path": "src\\web\\Docket.Web.esproj",
+        "Path": "src\\Uinsure.Policies.Web\\Docket.Web.esproj",
         "Action": "Start",
         "DebugTarget": "Vite dev server"
       }

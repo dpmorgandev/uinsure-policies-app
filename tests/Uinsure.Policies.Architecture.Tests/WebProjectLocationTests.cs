@@ -30,6 +30,21 @@ public sealed class WebProjectLocationTests
         ("docs/plans/", "plans, whose node text records each node as it was planned"),
         ("docs/qa/", "QA scripts of earlier nodes, signed off as they were run"),
         ("docs/lessons.md", "lessons, a record of what was learnt when"),
+        ("tests/Uinsure.Policies.Web.Tests/fixtures/trails/", "simulated trail receipts; the compiler accepts both paths"),
+        ("docs/ui/fixture/", "the design fixture's trail records"),
+        ("docs/ui/stylekit/", "signed-off G3 design output, stamped"),
+        ("docs/ui/styles.md", "signed-off G3 design output, stamped"),
+        ("docs/requirements.md", "the agreed brief, as written when agreed; the reserved-web-folder line is history"),
+        ("docs/ui-requirements.md", "the agreed brief, as written when agreed; the reserved-web-folder line is history"),
+        ("src/Uinsure.Policies.Web/kit/project/agent-lanes/agent-lanes.examples.tsx", "kit example data naming trail paths; the kit is out of U10's scope"),
+        ("tests/Uinsure.Policies.Web.Tests/e2e/U1/rule-1.spec.ts", "names paths inside a fixture trail's simulated repo, not this repo"),
+        ("tests/Uinsure.Policies.Web.Tests/e2e/U2/rule-3.spec.ts", "names paths inside a fixture trail's simulated repo, not this repo"),
+        ("tests/Uinsure.Policies.Web.Tests/e2e/U3/loop-3.spec.ts", "names paths inside a fixture trail's simulated repo, not this repo"),
+        ("tests/Uinsure.Policies.Web.Tests/e2e/U3/loop-4.spec.ts", "names paths inside a fixture trail's simulated repo, not this repo"),
+        ("tests/Uinsure.Policies.Web.Tests/unit/compiler/loop-3.test.ts", "names paths inside a fixture trail's simulated repo, not this repo"),
+        ("tests/Uinsure.Policies.Web.Tests/unit/compiler/loop-4.test.ts", "names paths inside a fixture trail's simulated repo, not this repo"),
+        ("tests/Uinsure.Policies.Web.Tests/unit/compiler/rule-1.test.ts", "names paths inside a fixture trail's simulated repo, not this repo"),
+        ("tests/Uinsure.Policies.Web.Tests/unit/compiler/rule-3.test.ts", "names paths inside a fixture trail's simulated repo, not this repo"),
     ];
 
     // The current node's QA script is live: it is written after the rename and must name the new paths.

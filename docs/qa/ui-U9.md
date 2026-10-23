@@ -2,9 +2,14 @@
 
 Rule IDs: none (`rules: []`, an evidence node). The acceptance lines in `docs/plans/active/ui.dag.yaml` are the
 contract, tagged AC1 to AC11 below. No test carries a rule tag for U9, so the Rule column reads `—`.
-Branch: feature/ui/U9   Worktree: .claude/worktrees/ui-U9
-Commit under test: a4da445, HEAD when this script was written. The work landed in 7910201 (builder), 8f23c27 and
-ec646d7 (the launch profile, renamed `Uinsure.Policies.slnLaunch` in round D1, the name Visual Studio reads). Record the SHA you test in the sign-off.
+Branch: feature/ui/U9, carried into feature/ui/U10   Worktree: .claude/worktrees/ui-U10
+Commit under test: 78f52d2 or later. The work landed in 7910201 (builder), 8f23c27 and ec646d7 (the launch profile,
+renamed `Uinsure.Policies.slnLaunch` in round D1, the name Visual Studio reads), be687b6 (the Static Web App
+deploy: the token read, the CLI deploy and the site smoke test), and in U10 adb4b3d and 78f52d2 (one-key F5 on a
+`Vite dev server` target that opens the default browser, the dev server compiling trace.json on start, and the
+SWA CLI installed by `npm ci` from `infrastructure/pipelines/swa-cli/`). Record the SHA you test in the sign-off.
+From U10 task t7 on, the web project is `src/Uinsure.Policies.Web` and its tests `tests/Uinsure.Policies.Web.Tests`:
+read every `src/web` below as that path when you test at or after that commit.
 Ports: Visual Studio F5 uses the profile's fixed ports, the API on 5080 and the dev server on 4170. The CLI run
 uses the node's ports, the app on 4183 and the API on 5093 (U9 is position 13 in `ui.dag.yaml`).
 
@@ -12,8 +17,8 @@ uses the node's ports, the app on 4183 and the API on 5093 (U9 is position 13 in
 (Bicep compiled locally, the pipeline YAML schema-checked offline, the README read by eye). They prove the files'
 shape, not that Azure would accept them. Parts A and B run the app on this machine.
 
-The Actual and Pass/Fail columns are empty. I wrote the steps from the files at a4da445 and didn't run them
-(note 4).
+The Actual and Pass/Fail columns are empty. I wrote the steps from the files at a4da445, brought steps 1, 4–6,
+21, 23–25, 28 and 31 and the notes up to 78f52d2, and didn't run them (note 4).
 
 ## Acceptance items (from `docs/plans/active/ui.dag.yaml`, node U9)
 
@@ -35,7 +40,7 @@ The Actual and Pass/Fail columns are empty. I wrote the steps from the files at 
 
 - [ ] Visual Studio 2022 or later with the **Node.js development** workload (it loads the JavaScript SDK
       `.esproj`), and the .NET 10 SDK.
-- [ ] Node 22 on `PATH`.
+- [ ] Node 22.22 or later on `PATH` (jsdom, react-router and undici warn on 22.18).
 - [ ] The Bicep CLI (`bicep --version`), and Python with PyYAML and jsonschema for the pipeline check.
 - [ ] Nothing else listening on 4170, 5080, 4183 or 5093.
 - [ ] Run every command from the worktree root, `.claude/worktrees/ui-U9`, in PowerShell, unless a step says
@@ -47,12 +52,12 @@ The Actual and Pass/Fail columns are empty. I wrote the steps from the files at 
 
 | # | Rule | Where | Action | Expected | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|
-| 1 | — | `src/web` | `npm ci`, then `npm run trace` | Both exit 0. `src/web/public/trace.json` now exists (README: without it the explorer shows "trace.json could not be read") | | |
+| 1 | — | `src/web` | `npm ci` | Exits 0. No `npm run trace` is needed for F5: the dev server compiles `trace.json` from git history each time it starts (step 5) | | |
 | 2 | — | Visual Studio | Open `Uinsure.Policies.slnx`. Look at Solution Explorer | A `web` solution folder holds `Docket.Web`, loaded (not "unloaded" or "incompatible"). `src`, `tests` and the other folders are as before | | |
 | 3 | — | Visual Studio | Open the startup-project dropdown on the toolbar | A profile named **API and web** is listed. Choose it | | |
-| 4 | — | Visual Studio | Solution → Configure Startup Projects | Multiple startup projects: `Uinsure.Policies.Api` set to Start with the `http` target, `Docket.Web` set to Start with the `localhost (Edge)` target, nothing else started | | |
-| 5 | — | Visual Studio | F5 | No "unable to launch the previously selected debugger" message. The API starts on `http://localhost:5080` and opens its own browser tab on `/health/live`, which answers healthy. A second console runs `npx vite --port 4170 --strictPort` and prints `Local: http://localhost:4170/`, and a debug browser (Edge) opens the web app on `http://localhost:4170/` | | |
-| 6 | — | `http://localhost:4170/` | Use the browser F5 opened on it. Then open `#/workbench/sell`, sell `QA-U9-VS` (start today, amount `365.00`, Card), DevTools Network open | The explorer overview renders from trace.json. The sell sends `POST /api/policies`, answered 201 by the API on 5080 through the dev server's proxy (the API's console logs `POST /policies`) | | |
+| 4 | — | Visual Studio | Solution → Configure Startup Projects | Multiple startup projects: `Uinsure.Policies.Api` set to Start with the `http` target, `Docket.Web` set to Start with the `Vite dev server` target, nothing else started | | |
+| 5 | — | Visual Studio | F5 | No "unable to launch the previously selected debugger" message. The API starts on `http://localhost:5080` and opens its own browser tab on `/health/live`, which answers healthy. The dev server compiles `trace.json` first, then prints `Local: http://localhost:4170/` and opens Docket on it in your default browser (Vite's `--open`; not an Edge debug window, and no debugger is attached to it) | | |
+| 6 | — | `http://localhost:4170/` | Use the browser tab F5 opened on it. Then open `#/workbench/sell`, sell `QA-U9-VS` (start today, amount `365.00`, Card), DevTools Network open | The explorer overview renders from trace.json. The sell sends `POST /api/policies`, answered 201 by the API on 5080 through the dev server's proxy (the API's console logs `POST /policies`) | | |
 | 7 | — | Visual Studio | Stop debugging (Shift+F5) | Both the API and the Vite console stop. Nothing is left listening on 5080 or 4170 | | |
 | 8 | — | Visual Studio, then shell | Build → Rebuild Solution; then `dotnet build Uinsure.Policies.slnx -warnaserror` | The VS Output window shows `Docket.Web` skipped and no `npm` line. The CLI build ends with 0 warnings and 0 errors and prints no `npm` and no `Docket.Web` line | | |
 | 9 | — | shell | `dotnet test --solution Uinsure.Policies.slnx` | Every test passes, the same projects as before U9. No Vitest or Playwright run starts | | |
@@ -77,16 +82,16 @@ The Actual and Pass/Fail columns are empty. I wrote the steps from the files at 
 | 18 | — | shell | The same for `infrastructure/params/test.bicepparam` | `0`, no diagnostic, `webLocation` `westeurope` | | |
 | 19 | — | shell | The same for `infrastructure/params/prod.bicepparam` | `0`, no diagnostic, `webLocation` `westeurope` | | |
 | 20 | — | `infrastructure/modules/staticwebapp.bicep`, `main.bicep` | Read them | `stapp-<suffix>`, SKU Standard (a linked backend isn't on Free), and a `linkedBackends` child `api` whose `backendResourceId` is `app.outputs.appId` and whose region is the workload `location`. The module sits in `main.bicep` beside `module app`, on the resource group. No parameter carries a token | | |
-| 21 | — | `infrastructure/web/staticwebapp.config.json` | Read it | `navigationFallback` rewrites to `/index.html`, excluding `/assets/*`, `/*.json`, `/*.ico` and `/kitchen-sink.html`. The header CSP starts `default-src 'self'` and matches the app's (`base-uri 'self'; form-action 'none'; object-src 'none'`). Note 2 on deep links | | |
+| 21 | — | `infrastructure/web/staticwebapp.config.json` | Read it | `navigationFallback` rewrites to `/index.html`, excluding `/assets/*`, `/*.json`, `/*.ico` and `/kitchen-sink.html`. The header CSP starts `default-src 'self'` and matches the app's (`base-uri 'self'; form-action 'none'; object-src 'none'`), plus `frame-ancestors 'none'`. `Referrer-Policy: no-referrer` and `X-Content-Type-Options: nosniff` are set as global headers. Note 2 on deep links | | |
 | 22 | — | shell | `git grep -niE "password\|secret\|token\|@secure\|keyvault" -- infrastructure/main.bicep infrastructure/modules/staticwebapp.bicep infrastructure/params infrastructure/web` | Only the comment lines already in the params ("Not a secret"). No value, no `@secure()` parameter, no token in a param file | | |
 
 ### Part D: the pipeline, schema-checked offline (AC4, AC5, AC8). Evidence only: the pipeline has never run
 
 | # | Rule | Where | Action | Expected | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|
-| 23 | — | shell | `python -I infrastructure/pipelines/check-pipeline.py; $LASTEXITCODE` | `pipeline check passed`, then `0`. The check now asserts the chain Build → Web → dev → test → prod and the Web stage's commands | | |
-| 24 | — | `infrastructure/pipelines/azure-pipelines.yml` | Read the `Web` stage | `dependsOn: Build`, hosted agent, full-depth checkout. Steps in order: `npm ci`, typecheck, lint, CSS lint, unit, `npm run trace`, build, Playwright against the API started on the agent, then `dist/` plus `staticwebapp.config.json` published as the `web` artifact. The `dev` template stage has `dependsOn: Web` | | |
-| 25 | — | `infrastructure/pipelines/stage-template.yml` | Read `Deploy_<env>` | **Expected per the acceptance and `infrastructure/README.md`:** a step that reads the deployment token from the resource (`az staticwebapp secrets list`) into a masked variable, a download of the `web` artifact, a Static Web Apps CLI deploy, and a smoke test of the site's root. **What I read at a4da445:** only two new lines, setting `webSiteName` and `webHostName` from the outputs. No token step, no web deploy, no site smoke test (note 1) | | |
+| 23 | — | shell | `python -I infrastructure/pipelines/check-pipeline.py; $LASTEXITCODE` | `pipeline check passed`, then `0`. The check now asserts the chain Build → Web → dev → test → prod, the Web stage's commands, and the deploy's token step, CLI deploy and site smoke test in that order (note 1) | | |
+| 24 | — | `infrastructure/pipelines/azure-pipelines.yml` | Read the `Web` stage | `dependsOn: Build`, hosted agent, full-depth checkout. Steps in order: `npm ci`, typecheck, lint, CSS lint, unit, `npm run trace`, build, Playwright against the API started on the agent, then `dist/` plus `staticwebapp.config.json` packaged; `infrastructure/pipelines/swa-cli` published as the `swa-cli` artifact and the package as the `web` artifact. The `dev` template stage has `dependsOn: Web` | | |
+| 25 | — | `infrastructure/pipelines/stage-template.yml` | Read `Deploy_<env>`, after "Deploy app" | `Deploy infrastructure` sets `webSiteName` and `webHostName` from the outputs. Then three steps in this order. **Read the Static Web App deployment token:** `az staticwebapp secrets list --name "$(webSiteName)" --resource-group "$(resourceGroupName)" --query properties.apiKey`, on the ARM connection, set as `swaDeploymentToken` with `issecret=true`. **Deploy web:** `npm ci --prefix $(Pipeline.Workspace)/swa-cli --ignore-scripts` (the CLI, `@azure/static-web-apps-cli` 2.0.2, from its lockfile, never `npx --yes`), then `swa-cli/node_modules/.bin/swa deploy $(Pipeline.Workspace)/web --env production`, with the token only in the step's `env` as `SWA_CLI_DEPLOYMENT_TOKEN`, never on the command line. **Smoke test the site root:** `curl --fail` against `https://$(webHostName)/`, with retries. The `/health/ready` smoke test stays last | | |
 | 26 | — | shell | `git ls-files .github` | Nothing: no file under `.github/workflows`. Every pipeline and IaC file is under `infrastructure/` | | |
 | 27 | — | shell | `git grep -nE "(^\|[^[:alnum:]_-])az (deployment\|webapp\|staticwebapp\|login\|group\|sql\|account\|resource)" -- src tests .githooks` | Nothing. `az` appears only in the never-run `stage-template.yml` and as string needles in `check-pipeline.py` | | |
 
@@ -94,10 +99,10 @@ The Actual and Pass/Fail columns are empty. I wrote the steps from the files at 
 
 | # | Rule | Where | Action | Expected | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|
-| 28 | — | `infrastructure/README.md` § The Static Web App | Read it beside steps 20–25 | It states the Standard plan and linked backend, the host settings file, the token read at deploy time, the Web stage, a "Configured, not tested" bullet and a "Known mismatch" bullet, in the voice of the App Service sections. Every claim matches a file, except the deploy and token claims (note 1) | | |
+| 28 | — | `infrastructure/README.md` § The Static Web App | Read it beside steps 20–25 | It states the Standard plan and linked backend, the host settings file, the token read at deploy time (the step names "Read the Static Web App deployment token" and "Deploy web", `swaDeploymentToken` with `issecret=true`, the token only in `SWA_CLI_DEPLOYMENT_TOKEN`), the Web stage and its `web` artifact, the deploy of it and the step "Smoke test the site root", a "Configured, not tested" bullet (the CLI installed by `npm ci` from `pipelines/swa-cli/`; Node 22.22 or later on the deploy agents) and a "Known mismatch" bullet, in the voice of the App Service sections. Every claim matches a file in step 25. One wording to check: the "No secret in the repo" bullet still says the CLI is "run with `npx`", where step 25 installs it with `npm ci` (note 1) | | |
 | 29 | — | `infrastructure/README.md` § Shape and § The pipeline | Read them | Five modules, `staticwebapp` among them; `webLocation` `westeurope` because Static Web Apps isn't offered in `uksouth`; the Web stage listed as stage 2 | | |
 | 30 | — | `infrastructure/README.md`, "Known mismatch" | Read it | It says the linked backend forwards `/api/...` unchanged while the API's routes have no `/api` prefix (the dev and preview proxies strip it), so the deployed site wouldn't reach the API without a path base. It is stated as not fixed in U9. Decide: accept as documented, or a defect | | |
-| 31 | — | `README.md` § Docket (the web app) | Read it | It says what Docket is (the trail explorer and the workbench), gives the Visual Studio route (the **API and web** profile, F5, ports 5080 and 4170, `npm ci` and `npm run trace` once first) and the CLI block from Part B | | |
+| 31 | — | `README.md` § Docket (the web app) | Read it | It says what Docket is (the trail explorer and the workbench), gives the Visual Studio route (the **API and web** profile, F5, ports 5080 and 4170, Docket opened in the default browser by Vite's `--open`, `trace.json` compiled each time the dev server starts, `npm ci` once first) and the CLI block from Part B | | |
 
 ### Part F: diff scope (AC11)
 
@@ -122,23 +127,26 @@ Visual Studio F5 uses the profile's ports (API 5080, dev server 4170), not these
 
 ## Notes
 
-1. **The Static Web App deploy is described but not in the pipeline (step 25).** `infrastructure/README.md` says
-   `Deploy_<env>` "deploys the web artifact to the Static Web App, and smoke-tests the site", and that the
-   deployment token is read with `az staticwebapp secrets list` and passed to the Static Web Apps CLI. At a4da445,
-   `stage-template.yml` gained only the `webSiteName` and `webHostName` variables (the builder's diff to it is two
-   lines). There is no token step, no `web` artifact download, no CLI deploy and no site smoke test, and
-   `check-pipeline.py` asserts none of them, so step 23 passes regardless. The acceptance asks for "a web build
-   and deploy stage" and "deployment token from the resource". I expect step 25 to fail and step 28 to fail on
-   the deploy claims. That is a gap between the README and the YAML, for review or a fix round.
+1. **The Static Web App deploy (steps 23, 25 and 28).** At a4da445 the README described a deploy the pipeline
+   didn't have. be687b6 added it to `stage-template.yml`: the token step, the CLI deploy of the `web` artifact
+   and the site smoke test, in that order; 78f52d2 moved the CLI from a pinned `npx` run to `npm ci` from
+   `infrastructure/pipelines/swa-cli/package-lock.json`, published as the `swa-cli` artifact, so every package is
+   pinned with its integrity hash. `check-pipeline.py` now asserts each of these (one token step with
+   `issecret=true` against `$(webSiteName)`, one CLI step installed by `npm ci` from its lockfile and never
+   `npx --yes`, the token only through `env`, a `curl --fail` of `https://$(webHostName)/`, and their order), so
+   step 23 fails if any is removed. The README's step names and variables match the YAML, except the "run with
+   `npx`" parenthetical in its "No secret in the repo" bullet, which predates 78f52d2: step 28 fails on that
+   phrase until it's reworded. Nothing here has run against Azure.
 2. **Deep links.** The app routes by hash (`#/workbench/...`), so a refreshed deep link requests `/` and the
    `navigationFallback` rule only matters for a path URL. Nothing here can serve the config locally (the Vite
    preview doesn't read `staticwebapp.config.json`), so step 21 is a reading.
 3. **Smaller observations.** The solution's `/infrastructure/modules/` folder doesn't list `staticwebapp.bicep`,
    and `infrastructure/web/staticwebapp.config.json` isn't in any solution folder, so neither shows in Solution
-   Explorer. `src/web/public/trace.json` is neither tracked nor ignored, so after steps 1 and 11 it shows as
-   untracked in `git status`: don't commit it.
+   Explorer (78f52d2 lists both in the solution). `src/web/public/` is ignored since 955cad3, so the
+   `trace.json` that steps 5 and 11 write doesn't show in `git status`.
 4. **I didn't run these steps.** Visual Studio, the build, the trace compile and the API are outside what I run
-   at the QA step. The expected text is from the files at a4da445. Bicep's version and the test counts are
+   at the QA step. The expected text is from the files at a4da445, and at 78f52d2 for the steps the header
+   names. Bicep's version and the test counts are
    yours to record.
 
 ## Sign-off

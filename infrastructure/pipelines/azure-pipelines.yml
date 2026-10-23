@@ -85,37 +85,37 @@ stages:
               packageType: sdk
               version: $(dotnetSdkVersion)
 
-          - script: npm --prefix src/web ci
+          - script: npm --prefix src/Uinsure.Policies.Web ci
             displayName: Web install
 
-          - script: npm --prefix src/web run typecheck
+          - script: npm --prefix src/Uinsure.Policies.Web run typecheck
             displayName: Web typecheck
 
-          - script: npm --prefix src/web run lint
+          - script: npm --prefix src/Uinsure.Policies.Web run lint
             displayName: Web lint
 
-          - script: npm --prefix src/web run lint:css
+          - script: npm --prefix src/Uinsure.Policies.Web run lint:css
             displayName: Web CSS lint
 
-          - script: npm --prefix src/web run test
+          - script: npm --prefix src/Uinsure.Policies.Web run test
             displayName: Web unit tests
 
-          - script: npm --prefix src/web run trace
+          - script: npm --prefix src/Uinsure.Policies.Web run trace
             displayName: Compile trace.json
 
-          - script: npm --prefix src/web run build
+          - script: npm --prefix src/Uinsure.Policies.Web run build
             displayName: Web build
 
           - script: |
-              npx --prefix src/web playwright install --with-deps chromium
+              npx --prefix src/Uinsure.Policies.Web playwright install --with-deps chromium
               dotnet run --project src/Uinsure.Policies.Api --urls http://localhost:5080 &
               timeout 120 bash -c 'until curl --fail --silent http://localhost:5080/health/live; do sleep 2; done'
-              npm --prefix src/web run e2e
+              npm --prefix src/Uinsure.Policies.Web run e2e
             displayName: Web end-to-end tests against the API
 
           - script: |
               mkdir -p $(Build.ArtifactStagingDirectory)/web
-              cp -r src/web/dist/. $(Build.ArtifactStagingDirectory)/web/
+              cp -r src/Uinsure.Policies.Web/dist/. $(Build.ArtifactStagingDirectory)/web/
               cp infrastructure/web/staticwebapp.config.json $(Build.ArtifactStagingDirectory)/web/
             displayName: Package web build with the static host settings
 

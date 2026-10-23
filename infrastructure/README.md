@@ -83,7 +83,7 @@ origin, so the browser makes no cross-origin call and the page's Content-Securit
 - **No secret in the repo.** The step "Read the Static Web App deployment token" runs
   `az staticwebapp secrets list` on the ARM connection, against the site named by `$(webSiteName)`, and sets the
   variable `swaDeploymentToken` with `issecret=true`, so the log masks it. The step "Deploy web" passes it to the
-  CLI (`@azure/static-web-apps-cli@2.0.2`, run with `npx`) only as the step's `SWA_CLI_DEPLOYMENT_TOKEN`
+  CLI (`@azure/static-web-apps-cli@2.0.2`, installed by `npm ci` from `pipelines/swa-cli/package-lock.json`) only as the step's `SWA_CLI_DEPLOYMENT_TOKEN`
   environment variable, never on the command line. It is in no parameter file or variable group.
 - **The web stage.** A `Web` stage runs after `Build` and before `dev`, on a hosted agent: `npm ci`, typecheck,
   lint, CSS lint, unit tests, the trace compile (`npm run trace`, which reads git history, so the checkout is

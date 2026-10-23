@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "types": [
+      "vite/client"
+    ],
+    "paths": {
+      "@axe-core/playwright": ["./node_modules/@axe-core/playwright"],
+      "@playwright/test": ["./node_modules/@playwright/test"],
+      "@testing-library/*": ["./node_modules/@testing-library/*"],
+      "react": ["./node_modules/@types/react"],
+      "react/*": ["./node_modules/@types/react/*"],
+      "vitest": ["./node_modules/vitest"]
+    }
+  },
+  "include": [
+    "app",
+    "compiler",
+    "kit",
+    "vite.config.ts",
+    "playwright.config.ts",
+    "eslint.config.js",
+    "../../tests/Uinsure.Policies.Web.Tests/kit",
+    "../../tests/Uinsure.Policies.Web.Tests/unit",
+    "../../tests/Uinsure.Policies.Web.Tests/e2e"
+  ]
+}

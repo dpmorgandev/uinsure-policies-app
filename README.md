@@ -8,7 +8,7 @@ with TDD, one feature at a time. Every rule, its ID and the interpretation taken
 
 ## Docket (the web app)
 
-Docket lives in `src/web`. It has two parts: the **trail explorer**, which reads the compiled build trail
+Docket lives in `src/Uinsure.Policies.Web`. It has two parts: the **trail explorer**, which reads the compiled build trail
 (`trace.json`: plans, nodes, rules, tests and verdicts) and shows how each rule was built, and the
 **workbench**, which calls this API (`/api/...`) so a policy can be sold, retrieved, cancelled, claimed on and
 renewed from a browser. It is React, TypeScript and Vite.
@@ -18,13 +18,13 @@ renewed from a browser. It is React, TypeScript and Vite.
 tab on `/health/live`, and the web dev server on `http://localhost:4170`, which opens Docket in your default
 browser (Vite's `--open`; it is not a debugger-attached window). The dev server compiles `trace.json` from git
 history each time it starts, and proxies `/api` to the API. The web project is excluded from the solution
-build, so `dotnet build` never runs npm. Run `npm ci` in `src/web` once first.
+build, so `dotnet build` never runs npm. Run `npm ci` in `src/Uinsure.Policies.Web` once first.
 
 **From the command line:**
 
 ```sh
 dotnet run --project src/Uinsure.Policies.Api --launch-profile http   # the API, port 5080
-cd src/web
+cd src/Uinsure.Policies.Web
 npm ci
 npm run trace      # compile trace.json from git history
 npm run build

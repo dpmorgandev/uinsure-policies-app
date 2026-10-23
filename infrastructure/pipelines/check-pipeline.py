@@ -51,7 +51,7 @@ web_text = json.dumps(web_stage) if web_stage else ""
 check(web_stage is not None and web_stage.get("dependsOn") == "Build", "Web stage must depend on Build")
 check(re.search(r"run lint(?!:)", web_text) is not None, "Web stage must run: run lint (not only lint:css)")
 check("timeout " in web_text, "The e2e wait for the API must be bounded")
-for needle in ("npm --prefix src/web ci", "run typecheck", "run lint:css", "run test", "run trace", "run build", "run e2e", "staticwebapp.config.json"):
+for needle in ("npm --prefix src/Uinsure.Policies.Web ci", "run typecheck", "run lint:css", "run test", "run trace", "run build", "run e2e", "staticwebapp.config.json"):
     check(needle in web_text, f"Web stage must run: {needle}")
 
 # Build stage: build, test, idempotent script.
