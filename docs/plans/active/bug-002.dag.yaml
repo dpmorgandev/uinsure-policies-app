@@ -36,7 +36,7 @@ nodes:
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the reproduction tests red against main; go or change", status: skipped}
       - {id: t4, role: builder, step: green, layer: compiler, rules: [DATA-1], title: "Launch path restore or named stop, listen-first trace-on-start, preview report or skip, engines and .nvmrc", status: done}
       - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with the suite green", status: skipped}
-      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "Every gate for the node, recorded with receipts", status: pending}
+      - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "Every gate for the node, recorded with receipts", status: done}
       - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
       - {id: t8, role: tester, step: qa, after: [t6], layer: null, rules: [DATA-1], title: "QA script docs/qa/bug-002-N1.md: a fresh clone F5s into Docket", status: pending}
       - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: pending}
@@ -205,6 +205,7 @@ nodes:
       - "The UI guide carries F8 R6-R12 and the A2.2 cd-chain note, fixed (inv-009 #15, I20)"
       - "The README says the API and web profile is picked once per machine (inv-009 #1, I2)"
       - "build.dag.yaml shows F7 and F8 done with pr 119, ui.dag.yaml shows U10 done with pr 116; tasks that never ran are skipped, not done (inv-009 #9, I14)"
+      - "Every regression spec passes on the N6 head: the baselines that drifted on main since U4 (65 screenshots, listed in bug-002/N1 gate.e2e-regression) are re-signed by a baseline: <screen> ruling at Pause 2, each diff looked at and its cause named"
       - "Both PDFs are reprinted from the HTML on the PR head"
       - "The full suite and the guide checks pass"
     tasks:
