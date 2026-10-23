@@ -16,7 +16,8 @@ renewed from a browser. It is React, TypeScript and Vite.
 **In Visual Studio:** open `Uinsure.Policies.slnx` and choose the **API and web** startup profile (it is in
 `Uinsure.Policies.slnx.slnLaunch`). F5 starts the API on port 5080 and the web dev server on
 `http://localhost:4170`, which proxies `/api` to the API. The web project is excluded from the solution build,
-so `dotnet build` never runs npm. Run `npm ci` in `src/web` once first.
+so `dotnet build` never runs npm. Run `npm ci` and `npm run trace` in `src/web` once first: the explorer reads
+`trace.json`, and without it shows "trace.json could not be read".
 
 **From the command line:**
 

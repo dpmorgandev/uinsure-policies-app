@@ -1,0 +1,16 @@
+[
+  {
+    "Name": "API and web",
+    "Projects": [
+      {
+        "Path": "src\\Uinsure.Policies.Api\\Uinsure.Policies.Api.csproj",
+        "Action": "Start",
+        "DebugTarget": "http"
+      },
+      {
+        "Path": "src\\web\\Docket.Web.esproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
