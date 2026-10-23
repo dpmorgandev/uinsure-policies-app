@@ -18,7 +18,7 @@ export function SiteSearch() {
 
   const results = useMemo(() => {
     const hrefOf = (entry: SearchEntry): string =>
-      entry.kind === 'path' && snapshotSha !== null ? blobUrl(snapshotSha, entry.href) : entry.href;
+      entry.repoPath !== null && snapshotSha !== null ? blobUrl(snapshotSha, entry.repoPath) : (entry.route ?? entry.repoPath ?? '');
     return searchTrace(index, query)
       .slice(0, MAX_MATCHES)
       .map((entry): SearchResult => ({ id: `${entry.kind}:${entry.label}`, kind: entry.kind, label: entry.label, detail: entry.detail ?? undefined, href: hrefOf(entry) }));

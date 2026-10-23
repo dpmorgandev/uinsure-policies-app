@@ -338,10 +338,10 @@ export interface SearchEntry {
   kind: 'rule' | 'node' | 'sha' | 'path';
   label: string;
   detail: string | null;
-  /** An in-app route; for a path, the repo-relative path itself, which the search opens on GitHub at the snapshot. */
-  href: string;
-  route?: string | null;
-  repoPath?: string | null;
+  /** The in-app route a rule, node or commit opens; null for a path. */
+  route: string | null;
+  /** The repo-relative path a path entry names, which the search opens on GitHub at the snapshot; null for the others. */
+  repoPath: string | null;
   /** A commit's full SHA, so a longer prefix than the label still finds it. */
   sha?: string;
 }
@@ -349,9 +349,9 @@ export interface SearchEntry {
 /** NAV-4: every rule ID, node, commit and file path the trace names, each once. */
 export function searchIndex(trace: Trace): SearchEntry[] {
   const entries: SearchEntry[] = [
-    ...trace.rules.map((rule): SearchEntry => ({ kind: 'rule', label: rule.id, detail: rule.title, href: entityUrl({ kind: 'rule', id: rule.id }) })),
-    ...trace.nodes.map((node): SearchEntry => ({ kind: 'node', label: `${node.plan}/${node.id}`, detail: node.title, href: entityUrl({ kind: 'node', plan: node.plan, node: node.id }) })),
-    ...trace.commits.map((commit): SearchEntry => ({ kind: 'sha', label: commit.short, detail: commit.subject, href: entityUrl({ kind: 'commit', sha: commit.sha }), sha: commit.sha })),
+    ...trace.rules.map((rule): SearchEntry => ({ kind: 'rule', label: rule.id, detail: rule.title, route: entityUrl({ kind: 'rule', id: rule.id }), repoPath: null })),
+    ...trace.nodes.map((node): SearchEntry => ({ kind: 'node', label: `${node.plan}/${node.id}`, detail: node.title, route: entityUrl({ kind: 'node', plan: node.plan, node: node.id }), repoPath: null })),
+    ...trace.commits.map((commit): SearchEntry => ({ kind: 'sha', label: commit.short, detail: commit.subject, route: entityUrl({ kind: 'commit', sha: commit.sha }), repoPath: null, sha: commit.sha })),
   ];
   const findingFiles = (trace.findings as { files?: string[] }[]).flatMap((finding) => finding.files ?? []);
   const paths = [
@@ -361,7 +361,7 @@ export function searchIndex(trace: Trace): SearchEntry[] {
     ...findingFiles,
   ];
   for (const path of new Set(paths)) {
-    if (typeof path === 'string' && path !== '') entries.push({ kind: 'path', label: path, detail: null, href: path });
+    if (typeof path === 'string' && path !== '') entries.push({ kind: 'path', label: path, detail: null, route: null, repoPath: path });
   }
   return entries;
 }
