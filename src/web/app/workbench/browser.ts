@@ -17,12 +17,19 @@ let logSnapshot: readonly LoggedExchange[] = [];
 const watchers = new Set<() => void>();
 const loggedFetch = loggingFetch((input, init) => fetch(input, init), requestLog);
 
+// The page keeps the newest exchanges only, so a long session cannot grow the log without bound.
+const MAX_EXCHANGES = 1000;
+// A settled exchange is copied once; every later snapshot holds that same copy.
+const settledCopies = new WeakMap<LoggedExchange, LoggedExchange>();
+
 function publish(): void {
-  // Only an exchange still waiting is copied afresh; a settled one is kept as the same object.
-  const before = logSnapshot;
-  logSnapshot = requestLog.map((entry, index) => {
-    const seen = before[index];
-    return seen !== undefined && seen.status !== null ? seen : { ...entry };
+  if (requestLog.length > MAX_EXCHANGES) requestLog.splice(0, requestLog.length - MAX_EXCHANGES);
+  logSnapshot = requestLog.map((entry) => {
+    const settled = settledCopies.get(entry);
+    if (settled !== undefined) return settled;
+    const copy = { ...entry };
+    if (entry.status !== null) settledCopies.set(entry, copy);
+    return copy;
   });
   watchers.forEach((watcher) => watcher());
 }
