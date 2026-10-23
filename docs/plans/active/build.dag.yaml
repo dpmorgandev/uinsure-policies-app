@@ -370,7 +370,7 @@ nodes:
     rules: []
     cuttable: false
     budget: null
-    status: pending
+    status: done
     attempt: 0
     branch: null
     worktree: null
@@ -380,7 +380,7 @@ nodes:
     acceptance:
       - "U4, U7, U8, U9 and U10 are merged into main and U10's rename (src/Uinsure.Policies.Web, tests/Uinsure.Policies.Web.Tests) is on main; the DAG resolves dependencies inside one plan only, so David marks this node done (docs/documentation-requirements.md §2)"
     tasks:
-      - {id: t1, role: david, step: session, layer: null, rules: [], title: "Confirm the ui plan is complete on main, then mark F6b done", status: pending}
+      - {id: t1, role: david, step: session, layer: null, rules: [], title: "Confirm the ui plan is complete on main, then mark F6b done", status: done}
   - id: F7
     title: API user guide
     kind: docs
