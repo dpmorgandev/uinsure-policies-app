@@ -1,0 +1,42 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T13:32:18Z",
+  "plan": "build",
+  "node": "F8",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a5138ae5e064610a8",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "build",
+    "node_id": "F8",
+    "attempt": 2,
+    "base_sha": "f041f019e9a55ae31055c71adf589c9a2db56d81",
+    "head_sha": "5ab3eadd1018f1b84708b6a2dd335e10dd8a553a",
+    "diff_fingerprint": "5c8cc51c2cc4cd4078596a4e0d938d2e40f8f0bc",
+    "verdict": "PASS",
+    "gate_refs": [
+      "loop.jsonl:4 gate"
+    ],
+    "rules_covered": [
+      "API3:2023",
+      "API4:2023",
+      "API6:2023",
+      "API8:2023",
+      "API9:2023",
+      "NET-secrets",
+      "NET-private-content"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Scope: docs/trace/build/F8/packet/delta-A2.patch only (round A2.2 delta re-review, kind docs). I did not read the reprinted PDF, so its content is unchecked. It is meant to match index.html, and index.html's changes are in the patch.",
+      "API3, API4, API6 and API9 are listed as covered only because the delta cannot reach them. It changes guide text in build.mjs and the generated index.html, with no DTOs, entities, limits, rate limiting, cancel or refund logic, or routes. I checked that nothing in the delta weakens them. This is a vacuous pass, not a code review of those items.",
+      "The patch prefixes the Playwright and Vitest commands with `cd src/Uinsure.Policies.Web && npx ...`. The paths are relative, with no absolute paths, no personal emails, no keys or tokens, and no private names. In index.html the && is HTML-escaped as &amp;&amp;.",
+      "The added instructions are safe. They are plain `cd` into a repo-relative directory followed by npx running the project's own locally installed playwright and vitest. They have no pipes to a shell, no downloads, no remote fetches and no sudo. The `--update-snapshots` warning callout is unchanged.",
+      "API1, API2 and API5: n/a, auth is out of scope. API7: n/a, no outbound URL fetching. API10: n/a, no upstream APIs. The .NET extras (SQL, money, packages, logging) are n/a because the delta touches no code or packages.",
+      "I found no P0, P1 or P2 issues."
+    ]
+  }
+}

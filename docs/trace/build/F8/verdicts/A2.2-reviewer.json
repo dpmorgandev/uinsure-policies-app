@@ -1,0 +1,46 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T13:32:49Z",
+  "plan": "build",
+  "node": "F8",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a4bad8d4dbf1f9302",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "build",
+    "node_id": "F8",
+    "attempt": 2,
+    "base_sha": "f041f019e9a55ae31055c71adf589c9a2db56d81",
+    "head_sha": "5ab3eadd1018f1b84708b6a2dd335e10dd8a553a",
+    "diff_fingerprint": "5c8cc51c2cc4cd4078596a4e0d938d2e40f8f0bc",
+    "verdict": "PASS",
+    "gate_refs": [
+      "docs/trace/build/F8/loop.jsonl line 4 gate.write 2026-10-23T12:34:36Z (head c60b521, exit 0). It is the only gate event in loop.jsonl and none covers 5ab3ead. This docs-only delta was judged statically."
+    ],
+    "rules_covered": [],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R14",
+        "rule_id": "MAN-5",
+        "severity": "P2",
+        "file": "docs/guides/ui/index.html",
+        "line": 33,
+        "what": "The two HTML-report lines both start with 'cd src/Uinsure.Policies.Web &&'. Pasted as one block, the second cd fails and show-report doesn't run.",
+        "why": "Each line works when run on its own from the repo root, which is what the rest of the guide assumes. So this doesn't meet the bar of a command that fails as printed. It only fails when the two lines are pasted as one block. Running each line in a subshell, or dropping the cd from the second line, would remove the trap. The same lines are in build.mjs at line 12 of the delta. The MAN-6 vitest lines are alternatives, and watch mode blocks anyway, so they don't run in sequence.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "R13 is closed. Both the Playwright and the Vitest commands now run from src/Uinsure.Policies.Web. The web project has playwright.config.ts and vite.config.ts, so '--config playwright.config.ts' and '--config vite.config.ts' now resolve.",
+      "Playwright: testDir is '../../tests/Uinsure.Policies.Web.Tests/e2e', and e2e/W1/wb-1.spec.ts exists, so the 'W1/wb-1' filter matches. The config sets no reporter, so --reporter=html writes playwright-report next to the config, in the web project. show-report run from the same directory looks there by default, so the R3 pair now works.",
+      "Vitest: test.root is resolve(dirname, '../..'), the repo root. Run from the web project, '../../tests/Uinsure.Policies.Web.Tests/unit/client/wb-1.test.ts' resolves to the repo-root path. That file exists and is inside the include glob 'tests/Uinsure.Policies.Web.Tests/unit/**', so the one-file filter matches.",
+      "npx from the web project uses the pinned local binaries in its node_modules/.bin, so the R4 binary concern stays closed.",
+      "build.mjs and index.html match: the generated HTML escapes && as &amp;&amp; inside <pre>, which is correct.",
+      "I judged only delta-A2.patch. R1-R5 were closed at A1. R6-R12 stand as PR notes under the lighter-loop ruling. R14 is P2 and doesn't reopen the node.",
+      "None of this was run. The checks are static, against the read-only U10 export."
+    ]
+  }
+}

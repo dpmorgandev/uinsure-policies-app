@@ -1,0 +1,42 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T13:27:16Z",
+  "plan": "build",
+  "node": "F8",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a70fec1d560a18008",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "build",
+    "node_id": "F8",
+    "attempt": 2,
+    "base_sha": "f041f019e9a55ae31055c71adf589c9a2db56d81",
+    "head_sha": "7caa0af3f1e1b21f6ccb249c71fa3cbb7a73425f",
+    "diff_fingerprint": "4ec51e9acce5ba5cc64b5ce80fde83802ec5a796",
+    "verdict": "PASS",
+    "gate_refs": [
+      "docs/trace/build/F8/packet/delta-A1.patch"
+    ],
+    "rules_covered": [
+      "API3:2023",
+      "API4:2023",
+      "API6:2023",
+      "API8:2023",
+      "API9:2023",
+      "NET-secrets"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Delta re-review A1.2 of docs/trace/build/F8/packet/delta-A1.patch only. It changes build.mjs and index.html. I did not open the reprinted UI_UserGuide.pdf, which is a binary.",
+      "No absolute local path, personal email, key, token or connection string is added. The only new literals are localhost ports 4170 and 5080, and src/Uinsure.Policies.Web-relative npm commands.",
+      "The added commands are safe: npm ci, run trace, run build, npm exec -- playwright and vitest, and curl against localhost. Nothing pipes a download into a shell or disables a check. The --reporter=html and --trace on flags are local-only.",
+      "API3, API4, API6 and API9 are listed as covered because the delta is docs text only. It touches no DTO, limit, refund flow, route or OpenAPI document, so there is nothing to fail. API8 is met because no configuration, secret or error-handling change is added.",
+      "API1, API2, API5, API7 and API10 are n/a: auth is out of scope, there is no outbound fetching, and the delta touches no server code.",
+      "The .NET extras (SQL, money, packages, logging) are n/a: no source files are in the delta.",
+      "kind docs, no rules. Under David's docs-node ruling only a P1 fails, and there are none."
+    ]
+  }
+}
