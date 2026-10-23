@@ -4,6 +4,8 @@
 //   launch path   the slnLaunch "API and web" profile's web DebugTarget, run from launch.json on a copy of the web
 //                 project with no node_modules: it restores packages or stops naming `npm ci`, never "Cannot find
 //                 module …vite.js" (I1)
+//   StartupCommand Docket.Web.esproj's StartupCommand, run exactly as written on such a copy with npm offline and an
+//                 empty cache: it names `npm ci` and fetches nothing from the registry (A2/I2)
 //   listen first  the dev server answers on its port while the trail compiles: /trace.json says it is compiling,
 //                 then serves the compiled trail at HEAD. The trail is the `complete` fixture with 300 extra empty
 //                 commits, so the compile takes long enough to be seen (I4)
@@ -13,6 +15,7 @@
 import { execFileSync, spawn } from 'node:child_process';
 import type { ChildProcess } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, rmdirSync, symlinkSync, unlinkSync, writeFileSync } from 'node:fs';
+import { createServer as createHttpServer } from 'node:http';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join, relative, sep } from 'node:path';
@@ -76,11 +79,11 @@ interface Running {
   stop(): Promise<void>;
 }
 
-function launch(command: string, args: string[], cwd: string, shell = false): Running {
+function launch(command: string, args: string[], cwd: string, shell = false, env: Record<string, string> = {}): Running {
   const child = spawn(command, args, {
     cwd,
     shell,
-    env: { ...process.env, DOCKET_API_PORT: '5095', BROWSER: 'none', FORCE_COLOR: '0', NO_COLOR: '1' },
+    env: { ...process.env, DOCKET_API_PORT: '5095', BROWSER: 'none', FORCE_COLOR: '0', NO_COLOR: '1', ...env },
     windowsHide: true,
   });
   let printed = '';
@@ -193,6 +196,52 @@ describe('a fresh clone F5s straight into Docket', () => {
         await running.stop();
       }
     } finally {
+      rmSync(root, { recursive: true, force: true });
+    }
+  }, SLOW);
+
+  test('DATA-1 · on a clone with no node_modules and npm offline, the esproj StartupCommand run as written names npm ci, with no registry fetch and never "Cannot find module"', async () => {
+    const esproj = readFileSync(join(webDir, 'Docket.Web.esproj'), 'utf8');
+    const command = /<StartupCommand>([^<]+)<\/StartupCommand>/.exec(esproj)?.[1]?.trim() ?? '';
+    expect(command, 'setup: Docket.Web.esproj declares a StartupCommand').not.toBe('');
+
+    // A registry that records every request and serves nothing: npm is pointed at it, so any fetch shows up here.
+    const fetched: string[] = [];
+    const registry = createHttpServer((request, response) => {
+      fetched.push(request.url ?? '');
+      response.statusCode = 503;
+      response.end();
+    });
+    await new Promise<void>((done) => registry.listen(0, '127.0.0.1', () => done()));
+    const address = registry.address();
+    const registryUrl = `http://127.0.0.1:${typeof address === 'object' && address !== null ? address.port : 0}/`;
+
+    const root = mkdtempSync(join(tmpdir(), 'docket-startup-'));
+    try {
+      const tree = copyWebTree(root);
+      expect(existsSync(join(tree, 'node_modules')), 'setup: the fresh tree has no node_modules').toBe(false);
+      // A fresh machine: an empty npm cache (so no vite an earlier npx left behind), offline, and the recording registry.
+      const running = launch(command, [], tree, true, {
+        npm_config_offline: 'true',
+        npm_config_registry: registryUrl,
+        npm_config_cache: join(root, 'npm-cache'),
+        npm_config_yes: 'true',
+        npm_config_update_notifier: 'false',
+      });
+      try {
+        await running.waitFor(/npm ci|Local:\s+http/, 60_000);
+        await running.stop();
+        const said = running.output();
+        expect(said, 'node is not left to fail on a vite.js that was never restored').not.toMatch(/Cannot find module/);
+        expect(fetched, 'nothing is fetched from the registry').toEqual([]);
+        expect(said, `npx does not go looking for vite in the registry or its cache\n${said}`).not.toMatch(/ENOTCACHED|Need to install|will be installed/);
+        expect(said, `the StartupCommand stops naming the command that restores packages\n${said}`).toContain('npm ci');
+        expect(said, 'and says where to run it').toMatch(/Uinsure\.Policies\.Web/);
+      } finally {
+        await running.stop();
+      }
+    } finally {
+      await new Promise<void>((done) => registry.close(() => done()));
       rmSync(root, { recursive: true, force: true });
     }
   }, SLOW);
