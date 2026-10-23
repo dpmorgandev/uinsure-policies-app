@@ -1,7 +1,7 @@
 {
  "stamp": {
-  "kitTree": "22b25c7d18395ba10dffc7fe14784765d3ac6941",
-  "builtAt": "2026-10-22T13:36:38Z",
+  "kitTree": "54b45adb14a5119526955d713a4592c21d821a6d",
+  "builtAt": "2026-10-23T01:06:08Z",
   "from": "src/web/kit",
   "script": ".claude/scripts/design/build-stylekit.mjs"
  },
@@ -6523,6 +6523,12 @@
        "classes": [
         "kit-top-bar__bar"
        ]
+      },
+      {
+       "tag": "header",
+       "classes": [
+        "kit-top-bar__bar"
+       ]
       }
      ]
     }
@@ -6546,6 +6552,20 @@
     {
      "tag": "div",
      "classes": [
+      "kit-search__field"
+     ],
+     "style": false
+    },
+    {
+     "tag": "div",
+     "classes": [
+      "kit-search__root"
+     ],
+     "style": false
+    },
+    {
+     "tag": "div",
+     "classes": [
       "kit-theme-toggle__options"
      ],
      "style": false
@@ -6561,6 +6581,13 @@
      "tag": "div",
      "classes": [
       "kit-top-bar__inner"
+     ],
+     "style": false
+    },
+    {
+     "tag": "div",
+     "classes": [
+      "kit-top-bar__slot"
      ],
      "style": false
     },
@@ -6595,6 +6622,13 @@
     {
      "tag": "input",
      "classes": [
+      "kit-search__input"
+     ],
+     "style": false
+    },
+    {
+     "tag": "input",
+     "classes": [
       "kit-text-input__input",
       "kit-text-input__mono"
      ],
@@ -6604,6 +6638,13 @@
      "tag": "input",
      "classes": [
       "kit-theme-toggle__input"
+     ],
+     "style": false
+    },
+    {
+     "tag": "label",
+     "classes": [
+      "kit-search__label"
      ],
      "style": false
     },
@@ -6629,9 +6670,85 @@
      "style": false
     },
     {
+     "tag": "li",
+     "classes": [
+      "kit-search__option"
+     ],
+     "style": false
+    },
+    {
+     "tag": "p",
+     "classes": [
+      "kit-search__keys"
+     ],
+     "style": false
+    },
+    {
+     "tag": "p",
+     "classes": [
+      "kit-search__srOnly"
+     ],
+     "style": false
+    },
+    {
+     "tag": "span",
+     "classes": [
+      "kit-search__detail"
+     ],
+     "style": false
+    },
+    {
+     "tag": "span",
+     "classes": [
+      "kit-search__kind"
+     ],
+     "style": false
+    },
+    {
+     "tag": "span",
+     "classes": [
+      "kit-search__name"
+     ],
+     "style": false
+    },
+    {
      "tag": "span",
      "classes": [
       "kit-theme-toggle__face"
+     ],
+     "style": false
+    },
+    {
+     "tag": "svg",
+     "classes": [
+      "kit-search__glyph",
+      "lucide",
+      "lucide-file-text"
+     ],
+     "style": false
+    },
+    {
+     "tag": "svg",
+     "classes": [
+      "kit-search__glyph",
+      "lucide",
+      "lucide-git-branch"
+     ],
+     "style": false
+    },
+    {
+     "tag": "svg",
+     "classes": [
+      "kit-search__glyph",
+      "lucide",
+      "lucide-search"
+     ],
+     "style": false
+    },
+    {
+     "tag": "ul",
+     "classes": [
+      "kit-search__list"
      ],
      "style": false
     }
@@ -10486,6 +10603,13 @@
      "style": false
     },
     {
+     "tag": "span",
+     "classes": [
+      "kit-agent-lanes__touched"
+     ],
+     "style": false
+    },
+    {
      "tag": "svg",
      "classes": [
       "kit-agent-badge__icon",
@@ -10558,6 +10682,13 @@
     {
      "tag": "td",
      "classes": [
+      "kit-agent-lanes__cellFile"
+     ],
+     "style": false
+    },
+    {
+     "tag": "td",
+     "classes": [
       "kit-agent-lanes__cellMono"
      ],
      "style": false
@@ -10587,6 +10718,14 @@
      "tag": "ul",
      "classes": [
       "kit-agent-lanes__lanes"
+     ],
+     "style": true
+    },
+    {
+     "tag": "ul",
+     "classes": [
+      "kit-agent-lanes__lanes",
+      "kit-agent-lanes__wrapped"
      ],
      "style": true
     }
