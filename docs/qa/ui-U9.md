@@ -4,7 +4,7 @@ Rule IDs: none (`rules: []`, an evidence node). The acceptance lines in `docs/pl
 contract, tagged AC1 to AC11 below. No test carries a rule tag for U9, so the Rule column reads `—`.
 Branch: feature/ui/U9   Worktree: .claude/worktrees/ui-U9
 Commit under test: a4da445, HEAD when this script was written. The work landed in 7910201 (builder), 8f23c27 and
-ec646d7 (the `Uinsure.Policies.slnx.slnLaunch` profile). Record the SHA you test in the sign-off.
+ec646d7 (the launch profile, renamed `Uinsure.Policies.slnLaunch` in round D1, the name Visual Studio reads). Record the SHA you test in the sign-off.
 Ports: Visual Studio F5 uses the profile's fixed ports, the API on 5080 and the dev server on 4170. The CLI run
 uses the node's ports, the app on 4183 and the API on 5093 (U9 is position 13 in `ui.dag.yaml`).
 
@@ -50,9 +50,9 @@ The Actual and Pass/Fail columns are empty. I wrote the steps from the files at 
 | 1 | — | `src/web` | `npm ci`, then `npm run trace` | Both exit 0. `src/web/public/trace.json` now exists (README: without it the explorer shows "trace.json could not be read") | | |
 | 2 | — | Visual Studio | Open `Uinsure.Policies.slnx`. Look at Solution Explorer | A `web` solution folder holds `Docket.Web`, loaded (not "unloaded" or "incompatible"). `src`, `tests` and the other folders are as before | | |
 | 3 | — | Visual Studio | Open the startup-project dropdown on the toolbar | A profile named **API and web** is listed. Choose it | | |
-| 4 | — | Visual Studio | Solution → Configure Startup Projects | Multiple startup projects: `Uinsure.Policies.Api` set to Start with the `http` target, `Docket.Web` set to Start, nothing else started | | |
-| 5 | — | Visual Studio | F5 | The API starts on `http://localhost:5080` and a browser opens `/health/live`, which answers healthy. A second console runs `npx vite --port 4170 --strictPort` and prints `Local: http://localhost:4170/` | | |
-| 6 | — | `http://localhost:4170/` | Open it. Then open `#/workbench/sell`, sell `QA-U9-VS` (start today, amount `365.00`, Card), DevTools Network open | The explorer overview renders from trace.json. The sell sends `POST /api/policies`, answered 201 by the API on 5080 through the dev server's proxy (the API's console logs `POST /policies`) | | |
+| 4 | — | Visual Studio | Solution → Configure Startup Projects | Multiple startup projects: `Uinsure.Policies.Api` set to Start with the `http` target, `Docket.Web` set to Start with the `localhost (Edge)` target, nothing else started | | |
+| 5 | — | Visual Studio | F5 | No "unable to launch the previously selected debugger" message. The API starts on `http://localhost:5080` and opens its own browser tab on `/health/live`, which answers healthy. A second console runs `npx vite --port 4170 --strictPort` and prints `Local: http://localhost:4170/`, and a debug browser (Edge) opens the web app on `http://localhost:4170/` | | |
+| 6 | — | `http://localhost:4170/` | Use the browser F5 opened on it. Then open `#/workbench/sell`, sell `QA-U9-VS` (start today, amount `365.00`, Card), DevTools Network open | The explorer overview renders from trace.json. The sell sends `POST /api/policies`, answered 201 by the API on 5080 through the dev server's proxy (the API's console logs `POST /policies`) | | |
 | 7 | — | Visual Studio | Stop debugging (Shift+F5) | Both the API and the Vite console stop. Nothing is left listening on 5080 or 4170 | | |
 | 8 | — | Visual Studio, then shell | Build → Rebuild Solution; then `dotnet build Uinsure.Policies.slnx -warnaserror` | The VS Output window shows `Docket.Web` skipped and no `npm` line. The CLI build ends with 0 warnings and 0 errors and prints no `npm` and no `Docket.Web` line | | |
 | 9 | — | shell | `dotnet test --solution Uinsure.Policies.slnx` | Every test passes, the same projects as before U9. No Vitest or Playwright run starts | | |
@@ -103,7 +103,7 @@ The Actual and Pass/Fail columns are empty. I wrote the steps from the files at 
 
 | # | Rule | Where | Action | Expected | Actual | Pass/Fail |
 |---|---|---|---|---|---|---|
-| 32 | — | shell | `git fetch origin; git diff --name-only origin/ui...HEAD` | Only `README.md`, `Uinsure.Policies.slnx`, `Uinsure.Policies.slnx.slnLaunch`, `infrastructure/**`, `src/web/Docket.Web.esproj`, `docs/trace/ui/U9/**`, `docs/qa/ui-U9.md` and `docs/plans/active/ui.dag.yaml`. No app runtime file under `src/web/app/` or `src/web/kit/` | | |
+| 32 | — | shell | `git fetch origin; git diff --name-only origin/ui...HEAD` | Only `README.md`, `Uinsure.Policies.slnx`, `Uinsure.Policies.slnLaunch`, `infrastructure/**`, `src/web/Docket.Web.esproj`, `src/web/.vscode/launch.json`, `tests/Uinsure.Policies.Architecture.Tests/LaunchProfileTests.cs`, `docs/trace/ui/U9/**`, `docs/qa/ui-U9.md` and `docs/plans/active/ui.dag.yaml`. No app runtime file under `src/web/app/` or `src/web/kit/` | | |
 
 ## Run commands (the node's ports)
 
