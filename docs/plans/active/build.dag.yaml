@@ -420,10 +420,10 @@ nodes:
     rules: []
     cuttable: false
     budget: null
-    status: pending
-    attempt: 0
-    branch: null
-    worktree: null
+    status: in_progress
+    attempt: 1
+    branch: feature/build/F8
+    worktree: .claude/worktrees/build-F8
     pr: null
     qa: docs/qa/build-F8.md
     trace: docs/trace/build/F8/
@@ -437,7 +437,7 @@ nodes:
       - {id: t3, role: builder, step: write, layer: null, rules: [], title: "docs/guides/ui/index.html built from the spec; UI_UserGuide.pdf printed", status: pending}
       - {id: t4, role: orchestrator, step: gates, layer: null, rules: [], title: "Links resolve, privacy scan, the PDF reprints from its HTML, question bank fully answered, full suite green", status: pending}
       - {id: t5, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
-      - {id: t6, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/build-F8.md: David follows the guide's workflows in the running app", status: pending}
+      - {id: t6, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/build-F8.md: David follows the guide's workflows in the running app", status: skipped}
       - {id: t7, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: pending}
       - {id: t8, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; completeness check passes", status: pending}
       - {id: t9, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: pending}
