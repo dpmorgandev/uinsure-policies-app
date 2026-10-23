@@ -444,7 +444,7 @@ nodes:
     cuttable: true
     budget: null
     status: in_progress
-    attempt: 1
+    attempt: 2
     branch: feature/ui/U8
     worktree: .claude/worktrees/ui-U8
     pr: null
@@ -466,8 +466,8 @@ nodes:
       - "U7's NAV-5 tour tests wait for the tour's Rule stop to name a rule before reading it: the Walkthrough test read #/rules before the trace loaded and failed 2 of 6 runs (U8 red, 2026-10-23)"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Playwright acceptance and unit tests for every U8 acceptance line … and unit tests", status: done}
-      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: pending}
-      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the U8 acceptance tests; go or change", status: pending}
+      - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No new route: the stub step confirms the app still serves every built route", status: skipped}
+      - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the U8 acceptance tests; go or change", status: skipped}
       - {id: t4, role: builder, step: green, layer: screen, rules: [], title: "The fixes for every U8 acceptance line; whole acceptance suite green … all layers", status: done}
       - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with every check green (skipped unless the gates show a need)", status: skipped}
       - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "typecheck, unit, CSS lint, Playwright e2e, axe, the regression, rule coverage, diff scope", status: done}
