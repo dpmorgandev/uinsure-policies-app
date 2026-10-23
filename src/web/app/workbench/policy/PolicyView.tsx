@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { useParams } from 'react-router';
-import { DataTable, KeyValueList, PageHeader, ProblemBanner, StatusTag, TermTimeline } from '../../../kit';
-import type { DataTableColumn, KeyValueItem, Status, TermTimelineProps } from '../../../kit';
+import { Link, useParams } from 'react-router';
+import { DataTable, KeyValueList,PageHeader, ProblemBanner, RequestLog, StatusTag, TermTimeline } from '../../../kit';
+import type { DataTableColumn, KeyValueItem, RequestLogEntry, Status, TermTimelineProps } from '../../../kit';
 import { getPolicy } from '../../data/api';
 import type { ApiAnswer, Policy, Problem } from '../../data/api';
-import { NotBuiltRegion } from '../../shell/Rung';
-import { browserDeps } from '../browser';
+import { browserDeps, useRequestLog } from '../browser';
+import { apiPathOf } from '../RequestsDrawer';
 import { ProblemView } from '../ProblemView';
 import '../workbench.css';
 
@@ -45,6 +45,11 @@ const sorted = { columnId: 'n', direction: 'ascending' } as const;
 
 const plural = (count: number, one: string, many: string): string => `${count} ${count === 1 ? one : many}`;
 
+/** The cancel screen for one policy (W2). */
+function cancelRoute(reference: string): string {
+  return `/workbench/policies/${encodeURIComponent(reference)}/cancel`;
+}
+
 function Region({ slug, req, heading, children }: { slug: string; req: string; heading: string; children: ReactNode }) {
   return (
     <section className="s-wb-region" data-region={slug} data-req={req}>
@@ -65,6 +70,7 @@ interface PolicyDetailProps {
 
 function PolicyDetail({ policy }: PolicyDetailProps) {
   const reference = policy.reference;
+  const cancelPath = cancelRoute(reference);
   const { claims, refunds, cancellation } = policy;
 
   const timelineClaims: TimelineClaim[] = claims.map((claim) => ({
@@ -149,7 +155,8 @@ function PolicyDetail({ policy }: PolicyDetailProps) {
             empty={{
               context: 'empty',
               title: `The API returned no refunds for ${reference}.`,
-              why: 'refunds is an empty list. Quoting a cancellation is not built yet.',
+              why: 'refunds is an empty list.',
+              to: { label: 'Quote a cancellation', href: `#${cancelPath}` },
             }}
           />
         </div>
@@ -164,7 +171,7 @@ function PolicyDetail({ policy }: PolicyDetailProps) {
           empty={{
             context: 'empty',
             title: `The API returned no claims for ${reference}.`,
-            why: 'claims is an empty list. A recorded claim would appear here as one numbered row. Recording a claim is not built yet.',
+            why: 'claims is an empty list. A recorded claim would appear here as one numbered row.',
           }}
         />
       </Region>
@@ -310,10 +317,22 @@ function headerOf(reference: string, answer: ApiAnswer<Policy> | null): ReactNod
 
 export function PolicyView() {
   const { reference = '' } = useParams();
+  const cancelPath = cancelRoute(reference);
   const [attempt, setAttempt] = useState(0);
   const key = `${reference}#${attempt}`;
   const [settled, setSettled] = useState<{ key: string; answer: ApiAnswer<Policy> } | null>(null);
   const answer = settled?.key === key ? settled.answer : null;
+  const log = useRequestLog();
+  // WB-7: an exchange touched this policy if its path names it, or it is the sale whose answer created it.
+  const touching: RequestLogEntry[] = log
+    .map((entry, index) => ({ n: index + 1, entry }))
+    .filter(
+      ({ entry }) =>
+        entry.path.includes(`/policies/${reference}`) ||
+        (entry.method === 'POST' && apiPathOf(entry.path) === '/policies' && (entry.responseBody ?? '').includes(`"${reference}"`)),
+    )
+    .map(({ n, entry }) => ({ n, method: entry.method, path: apiPathOf(entry.path), status: entry.status ?? 0 }))
+    .reverse();
 
   useEffect(() => {
     let current = true;
@@ -383,8 +402,25 @@ export function PolicyView() {
         />
       )}
 
-      <NotBuiltRegion region="actions-quote-and-cancel-record-a-claim-renew" name="actions: quote and cancel, record a claim, renew" />
-      <NotBuiltRegion region="requests-that-touched-this-policy" name="requests that touched this policy" />
+      <section className="s-wb-region" data-region="actions-quote-and-cancel-record-a-claim-renew" data-req="WB-4 WB-5">
+        <h2 className="s-wb-heading">Actions</h2>
+        <ul className="s-wb-list">
+          <li>
+            <Link to={cancelPath}>Quote and cancel</Link>
+          </li>
+          <li>
+            <Link to={`/workbench/policies/${encodeURIComponent(reference)}/claims/new`}>Record a claim</Link>
+          </li>
+          <li>
+            <Link to={`/workbench/policies/${encodeURIComponent(reference)}/renew`}>Renew</Link>
+          </li>
+        </ul>
+      </section>
+
+      <section className="s-wb-region" data-region="requests-that-touched-this-policy" data-req="WB-7">
+        <h2 className="s-wb-heading">Requests that touched this policy</h2>
+        <RequestLog entries={touching} headingLevel={3} />
+      </section>
     </div>
   );
 }

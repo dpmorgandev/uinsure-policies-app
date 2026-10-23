@@ -54,8 +54,8 @@ function Region({ slug, req, heading, children }: { slug: string; req: string; h
   );
 }
 
-function answerOf(quoted: Quoted | null, cancelled: CancellationResult | null, quoting: boolean): string {
-  if (cancelled) return `Cancelled on ${cancelled.cancellationDate}. The API answered 201, with a total refund of ${money(cancelled.totalRefund)}.`;
+function answerOf(quoted: Quoted | null, cancelled: CancellationResult | null, cancelStatus: number | null, quoting: boolean): string {
+  if (cancelled) return `Cancelled on ${cancelled.cancellationDate}. The API answered ${cancelStatus}, with a total refund of ${money(cancelled.totalRefund)}.`;
   if (quoting) return 'Not known yet. The quote is in flight, so no refund is shown until the API answers.';
   if (quoted) return `Cancel on ${quoted.date} and the refund quoted is ${money(quoted.quote.totalRefund)}. Nothing is cancelled yet.`;
   return 'Nothing is quoted yet. Quote a date to see the refund before anything is cancelled.';
@@ -102,6 +102,11 @@ export function CancelPolicy() {
     inFlight.current = false;
     setConfirming(false);
     setCancelling(stepOf(answer));
+    // WB-4: after a 201 the policy is read again, so the header shows the status the API holds now.
+    if (answer.kind === 'ok' && answer.status === 201) {
+      const again = await getPolicy(browserDeps(), reference);
+      if (again.kind === 'ok') setPolicy(again.value);
+    }
   }
 
   const quoteBusy = quoting.kind === 'busy';
@@ -158,7 +163,7 @@ export function CancelPolicy() {
           : { status: 'pending', label: 'Not quoted yet' },
       receipt: quoted ? (
         <p className="s-wb-note">
-          {quotePath} answered {quoting.kind === 'done' ? quoting.status : 200}, quotedOn {quoted.quote.quotedOn}.
+          {quotePath} answered {quoting.kind === 'done' ? quoting.status : ''}, quotedOn {quoted.quote.quotedOn}.
         </p>
       ) : (
         <p className="s-wb-note">Nothing quoted yet, so there is no quoted date to carry down.</p>
@@ -187,7 +192,7 @@ export function CancelPolicy() {
         : undefined,
       receipt: cancelled ? (
         <p className="s-wb-note">
-          {cancelPath} answered {cancelling.kind === 'done' ? cancelling.status : 201}, cancellationDate {cancelled.cancellationDate}.
+          {cancelPath} answered {cancelling.kind === 'done' ? cancelling.status : ''}, cancellationDate {cancelled.cancellationDate}.
         </p>
       ) : (
         <p className="s-wb-note">
@@ -219,7 +224,7 @@ export function CancelPolicy() {
           title="Quote and cancel"
           eyebrow={`Workbench · Quote and cancel · policy ${reference}`}
           question="If I cancel on the date I quoted, is the refund the one I was quoted?"
-          answer={answerOf(quoted, cancelled, quoteBusy)}
+          answer={answerOf(quoted, cancelled, cancelling.kind === 'done' ? cancelling.status : null, quoteBusy)}
           missingLabel="not returned"
           ids={[
             { label: 'Policy status', value: policy?.status, missing: 'not returned' },

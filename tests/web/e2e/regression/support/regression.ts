@@ -12,7 +12,8 @@
 // - the locale and time zone are fixed (en-GB, Europe/London), so no number or date is formatted by the machine's.
 //
 // Each test waits until its state is drawn (the snapshot's footer stamp, the theme on <html>, the fonts, the colour
-// transitions, and the state's own marker), then compares one full-page screenshot. Until the baselines are written
+// transitions, and the state's own marker), then compares one screenshot: the full page, or for a bounded state its
+// first viewport. Until the baselines are written
 // at the trace step, every test is meant to fail on its missing baseline alone; a wait above timing out is a setup
 // fault, not that failure.
 import { readFileSync } from 'node:fs';
@@ -51,6 +52,17 @@ export interface State {
   open(page: Page): Promise<void>;
   /** Resolves once the state's own content is on the page. */
   drawn(page: Page): Promise<void>;
+  /**
+   * Photographed as a bounded shot (the first viewport, 1440x900 or 390x844) rather than the full page: a state whose
+   * page runs to thousands of pixels (the activity's ~1130 records: 390x144310 px, about 5 MB, past the 5000 ms
+   * screenshot timeout at 1440). Absent, the shot is the full page.
+   */
+  bounded?: boolean;
+}
+
+/** The same state, photographed as a bounded shot: its first viewport, not its full page. */
+export function bounded(state: State): State {
+  return { ...state, bounded: true };
 }
 
 /** Every request to /api/… that no recorded answer takes is refused in the browser: no test reaches a network. */
@@ -105,6 +117,8 @@ export const fixedFormats = { locale: 'en-GB', timezoneId: 'Europe/London' } as 
 /** One regression test: its title, and what it does on a fresh page. */
 export interface Case {
   title: string;
+  /** Whether the shot is the full page (true) or bounded to the first viewport (false). */
+  fullPage: boolean;
   run(page: Page): Promise<void>;
 }
 
@@ -119,6 +133,7 @@ export function cases(screen: string, now: string, states: readonly State[]): Ca
     widths.flatMap((width) =>
       themes.map((theme) => ({
         title: `${screen} · ${state.name} ${width} ${theme}`,
+        fullPage: state.bounded !== true,
         run: async (page: Page) => {
           await page.clock.setFixedTime(new Date(now));
           await refuseUnrecordedApi(page);
@@ -128,7 +143,7 @@ export function cases(screen: string, now: string, states: readonly State[]): Ca
           await state.open(page);
           await state.drawn(page);
           await settled(page, theme);
-          await expect(page).toHaveScreenshot([screen, `${state.name}-${width}-${theme}.png`], { fullPage: true });
+          await expect(page).toHaveScreenshot([screen, `${state.name}-${width}-${theme}.png`], { fullPage: state.bounded !== true });
         },
       })),
     ),

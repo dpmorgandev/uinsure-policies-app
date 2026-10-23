@@ -1,0 +1,61 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T00:50:51Z",
+  "plan": "ui",
+  "node": "U7",
+  "attempt": 1,
+  "agent": "security",
+  "agent_id": "a460d8b2abe1eba23",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "ui",
+    "node_id": "U7",
+    "attempt": 1,
+    "base_sha": "aad3a7189ffe1192035bf043add80291deb4712a",
+    "head_sha": "e4250a95af269d620d95ab44434068e7db064193",
+    "diff_fingerprint": "39a31dfc8901043f203587036e8b6a5a9b41c758",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.integrate",
+      "gate.audit",
+      "gate.audit-dev",
+      "gate.build",
+      "gate.e2e",
+      "gate.e2e-regression",
+      "gate.green",
+      "gate.coverage",
+      "gate.scope",
+      "gate.no-stubs"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Re-review after merge e640508 (origin/ui aad3a71, W3 #105) and the re-derive at 982e30f. Against the new base the source diff is still the same four files under src/web: About.tsx, u3Routes.tsx, CancelPolicy.tsx and index.html. They match what the A1 PASS at 41ae7a3 reviewed. Everything else is tests, docs/ui/derived contracts and trace bookkeeping.",
+      "W1 met: no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( , new Function or javascript: appears in the diff's source or test files. The only hits are the earlier security verdict and activity log text quoting the grep. Under src/web the only hits are two comments in kit MarkdownText.tsx, which is not in the diff. It states that it uses no dangerouslySetInnerHTML and refuses non-http schemes. The CancelPolicy changes render the received status as JSX text.",
+      "W2 met: the About tour hrefs are internal hash routes ('#/', '#/rules', '#/rules/<encoded id>', '#/plans/<plan>/<node>/commits', '#/commits/<sha>'). The plan, node and sha segments come from trace.json, so none can start with a scheme. The diff adds no external links, so no new rel=noreferrer is needed. index.html:7 adds meta referrer=no-referrer as a blanket hardening.",
+      "W3 met: src/web/index.html:6 keeps default-src 'self' and adds base-uri 'self', form-action 'none' and object-src 'none'. It adds no external origin, script, font, image or style. style-src 'unsafe-inline' is unchanged from before this node. I read the file at head and it matches the diff, so the W3 merge did not alter it.",
+      "W4 met: the only new network call is getPolicy(browserDeps(), reference) after a 201 cancel (CancelPolicy.tsx, via src/web/app/data/api.ts to /api/...). A failed re-read is ignored. A grep of CancelPolicy.tsx finds no fetch(, absolute URL, localStorage, sessionStorage or document.cookie.",
+      "W5 met: src/web/compiler/** is not in the diff, so there is no new reach for .claude, fetch or process.env.",
+      "W6 met: no local absolute path, personal email, key or token is added in src/web, the tests or docs/ui/derived. The only email-like strings are noreply@anthropic.com commit trailers in the trace files.",
+      "W7 met: the diff does not touch src/web/package.json or the lockfile. The latest gate.audit (omit dev, at 2e6d3e2) found 0 vulnerabilities. gate.audit-dev reports only the known dev-only stylelint/braces GHSA-vfj7-8cjw-p6xm item.",
+      "W8 met: the cancel screen shows the received status and the API's own fields (cancellationDate, totalRefund) as text. It adds no stack trace or exception text. A failed re-read leaves the earlier policy in place and shows no error content.",
+      "API8:2023 met via W3 and W4. API10:2023 met via W1 and W8: API answers (status, refund, cancellationDate) render as text.",
+      "Gate evidence: gate.integrate at 982e30f (after the W3 merge and re-derive) shows unit 1387/1387 and e2e 792/792 passed. The d7489cb gate.e2e-regression and gate.coverage failures were superseded by passes at 2e6d3e2. Neither bears on security. The gate.audit events were last run at 2e6d3e2, before the merge. The merge did not touch src/web/package.json in this diff, so I did not treat that as a gap.",
+      "n/a, ui node, no server code: API1:2023, API2:2023, API3:2023, API4:2023, API5:2023, API6:2023, API7:2023, API9:2023. API1, API2 and API5 are also out of scope by the skill's checklist (no auth, tenancy or roles). The .NET extras (SQL, money, packages, secrets, logging) do not apply: the diff has no src/*.cs change and the W checklist replaces them.",
+      "Not a finding: the CSP is a meta tag, so frame-ancestors cannot be set that way. A real response header would be hardening if the app is ever hosted beyond the explorer."
+    ]
+  }
+}

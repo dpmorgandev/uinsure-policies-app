@@ -1,0 +1,96 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T00:27:47Z",
+  "plan": "ui",
+  "node": "U7",
+  "attempt": 1,
+  "agent": "reviewer",
+  "agent_id": "ad3367e15e74ece5f",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "ui",
+    "node_id": "U7",
+    "attempt": 1,
+    "base_sha": "209fd0aa2f16cef6aed8be921f9d57061da58a06",
+    "head_sha": "b1550f42cceca2cefd8600f277a659bf9e966b48",
+    "diff_fingerprint": "d0ebe1709d64fce906022d7c9de2fc35f3cbc190",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.red@d7b3b7a (loop.jsonl:3)",
+      "steer(D1,pause1) (loop.jsonl:4)",
+      "gate.red@f0e8787 (loop.jsonl:5)",
+      "gate.typecheck@d7489cb",
+      "gate.lint@d7489cb",
+      "gate.lint-css@d7489cb",
+      "gate.test@d7489cb",
+      "gate.build@d7489cb",
+      "gate.e2e@d7489cb",
+      "gate.e2e-regression@d7489cb (exit 1, baselines not yet written)",
+      "gate.coverage@d7489cb (exit 1, trail incomplete, reconciled loop.jsonl:18-27)",
+      "gate.scope@d7489cb",
+      "gate.no-stubs@d7489cb",
+      "gate.green@8845f75 (loop.jsonl:28)",
+      "gate.typecheck@2e6d3e2",
+      "gate.lint@2e6d3e2",
+      "gate.lint-css@2e6d3e2",
+      "gate.test@2e6d3e2",
+      "gate.build@2e6d3e2",
+      "gate.e2e@2e6d3e2",
+      "gate.e2e-regression@2e6d3e2",
+      "gate.audit@2e6d3e2",
+      "gate.audit-dev@2e6d3e2",
+      "gate.coverage@2e6d3e2",
+      "gate.scope@2e6d3e2",
+      "gate.no-stubs@2e6d3e2"
+    ],
+    "rules_covered": [
+      "SEC-1",
+      "NAV-5",
+      "DAG-1",
+      "HONEST-1",
+      "WB-4"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "HONEST-1",
+        "severity": "P2",
+        "file": "tests/web/e2e/regression/activity.spec.ts",
+        "line": 13,
+        "what": "The bounded populated-390 baseline holds only the header and a not-built box, with no activity record, so at 390 a change to the records can't be caught.",
+        "why": "Acceptance line 2 asks for a bounded shot, and that is met. But docs/ui/baselines/activity/populated-390-{light,dark}.png end above the 'Every line as text' table, so the populated state at 390 looks like any other state at the fold. web-testing: a regression spec photographs the state on fixed data. At 1440 the first rows are in the shot; at 390 none are.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "WB-4",
+        "severity": "P2",
+        "file": "src/web/app/workbench/cancel/CancelPolicy.tsx",
+        "line": 108,
+        "what": "If the WB-4 re-read after a 201 fails, nothing is shown: the header keeps the status from before the cancel, with no label, beside 'Cancelled on'.",
+        "why": "Acceptance line 5: after a 201 the header status is 'the one the API holds now'. HONEST-1: no status shown that isn't the data's. When `again.kind !== 'ok'` the stale policy.status stays on screen as if it were current. This is rare (the API answered the POST a moment before), so it doesn't block.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "HONEST-1",
+        "severity": "P2",
+        "file": "src/web/app/workbench/cancel/CancelPolicy.tsx",
+        "line": 166,
+        "what": "The `: ''` status fallbacks at lines 166 and 195 can't be reached. If they were, they would print 'answered , quotedOn' instead of the missing label.",
+        "why": "code-quality slop list: dead branches. react-web HONEST-1: a value the data doesn't hold renders as the kit's empty or not-returned state, never a blank in a sentence. quoted and cancelled are set only with a 'done' step, so today this is cosmetic only.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "HEAD moved while I was reviewing. I read the code at 41ae7a3; the verdict names b1550f4. According to the coordinator, the commits after 41ae7a3 are only the QA tester's QA script and trace bookkeeping. I didn't inspect them myself. The hook accepts diff_fingerprint d0ebe17 unchanged, which agrees with that: nothing moved in src/ or tests/. I wrote and changed nothing in this review.",
+      "Rules-less node: the contract is the 8 U7 acceptance lines (ui.dag.yaml:418-425, line 1 amended at f4a2af1). All 8 are met at the code I reviewed. SEC-1: index.html has a no-referrer meta and CSP base-uri 'self', form-action 'none', object-src 'none'. Activity: a bounded populated shot, and all 8 activity baselines are present. HONEST-1: the cancel status is read from the step, with no literal 200/201. WB-4: getPolicy is called again after a 201 and the header is updated. NAV-5: rule, home node and red commit come from one rule (About.tsx:94-98), and TraceCommit.rule is string[], so includes() is an exact match. DAG-1: the duplicate in u3Routes was removed, and u2Routes:8 is now the only plans/:planId.",
+      "TDD order: the red commits 4bb77b1, 7d6db67, 9f2a4a9, 864df0d, 53e75e8 and f0e8787 all come before green d7489cb. The stub (t2) and pause 1 (t3) are recorded as skipped in the DAG, so there is no gate.stub receipt. gate.red@d7b3b7a shows the 12 U7 e2e tests and both DAG-1 unit tests failing on assertions, not setup.",
+      "The SEC-1 per-link rel tests from red 4bb77b1 (5 to 2) were replaced before any green, under steer(D1,pause1), with a new red receipt at f0e8787. I judged this a pause-1 change to the acceptance, not a test weakened after red. The per-link rel=noreferrer line is carried to a kit-gap node (D1 I1). The react-web skill's SEC-1 bullet still states the per-link form until that lands.",
+      "The tests are stub-proof. HONEST-1 sends the API's 201 to the page as 200 and asserts 'answered 200' and not 'answered 201'. WB-4 asserts that a GET follows the POST and that the header equals the API's status read back afterwards. NAV-5 pins literal targets (SELL-1, build/F1, c2). DAG-1 reads App's element tree, not source text.",
+      "The last gate receipts are at 2e6d3e2, where every gate passed (e2e 9/9, regression 153/153, unit 325/325, coverage OK, no-stubs none). There are no receipts for 41ae7a3 or b1550f4."
+    ]
+  }
+}
