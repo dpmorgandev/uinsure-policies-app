@@ -87,7 +87,7 @@ const explorer = [
     [["Open <code>#/rules</code>.", "Filters (marker 1) above the matrix table (marker 2)."], ["Filter by status or feature.", "The table narrows."], ["Select a rule chip.", "The rule page opens."]]],
   ["rule", "One rule", "#/rules/CANCEL-1b", `${R}/rule/Rule.tsx`, 309, "What did this rule say, and what proves it?",
     "A rule from its agreed text to its tests, commits and verdicts: the rule's evidence.",
-    [["Open <code>#/rules/CANCEL-1b</code>, or type the id in the search box.", "The rule text and agreed interpretation (marker 1)."], ["Read the red-before-green evidence.", "The red commit comes before the green one (marker 2)."], ["Follow a commit link.", "The commit page opens."]]],
+    [["Open <code>#/rules/CANCEL-1b</code>, or type the id in the search box.", "The rule text and agreed interpretation (marker 1)."], ["Read the red-before-green evidence.", "The red commit comes before the green one."], ["Follow a commit link.", "The commit page opens."]]],
   ["plan", "A plan", "#/plans/build", `${R}/plan/Plan.tsx`, 32, "What was built, in what order?",
     "A plan's header, approval and node graph with its table.",
     [["Open <code>#/plans/build</code> through the Plan nav item.", "Plan header, status and approval (marker 1)."], ["Read the node graph.", "Dependencies between nodes."], ["Select a node.", "The node page opens."]]],
@@ -205,9 +205,9 @@ const s1 = section("s1", "1. What Docket is", "Docket is one app with two halves
 const s2 = section("s2", "2. Run it", "Build once, preview it, and point <code>/api</code> at the API.",
   "The static build is served by <code>vite preview</code>; the workbench calls <code>/api/...</code> and the app proxies it to the API port in <code>DOCKET_API_PORT</code> (default 5080). The dev server does the same on port 4170, which is what the Visual Studio launch profile starts beside the API.",
   steps([
-    ["Install and build the app.", "A <code>dist</code> folder.", ["npm --prefix src/Uinsure.Policies.Web ci\nnpm --prefix src/Uinsure.Policies.Web run build", "(not captured in this short form)"]],
+    ["Install and build the app.", "A <code>dist</code> folder.", ["npm --prefix src/Uinsure.Policies.Web ci\nnpm --prefix src/Uinsure.Policies.Web run trace\nnpm --prefix src/Uinsure.Policies.Web run build", "(not captured in this short form)"]],
     ["Start the API (its http profile is port 5080), then preview the app.", "The preview serves the app.", ["dotnet run --project src/Uinsure.Policies.Api --launch-profile http\nDOCKET_API_PORT=5080 npm --prefix src/Uinsure.Policies.Web run preview -- --port 4170", "(not captured: the guide's screenshots came from a copy already running with the app on port 4186 and the API on 5096)"]],
-    ["Check both answer.", "HTTP 200 from each, captured from that running copy.", [`curl -s -o /dev/null -w "%{http_code}\\n" http://localhost:4186/\ncurl -s -o /dev/null -w "%{http_code}\\n" http://localhost:5096/health/live`, outputs.health]],
+    ["Check both answer.", "HTTP 200 from each, captured from that running copy.", [`curl -s -o /dev/null -w "%{http_code}\\n" http://localhost:4170/\ncurl -s -o /dev/null -w "%{http_code}\\n" http://localhost:5080/health/live`, outputs.health]],
     ["Open <code>http://localhost:4170/#/</code>.", "The Overview. The workbench is at <code>#/workbench</code>."],
     ["Or use Visual Studio: open <code>Uinsure.Policies.slnx</code> and start the \"API and web\" profile.", "Both start; the dev server's <code>/api</code> proxy defaults to port 5080."],
   ]) +
@@ -308,17 +308,17 @@ const s8 = section("s8", "8. Run the tests yourself", "Postman for the API's req
     ["Read the results.", "Each test name starts with its rule id."],
   ]) +
   `<h3>Postman CLI (MAN-2)</h3>` + steps([
-    ["Run one folder against the running API (the base URL is overridden here to the API port in use).", "A summary table.", ["postman collection run tests/postman/Uinsure.Policies.postman_collection.json -e tests/postman/local.postman_environment.json --env-var baseUrl=http://localhost:5096 -i \"F2 Retrieve\"", outputs.postman]],
+    ["Run one folder against the running API (the base URL is overridden here to the API port in use).", "A summary table.", ["postman collection run tests/postman/Uinsure.Policies.postman_collection.json -e tests/postman/local.postman_environment.json --env-var baseUrl=http://localhost:5080 -i \"F2 Retrieve\"", outputs.postman]],
   ]) +
   `<h3>Playwright (MAN-5)</h3>` + steps([
-    ["Install the browser once.", "Chromium downloaded.", ["npx playwright install chromium", "(not run in this short form)"]],
+    ["Install the browser once.", "Chromium downloaded.", ["npm --prefix src/Uinsure.Policies.Web exec -- playwright install chromium", "(not run in this short form)"]],
     ["Run everything: it builds, starts the app and uses its own API.", "Specs pass.", ["npm --prefix src/Uinsure.Policies.Web run e2e", "(not run in this short form)"]],
-    ["Run one spec or one test by title, rule id or screen name; use <code>--ui</code> for UI mode, <code>--headed</code> or <code>--debug</code> to watch.", "The matching tests only.", ["npx playwright test --config src/Uinsure.Policies.Web/playwright.config.ts W1/wb-1 -g \"WB-1\"", "(not run in this short form)"]],
-    ["Open the report and traces.", "The HTML report; a trace opens in the trace viewer.", ["npx playwright show-report", "(not run in this short form)"]],
+    ["Run one spec or one test by title, rule id or screen name; use <code>--ui</code> for UI mode, <code>--headed</code> or <code>--debug</code> to watch.", "The matching tests only.", ["npm --prefix src/Uinsure.Policies.Web exec -- playwright test --config playwright.config.ts W1/wb-1 -g \"WB-1\"", "(not run in this short form)"]],
+    ["Run with the HTML reporter and traces on the command line (the config itself uses the list reporter), then open the report.", "The HTML report opens in the browser.", ["npm --prefix src/Uinsure.Policies.Web exec -- playwright test --config playwright.config.ts --reporter=html --trace on\nnpm --prefix src/Uinsure.Policies.Web exec -- playwright show-report","(not run in this short form)"]],
   ]) +
   `<div class="callout warn"><span class="label">Visual regression</span> The baselines are Windows renders in <code>docs/ui/baselines</code>, so the regression folder is skipped on Linux. Update them only deliberately, with <code>--update-snapshots</code>, after a signed-off design change, never to silence a failure. See <a href="../../../src/Uinsure.Policies.Web/playwright.config.ts#L9">src/Uinsure.Policies.Web/playwright.config.ts:9</a>.</div>` +
   `<h3>Vitest (MAN-6)</h3>` + steps([
-    ["Run the unit tests once, in watch mode, or for one file.", "A pass count.", ["npm --prefix src/Uinsure.Policies.Web run test\nnpx vitest --config src/Uinsure.Policies.Web/vite.config.ts\nnpx vitest run --config src/Uinsure.Policies.Web/vite.config.ts tests/Uinsure.Policies.Web.Tests/unit/client/wb-1.test.ts", "(not run in this short form)"]],
+    ["Run the unit tests once, in watch mode, or for one file.", "A pass count.", ["npm --prefix src/Uinsure.Policies.Web run test\nnpm --prefix src/Uinsure.Policies.Web exec -- vitest --config vite.config.ts\nnpm --prefix src/Uinsure.Policies.Web exec -- vitest run --config vite.config.ts ../../tests/Uinsure.Policies.Web.Tests/unit/client/wb-1.test.ts", "(not run in this short form)"]],
   ]) +
   `<h3>Every runner (MAN-7)</h3><table><thead><tr><th>Runner</th><th>Tests</th><th>Use when</th><th>Command or click</th><th>Needs running</th><th>Time</th></tr></thead><tbody>
 <tr><td>Postman app</td><td>The API's requests, by rule</td><td>Exploring</td><td>Collection Runner</td><td>API on 5080</td><td>Not measured</td></tr>
@@ -346,7 +346,7 @@ const s10 = section("s10", "10. Troubleshooting", "Most problems are a missing A
 <tr><td>The workbench says no response was read</td><td>The API is not running, or <code>DOCKET_API_PORT</code> names the wrong port</td><td>Start the API; set <code>DOCKET_API_PORT</code> to its port and restart the preview</td></tr>
 <tr><td>Explorer screens say data is not available</td><td><code>trace.json</code> was not compiled</td><td><code>npm --prefix src/Uinsure.Policies.Web run trace</code>, then rebuild</td></tr>
 <tr><td>Port 4170 in use</td><td>The dev server uses <code>--strictPort</code></td><td>Stop the other process or pass another <code>--port</code></td></tr>
-<tr><td>Playwright says the browser is missing</td><td>Chromium not installed</td><td><code>npx playwright install chromium</code></td></tr>
+<tr><td>Playwright says the browser is missing</td><td>Chromium not installed</td><td><code>npm --prefix src/Uinsure.Policies.Web exec -- playwright install chromium</code></td></tr>
 <tr><td>Visual regression fails on Linux or macOS</td><td>Baselines are Windows renders; Linux skips the folder</td><td>Run on Windows; update baselines only deliberately</td></tr>
 <tr><td>Renew answers 422 on a new policy</td><td>RENEW-1 and RENEW-2: the window opens 30 days before the end date</td><td>Expected; renew inside the window</td></tr>
 <tr><td>A sell answers 409</td><td>SELL-1: the reference exists (case-insensitive)</td><td>Use a new reference</td></tr>
