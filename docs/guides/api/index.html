@@ -67,7 +67,7 @@
     </table>
     <p>The rules and their agreed interpretations are written in <code>docs/requirements.md</code>, one row per ID, and the controller that serves the six routes is a single class.</p>
     <div class="extract">
-      <a class="ref" href="src/Uinsure.Policies.Api/Controllers/PoliciesController.cs:13">src/Uinsure.Policies.Api/Controllers/PoliciesController.cs:13</a>
+      <a class="ref" href="../../../src/Uinsure.Policies.Api/Controllers/PoliciesController.cs#L13">src/Uinsure.Policies.Api/Controllers/PoliciesController.cs:13</a>
 <pre>[ApiController]
 [Route("policies")]
 public sealed class PoliciesController(IPolicyService service) : ControllerBase
@@ -78,7 +78,7 @@ public sealed class PoliciesController(IPolicyService service) : ControllerBase
     </div>
 
     <h3>Where the brief was unclear</h3>
-    <p>The full list is the assumptions section of the README (<a class="ref" href="README.md:151">README.md:151</a>). The ones that change what you see:</p>
+    <p>The full list is the assumptions section of the README (<a class="ref" href="../../../README.md#L151">README.md:151</a>). The ones that change what you see:</p>
     <table>
       <thead><tr><th>Question in the brief</th><th>Taken as</th><th>Rule</th></tr></thead>
       <tbody>
@@ -124,7 +124,7 @@ public sealed class PoliciesController(IPolicyService service) : ControllerBase
       <li class="step">Check the SDK. <code>global.json</code> pins <code>10.0.100</code> with <code>rollForward</code> set to <code>latestFeature</code>, so any 10.0.1xx or later feature band works.
         <pre>dotnet --version</pre>
         <div class="see">The installed version, here:</div>
-        <pre class="output">10.0.402</pre>
+        <pre class="output" data-receipt="R1">10.0.402</pre>
       </li>
       <li class="step">Build with warnings as errors, as the pre-commit hook does.
         <pre>dotnet build Uinsure.Policies.slnx -warnaserror</pre>
@@ -133,28 +133,35 @@ public sealed class PoliciesController(IPolicyService service) : ControllerBase
     0 Warning(s)
     0 Error(s)
 
-Time Elapsed 00:00:12.14</pre>
+Time Elapsed 00:00:03.22</pre>
       </li>
       <li class="step">Run the API on port 5080 with the <code>http</code> launch profile (Development, so SQLite).
         <pre>dotnet run --project src/Uinsure.Policies.Api --launch-profile http</pre>
         <div class="see">The start-up lines:</div>
         <pre class="output">      Now listening on: http://localhost:5080
-info: Microsoft.Hosting.Lifetime[0]
       Application started. Press Ctrl+C to shut down.
-info: Microsoft.Hosting.Lifetime[0]
-      Hosting environment: Development</pre>
+      Hosting environment: Development
+      Content root path: &lt;repo&gt;\src\Uinsure.Policies.Api</pre>
       </li>
-      <li class="step">Check health from a second terminal. <code>/health/live</code> runs no checks. <code>/health/ready</code> runs the checks tagged <code>ready</code>, which here is the database.
-        <pre>curl -s -ihttp://localhost:5080/health/live
+    </ol>
+
+    <h3>Check that it is up</h3>
+    <p>The commands in this guide are for a POSIX shell: Git Bash on Windows, or bash or zsh elsewhere. In PowerShell, <code>curl</code> is an alias for a different command, so use <code>curl.exe</code> and change the quoting. Open a second terminal for these.</p>
+    <ol class="steps">
+      <li class="step">Check health. Port 5080 is the API. <code>/health/live</code> runs no checks. <code>/health/ready</code> runs the checks tagged <code>ready</code>, which here is the database.
+        <pre>curl -s -i http://localhost:5080/health/live
 curl -s -i http://localhost:5080/health/ready</pre>
         <div class="see">Both answer 200 with a plain-text body:</div>
-        <pre class="output">HTTP/1.1 200 OK
+        <pre class="output" data-receipt="H1">HTTP/1.1 200 OK
 Content-Type: text/plain
+Cache-Control: no-store, no-cache
+Expires: Thu, 01 Jan 1970 00:00:00 GMT
+Pragma: no-cache
 
 Healthy</pre>
       </li>
-      <li class="step">Open the API description. In Development only, OpenAPI is at <code>/openapi/v1.json</code> and the Scalar page at <code>/scalar</code>. Both answered 200 in the run.
-        <pre>curl -s -i http://localhost:5080/openapi/v1.json -o /dev/null -w "openapi status %{http_code}\n"
+      <li class="step">Open the API description. In Development only, OpenAPI is at <code>/openapi/v1.json</code> and the Scalar page at <code>/scalar/v1</code>. Both answered 200 in the run.
+        <pre>curl -s -o /dev/null -w "openapi status %{http_code}\n" http://localhost:5080/openapi/v1.json
 curl -s -o /dev/null -w "scalar status %{http_code}\n" http://localhost:5080/scalar/v1</pre>
         <div class="see">The run printed:</div>
         <pre class="output">openapi status 200
@@ -165,7 +172,7 @@ scalar status 200</pre>
     <h3>The SQLite and SQL Server switch</h3>
     <p>One <code>PoliciesDbContext</code> serves both. <code>Database:Provider</code> (<code>Sqlite</code> or <code>SqlServer</code>) chooses the provider and <code>ConnectionStrings:Policies</code> holds the connection. The development file sets SQLite and a database file per checkout (<code>policies.development.db</code>, ignored by git).</p>
     <div class="extract">
-      <a class="ref" href="src/Uinsure.Policies.Persistence/PersistenceServiceCollectionExtensions.cs:18">src/Uinsure.Policies.Persistence/PersistenceServiceCollectionExtensions.cs:18</a>
+      <a class="ref" href="../../../src/Uinsure.Policies.Persistence/PersistenceServiceCollectionExtensions.cs#L18">src/Uinsure.Policies.Persistence/PersistenceServiceCollectionExtensions.cs:18</a>
 <pre>        services.AddDbContext&lt;PoliciesDbContext&gt;((serviceProvider, options) =&gt;
         {
             var connectionString = configuration.GetConnectionString("Policies");
@@ -180,7 +187,7 @@ scalar status 200</pre>
     <div class="callout warn"><span class="label">No SQL Server here</span> No test runs against SQL Server, and this guide ran none. What is shown for it is the configuration above and the generated migration script below.</div>
 
     <h3>Migrations</h3>
-    <p>With SQLite, the schema is created from the model at start-up (<code>EnsureCreated</code>, <a class="ref" href="src/Uinsure.Policies.Persistence/PersistenceServiceCollectionExtensions.cs:37">src/Uinsure.Policies.Persistence/PersistenceServiceCollectionExtensions.cs:37</a>). The app never calls <code>Migrate()</code>. The migration, <code>InitialCreate</code>, is for SQL Server only and is applied by the pipeline as a script.</p>
+    <p>With SQLite, the schema is created from the model at start-up (<code>EnsureCreated</code>, <a class="ref" href="../../../src/Uinsure.Policies.Persistence/PersistenceServiceCollectionExtensions.cs#L37">src/Uinsure.Policies.Persistence/PersistenceServiceCollectionExtensions.cs:37</a>). The app never calls <code>Migrate()</code>. The migration, <code>InitialCreate</code>, is for SQL Server only and is applied by the pipeline as a script.</p>
     <ol class="steps">
       <li class="step">Generate the idempotent script, as the pre-push hook does.
         <pre>dotnet ef migrations script --idempotent --project src/Uinsure.Policies.Persistence --startup-project src/Uinsure.Policies.Api -o migrate.sql</pre>
@@ -230,46 +237,48 @@ GO</pre>
 <section id="s3">
   <h2>3. Use it, endpoint by endpoint</h2>
   <p class="headline">Six routes under <code>/policies</code>. Every failure is a problem body that names the rule broken.</p>
-  <p class="summary">The examples below were sent with <code>curl</code> to the API started in section 2, on 2026-10-23, so "today" is 2026-10-23. Each endpoint gives the request, the response, its failures, and the Postman request that does the same. A <code>…</code> inside a command or an output marks text left out of this page; the full text is in <code>receipts.md</code>. The sale of GUIDE-002 (1,200.00, Direct Debit, starting today) is in R5b there.</p>
+  <p class="summary">The examples below were sent with <code>curl</code> to the API started in section 2, on 2026-10-23, so "today" is 2026-10-23. Each endpoint gives the request, the response, its failures, and the Postman request that does the same. A <code>…</code> inside a command or an output marks text left out of this page; the full text is in <code>receipts.md</code>. Run the sections in order: the later steps use the policies the earlier ones create.</p>
   <details class="depth" open><summary>In depth</summary>
 
     <h3>Sell a policy</h3>
     <p><span class="chip">SELL-1</span> to <span class="chip">SELL-7</span>. <code>POST /policies</code> takes the reference you choose, the type (<code>Household</code> or <code>BuyToLet</code>), the start date, the amount, <code>autoRenew</code>, the payment method (<code>Card</code>, <code>DirectDebit</code>, <code>Cheque</code>), one to three policyholders and the property. The end date is calculated.</p>
     <ol class="steps">
       <li class="step">Sell a policy that starts 2026-11-01.
-        <pre>curl -s -i-X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '{"reference":"GUIDE-001","type":"Household","startDate":"2026-11-01","amount":803.40,"autoRenew":true,"paymentMethod":"Card","policyholders":[{"firstName":"Ada","lastName":"Lovelace","dateOfBirth":"1985-12-10"}],"property":{"addressLine1":"1 Example Street","addressLine2":"Exampleton","postcode":"EX1 1AA"}}'</pre>
+        <pre>curl -s -i -X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '{"reference":"GUIDE-001","type":"Household","startDate":"2026-11-01","amount":803.40,"autoRenew":true,"paymentMethod":"Card","policyholders":[{"firstName":"Ada","lastName":"Lovelace","dateOfBirth":"1985-12-10"}],"property":{"addressLine1":"1 Example Street","addressLine2":"Exampleton","postcode":"EX1 1AA"}}'</pre>
         <div class="see">201 with a <code>Location</code> header and the whole policy. The end date, the term and the payment were calculated.</div>
-        <pre class="output">HTTP/1.1 201 Created
+        <pre class="output" data-receipt="C01">HTTP/1.1 201 Created
 Content-Type: application/json; charset=utf-8
 Location: /policies/GUIDE-001
 
-{"reference":"GUIDE-001","type":"Household","status":"Pending","currentTermNumber":1,"startDate":"2026-11-01","endDate":"2027-10-31","amount":803.40,"hasClaims":false,"autoRenew":true,"policyholders":[{"firstName":"Ada","lastName":"Lovelace","dateOfBirth":"1985-12-10"}],"property":{"addressLine1":"1 Example Street","addressLine2":"Exampleton","addressLine3":null,"postcode":"EX1 1AA"},"terms":[{"termNumber":1,"startDate":"2026-11-01","endDate":"2027-10-31","amount":803.40,"paymentReference":"PAY-180270d7cc1c4bd7ba00e24de5b00b1b"}],"payments":[{"reference":"PAY-180270d7cc1c4bd7ba00e24de5b00b1b","type":"Card","amount":803.40}],"refunds":[],"claims":[],"cancellation":null}</pre>
+{"reference":"GUIDE-001","type":"Household","status":"Pending","currentTermNumber":1,"startDate":"2026-11-01","endDate":"2027-10-31","amount":803.40,"hasClaims":false,"autoRenew":true,"policyholders":[{"firstName":"Ada","lastName":"Lovelace","dateOfBirth":"1985-12-10"}],"property":{"addressLine1":"1 Example Street","addressLine2":"Exampleton","addressLine3":null,"postcode":"EX1 1AA"},"terms":[{"termNumber":1,"startDate":"2026-11-01","endDate":"2027-10-31","amount":803.40,"paymentReference":"PAY-3097e50a8db548459a30f7565f15e490"}],"payments":[{"reference":"PAY-3097e50a8db548459a30f7565f15e490","type":"Card","amount":803.40}],"refunds":[],"claims":[],"cancellation":null}</pre>
       </li>
       <li class="step">Send the same reference again.
-        <pre>curl -s -i-X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '…the same body…'</pre>
+        <pre>curl -s -i -X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '…the same body…'</pre>
         <div class="see">409: <span class="chip">SELL-1</span>. A 409 is returned alone, before any 422 rule is looked at.</div>
-        <pre class="output">HTTP/1.1 409 Conflict
+        <pre class="output" data-receipt="F01">HTTP/1.1 409 Conflict
 Content-Type: application/problem+json; charset=utf-8
 
-{"type":"/problems/sell-1","title":"Policy reference already exists","status":409,"detail":"A policy with reference 'GUIDE-001' already exists.","instance":"/policies","traceId":"00-35dbb41576bf3a12eb853c86d9b85070-a4bbb08391adcac3-00","ruleId":"SELL-1","reference":"GUIDE-001"}</pre>
+{"type":"/problems/sell-1","title":"Policy reference already exists","status":409,"detail":"A policy with reference 'GUIDE-001' already exists.","instance":"/policies","traceId":"00-91d2bcb7ac25f9cf4fc1f04a1dbf689a-2f45dea6f9ebeaf5-00","ruleId":"SELL-1","reference":"GUIDE-001"}</pre>
       </li>
       <li class="step">Send a sale with the start date in the past and an amount of 0.
-        <pre>curl -s -i-X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '{"reference":"GUIDE-003","type":"Household","startDate":"2026-10-01","amount":0,…}'</pre>
+        <pre>curl -s -i -X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '{"reference":"GUIDE-003","type":"Household","startDate":"2026-10-01","amount":0,…}'</pre>
         <div class="see">422 with <em>both</em> broken rules in <code>violations[]</code>. <code>ruleId</code> is the first of them in requirements order.</div>
-        <pre class="output">HTTP/1.1 422 Unprocessable Entity
+        <pre class="output" data-receipt="F02">HTTP/1.1 422 Unprocessable Entity
 Content-Type: application/problem+json; charset=utf-8
 
-{"type":"/problems/sell-2","title":"Start date outside the sale window","status":422,"detail":"2 rules failed.","instance":"/policies","traceId":"00-247ad89a1cb98197b9d4db31f6821a2d-0d65be4b8c3254f6-00","ruleId":"SELL-2","violations":[{"ruleId":"SELL-2","detail":"The start date must be between 2026-10-23 and 2026-12-22."},{"ruleId":"SELL-7","detail":"The policy amount must be greater than 0."}]}</pre>
+{"type":"/problems/sell-2","title":"Start date outside the sale window","status":422,"detail":"2 rules failed.","instance":"/policies","traceId":"00-ae4c0ef28ad55e1fe676f5d306edc8f4-c63f419321bfdf33-00","ruleId":"SELL-2","violations":[{"ruleId":"SELL-2","detail":"The start date must be between 2026-10-23 and 2026-12-22."},{"ruleId":"SELL-7","detail":"The policy amount must be greater than 0."}]}</pre>
       </li>
       <li class="step">Send a body with only <code>{"reference":"GU"}</code>.
-        <pre>curl -s -i-X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '{"reference":"GU"}'</pre>
+        <pre>curl -s -i -X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '{"reference":"GU"}'</pre>
         <div class="see">400: a shape error. It has an <code>errors</code> map and no <code>ruleId</code>.</div>
-        <pre class="output">HTTP/1.1 400 Bad Request
+        <pre class="output" data-receipt="F03">HTTP/1.1 400 Bad Request
 Content-Type: application/problem+json; charset=utf-8
 
-{"type":"https://tools.ietf.org/html/rfc9110#section-15.5.1","title":"One or more validation errors occurred.","status":400,"instance":"/policies","errors":{"type":["The Type field is required."],"amount":["The Amount field is required."],"property":["The Property field is required."],"autoRenew":["The AutoRenew field is required."],"startDate":["The StartDate field is required."],"paymentMethod":["The PaymentMethod field is required."],"policyholders":["The Policyholders field is required."]},"traceId":"00-a5eb6750da9764cda9cbdbd1bc236837-14df225b286f368b-00"}</pre>
+{"type":"https://tools.ietf.org/html/rfc9110#section-15.5.1","title":"One or more validation errors occurred.","status":400,"instance":"/policies","errors":{"type":["The Type field is required."],"amount":["The Amount field is required."],"property":["The Property field is required."],"autoRenew":["The AutoRenew field is required."],"startDate":["The StartDate field is required."],"paymentMethod":["The PaymentMethod field is required."],"policyholders":["The Policyholders field is required."]},"traceId":"00-e32452ddfd4cc23700224f35dde2abbd-03e4a11a2900ca04-00"}</pre>
       </li>
     </ol>
+    <p>The later steps also use a second policy, GUIDE-002 (1,200.00 by Direct Debit, auto-renew off), that starts today. Sell it now. It answers 201 with the same shape as the first sale.</p>
+    <pre>curl -s -i -X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '{"reference":"GUIDE-002","type":"BuyToLet","startDate":"2026-10-23","amount":1200.00,"autoRenew":false,"paymentMethod":"DirectDebit","policyholders":[{"firstName":"Grace","lastName":"Hopper","dateOfBirth":"1990-12-09"}],"property":{"addressLine1":"2 Sample Road","postcode":"EX2 2BB"}}'</pre>
     <table>
       <thead><tr><th>Failure</th><th>Status</th><th>Rule</th></tr></thead>
       <tbody>
@@ -286,28 +295,28 @@ Content-Type: application/problem+json; charset=utf-8
     <p><span class="chip">GET-1</span>. <code>GET /policies/{reference}</code> returns the policy, its terms, policyholders, property, payments, refunds and claims. The reference in the path is trimmed and upper-cased, so a lower-case one finds it. <code>status</code> is derived from today: <code>Pending</code> before the first start, <code>Active</code>, <code>Expired</code> after the last end, and <code>Cancelled</code>, which overrides the rest. The policy-level dates and amount describe the current term.</p>
     <ol class="steps">
       <li class="step">Read it back, using a lower-case reference.
-        <pre>curl -s -ihttp://localhost:5080/policies/guide-001</pre>
-        <div class="see">200 with the same body as the sale response above. The status line and the first fields:</div>
-        <pre class="output">HTTP/1.1 200 OK
+        <pre>curl -s -i http://localhost:5080/policies/guide-001</pre>
+        <div class="see">200 with the same body as the sale response above.</div>
+        <pre class="output" data-receipt="C02">HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
 
-{"reference":"GUIDE-001","type":"Household","status":"Pending","currentTermNumber":1,"startDate":"2026-11-01","endDate":"2027-10-31","amount":803.40,"hasClaims":false,"autoRenew":true, …</pre>
+{"reference":"GUIDE-001","type":"Household","status":"Pending","currentTermNumber":1,"startDate":"2026-11-01","endDate":"2027-10-31","amount":803.40,"hasClaims":false,"autoRenew":true,"policyholders":[{"firstName":"Ada","lastName":"Lovelace","dateOfBirth":"1985-12-10"}],"property":{"addressLine1":"1 Example Street","addressLine2":"Exampleton","addressLine3":null,"postcode":"EX1 1AA"},"terms":[{"termNumber":1,"startDate":"2026-11-01","endDate":"2027-10-31","amount":803.40,"paymentReference":"PAY-3097e50a8db548459a30f7565f15e490"}],"payments":[{"reference":"PAY-3097e50a8db548459a30f7565f15e490","type":"Card","amount":803.40}],"refunds":[],"claims":[],"cancellation":null}</pre>
       </li>
       <li class="step">Ask for a reference that does not exist.
-        <pre>curl -s -ihttp://localhost:5080/policies/NO-SUCH-POLICY</pre>
+        <pre>curl -s -i http://localhost:5080/policies/NO-SUCH-POLICY</pre>
         <div class="see">404: <span class="chip">GET-1</span>.</div>
-        <pre class="output">HTTP/1.1 404 Not Found
+        <pre class="output" data-receipt="F04">HTTP/1.1 404 Not Found
 Content-Type: application/problem+json; charset=utf-8
 
-{"type":"/problems/get-1","title":"Policy not found","status":404,"detail":"No policy with reference 'NO-SUCH-POLICY'.","instance":"/policies/NO-SUCH-POLICY","traceId":"00-58d2590d72cf26ebb8f68a942433649a-16b49e0ead98e59b-00","ruleId":"GET-1","reference":"NO-SUCH-POLICY"}</pre>
+{"type":"/problems/get-1","title":"Policy not found","status":404,"detail":"No policy with reference 'NO-SUCH-POLICY'.","instance":"/policies/NO-SUCH-POLICY","traceId":"00-18751e52339248f459d2c8c79be8848f-c14b0110d7ae5084-00","ruleId":"GET-1","reference":"NO-SUCH-POLICY"}</pre>
       </li>
       <li class="step">Add a query key the route does not bind.
-        <pre>curl -s -i"http://localhost:5080/policies/GUIDE-001?reference=X"</pre>
+        <pre>curl -s -i "http://localhost:5080/policies/GUIDE-001?reference=X"</pre>
         <div class="see">400. Unknown query keys are refused. A key named like a route parameter counts as unknown.</div>
-        <pre class="output">HTTP/1.1 400 Bad Request
+        <pre class="output" data-receipt="F05">HTTP/1.1 400 Bad Request
 Content-Type: application/problem+json; charset=utf-8
 
-{"type":"https://tools.ietf.org/html/rfc9110#section-15.5.1","title":"One or more validation errors occurred.","status":400,"instance":"/policies/GUIDE-001","errors":{"reference":["Unknown query parameter."]},"traceId":"00-36aa14f3cb34839de8f2a0d87fbb67b1-cba103a7aeeda6a8-00"}</pre>
+{"type":"https://tools.ietf.org/html/rfc9110#section-15.5.1","title":"One or more validation errors occurred.","status":400,"instance":"/policies/GUIDE-001","errors":{"reference":["Unknown query parameter."]},"traceId":"00-43d622863ad1154be23cf704eebdc71d-cd2f3a032894236d-00"}</pre>
       </li>
     </ol>
     <p>In Postman: folder <strong>F2 Retrieve</strong>, request <code>GET-1 · unknown reference → 404</code>.</p>
@@ -324,46 +333,50 @@ Content-Type: application/problem+json; charset=utf-8
         <tr><td>The term was never paid (an unpaid renewal)</td><td><code>UNPAID-TERM</code></td><td>0.00, and it wins over a claim</td></tr>
       </tbody>
     </table>
+    <h4>Quote</h4>
     <ol class="steps">
       <li class="step">Quote a cancellation on 2026-11-10, nine days after the start.
-        <pre>curl -s -i"http://localhost:5080/policies/GUIDE-001/cancellation-quote?cancellationDate=2026-11-10"</pre>
+        <pre>curl -s -i "http://localhost:5080/policies/GUIDE-001/cancellation-quote?cancellationDate=2026-11-10"</pre>
         <div class="see">200: cooling-off, so the full 803.40 back to the Card.</div>
-        <pre class="output">HTTP/1.1 200 OK
+        <pre class="output" data-receipt="C03">HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
 
-{"reference":"GUIDE-001","cancellationDate":"2026-11-10","ruleApplied":"CANCEL-1b","totalRefund":803.40,"terms":[{"termNumber":1,"ruleApplied":"CANCEL-1b","daysInTerm":365,"daysUsed":10,"unusedDays":355,"refundAmount":803.40}],"refunds":[{"type":"Card","amount":803.40,"paymentReference":"PAY-180270d7cc1c4bd7ba00e24de5b00b1b"}],"quotedOn":"2026-10-23"}</pre>
+{"reference":"GUIDE-001","cancellationDate":"2026-11-10","ruleApplied":"CANCEL-1b","totalRefund":803.40,"terms":[{"termNumber":1,"ruleApplied":"CANCEL-1b","daysInTerm":365,"daysUsed":10,"unusedDays":355,"refundAmount":803.40}],"refunds":[{"type":"Card","amount":803.40,"paymentReference":"PAY-3097e50a8db548459a30f7565f15e490"}],"quotedOn":"2026-10-23"}</pre>
       </li>
       <li class="step">Quote 2027-04-30, after cooling-off.
-        <pre>curl -s -i"http://localhost:5080/policies/GUIDE-001/cancellation-quote?cancellationDate=2027-04-30"</pre>
+        <pre>curl -s -i "http://localhost:5080/policies/GUIDE-001/cancellation-quote?cancellationDate=2027-04-30"</pre>
         <div class="see">200: pro rata. 181 days used, 184 unused, 803.40 × 184 ÷ 365 = 405.00.</div>
-        <pre class="output">HTTP/1.1 200 OK
+        <pre class="output" data-receipt="C04">HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
 
-{"reference":"GUIDE-001","cancellationDate":"2027-04-30","ruleApplied":"CANCEL-1c","totalRefund":405.00,"terms":[{"termNumber":1,"ruleApplied":"CANCEL-1c","daysInTerm":365,"daysUsed":181,"unusedDays":184,"refundAmount":405.00}],"refunds":[{"type":"Card","amount":405.00,"paymentReference":"PAY-180270d7cc1c4bd7ba00e24de5b00b1b"}],"quotedOn":"2026-10-23"}</pre>
+{"reference":"GUIDE-001","cancellationDate":"2027-04-30","ruleApplied":"CANCEL-1c","totalRefund":405.00,"terms":[{"termNumber":1,"ruleApplied":"CANCEL-1c","daysInTerm":365,"daysUsed":181,"unusedDays":184,"refundAmount":405.00}],"refunds":[{"type":"Card","amount":405.00,"paymentReference":"PAY-3097e50a8db548459a30f7565f15e490"}],"quotedOn":"2026-10-23"}</pre>
       </li>
+    </ol>
+    <h4>Cancel</h4>
+    <ol class="steps">
       <li class="step">Cancel for 2026-11-10.
-        <pre>curl -s -i-X POST http://localhost:5080/policies/GUIDE-001/cancellation -H "Content-Type: application/json" -d '{"cancellationDate":"2026-11-10"}'</pre>
+        <pre>curl -s -i -X POST http://localhost:5080/policies/GUIDE-001/cancellation -H "Content-Type: application/json" -d '{"cancellationDate":"2026-11-10"}'</pre>
         <div class="see">201, no <code>Location</code>. The answer agrees with the quote and now carries a refund <code>reference</code>.</div>
-        <pre class="output">HTTP/1.1 201 Created
+        <pre class="output" data-receipt="C05">HTTP/1.1 201 Created
 Content-Type: application/json; charset=utf-8
 
-{"reference":"GUIDE-001","cancellationDate":"2026-11-10","ruleApplied":"CANCEL-1b","totalRefund":803.40,"terms":[{"termNumber":1,"ruleApplied":"CANCEL-1b","daysInTerm":365,"daysUsed":10,"unusedDays":355,"refundAmount":803.40}],"refunds":[{"reference":"REF-82c873b208b34aedb5d6ecde150ddf10","type":"Card","amount":803.40,"paymentReference":"PAY-180270d7cc1c4bd7ba00e24de5b00b1b"}]}</pre>
+{"reference":"GUIDE-001","cancellationDate":"2026-11-10","ruleApplied":"CANCEL-1b","totalRefund":803.40,"terms":[{"termNumber":1,"ruleApplied":"CANCEL-1b","daysInTerm":365,"daysUsed":10,"unusedDays":355,"refundAmount":803.40}],"refunds":[{"reference":"REF-0315317e778347a59596fbd840baa39a","type":"Card","amount":803.40,"paymentReference":"PAY-3097e50a8db548459a30f7565f15e490"}]}</pre>
       </li>
       <li class="step">Cancel again.
-        <pre>curl -s -i-X POST http://localhost:5080/policies/GUIDE-001/cancellation</pre>
+        <pre>curl -s -i -X POST http://localhost:5080/policies/GUIDE-001/cancellation</pre>
         <div class="see">409: <span class="chip">CANCEL-4</span>. The body gives the original cancellation date.</div>
-        <pre class="output">HTTP/1.1 409 Conflict
+        <pre class="output" data-receipt="C06">HTTP/1.1 409 Conflict
 Content-Type: application/problem+json; charset=utf-8
 
-{"type":"/problems/cancel-4","title":"Policy already cancelled","status":409,"detail":"The policy was already cancelled on 2026-11-10.","instance":"/policies/GUIDE-001/cancellation","traceId":"00-a9d78d5db903240285b4d43b48543cbc-ad5eca82de206571-00","ruleId":"CANCEL-4","cancellationDate":"2026-11-10"}</pre>
+{"type":"/problems/cancel-4","title":"Policy already cancelled","status":409,"detail":"The policy was already cancelled on 2026-11-10.","instance":"/policies/GUIDE-001/cancellation","traceId":"00-e6603ec7f754b61da89d65e5fa52cc34-cc7f775c4fed4be0-00","ruleId":"CANCEL-4","cancellationDate":"2026-11-10"}</pre>
       </li>
       <li class="step">Cancel a different policy for yesterday.
-        <pre>curl -s -i-X POST http://localhost:5080/policies/GUIDE-002/cancellation -H "Content-Type: application/json" -d '{"cancellationDate":"2026-10-22"}'</pre>
+        <pre>curl -s -i -X POST http://localhost:5080/policies/GUIDE-002/cancellation -H "Content-Type: application/json" -d '{"cancellationDate":"2026-10-22"}'</pre>
         <div class="see">422: <span class="chip">CANCEL-3</span>. No past dates.</div>
-        <pre class="output">HTTP/1.1 422 Unprocessable Entity
+        <pre class="output" data-receipt="F08">HTTP/1.1 422 Unprocessable Entity
 Content-Type: application/problem+json; charset=utf-8
 
-{"type":"/problems/cancel-3","title":"Cancellation date in the past","status":422,"detail":"The cancellation date cannot be in the past.","instance":"/policies/GUIDE-002/cancellation","traceId":"00-c2f67c1eb0a0ef7fe6d5bedfb01d5b1a-f90b9a508fffe405-00","ruleId":"CANCEL-3","today":"2026-10-23","violations":[{"ruleId":"CANCEL-3","detail":"The cancellation date cannot be in the past."}]}</pre>
+{"type":"/problems/cancel-3","title":"Cancellation date in the past","status":422,"detail":"The cancellation date cannot be in the past.","instance":"/policies/GUIDE-002/cancellation","traceId":"00-6562c7bacca957c9f794d8d3952cee59-080ec87a332c5a22-00","ruleId":"CANCEL-3","today":"2026-10-23","violations":[{"ruleId":"CANCEL-3","detail":"The cancellation date cannot be in the past."}]}</pre>
       </li>
     </ol>
     <table>
@@ -379,39 +392,40 @@ Content-Type: application/problem+json; charset=utf-8
 
     <h3>Record a claim</h3>
     <p><span class="chip">COULD-2</span>, <span class="chip">COULD-2a</span> to <span class="chip">COULD-2c</span>. <code>POST …/claims</code> takes a required <code>claimDate</code> and an optional <code>description</code> of up to 500 characters. The date must not be in the future and must fall inside a term's cover.</p>
+    <p>The claim goes on GUIDE-002, sold in the sell section above.</p>
     <ol class="steps">
-      <li class="step">Sell a policy starting today (GUIDE-002, 1,200.00 by Direct Debit), then claim for today.
-        <pre>curl -s -i-X POST http://localhost:5080/policies/GUIDE-002/claims -H "Content-Type: application/json" -d '{"claimDate":"2026-10-23","description":"Burst pipe"}'</pre>
+      <li class="step">Claim for today.
+        <pre>curl -s -i -X POST http://localhost:5080/policies/GUIDE-002/claims -H "Content-Type: application/json" -d '{"claimDate":"2026-10-23","description":"Burst pipe"}'</pre>
         <div class="see">201 with <code>Location</code> pointing at the policy, not at a claim.</div>
-        <pre class="output">HTTP/1.1 201 Created
+        <pre class="output" data-receipt="C09">HTTP/1.1 201 Created
 Content-Type: application/json; charset=utf-8
 Location: /policies/GUIDE-002
 
 {"reference":"CLM-GUIDE-002-1","policyReference":"GUIDE-002","claimDate":"2026-10-23","description":"Burst pipe","hasClaims":true}</pre>
       </li>
       <li class="step">Quote a cancellation for 2027-04-30 on that policy.
-        <pre>curl -s -i"http://localhost:5080/policies/GUIDE-002/cancellation-quote?cancellationDate=2027-04-30"</pre>
+        <pre>curl -s -i "http://localhost:5080/policies/GUIDE-002/cancellation-quote?cancellationDate=2027-04-30"</pre>
         <div class="see">200 and nothing back: <span class="chip">COULD-2</span>. No <code>refunds</code> are listed, because no £0 refund record is ever created.</div>
-        <pre class="output">HTTP/1.1 200 OK
+        <pre class="output" data-receipt="C10">HTTP/1.1 200 OK
 Content-Type: application/json; charset=utf-8
 
 {"reference":"GUIDE-002","cancellationDate":"2027-04-30","ruleApplied":"COULD-2","totalRefund":0.00,"terms":[{"termNumber":1,"ruleApplied":"COULD-2","daysInTerm":365,"daysUsed":190,"unusedDays":175,"refundAmount":0.00}],"refunds":[],"quotedOn":"2026-10-23"}</pre>
       </li>
       <li class="step">Claim for tomorrow.
-        <pre>curl -s -i-X POST http://localhost:5080/policies/GUIDE-002/claims -H "Content-Type: application/json" -d '{"claimDate":"2026-10-24"}'</pre>
+        <pre>curl -s -i -X POST http://localhost:5080/policies/GUIDE-002/claims -H "Content-Type: application/json" -d '{"claimDate":"2026-10-24"}'</pre>
         <div class="see">422: <span class="chip">COULD-2a</span>.</div>
-        <pre class="output">HTTP/1.1 422 Unprocessable Entity
+        <pre class="output" data-receipt="F06">HTTP/1.1 422 Unprocessable Entity
 Content-Type: application/problem+json; charset=utf-8
 
-{"type":"/problems/could-2a","title":"Claim date in the future","status":422,"detail":"The claim date cannot be in the future.","instance":"/policies/GUIDE-002/claims","traceId":"00-ec8b21a601d7b77acf50a481648bfb42-6173c6107c515c84-00","ruleId":"COULD-2a","today":"2026-10-23","violations":[{"ruleId":"COULD-2a","detail":"The claim date cannot be in the future."}]}</pre>
+{"type":"/problems/could-2a","title":"Claim date in the future","status":422,"detail":"The claim date cannot be in the future.","instance":"/policies/GUIDE-002/claims","traceId":"00-6d27cc934ee58f1a3f06f5185118d5a8-ced53f2c946ff9b2-00","ruleId":"COULD-2a","today":"2026-10-23","violations":[{"ruleId":"COULD-2a","detail":"The claim date cannot be in the future."}]}</pre>
       </li>
       <li class="step">Claim on the policy that was cancelled earlier (GUIDE-001).
-        <pre>curl -s -i-X POST http://localhost:5080/policies/GUIDE-001/claims -H "Content-Type: application/json" -d '{"claimDate":"2026-11-10"}'</pre>
+        <pre>curl -s -i -X POST http://localhost:5080/policies/GUIDE-001/claims -H "Content-Type: application/json" -d '{"claimDate":"2026-11-10"}'</pre>
         <div class="see">409: <span class="chip">COULD-2c</span>.</div>
-        <pre class="output">HTTP/1.1 409 Conflict
+        <pre class="output" data-receipt="F07">HTTP/1.1 409 Conflict
 Content-Type: application/problem+json; charset=utf-8
 
-{"type":"/problems/could-2c","title":"Claim on a cancelled policy","status":409,"detail":"The policy was cancelled on 2026-11-10, so a claim cannot be recorded.","instance":"/policies/GUIDE-001/claims","traceId":"00-12f616a40a6b6fef44134544f72526c7-e8072e5c20eb56f1-00","ruleId":"COULD-2c","cancellationDate":"2026-11-10"}</pre>
+{"type":"/problems/could-2c","title":"Claim on a cancelled policy","status":409,"detail":"The policy was cancelled on 2026-11-10, so a claim cannot be recorded.","instance":"/policies/GUIDE-001/claims","traceId":"00-1bb27aca1ef8cf790d622dc20ee4a181-48576e10390ebdb5-00","ruleId":"COULD-2c","cancellationDate":"2026-11-10"}</pre>
       </li>
     </ol>
     <div class="callout warn"><span class="label">A claim cannot be undone</span> It sets <code>hasClaims</code> for good, and every later refund is £0. A claim is not idempotent: sending it twice records two. That is why the guide shows it only on a throw-away policy.</div>
@@ -429,15 +443,15 @@ Content-Type: application/problem+json; charset=utf-8
     <p><span class="chip">RENEW-1/2</span> to <span class="chip">RENEW-6</span>, <span class="chip">COULD-3</span>. <code>POST …/renewals</code> takes the new term's <code>amount</code> and, optionally, a <code>paymentMethod</code>. You may renew from 30 days before the latest term's end date to the end date, both inclusive. The new term starts the day after the end. With <code>autoRenew</code> on, the payment method defaults to the current term's, and a Cheque is refused. With it off, the term is created unpaid and a <code>paymentMethod</code> is refused.</p>
     <ol class="steps">
       <li class="step">Renew the policy sold today (GUIDE-002), which ends 2027-10-22.
-        <pre>curl -s -i-X POST http://localhost:5080/policies/GUIDE-002/renewals -H "Content-Type: application/json" -d '{"amount":1250.00}'</pre>
+        <pre>curl -s -i -X POST http://localhost:5080/policies/GUIDE-002/renewals -H "Content-Type: application/json" -d '{"amount":1250.00}'</pre>
         <div class="see">422: <span class="chip">RENEW-1/2</span>. The window is named in the body.</div>
-        <pre class="output">HTTP/1.1 422 Unprocessable Entity
+        <pre class="output" data-receipt="C11">HTTP/1.1 422 Unprocessable Entity
 Content-Type: application/problem+json; charset=utf-8
 
-{"type":"/problems/renew-1-2","title":"Outside the renewal window","status":422,"detail":"A policy can be renewed from 2027-09-22 to 2027-10-22.","instance":"/policies/GUIDE-002/renewals","traceId":"00-213bda48b9797f9d89d00d5dc2d03ae6-7a8067215543b9d2-00","ruleId":"RENEW-1/2","windowStart":"2027-09-22","windowEnd":"2027-10-22","violations":[{"ruleId":"RENEW-1/2","detail":"A policy can be renewed from 2027-09-22 to 2027-10-22."}]}</pre>
+{"type":"/problems/renew-1-2","title":"Outside the renewal window","status":422,"detail":"A policy can be renewed from 2027-09-22 to 2027-10-22.","instance":"/policies/GUIDE-002/renewals","traceId":"00-b0407f4d1b0fceb966cb48e996653a64-31b36277c47ed14d-00","ruleId":"RENEW-1/2","windowStart":"2027-09-22","windowEnd":"2027-10-22","violations":[{"ruleId":"RENEW-1/2","detail":"A policy can be renewed from 2027-09-22 to 2027-10-22."}]}</pre>
       </li>
     </ol>
-    <div class="callout"><span class="label">A successful renewal is not shown live</span> A policy can only be sold from today, so it cannot be inside its renewal window for 335 days, and the API runs on the real clock. The acceptance tests set the clock instead. On this branch the 13 tests traited <span class="chip">RENEW-4</span> passed (<code>dotnet test --solution Uinsure.Policies.slnx --no-build -- --filter-trait "Rule=RENEW-4"</code>). A renewal returns the policy with a second entry in <code>terms</code>. Postman's <strong>F4 Renew</strong> has no happy-path requests for the same reason.</div>
+    <div class="callout"><span class="label">A successful renewal is not shown live</span> A policy can only be sold from today, so it cannot be inside its renewal window for 335 days, and the API runs on the real clock. The acceptance tests set the clock instead. On this branch the 13 tests traited <span class="chip">RENEW-4</span> passed (<code>dotnet test --solution Uinsure.Policies.slnx -- --filter-trait "Rule=RENEW-4"</code>). A renewal returns the policy with a second entry in <code>terms</code>. Postman's <strong>F4 Renew</strong> has no happy-path requests for the same reason.</div>
     <table>
       <thead><tr><th>Failure</th><th>Status</th><th>Rule</th></tr></thead>
       <tbody>
@@ -452,7 +466,7 @@ Content-Type: application/problem+json; charset=utf-8
     <h3>Reading an error</h3>
     <p>Every body follows RFC 9457. <code>type</code> is <code>/problems/</code> and the rule ID in lower case, with <code>/</code> as <code>-</code>. <code>ruleId</code> names the rule, <code>violations[]</code> lists every broken rule on a 422, and <code>traceId</code> finds the request in the logs. One place maps a rule to its status, type and title.</p>
     <div class="extract">
-      <a class="ref" href="src/Uinsure.Policies.Api/Errors/ProblemCatalog.cs:6">src/Uinsure.Policies.Api/Errors/ProblemCatalog.cs:6</a>
+      <a class="ref" href="../../../src/Uinsure.Policies.Api/Errors/ProblemCatalog.cs#L6">src/Uinsure.Policies.Api/Errors/ProblemCatalog.cs:6</a>
 <pre>// The one place a rule ID becomes an HTTP status, a problem type and a title.
 internal static class ProblemCatalog
 {
@@ -504,34 +518,42 @@ internal static class ProblemCatalog
       <li class="step">Run everything.
         <pre>dotnet test --solution Uinsure.Policies.slnx</pre>
         <div class="see">Four projects pass, then the totals:</div>
-        <pre class="output">Test run summary: Passed!
-  tests\Uinsure.Policies.Services.Tests\bin\Debug\net10.0\Uinsure.Policies.Services.Tests.dll (net10.0|x64) passed (906ms)
-  tests\Uinsure.Policies.Architecture.Tests\bin\Debug\net10.0\Uinsure.Policies.Architecture.Tests.dll (net10.0|x64) passed (1s 511ms)
-  tests\Uinsure.Policies.Domain.Tests\bin\Debug\net10.0\Uinsure.Policies.Domain.Tests.dll (net10.0|x64) passed (921ms)
-  tests\Uinsure.Policies.Api.Tests\bin\Debug\net10.0\Uinsure.Policies.Api.Tests.dll (net10.0|x64) passed (10s 319ms)
+        <pre class="output" data-receipt="R3">Test run summary: Passed!
+  &lt;repo&gt;\tests\Uinsure.Policies.Architecture.Tests\bin\Debug\net10.0\Uinsure.Policies.Architecture.Tests.dll (net10.0|x64) passed (1s 445ms)
+  &lt;repo&gt;\tests\Uinsure.Policies.Services.Tests\bin\Debug\net10.0\Uinsure.Policies.Services.Tests.dll (net10.0|x64) passed (926ms)
+  &lt;repo&gt;\tests\Uinsure.Policies.Domain.Tests\bin\Debug\net10.0\Uinsure.Policies.Domain.Tests.dll (net10.0|x64) passed (1s 045ms)
+  &lt;repo&gt;\tests\Uinsure.Policies.Api.Tests\bin\Debug\net10.0\Uinsure.Policies.Api.Tests.dll (net10.0|x64) passed (11s 972ms)
 
   total: 637
   failed: 0
   succeeded: 637
   skipped: 0
-  duration: 10s 753ms</pre>
+  duration: 12s 325ms</pre>
       </li>
       <li class="step">Run one project.
         <pre>dotnet test --project tests/Uinsure.Policies.Domain.Tests</pre>
-        <div class="see">Only that project's totals. The four runs gave:</div>
-        <pre class="output">Domain.Tests    total: 173  failed: 0  succeeded: 173  duration: 1s 062ms
-Services.Tests  total: 65   failed: 0  succeeded: 65   duration: 1s 077ms
-Api.Tests       total: 332  failed: 0  succeeded: 332  duration: 9s 476ms
-Architecture    total: 67   failed: 0  succeeded: 67   duration: 1s 482ms</pre>
+        <div class="see">Only that project's totals. The other three projects gave 65 (Services), 332 (Api) and 67 (Architecture), each with none failed:</div>
+        <pre class="output" data-receipt="R3a">Test run summary: Passed!
+  total: 173
+  failed: 0
+  succeeded: 173
+  skipped: 0
+  duration: 1s 056ms</pre>
       </li>
       <li class="step">Run one rule by its trait.
         <pre>dotnet test --solution Uinsure.Policies.slnx -- --filter-trait "Rule=CANCEL-1b"</pre>
         <div class="see">Eight tests across the projects, all passed:</div>
-        <pre class="output">  total: 8
+        <pre class="output" data-receipt="R4">Test run summary: Passed!
+  &lt;repo&gt;\tests\Uinsure.Policies.Services.Tests\bin\Debug\net10.0\Uinsure.Policies.Services.Tests.dll (net10.0|x64) passed (651ms)
+  &lt;repo&gt;\tests\Uinsure.Policies.Architecture.Tests\bin\Debug\net10.0\Uinsure.Policies.Architecture.Tests.dll (net10.0|x64) passed (650ms)
+  &lt;repo&gt;\tests\Uinsure.Policies.Domain.Tests\bin\Debug\net10.0\Uinsure.Policies.Domain.Tests.dll (net10.0|x64) passed (767ms)
+  &lt;repo&gt;\tests\Uinsure.Policies.Api.Tests\bin\Debug\net10.0\Uinsure.Policies.Api.Tests.dll (net10.0|x64) passed (2s 463ms)
+
+  total: 8
   failed: 0
   succeeded: 8
   skipped: 0
-  duration: 2s 923ms</pre>
+  duration: 2s 772ms</pre>
       </li>
     </ol>
     <div class="callout warn"><span class="label">Careful</span> The filter flag comes after <code>--</code>, and the option is <code>--filter-trait</code> (xUnit v3 on Microsoft.Testing.Platform). The older <code>--filter "Rule=…"</code> form is for VSTest and is not what this solution runs on.</div>
@@ -550,7 +572,7 @@ Architecture    total: 67   failed: 0  succeeded: 67   duration: 1s 482ms</pre>
     <h3>Rule coverage</h3>
     <p>Each test carries <code>[Trait("Rule", "&lt;id&gt;")]</code>. <code>RuleCoverageTests</code> fails if a rule ID in <code>docs/requirements.md</code> lacks a unit trait or an integration trait, unless it is listed as pending.</p>
     <div class="extract">
-      <a class="ref" href="tests/Uinsure.Policies.Api.Tests/CancelCoolingOffTests.cs:22">tests/Uinsure.Policies.Api.Tests/CancelCoolingOffTests.cs:22</a>
+      <a class="ref" href="../../../tests/Uinsure.Policies.Api.Tests/CancelCoolingOffTests.cs#L22">tests/Uinsure.Policies.Api.Tests/CancelCoolingOffTests.cs:22</a>
 <pre>    // 2026-10-17 is both the start date and today (CANCEL-3 allows today): 1 day used, 289.40 back to the Cheque.
     [Fact]
     [Trait("Rule", "CANCEL-1b")]
@@ -566,9 +588,12 @@ Architecture    total: 67   failed: 0  succeeded: 67   duration: 1s 482ms</pre>
       <li class="step">Run the coverage tests alone.
         <pre>dotnet test --project tests/Uinsure.Policies.Architecture.Tests -- --filter-class "*RuleCoverageTests"</pre>
         <div class="see">Eleven coverage tests passed:</div>
-        <pre class="output">  total: 11
+        <pre class="output" data-receipt="R4b">Test run summary: Passed!
+  total: 11
   failed: 0
-  succeeded: 11</pre>
+  succeeded: 11
+  skipped: 0
+  duration: 1s 155ms</pre>
       </li>
     </ol>
 
@@ -577,22 +602,46 @@ Architecture    total: 67   failed: 0  succeeded: 67   duration: 1s 482ms</pre>
       <li class="step">Start the API (section 2, step 3). Then, from the repository root, run the whole collection. No login is needed; the CLI warns that publishing to the Postman cloud needs one.
         <pre>postman collection run tests/postman/Uinsure.Policies.postman_collection.json -e tests/postman/local.postman_environment.json</pre>
         <div class="see">Each request, then each assertion as <code>Pass</code>, then the summary table. Failures would appear in the <code>failed</code> column.</div>
-        <pre class="output">|              iterations |                  1 |                  0 |
+        <pre class="output" data-receipt="R6">|              iterations |                  1 |                  0 |
+--------------------------+--------------------+---------------------
 |                requests |                253 |                  0 |
+--------------------------+--------------------+---------------------
 |            test-scripts |                109 |                  0 |
+--------------------------+--------------------+---------------------
 |      prerequest-scripts |                114 |                  0 |
+--------------------------+--------------------+---------------------
 |              assertions |                246 |                  0 |
-| total run duration: 17.7 s                                        |
-| average response time: 21 ms [min: 11 ms, max: 76 ms, s.d.: 7 ms] |</pre>
+---------------------------------------------------------------------
+| total run duration: 17.1 s                                        |
+---------------------------------------------------------------------
+| total data received: 128.5 KB (approx)                            |
+---------------------------------------------------------------------
+| average response time: 22 ms [min: 10 ms, max: 97 ms, s.d.: 8 ms] |
+---------------------------------------------------------------------
+Postman credentials are required for publishing run details to Postman cloud.
+Please specify it by using the `postman login` command</pre>
       </li>
       <li class="step">Run one folder with <code>-i</code>.
         <pre>postman collection run tests/postman/Uinsure.Policies.postman_collection.json -e tests/postman/local.postman_environment.json -i "F3 Cancel"</pre>
         <div class="see">Only that folder's requests:</div>
-        <pre class="output">|                requests |                 87 |                 0 |
+        <pre class="output" data-receipt="R6b">|              iterations |                  1 |                 0 |
+--------------------------+--------------------+--------------------
+|                requests |                 87 |                 0 |
+--------------------------+--------------------+--------------------
 |            test-scripts |                 33 |                 0 |
+--------------------------+--------------------+--------------------
 |      prerequest-scripts |                 33 |                 0 |
+--------------------------+--------------------+--------------------
 |              assertions |                 82 |                 0 |
-| total run duration: 5.1 s                                        |</pre>
+--------------------------------------------------------------------
+| total run duration: 5.6 s                                        |
+--------------------------------------------------------------------
+| total data received: 46.15 KB (approx)                           |
+--------------------------------------------------------------------
+| average response time: 20 ms [min: 8 ms, max: 53 ms, s.d.: 6 ms] |
+--------------------------------------------------------------------
+Postman credentials are required for publishing run details to Postman cloud.
+Please specify it by using the `postman login` command</pre>
       </li>
     </ol>
     <div class="callout"><span class="label">Reading the numbers</span> The summary counts <em>requests</em> (253, including the set-up sales and read-backs), <em>test scripts</em> (109, the requests that assert something) and <em>assertions</em> (246). The README and design notes call the 109 "requests"; the CLI shows they are test scripts.</div>
@@ -659,7 +708,7 @@ Architecture    total: 67   failed: 0  succeeded: 67   duration: 1s 482ms</pre>
     <h3>The harness self-test, and the git hooks</h3>
     <p>The repository's own hooks guard every commit and push. <strong>Pre-commit</strong>: refuses commits on a locked <code>main</code>, scans the staged files for private content, and builds with warnings as errors. <strong>Pre-push</strong>: refuses pushes to <code>main</code>, then builds in Release, runs the whole suite, generates the idempotent migration script, and runs the harness self-test.</p>
     <div class="extract">
-      <a class="ref" href=".githooks/pre-push:25">.githooks/pre-push:25</a>
+      <a class="ref" href="../../../.githooks/pre-push#L25">.githooks/pre-push:25</a>
 <pre>if [ -f Uinsure.Policies.slnx ]; then
   dotnet build Uinsure.Policies.slnx -c Release -warnaserror -nologo -v quiet || { echo "pre-push: build failed" &gt;&amp;2; exit 1; }
   dotnet test --solution Uinsure.Policies.slnx -c Release --no-build || { echo "pre-push: tests failed" &gt;&amp;2; exit 1; }
@@ -672,7 +721,7 @@ Architecture    total: 67   failed: 0  succeeded: 67   duration: 1s 482ms</pre>
       <li class="step">Run the harness self-test, which checks the guard hooks themselves.
         <pre>node --test ".claude/hooks/__tests__/*.test.mjs"</pre>
         <div class="see">221 tests, none failing. It is the slowest check here:</div>
-        <pre class="output">1..221
+        <pre class="output" data-receipt="R7">1..221
 # tests 221
 # suites 0
 # pass 221
@@ -680,7 +729,7 @@ Architecture    total: 67   failed: 0  succeeded: 67   duration: 1s 482ms</pre>
 # cancelled 0
 # skipped 0
 # todo 0
-# duration_ms 100183.7204</pre>
+# duration_ms 94372.4579</pre>
       </li>
     </ol>
 
@@ -688,12 +737,12 @@ Architecture    total: 67   failed: 0  succeeded: 67   duration: 1s 482ms</pre>
     <table>
       <thead><tr><th>Runner</th><th>Tests</th><th>Use when</th><th>Command or click path</th><th>Needs first</th><th>Measured</th></tr></thead>
       <tbody>
-        <tr><td><code>dotnet test</code></td><td>All 637 .NET tests</td><td>Before any commit; in CI</td><td><code>dotnet test --solution Uinsure.Policies.slnx</code></td><td>Nothing</td><td>10.7 s test time; 16.6 s wall</td></tr>
-        <tr><td>One rule by trait</td><td>Tests of one rule ID</td><td>Working on one rule</td><td><code>… -- --filter-trait "Rule=CANCEL-1b"</code></td><td>Nothing</td><td>2.9 s (8 tests)</td></tr>
-        <tr><td>Postman CLI</td><td>253 requests, 246 assertions, against the live API</td><td>Check a running build as a client</td><td><code>postman collection run …</code></td><td>API on 5080</td><td>17.7 s</td></tr>
+        <tr><td><code>dotnet test</code></td><td>All 637 .NET tests</td><td>Before any commit; in CI</td><td><code>dotnet test --solution Uinsure.Policies.slnx</code></td><td>Nothing</td><td>12.3 s test time</td></tr>
+        <tr><td>One rule by trait</td><td>Tests of one rule ID</td><td>Working on one rule</td><td><code>… -- --filter-trait "Rule=CANCEL-1b"</code></td><td>Nothing</td><td>2.8 s (8 tests)</td></tr>
+        <tr><td>Postman CLI</td><td>253 requests, 246 assertions, against the live API</td><td>Check a running build as a client</td><td><code>postman collection run …</code></td><td>API on 5080</td><td>17.1 s</td></tr>
         <tr><td>Postman app</td><td>The same collection</td><td>Explore, edit, run one request</td><td>Import, then ⋯ → Run collection</td><td>API on 5080</td><td>Not measured (hand run)</td></tr>
         <tr><td>Visual Studio</td><td>The .NET tests</td><td>Debug a test, group by rule</td><td>Test → Test Explorer</td><td>Nothing</td><td>Not measured (hand run)</td></tr>
-        <tr><td>Harness self-test</td><td>221 guard-hook tests</td><td>After changing a hook</td><td><code>node --test ".claude/hooks/__tests__/*.test.mjs"</code></td><td>Node</td><td>100.2 s</td></tr>
+        <tr><td>Harness self-test</td><td>221 guard-hook tests</td><td>After changing a hook</td><td><code>node --test ".claude/hooks/__tests__/*.test.mjs"</code></td><td>Node</td><td>94.4 s</td></tr>
       </tbody>
     </table>
     <p>Vitest and Playwright (the web app's unit and end-to-end suites) are covered in the UI guide, and are not run in this one.</p>
@@ -707,7 +756,7 @@ Architecture    total: 67   failed: 0  succeeded: 67   duration: 1s 482ms</pre>
       <tr><td>A4. How can I see each rule has a test?</td><td>The <code>Rule</code> trait on tests, and <code>RuleCoverageTests</code>, which fails on an untested ID.</td></tr>
       <tr><td>D9. How do I run one rule's tests?</td><td><code>-- --filter-trait "Rule=&lt;id&gt;"</code>, or Group By Traits in Test Explorer.</td></tr>
       <tr><td>D10. What do the hooks run?</td><td>Pre-commit: privacy scan and build. Pre-push: Release build, full tests, migration script, harness self-test.</td></tr>
-      <tr><td>U8. How do I try it without code?</td><td>The Postman app or CLI collection, or the Scalar page at <code>/scalar</code> in Development.</td></tr>
+      <tr><td>U8. How do I try it without code?</td><td>The Postman app or CLI collection, or the Scalar page at <code>/scalar/v1</code> in Development.</td></tr>
     </tbody>
   </table>
 </section>
@@ -721,6 +770,7 @@ Architecture    total: 67   failed: 0  succeeded: 67   duration: 1s 482ms</pre>
 
     <figure>
       <svg viewBox="0 0 560 150" role="img" aria-label="Domain at the centre, Services around it, Persistence and Api on the outside">
+        <defs><marker id="arrow-6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--color-primary)"/></marker></defs>
         <rect x="4" y="50" width="120" height="50" fill="var(--color-accent)" stroke="var(--color-primary)"/>
         <text x="64" y="73" text-anchor="middle" font-size="12" fill="var(--color-text-primary)">Domain</text>
         <text x="64" y="90" text-anchor="middle" font-size="10" fill="var(--color-text-secondary)">BCL only</text>
@@ -733,8 +783,10 @@ Architecture    total: 67   failed: 0  succeeded: 67   duration: 1s 482ms</pre>
         <rect x="324" y="92" width="130" height="50" fill="var(--color-accent)" stroke="var(--color-primary)"/>
         <text x="389" y="115" text-anchor="middle" font-size="12" fill="var(--color-text-primary)">Api</text>
         <text x="389" y="132" text-anchor="middle" font-size="10" fill="var(--color-text-secondary)">controller, DTOs, Program.cs</text>
-        <path d="M164 75h-40M324 33l-40 30M324 117l-40-30" stroke="var(--color-primary)" stroke-width="2" fill="none"/>
-        <path d="M454 117h40v-84h-40" stroke="var(--color-primary)" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+        <path d="M164 75h-40" stroke="var(--color-primary)" stroke-width="2" fill="none" marker-end="url(#arrow-6)"/>
+        <path d="M324 33l-40 30" stroke="var(--color-primary)" stroke-width="2" fill="none" marker-end="url(#arrow-6)"/>
+        <path d="M324 117l-40-30" stroke="var(--color-primary)" stroke-width="2" fill="none" marker-end="url(#arrow-6)"/>
+        <path d="M454 117h40v-84h-40" stroke="var(--color-primary)" stroke-width="2" fill="none" stroke-dasharray="4 3" marker-end="url(#arrow-6)"/>
         <text x="500" y="78" font-size="10" fill="var(--color-text-secondary)">Api wires</text>
         <text x="500" y="90" font-size="10" fill="var(--color-text-secondary)">Persistence</text>
         <text x="500" y="102" font-size="10" fill="var(--color-text-secondary)">in Program.cs</text>
@@ -751,7 +803,7 @@ Architecture    total: 67   failed: 0  succeeded: 67   duration: 1s 482ms</pre>
       </tbody>
     </table>
     <div class="extract">
-      <a class="ref" href="tests/Uinsure.Policies.Architecture.Tests/LayeringTests.cs:11">tests/Uinsure.Policies.Architecture.Tests/LayeringTests.cs:11</a>
+      <a class="ref" href="../../../tests/Uinsure.Policies.Architecture.Tests/LayeringTests.cs#L11">tests/Uinsure.Policies.Architecture.Tests/LayeringTests.cs:11</a>
 <pre>    [Fact]
     public void Domain_types_depend_on_no_Microsoft_namespace_and_not_on_TimeProvider()
     {
@@ -791,7 +843,7 @@ Architecture    total: 67   failed: 0  succeeded: 67   duration: 1s 482ms</pre>
       <figcaption>Figure 7. The request pipeline, in the order <code>Program.cs</code> builds it.</figcaption>
     </figure>
     <div class="extract">
-      <a class="ref" href="src/Uinsure.Policies.Api/Program.cs:116">src/Uinsure.Policies.Api/Program.cs:116</a>
+      <a class="ref" href="../../../src/Uinsure.Policies.Api/Program.cs#L116">src/Uinsure.Policies.Api/Program.cs:116</a>
 <pre>app.UseRateLimiter();
 app.UseAuthorization();
 
@@ -805,9 +857,9 @@ app.MapControllers();
 app.MapHealthChecks("/health/live", new() { Predicate = _ =&gt; false }).DisableRateLimiting();
 app.MapHealthChecks("/health/ready", new() { Predicate = check =&gt; check.Tags.Contains("ready") }).DisableRateLimiting();</pre>
     </div>
-    <p>Before those lines, <code>Program.cs</code> applies forwarded headers and the exception handler (<a class="ref" href="src/Uinsure.Policies.Api/Program.cs:83">src/Uinsure.Policies.Api/Program.cs:83</a>); outside Development it rejects plain HTTP with 400 <code>/problems/https-required</code> instead of redirecting. Input is strict: unknown JSON fields and query keys are 400s, and the body is capped at 65,536 bytes. The controller turns a service <code>Result</code> into a response, and the service does the orchestration:</p>
+    <p>Before those lines, <code>Program.cs</code> applies forwarded headers and the exception handler (<a class="ref" href="../../../src/Uinsure.Policies.Api/Program.cs#L83">src/Uinsure.Policies.Api/Program.cs:83</a>); outside Development it rejects plain HTTP with 400 <code>/problems/https-required</code> instead of redirecting. Input is strict: unknown JSON fields and query keys are 400s, and the body is capped at 65,536 bytes. The controller turns a service <code>Result</code> into a response, and the service does the orchestration:</p>
     <div class="extract">
-      <a class="ref" href="src/Uinsure.Policies.Services/PolicyService.cs:12">src/Uinsure.Policies.Services/PolicyService.cs:12</a>
+      <a class="ref" href="../../../src/Uinsure.Policies.Services/PolicyService.cs#L12">src/Uinsure.Policies.Services/PolicyService.cs:12</a>
 <pre>        var today = UkCalendar.Today(clock);
 
         // SELL-1: a duplicate is a 409 returned alone, before any 422 rule is evaluated.
@@ -819,9 +871,9 @@ app.MapHealthChecks("/health/ready", new() { Predicate = check =&gt; check.Tags.
 
     <h3>One rule, followed: CANCEL-1b</h3>
     <ol class="steps">
-      <li class="step"><strong>Requirement.</strong> <a class="ref" href="docs/requirements.md:77">docs/requirements.md:77</a>: "On or after the start date, within the 14-day cooling-off → full refund", interpreted as start + 14 days, inclusive.</li>
-      <li class="step"><strong>Test.</strong> <a class="ref" href="tests/Uinsure.Policies.Api.Tests/CancelCoolingOffTests.cs:22">tests/Uinsure.Policies.Api.Tests/CancelCoolingOffTests.cs:22</a> sells a policy, cancels it on the start date and asserts the refund (extract in section 4). The unit tests sit in <code>Domain.Tests</code>.</li>
-      <li class="step"><strong>Code.</strong> <a class="ref" href="src/Uinsure.Policies.Domain/Rules/RefundCalculator.cs:40">src/Uinsure.Policies.Domain/Rules/RefundCalculator.cs:40</a>. One pure method serves both the cancellation and its quote.
+      <li class="step"><strong>Requirement.</strong> <a class="ref" href="../../../docs/requirements.md#L77">docs/requirements.md:77</a>: "On or after the start date, within the 14-day cooling-off → full refund", interpreted as start + 14 days, inclusive.</li>
+      <li class="step"><strong>Test.</strong> <a class="ref" href="../../../tests/Uinsure.Policies.Api.Tests/CancelCoolingOffTests.cs#L22">tests/Uinsure.Policies.Api.Tests/CancelCoolingOffTests.cs:22</a> sells a policy, cancels it on the start date and asserts the refund (extract in section 4). The unit tests sit in <code>Domain.Tests</code>.</li>
+      <li class="step"><strong>Code.</strong> <a class="ref" href="../../../src/Uinsure.Policies.Domain/Rules/RefundCalculator.cs#L40">src/Uinsure.Policies.Domain/Rules/RefundCalculator.cs:40</a>. One pure method serves both the cancellation and its quote.
 <div class="extract">
 <pre>        // CANCEL-1b: cooling-off runs to start + 14 days, inclusive.
         if (cancelOn &lt;= term.Start.AddDays(CoolingOffDays))
@@ -839,14 +891,14 @@ app.MapHealthChecks("/health/ready", new() { Predicate = check =&gt; check.Tags.
     <h3>Time and money</h3>
     <p>"Today" has one source. Services read the injected <code>TimeProvider</code> and convert to Europe/London once; the domain receives a <code>DateOnly</code>. An analyser (<code>BannedSymbols.txt</code>) turns <code>DateTime.Now</code>, <code>UtcNow</code> and <code>Today</code> into build errors. Money is rounded only in <code>Money.Round</code>, and an architecture test allows the analyser suppression in that file alone.</p>
     <div class="extract">
-      <a class="ref" href="src/Uinsure.Policies.Services/UkCalendar.cs:5">src/Uinsure.Policies.Services/UkCalendar.cs:5</a>
+      <a class="ref" href="../../../src/Uinsure.Policies.Services/UkCalendar.cs#L5">src/Uinsure.Policies.Services/UkCalendar.cs:5</a>
 <pre>    private static readonly TimeZoneInfo London = TimeZoneInfo.FindSystemTimeZoneById("Europe/London");
 
     public static DateOnly Today(TimeProvider clock) =&gt;
         DateOnly.FromDateTime(TimeZoneInfo.ConvertTime(clock.GetUtcNow(), London).DateTime);</pre>
     </div>
     <div class="extract">
-      <a class="ref" href="src/Uinsure.Policies.Domain/Common/Money.cs:5">src/Uinsure.Policies.Domain/Common/Money.cs:5</a>
+      <a class="ref" href="../../../src/Uinsure.Policies.Domain/Common/Money.cs#L5">src/Uinsure.Policies.Domain/Common/Money.cs:5</a>
 <pre>    // CANCEL-6: 2 dp, half away from zero. .NET's default is banker's rounding, so this is the one place it is chosen.
 #pragma warning disable RS0030 // The only permitted call to decimal rounding (architecture test A11).
     public static decimal Round(decimal amount) =&gt; Math.Round(amount, 2, MidpointRounding.AwayFromZero);
@@ -854,7 +906,7 @@ app.MapHealthChecks("/health/ready", new() { Predicate = check =&gt; check.Tags.
     </div>
     <p>The 29 February case is in the domain too:</p>
     <div class="extract">
-      <a class="ref" href="src/Uinsure.Policies.Domain/Policies/Term.cs:23">src/Uinsure.Policies.Domain/Policies/Term.cs:23</a>
+      <a class="ref" href="../../../src/Uinsure.Policies.Domain/Policies/Term.cs#L23">src/Uinsure.Policies.Domain/Policies/Term.cs:23</a>
 <pre>    // SELL-3: start + 1 year - 1 day; a 29 Feb start has no anniversary, so it ends on 28 Feb.
     public static DateOnly EndFor(DateOnly start) =&gt;
         start is { Month: 2, Day: 29 }
@@ -865,7 +917,7 @@ app.MapHealthChecks("/health/ready", new() { Predicate = check =&gt; check.Tags.
     <h3>Persistence, logging and health</h3>
     <p>The aggregate is loaded whole. <code>Reference</code> has a unique index, so even a race on SELL-1 ends in a 409. <code>Version</code> is a concurrency token, set anew on every save of a changed policy; two writes on one policy give a 409 <code>/problems/concurrency</code>. Money is stored with precision 18,2 and enums as strings. The code never orders or sums money in SQL, because SQLite stores decimals as text.</p>
     <div class="extract">
-      <a class="ref" href="src/Uinsure.Policies.Persistence/Configurations/PolicyConfiguration.cs:14">src/Uinsure.Policies.Persistence/Configurations/PolicyConfiguration.cs:14</a>
+      <a class="ref" href="../../../src/Uinsure.Policies.Persistence/Configurations/PolicyConfiguration.cs#L14">src/Uinsure.Policies.Persistence/Configurations/PolicyConfiguration.cs:14</a>
 <pre>        // SELL-1: the stored reference is already normalised, so a plain unique index is case-insensitive in effect.
         builder.Property(p =&gt; p.Reference).HasMaxLength(20).IsRequired();
         builder.HasIndex(p =&gt; p.Reference).IsUnique();
@@ -885,10 +937,12 @@ app.MapHealthChecks("/health/ready", new() { Predicate = check =&gt; check.Tags.
     <p>To check the layering part of that, run the architecture tests alone:</p>
     <pre>dotnet test --project tests/Uinsure.Policies.Architecture.Tests</pre>
     <div class="see">The run gave:</div>
-    <pre class="output">  total: 67
+    <pre class="output" data-receipt="R3d">Test run summary: Passed!
+  total: 67
   failed: 0
   succeeded: 67
-  duration: 1s 482ms</pre>
+  skipped: 0
+  duration: 1s 559ms</pre>
 
     <h3>Why, in six decisions</h3>
     <div class="callout"><span class="label">Why</span> Terms, not overwritten dates. The alternative was to move the policy's dates on renewal. Renewal happens while the old term still runs, so overwriting would break a cancellation made in its last 30 days (<span class="chip">RENEW-4</span>).</div>
@@ -905,7 +959,7 @@ app.MapHealthChecks("/health/ready", new() { Predicate = check =&gt; check.Tags.
     <tbody>
       <tr><td>D1. Who may reference whom?</td><td>Domain (base library only) ← Services ← Persistence and Api. Architecture tests enforce it.</td></tr>
       <tr><td>D2. What happens to a request?</td><td>Pipeline in <code>Program.cs</code>, controller, service (load, today, domain, save), repository.</td></tr>
-      <tr><td>D3. How do I follow a rule?</td><td>Requirement row, traited tests, then the domain method: CANCEL-1b is <a class="ref" href="docs/requirements.md:77">docs/requirements.md:77</a>, <a class="ref" href="tests/Uinsure.Policies.Api.Tests/CancelCoolingOffTests.cs:22">tests/Uinsure.Policies.Api.Tests/CancelCoolingOffTests.cs:22</a>, <a class="ref" href="src/Uinsure.Policies.Domain/Rules/RefundCalculator.cs:40">src/Uinsure.Policies.Domain/Rules/RefundCalculator.cs:40</a>.</td></tr>
+      <tr><td>D3. How do I follow a rule?</td><td>Requirement row, traited tests, then the domain method: CANCEL-1b is <a class="ref" href="../../../docs/requirements.md#L77">docs/requirements.md:77</a>, <a class="ref" href="../../../tests/Uinsure.Policies.Api.Tests/CancelCoolingOffTests.cs#L22">tests/Uinsure.Policies.Api.Tests/CancelCoolingOffTests.cs:22</a>, <a class="ref" href="../../../src/Uinsure.Policies.Domain/Rules/RefundCalculator.cs#L40">src/Uinsure.Policies.Domain/Rules/RefundCalculator.cs:40</a>.</td></tr>
       <tr><td>D4. How is "today" decided?</td><td><code>UkCalendar.Today(TimeProvider)</code> in Europe/London; an analyser bans the rest.</td></tr>
       <tr><td>D5. How is money rounded?</td><td>Only <code>Money.Round</code>, 2 dp away from zero.</td></tr>
       <tr><td>D7. How do I add a rule?</td><td>Requirement row, red test, domain method, catalog entry, controller action.</td></tr>

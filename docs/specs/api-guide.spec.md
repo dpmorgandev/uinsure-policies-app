@@ -6,7 +6,7 @@ Citations are `path:line` at the F7 branch (main for the API). The web app is no
 
 ## 1. Question bank
 
-The guide exists to answer these. Each has a home section (§3 numbers) and a short answer, which t3 replaces with the captured, linked one. 27 questions.
+The guide exists to answer these. Each has a home section (§3 numbers) and a short answer, which t3 replaces with the captured, linked one. 30 questions.
 
 ### Assessor (reviewing the take-home)
 
@@ -129,7 +129,7 @@ About 32 pages. Each section has headline, summary, in-depth (LRN-2), at most on
 
 ## 4. Receipts plan
 
-t3 runs every command on the F7 branch at HEAD and records each in `docs/trace/build/F7/receipts.md`: the command, the date, the exit code and the output pasted from the run. The guide copies from that file only. Required runs:
+t3 runs every command on the F7 branch at HEAD and records each in `docs/guides/api/receipts.md` (agents may not write the trace directory), by `docs/guides/api/run-receipts.sh`: the command exactly as run, the date, the exit code and the output pasted from the run. The guide copies from that file only. Required runs:
 
 1. `dotnet --version`, `dotnet build Uinsure.Policies.slnx -warnaserror`
 2. API start on 5080, then `curl` on `/health/live`, `/health/ready`, and one request per endpoint and failure class (sell, get, quote, cancel, claim, renew; 400, 404, 409, 422 single and multiple)
@@ -145,7 +145,7 @@ A number that appears in the guide without a matching line in `receipts.md` fail
 
 ## 5. Acceptance
 
-1. §1 holds at least 25 questions in three reader groups. Met at 27.
+1. §1 holds at least 25 questions in three reader groups. Met at 30.
 2. Every question's home section exists in the guide and answers it; t4 maps question to heading id.
 3. Every item of `docs/documentation-requirements.md` §6 is a section or subsection (§3 table above); MAN-1 to MAN-4 and MAN-7 are covered in full (§4b).
 4. Every command shown matches a `receipts.md` entry, and every `path:line` resolves at HEAD (check script, §8.4).

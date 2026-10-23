@@ -26,7 +26,7 @@ Guide sources use only the classes in `guide.css`. No inline styles except the `
 | Screenshot with markers | `figure > div.shot > img + span.marker`; `left` and `top` are percentages measured from region tags | LRN-6 |
 | Check your understanding | `table.check` | LRN-7 |
 | Comparison table | `table` | LRN-8 |
-| Code reference | `div.extract > a.ref` (`path:line`) and `pre` of 3 to 12 real lines | LRN-9 |
+| Code reference | `div.extract > a.ref` (text `path:line`; `href` is relative to the guide's folder and carries the line as a fragment, for example `../../../src/X.cs#L13`) and `pre` of 3 to 12 real lines | LRN-9 |
 | Why callout | `div.callout` with `span.label` "Why": choice, alternative, reason | LRN-10 |
 | Troubleshooting | closing `table`: symptom, cause, fix | LRN-11 |
 | Rule chip, status callouts | `span.chip`, `div.callout.warn`, `.error`, `.ok` | STY-3 |
@@ -49,9 +49,9 @@ No new package. `print.mjs` uses the Playwright already installed for the web te
 
 1. `PLAYWRIGHT_MODULE` (path to the package directory, relative or absolute)
 2. `src/Uinsure.Policies.Web/node_modules/playwright` (the name after the ui plan's U10 rename)
-3. `src/web/node_modules/playwright`
+3. `src/web/node_modules/playwright` (this branch's layout)
 
-If none exists it exits with code 2 and says to run `npm --prefix src/Uinsure.Policies.Web ci`. Chromium must be installed (`npx playwright install chromium`).
+If none exists it exits with code 2 and says to run `npm --prefix src/web ci` (`src/Uinsure.Policies.Web` after U10). Chromium must be installed (`npx playwright install chromium`).
 
 ## Proof
 
