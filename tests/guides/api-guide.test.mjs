@@ -1,0 +1,109 @@
+// Guide checks for the API user guide (F7, failure route A1).
+// Run: node --test tests/guides/api-guide.test.mjs
+//
+// Each test reproduces one finding of docs/trace/build/F7/findings/A1.md and names it (<rule> <round>/<id>).
+// Conventions read from the sources themselves:
+// - receipts.md records each command it ran on a line `Command: \`<the command, verbatim>\``.
+// - In the guide, a `…` inside a command or an output marks text left out (index.html, section 3 summary).
+//   `…words…` is one elision, so the words between two ellipses are a description, not literal text.
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+const root = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
+const read = (path) => readFileSync(resolve(root, path), "utf8").replace(/\r\n/g, "\n");
+
+const guidePath = "docs/guides/api/index.html";
+const receiptsPath = "docs/guides/api/receipts.md";
+
+const VOID = new Set(["meta", "link", "br", "img", "hr", "input", "source", "wbr"]);
+const RAW = new Set(["pre", "script", "style"]);
+
+function lineAt(text, index) {
+  let line = 1;
+  for (let i = 0; i < index; i++) if (text.charCodeAt(i) === 10) line++;
+  return line;
+}
+
+function parseAttrs(raw) {
+  const attrs = {};
+  for (const m of raw.matchAll(/([\w:-]+)\s*=\s*"([^"]*)"/g)) attrs[m[1].toLowerCase()] = m[2];
+  return attrs;
+}
+
+// A small tag scanner, enough for the guide's own markup: every start tag with its attributes, its line,
+// its open ancestors, and (for pre, script, style) its raw inner text.
+function scan(html) {
+  const elements = [];
+  const stack = [];
+  const re = /<!--[\s\S]*?-->|<(\/?)([a-zA-Z][\w-]*)\b([^>]*?)(\/?)>/g;
+  let m;
+  while ((m = re.exec(html))) {
+    if (m[0].startsWith("<!--")) continue;
+    const [, closing, rawName, rawAttrs, selfClosing] = m;
+    const name = rawName.toLowerCase();
+    if (closing) {
+      const i = stack.map((e) => e.name).lastIndexOf(name);
+      if (i >= 0) stack.length = i;
+      continue;
+    }
+    const el = { name, attrs: parseAttrs(rawAttrs), line: lineAt(html, m.index), start: m.index, ancestors: stack.slice() };
+    elements.push(el);
+    if (RAW.has(name)) {
+      const end = html.indexOf(`</${name}>`, re.lastIndex);
+      el.inner = html.slice(re.lastIndex, end);
+      re.lastIndex = end + name.length + 3;
+      continue;
+    }
+    if (!selfClosing && !VOID.has(name)) stack.push(el);
+  }
+  return elements;
+}
+
+const classes = (el) => (el.attrs.class ?? "").split(/\s+/).filter(Boolean);
+const hasClass = (el, c) => classes(el).includes(c);
+const within = (el, name, c) => el.ancestors.some((a) => a.name === name && (c === undefined || hasClass(a, c)));
+
+const decode = (s) =>
+  s.replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&");
+
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// A shown text with `…` elisions as a pattern: each elision (and the space around it) matches any text.
+function elisionPattern(shown, anchored) {
+  const body = shown.split(/\s*…(?:[^…]*…)?\s*/).map(escapeRe).join("[\\s\\S]*?");
+  return new RegExp(anchored ? `^${body}$` : body);
+}
+
+const pres = (html) => scan(html).filter((el) => el.name === "pre");
+
+// The commands the guide tells the reader to run: every line of a <pre> that is not captured output and
+// not a code extract.
+function guideCommands(html) {
+  return pres(html)
+    .filter((el) => !hasClass(el, "output") && !within(el, "div", "extract"))
+    .flatMap((el) =>
+      decode(el.inner)
+        .split("\n")
+        .map((text, i) => ({ text: text.trim(), line: el.line + i }))
+        .filter((c) => c.text !== ""),
+    );
+}
+
+const receiptCommands = (md) => [...md.matchAll(/^Command:\s*`(.+)`\s*$/gm)].map((m) => m[1]);
+
+const isReceipted = (shown, receipted) => receipted.some((r) => elisionPattern(shown, true).test(r));
+
+test("LRN-5 A1/I1: every curl command in the guide is well formed and is a receipted command", () => {
+  const curls = guideCommands(read(guidePath)).filter((c) => c.text.startsWith("curl "));
+  assert.ok(curls.length > 0, "the guide shows curl commands");
+
+  const glued = curls.filter((c) => /(^|\s)-i(?!\s|$)/.test(c.text)).map((c) => `index.html:${c.line} ${c.text.slice(0, 40)}`);
+  assert.deepEqual(glued, [], "a curl flag `-i` must be followed by a space (`-ihttp` prints curl's help, `-i-X` is an unknown option)");
+
+  const receipted = receiptCommands(read(receiptsPath));
+  const unreceipted = curls.filter((c) => !isReceipted(c.text, receipted)).map((c) => `index.html:${c.line} ${c.text.slice(0, 60)}`);
+  assert.deepEqual(unreceipted, [], "every curl command shown must match a `Command:` line in receipts.md");
+});
