@@ -522,7 +522,7 @@ nodes:
       - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: check the fixes from the QA script, then sign off", status: pending}
       - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
   - id: U9
-    title: "Hosting evidence: Azure Static Web Apps for Docket in the Bicep"
+    title: "Docket ships: Azure Static Web Apps in the Bicep, web CI, Visual Studio launch, README"
     kind: evidence
     owner: loop
     depends_on: []
@@ -544,9 +544,14 @@ nodes:
       - "No secrets (deployment token from the resource, never in params); az never run; nothing deployed"
       - "Visual Studio (David 2026-10-23): the web app is a project in Uinsure.Policies.slnx (a JavaScript SDK .esproj in a web solution folder), and one launch profile starts the API and the web app together (multiple startup projects, the web app's dev server proxying /api to the API's port)"
       - "dotnet build Uinsure.Policies.slnx -warnaserror and dotnet test --solution stay as they are: the .esproj is excluded from the solution build, so pre-commit and pre-push never run npm"
+      - "CI for the web app (David 2026-10-23): the Azure pipeline gains a web build and test stage (npm ci, typecheck, lint, CSS lint, unit, the trace compile, build; Playwright against the API in the test stage) from the existing stage template, before the Static Web Apps deploy. Every pipeline and IaC file lives under infrastructure/, and nothing goes in .github/workflows; project-local tooling such as git hooks stays where it is"
+      - "infrastructure/README.md documents the Static Web App, the web stage and their configured-not-tested notes, in the style of its App Service sections"
+      - "README.md says what Docket is (the trail explorer and the workbench) and how to run it: Visual Studio F5 for API and web together, or the CLI (API, npm run trace, build, preview)"
+      - "The stale matrix rows are re-rendered: no cell reads undefined (build/F4, ui/U0b), and U0b's sign-off cells match its trail; a chore(trace) commit"
+      - "Diff scope: infrastructure/**, the .esproj and launch settings under src/web/, src/web/vite.config.ts, Uinsure.Policies.slnx, README.md, docs/trace/**, docs/qa/ui-U9.md, the plan files"
     tasks:
-      - {id: t1, role: builder, step: write, layer: null, rules: [], title: "staticwebapp.bicep, main.bicep wiring, three param files, the web pipeline stage, the static build settings; the .esproj, the web solution folder and the API + web launch profile", status: pending}
-      - {id: t2, role: orchestrator, step: gates, layer: null, rules: [], title: "bicep build and build-params exit 0 for dev, test and prod; pipeline schema check; dotnet build of the slnx runs no npm; typecheck, unit, build, e2e and regression still green; diff scope", status: pending}
+      - {id: t1, role: builder, step: write, layer: null, rules: [], title: "staticwebapp.bicep, main.bicep wiring, three param files; the web build, test and deploy stages; the static build settings; the .esproj, web solution folder and API + web launch; infrastructure/README.md and README.md", status: pending}
+      - {id: t2, role: orchestrator, step: gates, layer: null, rules: [], title: "bicep build and build-params exit 0 for dev, test and prod; pipeline schema check; dotnet build of the slnx runs no npm; typecheck, unit, build, e2e and regression still green; render-trace check; no matrix cell reads undefined; diff scope", status: pending}
       - {id: t3, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
       - {id: t4, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U9.md", status: pending}
       - {id: t5, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui; every check on the post-integrate HEAD", status: pending}
