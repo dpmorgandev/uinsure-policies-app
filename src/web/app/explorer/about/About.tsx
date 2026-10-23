@@ -1,8 +1,8 @@
-import { MarkdownText, PageHeader, ProvenanceLabel, StatusTag } from '../../../kit';
+import { MarkdownText, NotBuiltYet, PageHeader, ProvenanceLabel, StatusTag, VerifyCommand } from '../../../kit';
 import type { Provenance, Status } from '../../../kit';
 import type { Snapshot, Trace } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
-import { NotBuiltRegion, Region, Rung } from '../../shell/Rung';
+import { Region, Rung } from '../../shell/Rung';
 import { useShell } from '../../shell/ShellContext';
 import './about.css';
 
@@ -44,6 +44,30 @@ function gapsOf(trace: Trace): string[] {
     return `${where}: ${p.reason}`;
   });
   return trace.harness === null ? [...reported, NO_HARNESS] : reported;
+}
+
+/** VERIFY-1: commands that re-check the snapshot in a clone, with no UI. */
+function ReVerify({ sha, short }: { sha: string; short: string }) {
+  return (
+    <>
+      <p className="s-text">Every claim here can be re-checked with git alone. Run these in a clone of the repository.</p>
+      <VerifyCommand
+        command={`git show --no-patch --format="%H %cI %s" ${sha}`}
+        intro="This prints the snapshot commit: its full SHA, its commit time and its subject."
+        expect={
+          <>
+            Expect a full SHA that starts <code>{short}</code>.
+          </>
+        }
+        note="The command is filled in from the compiled-at stamp; the page has no recorded output for it."
+      />
+      <VerifyCommand
+        command={`git log -n 20 --format="%h %(trailers:key=TDD,valueonly) %s" ${sha}`}
+        intro="This lists the 20 commits up to the snapshot, each with its TDD trailer."
+        expect="Expect red, stub, green or refactor beside each commit the loop made, and nothing beside a commit it did not."
+      />
+    </>
+  );
 }
 
 function Stamp({ trace, snapshot }: { trace: Trace; snapshot: Snapshot }) {
@@ -165,7 +189,13 @@ export function About() {
         </div>
         <MarkdownText source={GLOSSARY} />
       </Rung>
-      <NotBuiltRegion region="re-verify-with-git" name="re-verify with git" />
+      <Rung region="re-verify-with-git" req="VERIFY-1" ordinal="Step 3" heading="Re-verify with git">
+        {trace.state === 'ready' ? (
+          <ReVerify sha={trace.snapshot.sha} short={trace.snapshot.short} />
+        ) : (
+          <NotBuiltYet kind="region" name="re-verify with git" />
+        )}
+      </Rung>
       <Rung region="guided-tour-entry-one-rule-end-to-end-could" req="NAV-5" ordinal="Step 4" heading="Follow one rule">
         <Tour trace={trace.state === 'ready' ? trace.trace : null} />
       </Rung>
