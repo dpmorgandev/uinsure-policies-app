@@ -486,7 +486,7 @@ nodes:
     cuttable: true
     budget: null
     status: in_progress
-    attempt: 1
+    attempt: 2
     branch: feature/ui/U9
     worktree: .claude/worktrees/ui-U9
     pr: null
@@ -494,7 +494,7 @@ nodes:
     trace: docs/trace/ui/U9/
     acceptance:
       - "Replaces U6 (cut by David 2026-10-23: one Azure hosting story, not GitHub Pages): a hand-written infrastructure/modules/staticwebapp.bicep, wired into main.bicep beside the App Service"
-      - "The Static Web App links the App Service as its backend, so /api reaches the API from the same origin and the CSP stays default-src 'self'"
+      - "The Static Web App links the App Service as its backend, same origin, so the CSP stays default-src 'self'. The linked backend forwards /api unchanged and the API has no /api prefix: a documented gap in infrastructure/README.md, not fixed (David 2026-10-23, U9 review A1 R3: evidence only, never deployed)"
       - "The static build's settings and deep links on the host (routes fall back to index.html); trace.json is compiled before the build"
       - "bicep build and bicep build-params succeed for dev, test and prod; the pipeline gains a web build and deploy stage from the existing stage template; pipeline schema check passes"
       - "No secrets (deployment token from the resource, never in params); az never run; nothing deployed"
@@ -535,6 +535,7 @@ nodes:
       - "Trail records already committed (docs/trace/**, packets, verdicts) keep src/web: they are receipts. The compiler, render-trace and the checks accept both paths"
       - "Runs last, after every other ui node has landed, so no node in flight conflicts with the move"
       - "The stale matrix rows are re-rendered (moved from U9, 2026-10-23: render-trace finds a node's commits as origin/<base>..HEAD, so a merged node can't be re-rendered; a harness change first gives render an explicit range): no cell reads undefined (build/F4, ui/U0b), and U0b's sign-off cells match its trail"
+      - "U9 carries (P2): check-pipeline.py asks the deploy template for the Static Web Apps deploy, and its run lint needle no longer matches lint:css alone (review A1 R6); the CI e2e wait is bounded and the regression specs are kept off the Linux agent or given per-platform baselines (R7); staticwebapp.config.json sets frame-ancestors and Referrer-Policy (security A1 S2); the solution lists staticwebapp.bicep and staticwebapp.config.json, and src/web/public/ is ignored (U9 QA note 3)"
       - "Every check passes on the renamed tree: dotnet build and test, typecheck, unit, e2e, regression, the harness self-test, render-trace check for every ui node"
     tasks:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [], title: "Architecture test that fails until the rename: the web project sits at src/Uinsure.Policies.Web and its tests at tests/Uinsure.Policies.Web.Tests, the slnx lists them there, and no live file outside the committed trail names src/web or tests/web", status: pending}
