@@ -7,7 +7,8 @@
     "U2",
     "U3",
     "U5",
-    "W1"
+    "W1",
+    "W2"
   ],
   "screens": {
     "about": {
@@ -144,13 +145,13 @@
     },
     "wb-cancel": {
       "built": [
+        "cancellation-date-and-quote",
         "quote-and-cancel-actions-each-busy-while-its-request-runs",
-        "problems-cancel-3-cancel-4-cancel-7"
+        "problems-cancel-3-cancel-4-cancel-7",
+        "the-refund-as-a-worked-sum-per-term-with-the-rule-applied",
+        "cancel-with-the-quoted-date-then-quote-and-cancellation-compared"
       ],
       "notBuilt": [
-        "cancellation-date-and-quote",
-        "the-refund-as-a-worked-sum-per-term-with-the-rule-applied",
-        "cancel-with-the-quoted-date-then-quote-and-cancellation-compared",
         "the-requests-as-sent-inspector"
       ]
     },
@@ -181,10 +182,10 @@
         "payments-and-refunds",
         "claims",
         "cancellation-summary-from-get-per-term-breakdown-from-the-logged-cancel-response",
-        "record-level-problem-banner-404-409"
+        "record-level-problem-banner-404-409",
+        "actions-quote-and-cancel-record-a-claim-renew"
       ],
       "notBuilt": [
-        "actions-quote-and-cancel-record-a-claim-renew",
         "requests-that-touched-this-policy"
       ]
     },

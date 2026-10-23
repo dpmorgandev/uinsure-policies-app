@@ -90,10 +90,12 @@ function Stamp({ trace, snapshot }: { trace: Trace; snapshot: Snapshot }) {
 
 /** NAV-5: the five stops of one rule's story. A stop whose page needs data the trace holds links to the first such page. */
 function Tour({ trace }: { trace: Trace | null }) {
+  // One rule decides all three targets: its node (from the matrix) and its first red commit.
   const rule = trace?.rules.find((r) => r.status === 'built');
-  const node = trace?.nodes.find((n) => (n.walkthrough ?? []).length > 0);
-  const commit = node?.walkthrough?.[0];
-  const walkthroughHref = node ? `#/plans/${node.plan}/${node.id}/commits` : '#/rules';
+  const home = rule?.matrix;
+  const commit =
+    rule && home ? trace?.commits.find((c) => c.rule.includes(rule.id) && c.tdd === 'red' && c.plan === home.plan && c.node === home.node) : undefined;
+  const walkthroughHref = home?.plan && home.node ? `#/plans/${home.plan}/${home.node}/commits` : '#/rules';
   const stops: { href: string; label: string; what: string }[] = [
     { href: '#/', label: 'Overview', what: 'read the headline answer and check its figures.' },
     { href: '#/rules', label: 'Requirements matrix', what: 'choose one rule.' },
