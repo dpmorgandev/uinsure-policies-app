@@ -403,7 +403,8 @@ export function SellPolicy() {
         </FormSection>
       </div>
 
-      <section className="s-wb-region" data-region="the-request-as-sent-inspector" data-req="WB-7">
+      <section className="s-wb-region" data-region="the-request-as-sent-inspector" data-req="WB-7" aria-labelledby="s-wb-receipt-title">
+        <h2 id="s-wb-receipt-title" className="s-wb-heading">Receipt for rung 4: what was sent, what came back</h2>
         <RequestsDrawer />
       </section>
     </form>

@@ -315,9 +315,11 @@ export function CancelPolicy() {
         <RungSpine label="Quote and cancel, three rungs" items={rungs} headingLevel={3} />
       </Region>
 
-      <section className="s-wb-region" data-region="the-requests-as-sent-inspector" data-req="WB-7">
-        <RequestsDrawer />
-      </section>
+      <Region slug="the-requests-as-sent-inspector" req="WB-7" heading="Requests">
+        <div className="s-wb-dock">
+          <RequestsDrawer />
+        </div>
+      </Region>
     </div>
   );
 }
