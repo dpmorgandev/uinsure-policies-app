@@ -1,0 +1,60 @@
+{
+  "v": 1,
+  "ts": "2026-10-24T13:59:46Z",
+  "plan": "bug-002",
+  "node": "N2",
+  "attempt": 3,
+  "agent": "security",
+  "agent_id": "ab096146f8b1810e7",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "bug-002",
+    "node_id": "N2",
+    "attempt": 3,
+    "base_sha": "250cd0d177171336cf44be32ea338a09620d7ed5",
+    "head_sha": "93eed277a43ec92b0694ab60308f75dc89623f79",
+    "diff_fingerprint": "864a30271bcff9820792271963b12e01a4584c39",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.web-static",
+      "gate.unit",
+      "gate.e2e",
+      "gate.diff-scope",
+      "gate.dotnet",
+      "gate.no-stub"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "ui node (bug-002 N2): walked the web-security checklist W1-W8 in place of the .NET extras.",
+      "W1 met: the src diff has no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval or new Function. RequestsDrawer.tsx pretty-prints JSON bodies with JSON.stringify(JSON.parse(body), null, 2) and falls back to the raw text. The result goes into the kit InspectorDrawer as a string, which React renders as text.",
+      "W2 met: the diff adds no href built from data and no external link.",
+      "W3 met: the diff adds no script, @import or remote URL to any src file. index.html and the CSP are untouched. The workbench.css change adds a .s-wb-dock rule with overflow: clip and nothing else.",
+      "W4 met: the diff adds no fetch, localStorage, sessionStorage or cookie use. The only hits in app/workbench are the existing browser.ts lines 8 and 18, which this diff doesn't touch. The drawer only reads the existing request log.",
+      "W5 n/a: the diff doesn't touch src/Uinsure.Policies.Web/compiler.",
+      "W6 met: no local absolute path, personal email, key or token in the diff (grep for C:\\Users, the user name and gmail.com returned 0 matches).",
+      "W7 met: package.json and the lockfile are not in the diff. gate.audit shows runtime 0 vulnerabilities and dev 0 vulnerabilities, so the known stylelint/braces item doesn't appear.",
+      "W8 met: the drawer shows the API's request and response bodies as the log recorded them. It adds no stack trace, error boundary change or server internals.",
+      "API8:2023 met: covered by W3 and W4 above.",
+      "API10:2023 met: covered by W1 and W8 above. API answers render as text only.",
+      "API1, API2, API3, API4, API5, API6, API7 and API9: n/a, ui node, no server code. API1, API2 and API5 are also out of scope by the skill, since there is no auth, tenancy or roles.",
+      "The .NET extras (SQL, money, packages, secrets, logging) are replaced by the W checklist for a ui node. gate.dotnet shows build 0 errors and 649/649 tests, and the diff touches no .cs file.",
+      "The diff.patch is 3.2 MB because it contains the regenerated docs/ui/derived/bug-002-N2 screen HTML and JSON. I read the src and tests hunks in full and ran grep checks over the rest, and found nothing sensitive in the derived files.",
+      "Scope check: the source changes are RequestsDrawer.tsx, CancelPolicy.tsx, RecordClaim.tsx, SellPolicy.tsx, workbench.css and the test specs. gate.diff-scope also reports no path outside the allowed set."
+    ]
+  }
+}
