@@ -1,0 +1,194 @@
+{
+  "screen": "wb-sell",
+  "route": "/workbench/sell",
+  "regions": [
+    {
+      "name": "error summary: every problem, each linked to its field and its rule",
+      "req": [
+        "WB-3"
+      ],
+      "components": [
+        "error-summary",
+        "rule-chip",
+        "problem-banner",
+        "button"
+      ],
+      "fields": [
+        "021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.exchanges[role=setup].responseBody.violations[].ruleId",
+        "021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.exchanges[role=setup].responseBody.violations[].detail",
+        "032-shape-startdate-missing-400.exchanges[role=setup].responseBody.errors.startDate[]",
+        "003-sell-1-new-reference-201.exchanges[role=setup].status"
+      ],
+      "built": true
+    },
+    {
+      "name": "policy fields (reference, type, start date, amount, payment method, auto-renew)",
+      "req": [
+        "WB-1"
+      ],
+      "components": [
+        "form-section",
+        "field",
+        "text-input",
+        "date-input",
+        "money-input",
+        "select",
+        "radio-group",
+        "switch",
+        "constraint-hint"
+      ],
+      "fields": [
+        "003-sell-1-new-reference-201.exchanges[role=setup].requestBody.reference",
+        "003-sell-1-new-reference-201.exchanges[role=setup].requestBody.type",
+        "003-sell-1-new-reference-201.exchanges[role=setup].requestBody.startDate",
+        "003-sell-1-new-reference-201.exchanges[role=setup].requestBody.amount",
+        "003-sell-1-new-reference-201.exchanges[role=setup].requestBody.paymentMethod",
+        "003-sell-1-new-reference-201.exchanges[role=setup].requestBody.autoRenew",
+        "021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.exchanges[role=setup].requestBody.{reference,type,startDate,amount,paymentMethod,autoRenew}"
+      ],
+      "built": true
+    },
+    {
+      "name": "reference as stored (normalisation preview)",
+      "req": [
+        "WB-1"
+      ],
+      "components": [
+        "reference-preview"
+      ],
+      "fields": [
+        "003-sell-1-new-reference-201.exchanges[role=setup].requestBody.reference",
+        "003-sell-1-new-reference-201.exchanges[role=setup].responseBody.reference",
+        "021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.exchanges[role=setup].requestBody.reference"
+      ],
+      "built": true
+    },
+    {
+      "name": "policyholders, 1 to 3",
+      "req": [
+        "WB-1"
+      ],
+      "components": [
+        "form-section",
+        "repeatable-group",
+        "field",
+        "text-input",
+        "button"
+      ],
+      "fields": [
+        "003-sell-1-new-reference-201.exchanges[role=setup].requestBody.policyholders[].{firstName,lastName,dateOfBirth}",
+        "021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.exchanges[role=setup].requestBody.policyholders[].{firstName,lastName,dateOfBirth}"
+      ],
+      "built": true
+    },
+    {
+      "name": "property",
+      "req": [
+        "WB-1"
+      ],
+      "components": [
+        "form-section",
+        "field",
+        "text-input"
+      ],
+      "fields": [
+        "003-sell-1-new-reference-201.exchanges[role=setup].requestBody.property.{addressLine1,addressLine2,addressLine3,postcode}",
+        "021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.exchanges[role=setup].requestBody.property.{addressLine1,addressLine2,addressLine3,postcode}"
+      ],
+      "built": true
+    },
+    {
+      "name": "send it anyway (client checks off)",
+      "req": [
+        "WB-6"
+      ],
+      "components": [
+        "send-anyway-toggle",
+        "switch",
+        "rule-chip"
+      ],
+      "fields": [
+        "021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.exchanges[role=setup].status",
+        "021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.exchanges[role=setup].responseBody.violations[].{ruleId,detail}"
+      ],
+      "built": true
+    },
+    {
+      "name": "submit, busy while the sell request runs (spinner, disabled)",
+      "req": [
+        "BUSY-1"
+      ],
+      "components": [
+        "form-section",
+        "button",
+        "spinner"
+      ],
+      "fields": [],
+      "built": true
+    },
+    {
+      "name": "the request as sent (inspector)",
+      "req": [
+        "WB-7"
+      ],
+      "components": [
+        "inspector-drawer"
+      ],
+      "fields": [
+        "003-sell-1-new-reference-201.exchanges[role=setup].{method,path,requestBody,status,responseHeaders.location,responseBody}",
+        "021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.exchanges[role=setup].{method,path,requestBody,status,responseBody}",
+        "021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.exchanges[role=request].{status,responseBody.ruleId}"
+      ],
+      "built": true
+    }
+  ],
+  "states": [
+    {
+      "name": "populated",
+      "file": "populated.html",
+      "variant": "docs/ui/fixture/api/003-sell-1-new-reference-201.json, the recorded SELL-1 exchange (201)"
+    },
+    {
+      "name": "submitting",
+      "file": "submitting.html",
+      "variant": "the populated page's recorded SELL-1 request, with the response not yet arrived"
+    },
+    {
+      "name": "api-error",
+      "file": "api-error.html",
+      "variant": "docs/ui/fixture/api/021-sell-2-start-today-61-4-policyholders-one-under-16-amount-0-422.json (422), with docs/ui/fixture/api/032-shape-startdate-missing-400.json (400) shown as a labelled second error"
+    },
+    {
+      "name": "api-unreachable",
+      "file": "api-unreachable.html",
+      "variant": "no API answer; the form keeps the populated page's recorded SELL-1 request values, and no response figure is shown"
+    }
+  ],
+  "actions": [
+    {
+      "label": "Sell this policy",
+      "kind": "submit",
+      "to": "POST /policies"
+    },
+    {
+      "label": "Try again",
+      "kind": "submit",
+      "to": "POST /policies"
+    },
+    {
+      "label": "Open policy F1-MVFJOFJ8IS",
+      "kind": "link",
+      "to": "/workbench/policies/:reference"
+    },
+    {
+      "label": "Rule chip (SELL-2, SELL-4, SELL-5, SELL-7)",
+      "kind": "link",
+      "to": "/rules/:ruleId"
+    },
+    {
+      "label": "The StartDate field is required.",
+      "kind": "anchor",
+      "to": "#startDate"
+    }
+  ]
+}

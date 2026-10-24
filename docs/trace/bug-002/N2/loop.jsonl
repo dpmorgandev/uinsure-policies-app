@@ -1,0 +1,2 @@
+{"v":1,"ts":"2026-10-24T00:38:29Z","plan":"bug-002","node":"N2","attempt":1,"source":"orchestrator","event":"setup","head":"1d5649364a7cecc75b918a3e7e58fde23e7b7ac7","branch":"bug/bug-002/N2","worktree":".claude/worktrees/bug-002-N2","detail":"stacked on bug/bug-002/N1 250cd0d1 (delegated ruling)"}
+{"v":1,"ts":"2026-10-24T00:38:29Z","plan":"bug-002","node":"N2","attempt":1,"source":"orchestrator","event":"state(in_progress)","head":"1d5649364a7cecc75b918a3e7e58fde23e7b7ac7"}

@@ -1,0 +1,133 @@
+{
+  "screen": "wb-claim",
+  "route": "/workbench/policies/:reference/claims/new",
+  "regions": [
+    {
+      "name": "claim date and description",
+      "req": [
+        "WB-5"
+      ],
+      "components": [
+        "page-header",
+        "field",
+        "date-input",
+        "text-area"
+      ],
+      "fields": [
+        "070-could-2-claim-dated-today-201.json exchanges[path=/policies/F3-MVFJRDH152].responseBody.{reference,status,terms[0].startDate,terms[0].endDate}",
+        "070-could-2-claim-dated-today-201.json exchanges[path=/policies/F3-MVFJRDH152/claims].requestBody.{claimDate,description}",
+        "070-could-2-claim-dated-today-201.json recordedAt",
+        "084-could-2a-claim-dated-tomorrow-422.json exchanges[path=/policies/F3-MVFJRZIXM3/claims].{requestBody.claimDate,responseBody.{status,ruleId,today,detail}} (api-error page)",
+        "084-could-2a-claim-dated-tomorrow-422.json exchanges[role=request].responseBody.{reference,status,terms[0].startDate,terms[0].endDate} (api-error page)",
+        "the API at localhost:5080 not answering (api-unreachable): no field"
+      ],
+      "built": true
+    },
+    {
+      "name": "refund before and after the claim (two quotes)",
+      "req": [
+        "WB-5"
+      ],
+      "components": [
+        "refund-worked-sum",
+        "rule-chip",
+        "rung-spine",
+        "spinner"
+      ],
+      "fields": [
+        "070-could-2-claim-dated-today-201.json exchanges[path=/policies/F3-MVFJRDH152/claims].{status,requestBody.claimDate,responseBody.{reference,hasClaims}}",
+        "070-could-2-claim-dated-today-201.json exchanges[path=/policies].responseBody.{hasClaims,claims}",
+        "070-could-2-claim-dated-today-201.json exchanges[role=request,path=/policies/F3-MVFJRDH152].responseBody.{hasClaims,claims[0].reference,terms[0].amount}",
+        "refund 0.00 and rule COULD-2 after the claim: from the screen entry's description, not from a recorded quote (no cancellation-quote response is in the data)",
+        "the quote before the claim: not in the data (shown as a gap)",
+        "084-could-2a-claim-dated-tomorrow-422.json exchanges[path=/policies/F3-MVFJRZIXM3/claims].{status,requestBody.claimDate,responseBody.ruleId} and exchanges[role=request].responseBody.{hasClaims,claims} (api-error page)"
+      ],
+      "built": true
+    },
+    {
+      "name": "problems (COULD-2a, COULD-2b, COULD-2c)",
+      "req": [
+        "WB-3"
+      ],
+      "components": [
+        "error-summary",
+        "problem-banner",
+        "rule-chip"
+      ],
+      "fields": [
+        "084-could-2a-claim-dated-tomorrow-422.json exchanges[path=/policies/F3-MVFJRZIXM3/claims].responseBody.{title,status,detail,instance,ruleId,today,type,traceId,violations}",
+        "088-could-2c-claim-on-a-cancelled-policy-409.json exchanges[role=request].responseBody.{title,status,detail,instance,ruleId,cancellationDate,type}",
+        "088-could-2c-claim-on-a-cancelled-policy-409.json exchanges[role=request].requestBody.claimDate",
+        "COULD-2b: no recorded response in the data (shown as a gap)",
+        "the API at localhost:5080 not answering (api-unreachable): no field"
+      ],
+      "built": true
+    },
+    {
+      "name": "record claim, busy while the request and the two quotes run",
+      "req": [
+        "BUSY-1"
+      ],
+      "components": [
+        "button",
+        "spinner",
+        "inspector-drawer"
+      ],
+      "fields": [
+        "070-could-2-claim-dated-today-201.json exchanges[role=setup,path=/policies/F3-MVFJRDH152/claims].{method,path,requestBody,status,responseBody}",
+        "070-could-2-claim-dated-today-201.json exchanges[role=request,path=/policies/F3-MVFJRDH152].{method,path,status,responseBody.{reference,status,hasClaims,claims}}",
+        "084-could-2a-claim-dated-tomorrow-422.json exchanges[*].{method,path,requestBody,status,responseBody} (api-error page)"
+      ],
+      "built": true
+    }
+  ],
+  "states": [
+    {
+      "name": "populated",
+      "file": "populated.html",
+      "variant": "070-could-2-claim-dated-today-201.json (recorded 2026-10-19T17:47:25Z): policy F3-MVFJRDH152, claim dated 2026-10-19 recorded as CLM-F3-MVFJRDH152-1; the two quotes are not in the recording, so rung 1 and the days of rung 3 are gaps"
+    },
+    {
+      "name": "submitting",
+      "file": "submitting.html",
+      "variant": "the populated page's values, with the claim request in flight (BUSY-1): rung 2 busy, rung 3 waiting, the record button busy and disabled"
+    },
+    {
+      "name": "api-error",
+      "file": "api-error.html",
+      "variant": "084-could-2a-claim-dated-tomorrow-422.json (recorded 2026-10-19T17:47:54Z): policy F3-MVFJRZIXM3, claim dated 2026-10-20 refused 422 under COULD-2a; plus 088-could-2c-claim-on-a-cancelled-policy-409.json (recorded 2026-10-19T17:48:02Z): policy F3-MVFJS5YBSP, 409 under COULD-2c, labelled as a second recorded refusal on another policy"
+    },
+    {
+      "name": "api-unreachable",
+      "file": "api-unreachable.html",
+      "variant": "no data: the API at localhost:5080 does not answer; problem-banner unreachable"
+    }
+  ],
+  "actions": [
+    {
+      "label": "Record this claim",
+      "kind": "request",
+      "to": "POST /policies/:reference/claims, then GET /policies/:reference/cancellation-quote?cancellationDate=:date for the quotes before and after (the quote date is not in the data)"
+    },
+    {
+      "label": "Try again",
+      "kind": "request",
+      "to": "repeats the request that did not answer"
+    },
+    {
+      "label": "Error summary link (Claim date in the future)",
+      "kind": "link",
+      "to": "#claim-date field on this page"
+    },
+    {
+      "label": "Show requests / Hide requests",
+      "kind": "control",
+      "to": "opens or closes the inspector drawer"
+    },
+    {
+      "label": "Rule chips (COULD-2, COULD-2a, COULD-2c)",
+      "kind": "link",
+      "to": "/rules/:ruleId"
+    }
+  ]
+}
