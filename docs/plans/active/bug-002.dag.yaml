@@ -52,7 +52,7 @@ nodes:
     rules: [WB-7]
     cuttable: false
     budget: 3h
-    status: hitl
+    status: done
     attempt: 4
     branch: bug/bug-002/N2
     worktree: .claude/worktrees/bug-002-N2
@@ -77,8 +77,8 @@ nodes:
       - {id: t8, role: tester, step: qa, layer: null, rules: [WB-7], title: "QA script docs/qa/bug-002-N2.md: send on each workbench screen and read the request and response", status: done}
       - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: done}
       - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md, README and matrix; chore(trace) commit; completeness check passes", status: done}
-      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: pending}
-      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and the running app", status: pending}
+      - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: done}
+      - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and the running app", status: done}
       - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
   - id: N3
     title: "The workbench says what the API answered"
