@@ -209,6 +209,61 @@ for (const width of [1440, 390] as const) {
   });
 }
 
+// ── A3/I2: the expected tokens are the wire text's, never a parsed body's ─────────────────────────────────────
+// watchApi parses every body, and String(803.4) is a substring of "803.40", so a toContainText on a parsed value
+// can't tell an exact exchange from a re-serialised one. Here the expected text is the raw response
+// (response.text()) and the raw request (postData()), on a sale whose amount has a trailing zero.
+
+/** The text with every whitespace character outside a JSON string removed: indenting may change nothing else. */
+function withoutLayout(text: string): string {
+  let out = '';
+  let inString = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const c = text[i] as string;
+    if (inString) {
+      out += c;
+      if (c === '\\') {
+        out += text[i + 1] ?? '';
+        i += 1;
+      } else if (c === '"') inString = false;
+    } else if (c === '"') {
+      inString = true;
+      out += c;
+    } else if (!/\s/.test(c)) out += c;
+  }
+  return out;
+}
+
+/** Every number token outside a JSON string, as written. */
+function numberTokens(json: string): string[] {
+  return [...withoutLayout(json).replace(/"(?:[^"\\]|\\.)*"/g, '""').matchAll(/-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?/g)].map((m) => m[0]);
+}
+
+test('WB-7 · the sell screen shows the sale\'s request and 201 response with every number token exactly as on the wire (803.40 stays 803.40)', async ({ page, api }) => {
+  void api;
+  const reference = freshReference('N2TK');
+  const seen = watchApi(page);
+  const wireResponse = page.waitForResponse((r) => new URL(r.url()).pathname === '/api/policies' && r.request().method() === 'POST', live);
+  await sell(page, sellForm(reference, { amount: '803.40' }));
+  const response = await wireResponse;
+  const sale = await answered(seen, 'POST', '/api/policies');
+  expect(sale.status, 'setup: the API sold the policy').toBe(201);
+  const rawResponse = await response.text();
+  const rawRequest = response.request().postData() ?? '';
+  expect(rawResponse, 'setup: the API wrote the amount with two places').toContain('"amount":803.40');
+
+  const inspector = page.locator('[data-region="the-request-as-sent-inspector"]');
+  const item = itemFor(drawerIn(inspector), sale);
+  await expect(item, 'setup: the region lists POST /policies').toBeVisible(live);
+  const shown = (await item.locator('pre').evaluate((el) => el.textContent ?? '')) as string;
+  const compact = withoutLayout(shown);
+  const responseTokens = numberTokens(rawResponse);
+  expect(responseTokens, 'setup: the response holds 803.40 as a token').toContain('803.40');
+  expect(numberTokens(compact.slice(compact.indexOf('response'))), "the response's number tokens, as shown, are the wire's").toEqual(responseTokens);
+  expect(compact, 'the response shown is the wire text with whitespace added, nothing else').toContain(withoutLayout(rawResponse));
+  expect(compact, 'the request shown is the wire text with whitespace added, nothing else').toContain(withoutLayout(rawRequest));
+});
+
 // ── Acceptance 4: bodies indented in the drawer, the wire text exact ───────────────────────────────────────────
 
 test('WB-7 · the claim screen drawer shows the claim request and response JSON indented, one key a line, while the wire text stays compact', async ({ page, api }) => {
