@@ -134,6 +134,7 @@ nodes:
       - "Matrix Step 3 draws the test-count scope note from trace.json per-node counts, with no not-built-yet marker (inv-009 #8, I6)"
       - "The undrawn-lines notice on the activity screen is a kit component, added by the in-node kit gap with at most one catalog state, and agent-2.spec.ts runs without fixme and passes (inv-009 #10, I15)"
       - "With two plans in trace.json, the Plan nav entry offers every plan before or without landing on the build plan (inv-009 #11, I16)"
+      - "NotBuiltRegion and its NotBuiltYet import are gone from app/shell/Rung.tsx once no screen uses them; N2 removed the last two uses (bug-002/N2 review A3 R3, P2)"
       - "The reproduction test fails on the merge base and passes at the PR head"
       - "The full suite and the rule-coverage check pass"
     tasks:
