@@ -1,0 +1,63 @@
+{
+  "v": 1,
+  "ts": "2026-10-24T14:27:15Z",
+  "plan": "bug-002",
+  "node": "N2",
+  "attempt": 4,
+  "agent": "security",
+  "agent_id": "aeb7b8a2bf8bbdbce",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "bug-002",
+    "node_id": "N2",
+    "attempt": 4,
+    "base_sha": "250cd0d177171336cf44be32ea338a09620d7ed5",
+    "head_sha": "259db8a441ccebe0920a51c725d1d75b5a5a4cfd",
+    "diff_fingerprint": "24723645ac7e28c19eaf51ad35a6a2030391afb5",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.web-static",
+      "gate.diff-scope",
+      "gate.green",
+      "gate.dotnet",
+      "gate.no-stub"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Scope: the ui-side source changes are RequestsDrawer.tsx, CancelPolicy.tsx, RecordClaim.tsx, SellPolicy.tsx and workbench.css. The rest of the diff is tests, docs and generated screen files under docs/ui/derived.",
+      "W1 met: no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval or new Function in app/workbench or the kit. The drawer shows request and response bodies through the kit's InspectorDrawer, which renders them as {request.exchange} inside a <pre> (text, not HTML). The new indent() function only changes whitespace and builds a string. It runs only after JSON.parse succeeds, so the brackets balance and depth never goes negative.",
+      "W2 met: the diff adds no href from data. The existing hrefs are internal hash routes with encodeURIComponent, or ruleHref rule links.",
+      "W3 met: index.html, the CSP and fonts are untouched. The CSS change is a local .s-wb-dock rule (overflow: clip) with no external resource.",
+      "W4 met: the diff adds no fetch or storage access. The drawer reads the in-memory request log through useRequestLog. The only localStorage use, in browser.ts, is existing code outside this diff and is the recent-policies list (WB-9).",
+      "W5 n/a: src/Uinsure.Policies.Web/compiler/** is not touched by this diff.",
+      "W6 met: the grep of added lines for absolute paths, personal emails, keys and tokens found only prose and fixtures. These are the words 'token' and 'Version token' in docs, and 'redaction-token' in derived screen JSON. None is a credential or a local path.",
+      "W7 met: the diff touches no package.json, lockfile or csproj. gate.audit reports runtime 0 vulnerabilities and package files untouched. The known dev-only stylelint/braces item is unchanged.",
+      "W8 met: the drawer shows the API's bodies exactly as received, with no stack or internals added. A body that is not JSON is shown unchanged.",
+      "API8:2023 (ui side) met through W3 and W4. API10:2023 (ui side) met through W1 and W8: the API's answers render as text only.",
+      "API1:2023 n/a: no auth or tenancy; the reference is the only key.",
+      "API2:2023 n/a: auth is out of scope.",
+      "API3:2023 n/a: ui node, no server code.",
+      "API4:2023 n/a: ui node, no server code.",
+      "API5:2023 n/a: no roles.",
+      "API6:2023 n/a: ui node, no server code.",
+      "API7:2023 n/a: no outbound URL fetching.",
+      "API9:2023 n/a: ui node, no server code.",
+      ".NET extras (SQL, money, packages, secrets, logging) replaced by W1-W8 for a ui node. gate.dotnet is green (649/649) and no server code changed."
+    ]
+  }
+}
