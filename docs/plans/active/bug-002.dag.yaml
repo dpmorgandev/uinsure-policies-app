@@ -159,7 +159,7 @@ nodes:
     rules: [SELL-4]
     cuttable: false
     budget: 3h
-    status: in_progress
+    status: paused_acceptance
     attempt: 1
     branch: bug/bug-002/N5
     worktree: .claude/worktrees/bug-002-N5
