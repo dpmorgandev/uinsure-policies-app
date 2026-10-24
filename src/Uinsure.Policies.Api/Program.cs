@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
@@ -62,10 +63,7 @@ builder.Services.AddScoped<IPolicyService, PolicyService>();
 // The document's info.version is the API project's <Version>, not the generator's default 1.0.0.
 builder.Services.AddOpenApi(options => options.AddDocumentTransformer((document, _, _) =>
 {
-    var informational = typeof(Program).Assembly
-        .GetCustomAttributes(typeof(System.Reflection.AssemblyInformationalVersionAttribute), false)
-        .OfType<System.Reflection.AssemblyInformationalVersionAttribute>()
-        .Single().InformationalVersion;
+    var informational = typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
     document.Info.Version = informational.Split('+')[0];
     return Task.CompletedTask;
 }));
