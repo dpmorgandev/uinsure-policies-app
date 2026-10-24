@@ -103,7 +103,7 @@ nodes:
       - "The reproduction test fails on the merge base and passes at the PR head"
       - "The full suite and the rule-coverage check pass"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-1, BUSY-1, HONEST-1], title: "Reproduction: Sell Status reads not in this screen's data after a 201, focus stays at Send, and Cancel shows an unmarked stale status and \"answered ,\"; fails on main (unit and e2e, and a rejected fetch shown as Waiting), the acceptance suite and unit tests", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-1, BUSY-1, HONEST-1], title: "Reproduction: Sell Status reads not in this screen's data after a 201, focus stays at Send, and Cancel shows an unmarked stale status and \"answered ,\"; fails on main (unit and e2e, and a rejected fetch shown as Waiting), the acceptance suite and unit tests", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No stub: every route this node touches already exists", status: skipped}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the reproduction tests red against main; go or change", status: skipped}
       - {id: t4, role: builder, step: green, layer: screen, rules: [WB-1, BUSY-1, HONEST-1], title: "Status bound on Sell and Cancel, focus to the sale answer, the failed re-read marked and not-returned drawn, a rejected fetch drawn as failed; all layers", status: pending}
