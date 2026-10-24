@@ -1,0 +1,70 @@
+{
+  "v": 1,
+  "ts": "2026-10-24T23:16:49Z",
+  "plan": "bug-002",
+  "node": "N5",
+  "attempt": 1,
+  "agent": "security",
+  "agent_id": "ab34101d69894d681",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "bug-002",
+    "node_id": "N5",
+    "attempt": 1,
+    "base_sha": "30cd50103dcdb6971436ce7aaadb4cf97ce34a98",
+    "head_sha": "7354cd3f6563556cd18d0ffd75fa45f3e955fd16",
+    "diff_fingerprint": "d889f510dc4e66bd6e342a4978ad53cc36ab500a",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.red",
+      "gate.green",
+      "gate.run",
+      "gate.refactor",
+      "gate.build",
+      "gate.test",
+      "gate.diff-scope",
+      "gate.no-stubs",
+      "gate.vulnerable"
+    ],
+    "rules_covered": [
+      "API3:2023",
+      "API4:2023",
+      "API6:2023",
+      "API8:2023",
+      "API9:2023",
+      "NET-SQL",
+      "NET-MONEY",
+      "NET-PACKAGES",
+      "NET-SECRETS",
+      "NET-LOGGING"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "API4:2023",
+        "severity": "P2",
+        "file": "src/Uinsure.Policies.Api/Contracts/SellPolicyRequest.cs",
+        "line": 61,
+        "what": "The null-element loop reports one error per null, so a 64 KB body of nulls returns a response several times larger.",
+        "why": "API4 (light): the policyholder bound of 1-3 is enforced after this validation. The 64 KB body cap and rate limits bound the effect to a hardening gap, so P2 and not blocking. A cap on reported errors is optional.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "n/a API1:2023: no auth or tenancy, the reference is the only key.",
+      "n/a API2:2023: authentication is out of scope.",
+      "n/a API5:2023: no roles.",
+      "n/a API7:2023: no outbound fetching. The diff adds no HttpClient or WebRequest.",
+      "n/a API10:2023: no upstream APIs.",
+      "API3: the diff adds no new request or response fields and no EF binding. The error message is a fixed string and the key is built from an integer index, so no client input is echoed. The OpenAPI info.version is the csproj <Version> with the +metadata suffix stripped, so no commit hash is exposed.",
+      "API4: PolicyholderDto and PropertyDto keep their MaxLength attributes and the Kestrel 64 KB cap is unchanged (Program.cs line 20). I did not re-check that EF column lengths match the DTO limits, because the diff touches no persistence code.",
+      "API6: no sell, cancel, refund or quote logic is touched. A null element is now rejected as a 400 before mapping, and the tests assert that nothing is stored.",
+      "API8: OpenAPI and Scalar stay behind IsDevelopment (Program.cs lines 126-129). The change adds no exception-message exposure, no developer exception page and no connection strings.",
+      "API9: the OpenAPI document now carries the real project version. The diff adds no routes and no stubs (gate.no-stubs ok).",
+      "NET: the diff has no raw SQL, no double or float, no new packages and no secrets or log statements. gate.vulnerable reports no vulnerable packages. The tests and the Postman additions use synthetic data only.",
+      "The refactor made the transformer read the informational version with a single GetCustomAttribute call with a null-forgiving '!'. The attribute is always emitted by the SDK for this web project, so a missing attribute is not a security concern."
+    ]
+  }
+}

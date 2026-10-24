@@ -1,0 +1,60 @@
+{
+  "v": 1,
+  "ts": "2026-10-24T23:17:45Z",
+  "plan": "bug-002",
+  "node": "N5",
+  "attempt": 1,
+  "agent": "reviewer",
+  "agent_id": "a4dd8e01b02f0d47b",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "bug-002",
+    "node_id": "N5",
+    "attempt": 1,
+    "base_sha": "30cd50103dcdb6971436ce7aaadb4cf97ce34a98",
+    "head_sha": "7354cd3f6563556cd18d0ffd75fa45f3e955fd16",
+    "diff_fingerprint": "d889f510dc4e66bd6e342a4978ad53cc36ab500a",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.red@10a48895a795c7f5a4c69d4ddb28d38fad04a17a",
+      "pause1@eea72856a8523ebcd0466e333a233246a76a5734",
+      "gate.green@4e8400af2da6492896a0b23935826e88b60c5455",
+      "gate.run@4e8400af2da6492896a0b23935826e88b60c5455",
+      "gate.refactor@0cfe3538f3f5bdd1b9222c82da91615f6c632f19",
+      "gate.build@0cfe3538f3f5bdd1b9222c82da91615f6c632f19",
+      "gate.test@0cfe3538f3f5bdd1b9222c82da91615f6c632f19",
+      "gate.diff-scope@0cfe3538f3f5bdd1b9222c82da91615f6c632f19",
+      "gate.no-stubs@0cfe3538f3f5bdd1b9222c82da91615f6c632f19",
+      "gate.run@0cfe3538f3f5bdd1b9222c82da91615f6c632f19",
+      "gate.vulnerable@0cfe3538f3f5bdd1b9222c82da91615f6c632f19"
+    ],
+    "rules_covered": [
+      "SELL-4"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "SELL-4",
+        "severity": "P2",
+        "file": "tests/Uinsure.Policies.Api.Tests/OpenApiVersionTests.cs",
+        "line": 186,
+        "what": "The OpenAPI info.version test is traited SELL-4, but it proves no part of the 1-to-3 policyholders rule. It is plumbing, so it inflates SELL-4's integration coverage.",
+        "why": "requirements-trace: a test that proves a rule carries its trait, and plumbing tests carry none. The file's own comment says the trait exists only so the node's rule filter runs it. The red receipt counts it among the 14 SELL-4 tests. It doesn't block, because SELL-4 keeps real unit and integration rows in SellPolicyholderCountTests and SellMultipleViolationsTests in both Domain.Tests and Api.Tests.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "TDD order: the red commits 713f64d9 (null holder) and 10a48895 (OpenAPI version) come before the green commit 4e8400af, and the refactor 0cfe3538 comes after green. There was no stub step (t2 skipped, every route already exists). pause1 is recorded at eea72856 before green. Every loop commit carries the Agent, Plan, Node, Rule and TDD trailers.",
+      "Test integrity: gate.green covers 373a66cb..4e8400af and gate.refactor covers a4e7d485..0cfe3538. Both diffs touch src/Uinsure.Policies.Api only, so no test or assertion changed after red. gate.red records that its diff was tests/** only, with no src line removed.",
+      "Red for the right reason (gate.red): both null-holder tests got 500, not 400, and the version test found no declared <Version>. This meets the acceptance line that the reproduction fails on the merge base. At HEAD, gate.test passed 652/652 including the rule-coverage check.",
+      "Acceptance line 1: SellPolicyRequest.Validate reports each null element as a 400 keyed Policyholders[i], and the key reaches the client camelCased (policyholders[i]). The tests check the ValidationProblemDetails shape, the absence of ruleId, the exact key, that the valid holder at index 0 is not reported, and that nothing was stored (GET 404). MVC skips the action whenever the ModelState is invalid, so the mapping that threw the 500 never sees a null element.",
+      "Acceptance line 2: the API csproj declares <Version>0.1.0</Version>. A document transformer sets info.version from AssemblyInformationalVersion with the +sha suffix removed. The test reads the expected version from the csproj source, so it doesn't recompute the code's value, and it fails if the csproj and the document drift apart. gate.run saw /openapi/v1.json report 0.1.0.",
+      "Status codes match the architecture map: a null element is a shape error, so it is a 400 with no ruleId, and it takes precedence over the 422 SELL-4 count rule.",
+      "Leftovers: gate.no-stubs found no NotImplementedException in src/. The diff uses no banned time or rounding API.",
+      "Postman: the requests 'SELL-4 · policyholders [null] → 400' and 'SELL-4 · policyholders [valid, null] → 400' sit in F1 Sell rule violations. Each takes its reference and start date from the folder pre-request script, and each pm.test name starts with the rule ID.",
+      "Not a finding: in SellPolicyRequest.cs line 63, the null-forgiving Policyholders![index] inside a loop bounded by Policyholders?.Count ?? 0 is correct but awkward to read. A guard on Policyholders before the loop would make it clearer."
+    ]
+  }
+}
