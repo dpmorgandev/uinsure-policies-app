@@ -250,6 +250,9 @@ export function RecordClaim() {
           </Button>
         </div>
         <p className="s-wb-note">Sends the claim, then asks for the quote again. While the request and the two quotes run, this button is busy and disabled.</p>
+      </section>
+
+      <section className="s-wb-region" data-region="the-requests-as-sent-inspector" data-req="WB-7">
         <RequestsDrawer />
       </section>
     </form>

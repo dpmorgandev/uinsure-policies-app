@@ -17,7 +17,7 @@ import {
 import type { QuoteCancelCompareProps, RungSpineItem } from '../../../kit';
 import { cancelPolicy, getPolicy, quoteCancellation } from '../../data/api';
 import type { ApiAnswer, CancellationQuote, CancellationResult, Policy } from '../../data/api';
-import { NotBuiltRegion } from '../../shell/Rung';
+import { RequestsDrawer } from '../RequestsDrawer';
 import { browserDeps } from '../browser';
 import { ProblemView } from '../ProblemView';
 import '../workbench.css';
@@ -315,7 +315,9 @@ export function CancelPolicy() {
         <RungSpine label="Quote and cancel, three rungs" items={rungs} headingLevel={3} />
       </Region>
 
-      <NotBuiltRegion region="the-requests-as-sent-inspector" name="the requests as sent (inspector)" />
+      <section className="s-wb-region" data-region="the-requests-as-sent-inspector" data-req="WB-7">
+        <RequestsDrawer />
+      </section>
     </div>
   );
 }
