@@ -13,7 +13,10 @@ const note = {
 // recorded policies, so their order here is a placeholder. The mockup records no durations; the numbers
 // below are placeholders and the third request is left unmeasured. Request #4 is a placeholder too: the mockup
 // records no unanswered request, so it is a read of the cancelled policy with no status yet, to show the pending row.
+// Request #5 is a placeholder as well: no mockup records a rejected fetch, so it is a read of the second policy
+// whose fetch was rejected (the API down or blocked), to show the failed row (HONEST-1).
 const entries: RequestLogEntry[] = [
+  { n: 5, method: 'GET', path: '/policies/F3-MVEOTAONJW', failed: true },
   { n: 4, method: 'GET', path: '/policies/F3-MVEOSVDQJQ', status: null },
   { n: 3, method: 'GET', path: '/policies/F3-MVEOTAONJW/cancellation-quote?cancellationDate=2026-10-18', status: 422, durationMs: 41 },
   { n: 2, method: 'POST', path: '/policies/F3-MVEOSVDQJQ/cancellation', status: 201, durationMs: 87 },
@@ -22,8 +25,8 @@ const entries: RequestLogEntry[] = [
 
 const caption = (
   <p style={note}>
-    Placeholder: the order, request #4 (no answer yet, shown as pending), and the 41 ms and 87 ms durations are not in
-    the mockups.
+    Placeholder: the order, request #4 (no answer yet, shown as pending), request #5 (fetch rejected, shown as failed),
+    and the 41 ms and 87 ms durations are not in the mockups.
   </p>
 );
 

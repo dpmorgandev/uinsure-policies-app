@@ -37,7 +37,16 @@ describe('RequestLog', () => {
       'Duration',
     ]);
     const heads = rows().map((row) => within(row).getByRole('rowheader').textContent);
-    expect(heads).toEqual(['#4', '#3', '#2', '#1']);
+    expect(heads).toEqual(['#5', '#4', '#3', '#2', '#1']);
+  });
+
+  it('pop: the rejected fetch reads Failed, and the unanswered one still reads Pending', () => {
+    render(examples[0]!.element);
+    const [rejected, waiting] = rows();
+    const failedTag = within(rejected!).getByText('Failed').closest('[data-status]');
+    expect(failedTag?.getAttribute('data-status')).toBe('fail');
+    expect(within(rejected!).queryByText(/pending/i)).toBeNull();
+    expect(within(waiting!).getByText('Pending').closest('[data-status]')?.getAttribute('data-status')).toBe('pending');
   });
 
   it('shows method, path, status as a word, a glyph and a colour, and duration', () => {
@@ -76,6 +85,38 @@ describe('RequestLog', () => {
     expect(screen.queryByText('0')).toBeNull();
   });
 
+  it('draws a rejected fetch as failed, never pending, even when it also carries a status or none (HONEST-1)', () => {
+    render(
+      <RequestLog
+        entries={[
+          { n: 3, method: 'GET', path: '/a', failed: true },
+          { n: 2, method: 'GET', path: '/b', status: null, failed: true },
+          { n: 1, method: 'GET', path: '/c', status: 0, failed: true, durationMs: 12 },
+        ]}
+      />,
+    );
+    expect(screen.queryByText(/pending/i)).toBeNull();
+    for (const row of rows()) {
+      const tag = within(row).getByText('Failed').closest('[data-status]');
+      expect(tag?.getAttribute('data-status')).toBe('fail');
+    }
+    expect(screen.queryByText('0')).toBeNull();
+  });
+
+  it('the filter finds a rejected fetch by the word failed', async () => {
+    render(
+      <RequestLog
+        entries={[
+          { n: 2, method: 'GET', path: '/down', failed: true },
+          { n: 1, method: 'GET', path: '/done', status: 200 },
+        ]}
+      />,
+    );
+    await userEvent.type(screen.getByRole('textbox', { name: 'Filter requests' }), 'failed');
+    expect(rows()).toHaveLength(1);
+    expect(within(rows()[0]!).getByRole('rowheader').textContent).toBe('#2');
+  });
+
   it('the filter matches a pending request by the word pending, and not an answered one', async () => {
     render(
       <RequestLog
@@ -103,7 +144,7 @@ describe('RequestLog', () => {
     expect((screen.getByRole('textbox', { name: 'Filter requests' }) as HTMLInputElement).value).toBe('POST');
     expect(rows()).toHaveLength(1);
     expect(within(rows()[0]!).getByRole('rowheader').textContent).toBe('#2');
-    expect(screen.getByRole('status').textContent).toBe('Showing 1 of 4');
+    expect(screen.getByRole('status').textContent).toBe('Showing 1 of 5');
   });
 
   it('typing narrows the list and the count follows', async () => {
