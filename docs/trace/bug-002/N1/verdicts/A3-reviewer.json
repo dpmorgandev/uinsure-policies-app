@@ -1,0 +1,57 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T23:19:08Z",
+  "plan": "bug-002",
+  "node": "N1",
+  "attempt": 3,
+  "agent": "reviewer",
+  "agent_id": "a4f5180c0dd8b9716",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "bug-002",
+    "node_id": "N1",
+    "attempt": 3,
+    "base_sha": "6b6bdb529cf494ea5e3992988091f883e1b0dcaa",
+    "head_sha": "598cdc6bf8d3d418f44ab38d1fe734d5f578c8b4",
+    "diff_fingerprint": "161bc9a979cfae29cc229454002fc9578b378d8d",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.finding-red@40895b51",
+      "gate.green@4a121f63",
+      "gate.typecheck@4a121f63",
+      "gate.lint@4a121f63",
+      "gate.test@4a121f63",
+      "gate.build@4a121f63",
+      "gate.dotnet-build@4a121f63",
+      "gate.dotnet-test@4a121f63",
+      "gate.dotnet-vulnerable@4a121f63",
+      "gate.e2e@4a121f63",
+      "gate.e2e-regression@4a121f63",
+      "gate.audit@4a121f63",
+      "gate.trace-check@4a121f63",
+      "gate.scope@4a121f63",
+      "gate.stubs@4a121f63",
+      "findings(findings/A2.md)@f0423f19",
+      "state(in_progress)@d226b66a"
+    ],
+    "rules_covered": [
+      "DATA-1"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "A2/R1 (I1) is closed. The dev server now sends 503 with the header X-Docket-Trace set to the state it is in (vite.config.ts:73-75). readJson asks again every 500 ms only when it gets a 503 marked 'compiling' (app/data/trace.ts:250-253). A 503 marked 'failed', a 503 with no marker, and a 404 all still settle as an error after one request (data-1.test.ts:116-123, :142-158). Frame.tsx is unchanged, so DataNotice keeps showing its existing 'Loading · trace.json is being read' state until loadTrace settles. Tests pin both ends of the contract: the loader test (:132-140) expects three requests and then ready on the fixture trace, and the toolchain test expects the first live answer to be 503 marked compiling (data-1-first-run.test.ts:1329-1331 in the packet).",
+      "A2/R2 (I2) is closed. The esproj StartupCommand is now 'node scripts/dev.mjs --port 4170 --strictPort'. A new test runs it exactly as written on a tree with no node_modules, npm offline and a registry that records every request. It expects 'npm ci' and the project path in the output, and no registry fetch. That test was red at gate.finding-red and passes at gate.green. The port still parses for DevServerPort (gate.dotnet-test 649/649).",
+      "A2/R3 (I3) and S1 (I3+I4) are closed. The middleware now checks the raw path before it decodes anything, so paths outside /trace go to Vite untouched. A malformed escape under /trace gets a 400. A path is served only if it resolves inside publicDir and is a regular file (statSync().isFile()); anything else gets a 404. The new tests in data-1-trace-on-start.test.ts cover /src/%E0%A4%A (not a 500), /trace/%E0%A4%A (4xx), and /trace/ and /trace/build/ (404). All were red before the green commit. The traversal guard still holds after decoding.",
+      "A2/R4 (I5) is closed. The first answer must now be status 503 with X-Docket-Trace 'compiling'. The /compil/i check is kept and two stricter assertions were added, so nothing was weakened.",
+      "A2/R5 (I6) is closed. The describe title and the file header now describe what the server does: it listens at once, answers 'compiling', then serves the trail or reports why it can't. In the base..head diff, every assertion in that file is unchanged or new.",
+      "I7 is closed. LaunchProfileTests now pins scripts/dev.mjs, and a comment explains why. inv-010 recommendation 2 is met: gate.dotnet-build and gate.dotnet-test (649/649) ran at 4a121f63.",
+      "All four of inv-010's accepted recommendations are met. There is no browser-open override (direction b), as the investigation recommended.",
+      "TDD order holds. The A2 red commits 0d92e6c5..6278bcca come before the green 4a121f63. 4a121f63 carries Fixes-Finding A2/I1 through I5, and each test-only fix commit carries its own Fixes-Finding. According to activity.jsonl, the web-builder only read test files in attempt 3 and edited none. gate.finding-red records 7 tests failing by assertion and 2 guards passing by design. 40895b51 (I6, prose only) and 6278bcca (I7, an expected value moved with an intended change) carry 'TDD: red' but are not true reds. That is mislabelled but harmless, as the previous review also noted for 9972c248.",
+      "Acceptance lines 1-5 are met: restore guard, listen-first with the compiling marker, no compile under preview, engines and .nvmrc both 22.22.0, and the reproduction was red on base (gate.red 6ee2e957 plus gate.finding-red). Line 6: .NET 649/649 and web unit tests 401/401 three times. The whole e2e run still has 64 regression-screenshot failures, all within main's 65. They are carried to N6 under its amended acceptance line, as in attempt 2.",
+      "Possible later hardening, not a finding: the loader retries with no limit, so a compile that hangs leaves the page on 'Loading' forever. That is honest, and a hang is outside the accepted recommendations. No e2e opens a page during the compile, but both sides of the header contract are pinned by tests, and the accepted route chose unit-level proof.",
+      "Leftovers: gate.stubs finds no 'not implemented' in src/Uinsure.Policies.Web. The diff adds no banned time or rounding API and no package (it adds only the engines field). Security owns the full API8 judgement on the middleware."
+    ]
+  }
+}

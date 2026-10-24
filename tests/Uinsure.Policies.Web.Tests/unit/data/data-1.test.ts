@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { loadActivity, loadTrace } from '../../../../src/Uinsure.Policies.Web/app/data/trace';
 import type { Trace } from '../../../../src/Uinsure.Policies.Web/app/data/trace';
 import { SLOW } from '../compiler/support/trail';
-import { changed, compileFixture, serve, settle } from './support/served';
+import { BASE, changed, compileFixture, serve, settle } from './support/served';
 import type { Compiled } from './support/served';
 
 let fixture: Compiled;
@@ -35,6 +35,34 @@ const withVersion = (version: string | undefined): string =>
     if (version === undefined) delete copy['schemaVersion'];
     else copy['schemaVersion'] = version;
   });
+
+/**
+ * The dev server's answer while the trail compiles, or after it failed (src/Uinsure.Policies.Web/vite.config.ts): 503,
+ * text/plain, and the state named in the X-Docket-Trace header, the machine-readable marker the loader keys on.
+ * `marker` null sends no header, as a 503 from any other host would.
+ */
+const COMPILING_TEXT = 'The trail is compiling; try again in a moment.';
+const FAILED_TEXT = 'The trail did not compile; see the console of the dev server.';
+const unavailable = (text: string, marker: 'compiling' | 'failed' | null): (() => Response) => () =>
+  new Response(text, {
+    status: 503,
+    headers: { 'content-type': 'text/plain', ...(marker === null ? {} : { 'x-docket-trace': marker }) },
+  });
+/** The loader may wait between asks; three asks settle well inside this. */
+const RETRY_TIMEOUT = 30_000;
+
+/**
+ * The served fetch, but trace.json answers each of `first` in turn before the served file. Every request is still
+ * recorded in `served.requested`.
+ */
+function withAnswers(served: ReturnType<typeof serve>, first: (() => Response)[]): typeof served.fetch {
+  const queue = [...first];
+  return async (input) => {
+    const response = await served.fetch(input);
+    const next = new URL(String(input), BASE).href === `${BASE}trace.json` ? queue.shift() : undefined;
+    return next === undefined ? response : next();
+  };
+}
 
 describe('trace.json', () => {
   test('DATA-1 · the loader reads the compiled trace.json and hands over what it holds', async () => {
@@ -100,6 +128,34 @@ describe('trace.json', () => {
     expect(loaded.state).toBe('error');
     expect(loaded).not.toHaveProperty('trace');
   });
+
+  test('DATA-1 · while the dev server answers trace.json "compiling" (503, X-Docket-Trace: compiling), the loader asks again and settles ready on the compiled file', async () => {
+    const served = serve(fixture.run.publicDir);
+    const compiling = 2;
+    const fetchFile = withAnswers(served, Array.from({ length: compiling }, () => unavailable(COMPILING_TEXT, 'compiling')));
+    const loaded = await settle(() => loadTrace(fetchFile));
+    expect(loaded.state, `it keeps loading until the compile ends: ${loaded.state === 'error' ? loaded.reason : ''}`).toBe('ready');
+    if (loaded.state === 'ready') expect(loaded.trace).toEqual(fixture.trace);
+    expect(served.paths(), 'two compiling answers, then the compiled file: three requests, all for trace.json').toEqual(['trace.json', 'trace.json', 'trace.json']);
+  }, RETRY_TIMEOUT);
+
+  test('DATA-1 · the "did not compile" 503 (X-Docket-Trace: failed) is final: an error after exactly one request', async () => {
+    const served = serve(fixture.run.publicDir);
+    const fetchFile = withAnswers(served, [unavailable(FAILED_TEXT, 'failed')]);
+    const loaded = await settle(() => loadTrace(fetchFile));
+    expect(loaded.state).toBe('error');
+    expect(loaded).not.toHaveProperty('trace');
+    expect(served.paths(), 'a failed compile is not asked again').toEqual(['trace.json']);
+  }, RETRY_TIMEOUT);
+
+  test('DATA-1 · a 503 that says "compiling" only in its prose, with no X-Docket-Trace marker, is final: an error after exactly one request', async () => {
+    const served = serve(fixture.run.publicDir);
+    const fetchFile = withAnswers(served, [unavailable(COMPILING_TEXT, null)]);
+    const loaded = await settle(() => loadTrace(fetchFile));
+    expect(loaded.state).toBe('error');
+    expect(loaded).not.toHaveProperty('trace');
+    expect(served.paths(), 'the re-ask keys on the machine-readable marker, never on the prose').toEqual(['trace.json']);
+  }, RETRY_TIMEOUT);
 
   test('DATA-1 · a fetch that fails outright settles as an error, not a rejection', async () => {
     const loaded = await settle(() => loadTrace(() => Promise.reject(new TypeError('Failed to fetch'))));

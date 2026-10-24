@@ -239,10 +239,18 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 
 const reasonOf = (caught: unknown): string => (caught instanceof Error ? caught.message : String(caught));
 
+/** DATA-1: how long the loader waits before asking again while the dev server compiles the trail. */
+const COMPILING_RETRY_MS = 500;
+
 /** GETs a static file beside the app and parses it as JSON; a failure is a reason, never a throw. */
 async function readJson(fetchFile: Fetch, path: string): Promise<{ ok: true; body: unknown } | { ok: false; reason: string }> {
   try {
     const response = await fetchFile(path);
+    // Only the dev server's marker means "ask again"; a 503 without it, or marked failed, is final.
+    if (response.status === 503 && response.headers.get('x-docket-trace') === 'compiling') {
+      await new Promise((resolve) => setTimeout(resolve, COMPILING_RETRY_MS));
+      return readJson(fetchFile, path);
+    }
     if (!response.ok) return { ok: false, reason: `${path} could not be read (HTTP ${response.status})` };
     return { ok: true, body: (await response.json()) as unknown };
   } catch (caught) {

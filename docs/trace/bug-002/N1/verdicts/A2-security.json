@@ -1,0 +1,70 @@
+{
+  "v": 1,
+  "ts": "2026-10-23T22:27:51Z",
+  "plan": "bug-002",
+  "node": "N1",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "adef72223a2583eae",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "bug-002",
+    "node_id": "N1",
+    "attempt": 2,
+    "base_sha": "6b6bdb529cf494ea5e3992988091f883e1b0dcaa",
+    "head_sha": "4ebe53f888afa3c8c681f18867bd4137a95646ef",
+    "diff_fingerprint": "d9c497d2fa2fe06ce02979ad68a9b8d74b5c034a",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.audit",
+      "gate.build",
+      "gate.test",
+      "gate.lint",
+      "gate.typecheck",
+      "gate.scope",
+      "gate.e2e-regression",
+      "gate.stubs"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "S1",
+        "rule_id": "API8:2023",
+        "severity": "P2",
+        "file": "src/Uinsure.Policies.Web/vite.config.ts",
+        "line": 53,
+        "what": "Dev middleware: decodeURIComponent throws on a malformed escape, and readFileSync throws EISDIR on '/trace/'; both surface as a dev-server 500.",
+        "why": "W8/API8 hygiene. Dev serve only, never in dist/. The startsWith(publicDir + sep) guard blocks traversal outside public/. Wrap the decode and the read in try/catch and answer 404.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "Scope: the node's code diff is vite.config.ts, scripts/dev.mjs, package.json (engines only), .nvmrc, .vscode/launch.json and two unit tests. The rest is generated docs/ui/derived, docs/trace and plan files.",
+      "W1 met: grep for dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( and new Function over the diff found nothing. No rendered code changed.",
+      "W2 met: no href is built or passed through. The derived HTML is generated fixtures, not new link logic.",
+      "W3 met: index.html is untouched. No third-party origin is added.",
+      "W4 met: the dev middleware serves only /trace.json and /trace/* from the package's own public/, and only once state is 'ready'. Traversal is blocked by resolve() plus the publicDir + sep prefix check. No cookie or storage access was added.",
+      "W5 met: compiler/** is untouched. vite.config spawns it via process.execPath with fixed args ['compiler/index.ts','--ref','HEAD'], no shell and no user input. The compiler CLI entry accepts --ref (index.ts:429).",
+      "W6 met: no local absolute path, personal email, key or token in src/Uinsure.Policies.Web (grep clean). The activity.jsonl paths in the diff are already redacted to ~/AppData/... and <user>.",
+      "W7 met: package.json gains only an engines field (node >=22.22.0). No dependency is added or changed. gate.audit (omit=dev, high) exited 0 with 0 vulnerabilities.",
+      "W8 met: the dev.mjs and 503 messages are fixed strings. The compile problems print to the dev console only, not to the HTTP response.",
+      "API8:2023 and API10:2023 are covered through W3/W4 and W1/W8. The plugin has apply serve only, is disabled for mode test and for preview, and ships nothing in the build (gate.build ok).",
+      "n/a: API1, API2, API3, API4, API5, API6, API7, API9 (ui node, no server code).",
+      "n/a: the .NET extras (SQL, money, packages, secrets, logging), replaced by W1-W8 for a ui node. No .NET code is in the diff.",
+      "The e2e regression failures (64, a subset of main's 65) are screenshot drift on main, not a security matter. They are carried to N6."
+    ]
+  }
+}

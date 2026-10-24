@@ -1,20 +1,25 @@
 // @vitest-environment node
 // DATA-1 · One compiled data file: trace on start (David 2026-10-23, U10). trace.json is written to the web project's
 // public/ folder, which git ignores, so a fresh clone has none and Docket opened on "Could not load trace.json" until
-// someone ran `npm run trace`. Starting the dev server (F5's Vite dev server target, the StartupCommand, npx vite)
-// compiles the trail first; a compile that fails is reported, never served as a silent empty trail.
+// someone ran `npm run trace`. The dev server (however it is started: F5's Vite dev server target or the esproj's
+// StartupCommand through scripts/dev.mjs, or vite itself) listens at once and compiles the trail beside it. Until the
+// compile ends /trace.json answers that the trail is compiling; then it serves the compiled trail, or, when the compile
+// fails, reports each problem in the console and serves no trace.json, never a silent empty trail. The "Local:" line
+// is printed once the compile has ended, so these tests ask the server after it.
 // Each test is a fresh tree: a fixture trail replayed into a new git repo, the web project copied in beside it with no
 // public/ (its node_modules linked, not copied), and Vite started from there on its own vite.config.ts, on a port the
 // OS gives. Nothing here knows how the compile is wired in; it only asks the running server.
 //   complete     compiles clean (tests/Uinsure.Policies.Web.Tests/fixtures/trails/complete/README.md): /trace.json is the trail at its HEAD
 //   privacy-hit  fails the compile on two denylisted values (privacy-hit/README.md): activity.jsonl line 2 and
 //                loop.jsonl line 3 are named in the console, no trace.json is served, and the page is still served
+//   complete, compiled  the middleware answers only for regular files under /trace and never throws: a malformed
+//                %-escape elsewhere is left to Vite, one under /trace is a 4xx, and a directory is a 404 (A2/I3, I4)
 import { spawn } from 'node:child_process';
 import type { ChildProcess } from 'node:child_process';
 import { cpSync, existsSync, mkdirSync, rmdirSync, symlinkSync, unlinkSync } from 'node:fs';
 import { join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { describe, expect, test } from 'vitest';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { ACTIVITY, LOOP, placeHits, replayTrail } from '../compiler/support/trail';
 import type { Trail } from '../compiler/support/trail';
 
@@ -56,10 +61,18 @@ interface Started {
   url: string | null;
   /** Everything it printed so far, stdout and stderr, colour codes removed. */
   output(): string;
+  /** Resolves when the output matches, or with false when the server exits or the time runs out first. */
+  waitFor(pattern: RegExp, ms: number): Promise<boolean>;
   stop(): Promise<void>;
 }
 
 const ANSI = /\u001b\[[0-9;]*m/g;
+/** How long the console may take to show every problem after 'Local:': stderr and stdout are two pipes, read in no fixed order. */
+const PROBLEMS_TIMEOUT = 30_000;
+
+const escape = (text: string): string => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+/** Matches output that names every one of `parts`, in any order. */
+const namesAll = (...parts: string[]): RegExp => new RegExp(parts.map((p) => `(?=[\\s\\S]*${escape(p)})`).join(''));
 
 /** Starts Vite in `web` as `npx vite` does (its bin, its own config), on a port the OS gives. */
 async function startVite(web: string): Promise<Started> {
@@ -88,6 +101,26 @@ async function startVite(web: string): Promise<Started> {
       done(null);
     });
   });
+  const waitFor = (pattern: RegExp, ms: number): Promise<boolean> =>
+    new Promise((done) => {
+      if (pattern.test(output())) return done(true);
+      const timer = setTimeout(() => finish(false), ms);
+      const look = (): void => {
+        if (pattern.test(output())) finish(true);
+      };
+      const finish = (found: boolean): void => {
+        clearTimeout(timer);
+        server.stdout?.off('data', look);
+        server.stderr?.off('data', look);
+        server.off('close', ended);
+        done(found);
+      };
+      const ended = (): void => finish(pattern.test(output()));
+      server.stdout?.on('data', look);
+      server.stderr?.on('data', look);
+      if (server.exitCode !== null) return finish(pattern.test(output()));
+      server.on('close', ended);
+    });
   const stop = async (): Promise<void> => {
     if (server.exitCode !== null) return;
     const exited = new Promise<void>((done) => server.on('exit', () => done()));
@@ -95,7 +128,7 @@ async function startVite(web: string): Promise<Started> {
     else server.kill();
     await exited;
   };
-  return { server, url, output, stop };
+  return { server, url, output, waitFor, stop };
 }
 
 async function onFreshTree(trail: Trail, check: (started: Started) => Promise<void>): Promise<void> {
@@ -116,7 +149,7 @@ async function askTrace(started: Started): Promise<{ status: number; type: strin
   return { status: answer.status, type: answer.headers.get('content-type') ?? '', text: await answer.text() };
 }
 
-describe('the dev server compiles the trail before it serves', () => {
+describe('the dev server listens at once, answers compiling, then serves the compiled trail or reports why not', () => {
   test('DATA-1 · a fresh tree started with npx vite serves /trace.json, compiled from the trail at its HEAD', async () => {
     const trail = replayTrail('complete');
     await onFreshTree(trail, async (started) => {
@@ -133,6 +166,7 @@ describe('the dev server compiles the trail before it serves', () => {
     const trail = replayTrail('privacy-hit', (root) => placeHits(root));
     await onFreshTree(trail, async (started) => {
       expect(started.url, `the dev server still starts, so the page can say what failed\n${started.output()}`).not.toBeNull();
+      await started.waitFor(namesAll(`${ACTIVITY}:2`, `${LOOP}:3`), PROBLEMS_TIMEOUT);
       const said = started.output();
       expect(said, 'the console names the failed compile and each problem by file and line').toContain(`${ACTIVITY}:2`);
       expect(said).toContain(`${LOOP}:3`);
@@ -143,4 +177,48 @@ describe('the dev server compiles the trail before it serves', () => {
       expect(page.status, 'the page is served, so Docket can say the trail could not be loaded').toBe(200);
     });
   }, SLOW);
+});
+
+describe('once compiled, the dev server answers only for files under /trace, and never a 500', () => {
+  // One server for these requests: the `complete` trail, compiled ('Local:' is printed once the compile ends).
+  let trail: Trail | undefined;
+  let web: string | undefined;
+  let started: Started | undefined;
+  beforeAll(async () => {
+    trail = replayTrail('complete');
+    web = freshWebTree(trail.root);
+    started = await startVite(web);
+  }, SLOW);
+  afterAll(async () => {
+    await started?.stop();
+    if (web !== undefined) unlinkModules(web);
+    trail?.cleanup();
+  }, SLOW);
+
+  /** GETs `path` (sent as written, its %-escapes untouched) from the running server. */
+  async function get(path: string): Promise<{ status: number; text: string }> {
+    expect(started?.url, `setup: Vite starts on the complete trail and says where\n${started?.output() ?? ''}`).toBeTruthy();
+    const answer = await fetch(`${started?.url ?? ''}${path}`);
+    return { status: answer.status, text: await answer.text() };
+  }
+
+  test('DATA-1 · a malformed %-escape outside /trace (GET /src/%E0%A4%A) is left to Vite, never a 500', async () => {
+    const answer = await get('src/%E0%A4%A');
+    expect(answer.status, `the trace middleware does not decode a path it does not serve: ${answer.status} ${answer.text.slice(0, 200)}`).not.toBe(500);
+  }, SLOW);
+
+  test('DATA-1 · a malformed %-escape under /trace (GET /trace/%E0%A4%A) answers 4xx, never a 500', async () => {
+    const answer = await get('trace/%E0%A4%A');
+    expect(answer.status, `a path that cannot be decoded is refused: ${answer.status} ${answer.text.slice(0, 200)}`).toBeGreaterThanOrEqual(400);
+    expect(answer.status, `as the client's fault: ${answer.status} ${answer.text.slice(0, 200)}`).toBeLessThan(500);
+  }, SLOW);
+
+  test.each([['/trace/', 'trace/'], ['/trace/build/', 'trace/build/']])(
+    'DATA-1 · a directory under public/ (GET %s) answers 404, never a 500',
+    async (_name, path) => {
+      const answer = await get(path);
+      expect(answer.status, `only regular files under public/ are served: ${answer.status} ${answer.text.slice(0, 200)}`).toBe(404);
+    },
+    SLOW,
+  );
 });
