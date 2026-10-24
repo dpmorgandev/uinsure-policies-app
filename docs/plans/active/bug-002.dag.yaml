@@ -52,10 +52,10 @@ nodes:
     rules: [WB-7]
     cuttable: false
     budget: 3h
-    status: pending
-    attempt: 0
-    branch: null
-    worktree: null
+    status: in_progress
+    attempt: 1
+    branch: bug/bug-002/N2
+    worktree: .claude/worktrees/bug-002-N2
     pr: null
     qa: docs/qa/bug-002-N2.md
     trace: docs/trace/bug-002/N2/
