@@ -339,7 +339,7 @@ export function PolicyView() {
         namesPolicy(apiPathOf(entry.path), reference) ||
         (entry.method === 'POST' && apiPathOf(entry.path) === '/policies' && (entry.responseBody ?? '').includes(`"${reference}"`)),
     )
-    .map(({ n, entry }) => ({ n, method: entry.method, path: apiPathOf(entry.path), status: entry.status }))
+    .map(({ n, entry }) => ({ n, method: entry.method, path: apiPathOf(entry.path), status: entry.status, failed: entry.failed }))
     .reverse();
 
   useEffect(() => {
