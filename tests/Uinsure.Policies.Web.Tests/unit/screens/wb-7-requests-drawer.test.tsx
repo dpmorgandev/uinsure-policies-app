@@ -102,3 +102,74 @@ test('WB-7 · the drawer indents JSON request and response bodies, shows a non-J
   expect(sent?.responseBody, 'the log keeps the response exactly as received').toBe(JSON.stringify(claim.responseBody));
   expect(log.find((e) => e.path === '/api/policies/N2U-HTML')?.responseBody).toBe(NOT_JSON);
 });
+
+// ── A3/I1: indenting changes whitespace only; every token is shown as it went ─────────────────────────────────────
+// The API writes every money amount with at least two places (803.40, 500.00, 0.00). A body sent through JSON.parse
+// and JSON.stringify comes back as 803.4, 500 and 0, which is not the exchange. The expected text here is the wire
+// text itself, hand-written, never a value rebuilt from parsed JSON (the recordings in docs/ui/fixture/api/ are
+// stored parsed and have lost these tokens).
+
+/** The raw request text, compact, with a money token a JS number would rewrite. */
+const RAW_REQUEST = '{"reference":"N2U-TOK","amount":803.40,"paymentMethod":"Card"}';
+/** The raw response text, compact, as the API writes it: amounts with two places, nested objects and arrays. */
+const RAW_RESPONSE =
+  '{"reference":"N2U-TOK","amount":803.40,"terms":[{"termNumber":1,"amount":803.40}],' +
+  '"payments":[{"type":"Card","amount":500.00}],"refunds":[{"amount":0.00}],"hasClaims":false,"cancellation":null}';
+
+/** The text with every whitespace character outside a JSON string removed: indenting may change nothing else. */
+function withoutLayout(text: string): string {
+  let out = '';
+  let inString = false;
+  for (let i = 0; i < text.length; i += 1) {
+    const c = text[i] as string;
+    if (inString) {
+      out += c;
+      if (c === '\\') {
+        out += text[i + 1] ?? '';
+        i += 1;
+      } else if (c === '"') inString = false;
+    } else if (c === '"') {
+      inString = true;
+      out += c;
+    } else if (!/\s/.test(c)) out += c;
+  }
+  return out;
+}
+
+/** How many times `token` stands whole in `text`: no digit or point before it, no digit after. */
+function wholeTokens(text: string, token: string): number {
+  const pattern = new RegExp(`(?<![\\d.])${token.replace('.', '\\.')}(?!\\d)`, 'g');
+  return [...text.matchAll(pattern)].length;
+}
+
+test('WB-7 · the drawer shows every number token of the request and response as it went (803.40, 500.00, 0.00), changing whitespace only', async () => {
+  vi.stubGlobal('fetch', async () => new Response(RAW_RESPONSE, { status: 201, headers: { 'content-type': 'application/json; charset=utf-8' } }));
+  const user = userEvent.setup();
+  render(
+    <>
+      <Probe />
+      <RequestsDrawer />
+    </>,
+  );
+  await act(async () => {
+    await browserDeps().fetch('/api/policies/N2U-TOK/claims', { method: 'POST', headers: { 'content-type': 'application/json' }, body: RAW_REQUEST });
+  });
+  const drawer = screen.getByRole('complementary', { name: 'The requests as sent' });
+  const show = within(drawer).queryByRole('button', { name: 'Show requests' });
+  if (show !== null) await user.click(show);
+
+  const sent = log.find((e) => e.path === '/api/policies/N2U-TOK/claims');
+  expect(sent?.requestBody, 'setup: the log holds the request text as sent').toBe(RAW_REQUEST);
+  expect(sent?.responseBody, 'setup: the log holds the response text as received').toBe(RAW_RESPONSE);
+
+  const shown = exchangeText('/api/policies/N2U-TOK/claims');
+  expect(wholeTokens(shown, '803.40'), 'every 803.40 (one in the request, two in the response) is shown whole').toBe(3);
+  expect(wholeTokens(shown, '500.00'), 'the payment 500.00 is shown whole').toBe(1);
+  expect(wholeTokens(shown, '0.00'), 'the refund 0.00 is shown whole').toBe(1);
+  expect(shown, 'no amount is shortened to 803.4').not.toMatch(/(?<![\d.])803\.4(?=[,}\]\s]|$)/m);
+  expect(shown, 'no amount is shortened to 500').not.toMatch(/(?<![\d.])500(?=[,}\]\s]|$)/m);
+  expect(withoutLayout(shown), 'the request is the wire text with whitespace added, nothing else').toContain(RAW_REQUEST);
+  expect(withoutLayout(shown), 'the response is the wire text with whitespace added, nothing else').toContain(RAW_RESPONSE);
+  expect(shown, 'the request is still indented, one key a line').toMatch(/^[ \t]+"paymentMethod"\s*:/m);
+  expect(shown, 'the response is still indented, one key a line').toMatch(/^[ \t]+"payments"\s*:/m);
+});
