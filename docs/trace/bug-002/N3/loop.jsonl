@@ -1,0 +1,2 @@
+{"v":1,"ts":"2026-10-24T23:01:16Z","plan":"bug-002","node":"N3","attempt":1,"source":"orchestrator","head":"dc6097ee4c0f338fa9c9ab9d5087156f30ed68b0","event":"setup","detail":"branch bug/bug-002/N3, worktree .claude/worktrees/bug-002-N3 from origin/main 30cd5010; run beside N5 under David's 'N3 ∥ N5' (2026-10-24), driven from the main checkout; ports app 4172, api 5082"}
+{"v":1,"ts":"2026-10-24T23:01:17Z","plan":"bug-002","node":"N3","attempt":1,"source":"orchestrator","head":"dc6097ee4c0f338fa9c9ab9d5087156f30ed68b0","event":"state(in_progress)"}
