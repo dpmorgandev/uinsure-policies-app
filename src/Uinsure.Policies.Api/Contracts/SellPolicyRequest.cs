@@ -57,6 +57,15 @@ public sealed class SellPolicyRequest : IValidatableObject
                 [nameof(Reference)]);
         }
 
+        // SELL-4's input: a null element is a shape error keyed by its index, reported before mapping.
+        for (var index = 0; index < (Policyholders?.Count ?? 0); index++)
+        {
+            if (Policyholders![index] is null)
+            {
+                yield return new ValidationResult("A policyholder must not be null.", [$"{nameof(Policyholders)}[{index}]"]);
+            }
+        }
+
         // Shape, not SELL-7: the value must be a whole number of pence and at most 1,000,000.00. A zero or
         // negative amount within that scale is the 422 SELL-7. The remainder test cannot overflow for any
         // decimal, however negative, which a multiplication by 100 would.

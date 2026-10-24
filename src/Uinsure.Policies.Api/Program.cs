@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Threading.RateLimiting;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
@@ -59,7 +60,13 @@ builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddPersistence(builder.Configuration);
 builder.Services.AddSingleton<IReferenceGenerator, ReferenceGenerator>();
 builder.Services.AddScoped<IPolicyService, PolicyService>();
-builder.Services.AddOpenApi();
+// The document's info.version is the API project's <Version>, not the generator's default 1.0.0.
+builder.Services.AddOpenApi(options => options.AddDocumentTransformer((document, _, _) =>
+{
+    var informational = typeof(Program).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()!.InformationalVersion;
+    document.Info.Version = informational.Split('+')[0];
+    return Task.CompletedTask;
+}));
 
 // RFC 9457 bodies: every problem response carries the request path and a traceId.
 builder.Services.AddProblemDetails(options => options.CustomizeProblemDetails = context =>
