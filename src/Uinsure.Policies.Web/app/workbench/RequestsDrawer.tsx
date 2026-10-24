@@ -70,7 +70,8 @@ function describe(entry: LoggedExchange, number: number): InspectorRequest {
     method: entry.method,
     path: apiPathOf(entry.path),
     status: entry.status ?? undefined,
-    outcome: entry.status === null ? 'pending' : entry.status < 400 ? 'ok' : 'problem',
+    outcome: entry.failed ? 'problem' : entry.status === null ? 'pending' : entry.status < 400 ? 'ok' : 'problem',
+    note: entry.failed ? 'The request failed: no response came back.' : undefined,
     exchange: parts.length > 0 ? parts.join('\n') : undefined,
   };
 }
