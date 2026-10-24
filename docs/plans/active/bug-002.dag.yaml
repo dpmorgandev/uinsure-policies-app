@@ -175,7 +175,7 @@ nodes:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [SELL-4], title: "Reproduction: POST /policies with policyholders [null] and [valid, null] returns 500, and OpenAPI info.version is the generator default; fails on main. Postman requests in F1 Sell rule violations", status: done}
       - {id: t2, role: builder, step: stub, layer: api, rules: [], title: "No stub: every route this node touches already exists", status: skipped}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the reproduction tests red against main; go or change", status: done}
-      - {id: t4, role: builder, step: green, layer: api, rules: [SELL-4], title: "SellPolicyRequest reports each null policyholder element as a 400 before mapping; <Version> in the API csproj carried by an OpenAPI document transformer", status: pending}
+      - {id: t4, role: builder, step: green, layer: api, rules: [SELL-4], title: "SellPolicyRequest reports each null policyholder element as a 400 before mapping; <Version> in the API csproj carried by an OpenAPI document transformer", status: done}
       - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with the suite green", status: pending}
       - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "Every gate for the node, recorded with receipts", status: pending}
       - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
