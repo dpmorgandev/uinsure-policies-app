@@ -172,7 +172,7 @@ nodes:
       - "The reproduction test fails on the merge base and passes at the PR head"
       - "The full suite and the rule-coverage check pass"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [SELL-4], title: "Reproduction: POST /policies with policyholders [null] and [valid, null] returns 500, and OpenAPI info.version is the generator default; fails on main. Postman requests in F1 Sell rule violations", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [SELL-4], title: "Reproduction: POST /policies with policyholders [null] and [valid, null] returns 500, and OpenAPI info.version is the generator default; fails on main. Postman requests in F1 Sell rule violations", status: done}
       - {id: t2, role: builder, step: stub, layer: api, rules: [], title: "No stub: every route this node touches already exists", status: skipped}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the reproduction tests red against main; go or change", status: pending}
       - {id: t4, role: builder, step: green, layer: api, rules: [SELL-4], title: "SellPolicyRequest reports each null policyholder element as a 400 before mapping; <Version> in the API csproj carried by an OpenAPI document transformer", status: pending}
