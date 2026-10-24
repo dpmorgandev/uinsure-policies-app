@@ -21,7 +21,7 @@ import {
 } from '../../../kit';
 import { prepareSale, sellPolicy } from '../../data/api';
 import type { PaymentMethod, Policy, PolicyType, Problem, SellForm, SellFormProperty } from '../../data/api';
-import { NotBuiltRegion } from '../../shell/Rung';
+import { RequestsDrawer } from '../RequestsDrawer';
 import { browserDeps, todayInLondon } from '../browser';
 import { ProblemView } from '../ProblemView';
 import '../workbench.css';
@@ -403,7 +403,12 @@ export function SellPolicy() {
         </FormSection>
       </div>
 
-      <NotBuiltRegion region="the-request-as-sent-inspector" name="the request as sent (inspector)" />
+      <section className="s-wb-region" data-region="the-request-as-sent-inspector" data-req="WB-7" aria-labelledby="s-wb-receipt-title">
+        <h2 id="s-wb-receipt-title" className="s-wb-heading">Receipt for rung 4: what was sent, what came back</h2>
+        <div className="s-wb-dock">
+          <RequestsDrawer />
+        </div>
+      </section>
     </form>
   );
 }

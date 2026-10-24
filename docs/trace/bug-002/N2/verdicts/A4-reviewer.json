@@ -1,0 +1,44 @@
+{
+  "v": 1,
+  "ts": "2026-10-24T14:27:47Z",
+  "plan": "bug-002",
+  "node": "N2",
+  "attempt": 4,
+  "agent": "reviewer",
+  "agent_id": "a0a71a4dfcbd760a4",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "bug-002",
+    "node_id": "N2",
+    "attempt": 4,
+    "base_sha": "250cd0d177171336cf44be32ea338a09620d7ed5",
+    "head_sha": "259db8a441ccebe0920a51c725d1d75b5a5a4cfd",
+    "diff_fingerprint": "24723645ac7e28c19eaf51ad35a6a2030391afb5",
+    "verdict": "PASS",
+    "gate_refs": [
+      "loop.jsonl:32 gate.finding-red@3a2249ce",
+      "loop.jsonl:33 gate.green@2ed982df",
+      "loop.jsonl:34 gate.web-static@2ed982df",
+      "loop.jsonl:35 gate.audit@2ed982df",
+      "loop.jsonl:36 gate.no-stub@2ed982df",
+      "loop.jsonl:37 gate.diff-scope@2ed982df",
+      "loop.jsonl:38 gate.dotnet@2ed982df",
+      "loop.jsonl:39 gate.e2e@2ed982df"
+    ],
+    "rules_covered": [
+      "WB-7"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "A3 R1 is fixed. In src/Uinsure.Policies.Web/app/workbench/RequestsDrawer.tsx, indent() (lines 11-51) copies every character inside a JSON string, and every non-structural token, character for character. Outside strings it only drops whitespace and adds newlines, two-space indents and ': '. JSON.parse (line 56) now only decides whether the body is JSON, and a body that isn't JSON comes back unchanged. So 803.40, 500.00 and 0.00 survive. Empty {} and [] stay on one line.",
+      "A3 R2 is fixed. The unit red e92517a2 (wb-7-requests-drawer.test.tsx:112-175) uses hand-written raw wire text, not values rebuilt from parsed recordings. It counts whole tokens (803.40 three times, 500.00 once, 0.00 once), forbids a shortened 803.4 or 500, and checks that the displayed text, with whitespace removed, contains the raw request and the raw response. The e2e red 3a2249ce (wb-7.spec.ts:212-265) sells 803.40 on the live API and takes its expected values from response.text() and postData(), not from watchApi. Both failed by assertion before the fix (loop.jsonl:32: 'expected 0 to be 3', '3 tokens differ') and pass after it (loop.jsonl:33: unit 404/404, N2 e2e 20/20).",
+      "TDD order holds for A3. Red e92517a2 and red 3a2249ce both come before the fix 2ed982df, which carries Fixes-Finding A3/I1 and A3/I2. gate.green records that 2ed982df touched only RequestsDrawer.tsx. Lines 1-104 of the unit test and lines 1-211 and 267-454 of the e2e spec match the A3 investigator's line citations, so no earlier assertion was weakened or removed. The A3 blocks were only inserted.",
+      "The checks from earlier attempts still hold at HEAD: acceptance 1-4 are each pinned by an e2e, and the A1 and A2 red-before-green ordering is unchanged (A3-reviewer.json notes). gate.dotnet ran 649/649, which includes RuleCoverageTests. gate.no-stub found no 'not implemented' left in src/Uinsure.Policies.Web.",
+      "gate.e2e at 2ed982df ran the whole suite: 810 passed and 96 failed, and every failure is a screenshot regression. That failing set is the same one as at d5b1e69c (main's 65 drift set plus N2's 31 under inv-011 #2), which David's ruling defers to Pause 2 and N6. Every functional test passes.",
+      "A3 R3 (P2, NotBuiltRegion in app/shell/Rung.tsx is dead code) is still present at HEAD. It is not raised again here because it was already carried to bug-002/N4 in 02f5e1f3.",
+      "The kit's JsonViewer already has a token-exact indent, but it isn't exported from the kit barrel, and a build node may not change the kit. That leaves two copies of the logic, which the rule of three tolerates. withoutLayout() also appears twice, once in the unit test and once in the e2e spec. Neither is a finding."
+    ]
+  }
+}

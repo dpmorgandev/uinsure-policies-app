@@ -1,0 +1,83 @@
+{
+  "v": 1,
+  "ts": "2026-10-24T14:03:37Z",
+  "plan": "bug-002",
+  "node": "N2",
+  "attempt": 3,
+  "agent": "reviewer",
+  "agent_id": "aa4e2d7729ca220f2",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "bug-002",
+    "node_id": "N2",
+    "attempt": 3,
+    "base_sha": "250cd0d177171336cf44be32ea338a09620d7ed5",
+    "head_sha": "93eed277a43ec92b0694ab60308f75dc89623f79",
+    "diff_fingerprint": "864a30271bcff9820792271963b12e01a4584c39",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "loop.jsonl:3 gate.red@8ad1ad7c",
+      "loop.jsonl:4 gate.green@40239581",
+      "loop.jsonl:5 gate.e2e@40239581",
+      "loop.jsonl:8 gate.finding-red@7441a63a",
+      "loop.jsonl:9 gate.green@02d7dee9",
+      "loop.jsonl:10 gate.e2e@02d7dee9",
+      "loop.jsonl:15 gate.finding-red@8997fd23",
+      "loop.jsonl:16 gate.green@17418366",
+      "loop.jsonl:17 gate.green@d5b1e69c",
+      "loop.jsonl:20 gate.web-static@d5b1e69c",
+      "loop.jsonl:21 gate.audit@d5b1e69c",
+      "loop.jsonl:22 gate.unit@d5b1e69c",
+      "loop.jsonl:23 gate.no-stub@d5b1e69c",
+      "loop.jsonl:24 gate.diff-scope@d5b1e69c",
+      "loop.jsonl:25 gate.trace-check@d5b1e69c",
+      "loop.jsonl:26 gate.dotnet@d5b1e69c",
+      "loop.jsonl:27 gate.e2e@d5b1e69c"
+    ],
+    "rules_covered": [],
+    "rules_missing": [
+      "WB-7"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "WB-7",
+        "severity": "P1",
+        "file": "src/Uinsure.Policies.Web/app/workbench/RequestsDrawer.tsx",
+        "line": 11,
+        "what": "forDisplay runs JSON.parse then JSON.stringify, so the drawer shows the API's money tokens changed: 803.40 shows as 803.4, 500.00 as 500, and a 0.00 refund as 0.",
+        "why": "WB-7 asks for 'the exact request and response of every action'. The API deliberately writes every decimal to at least two places (src/Uinsure.Policies.Api/Contracts/TwoDecimalPlacesConverter.cs:7-29, '803.40, not 803.4'). Sending the response through JS numbers drops those zeros, so the inspector shows a body the API never sent. That is worst on COULD-2 £0 refunds and any amount with a zero in the pence. Acceptance 4 asks for indented JSON, not re-serialised values, and keeping the log's wire text exact doesn't help because the display is what the user reads. The indenting has to keep the received tokens as they were (whitespace changes only).",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "WB-7",
+        "severity": "P1",
+        "file": "tests/Uinsure.Policies.Web.Tests/unit/screens/wb-7-requests-drawer.test.tsx",
+        "line": 651,
+        "what": "No test checks that the indented body keeps the API's tokens. Every amount used has non-zero pence, and leaves() compares String(parsed) by substring, so 803.4 passes against 803.40.",
+        "why": "The e2e tests (wb-7.spec.ts:10086-10120 in the packet; amounts 611.29, 633.41, 602.17, 644.52, 538.26) and the unit test only check indentation and parsed leaves. String(803.4) is a substring of both '803.4' and '803.40', so the suite passes whether R1 is present or fixed. That breaks the requirements-trace rule that a test written from a finding must fail before the fix. A red test is needed: a recorded or stubbed response whose raw text holds a value like 803.40 or 0.00, asserting the drawer's text contains that exact token.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R3",
+        "rule_id": "WB-7",
+        "severity": "P2",
+        "file": "src/Uinsure.Policies.Web/app/shell/Rung.tsx",
+        "line": 41,
+        "what": "NotBuiltRegion is now dead code. N2 removed its only two uses (SellPolicy, CancelPolicy), and nothing in src/ or tests/ imports it.",
+        "why": "Code-quality slop list: dead code (unused members) is a finding. The export, and the NotBuiltYet import it alone needs, should go in the same node that made it dead.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "TDD order holds. Red 8ad1ad7c comes before green 40239581 (stub skipped, every route already existed). The A1 reds 9494829, 6e60cf9, 80026e9 and 7441a63 come before greens fe901dac, a466b6b and 02d7dee9, and the A2 red 8997fd23 comes before green 17418366. Every fix commit carries Fixes-Finding.",
+      "Acceptance 1-3 are each pinned by an e2e at HEAD: the sell and cancel inspector regions with their signed-off headings and dock, the claim drawer that never covers the button with the footer last, open-after-send on all four sending screens, and sell and cancel heading never covered and page ending at the footer. N2's e2e is 19/19 and unit 403/403 at d5b1e69c. The reproduction failed by assertion at 8ad1ad7c (gate.red 9/9 and 2/2).",
+      "The W2 and W3 test edits (A1 I1, I2, I6) follow investigator direction for intended behaviour changes. W3's claim test is stronger (it asserts aria-expanded true with no click). W2's WB-3 check now excludes the inspector but adds an 'every listed item is a sent exchange' check. That check compares request lines only, not bodies. It is not a finding, because N2's own WB-7 tests check bodies.",
+      "Temporary probe files from the activity log (tmp-measure, app/tmpm, e2e/N2/zz-probe.spec.ts) are absent at HEAD and not in the diff.",
+      "A2 I3 (HONEST-1: a rejected fetch is left showing 'Waiting', and N2's open drawer makes it visible) was ruled into N3 under inv-011 rec 3. N3's tasks in bug-002.dag.yaml don't list it yet, so it needs adding at N3 SETUP or it lives only in inv-011.",
+      "Renew mounts the open-after-send drawer bare in the form with no dock, so its sticky range is the whole form. The signed-off wb-renew puts the drawer in the frame after main, so a floating dock is intended. No test covers whether the open drawer hides the Renew button. Not raised as a finding."
+    ]
+  }
+}

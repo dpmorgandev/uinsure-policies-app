@@ -255,11 +255,16 @@ export const cancelStates: Record<'populated' | 'submitting' | 'error' | 'unreac
   },
 };
 
-// ── Parity with docs/ui/derived/W2/wb-cancel/ ────────────────────────────────────────────────────────────────
+// ── Parity with docs/ui/derived/bug-002-N2/wb-cancel/ ────────────────────────────────────────────────────────
 
-/** W1's reader joins docs/ui/derived/W1 with the screen it is given, so W2's screen is passed as ../W2/wb-cancel. */
+/**
+ * W1's reader joins docs/ui/derived/W1 with the screen it is given, so the screen is passed as a relative path.
+ * bug-002 N2 (A1/I2) builds the cancel screen's requests-as-sent inspector under WB-7, so the reference is N2's
+ * derivation, where that region is built and none is left as not built yet. W2's (../W2/wb-cancel) still drew the
+ * inspector as the placeholder.
+ */
 const readCancelReference = (page: Page, state: string): Promise<Structure> =>
-  readReference(page.context(), '../W2/wb-cancel', state);
+  readReference(page.context(), '../bug-002-N2/wb-cancel', state);
 
 async function prepare(page: Page, s: CancelState): Promise<void> {
   await serveTrace(page, designFixtureDir);

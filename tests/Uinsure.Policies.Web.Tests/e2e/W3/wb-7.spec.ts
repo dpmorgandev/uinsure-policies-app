@@ -90,8 +90,12 @@ test("WB-7 · the request log's opened claim shows its response headers, holding
 test("WB-7 · the claim page's Show requests drawer holds the claim exchange", async ({ page, api }) => {
   void api;
   const claim = await recordClaim(page, freshReference('W3DR'), freshReference('W3DRP'));
-  await page.getByRole('button', { name: 'Show requests' }).click();
+  // bug-002 N2 (A1/I6): a send opens the drawer, so it is open with no click once the claim is answered.
   const drawer = page.getByRole('dialog').or(page.getByRole('complementary', { name: /requests/i }));
+  await expect(
+    drawer.first().getByRole('button', { name: /^(Show|Hide) requests$/ }),
+    'the drawer is open after the send, with no click',
+  ).toHaveAttribute('aria-expanded', 'true', live);
   await expect(drawer.first()).toContainText(apiPath(claim), live);
   await expect(drawer.first()).toContainText(String(claim.status));
 });

@@ -250,7 +250,9 @@ export function RecordClaim() {
           </Button>
         </div>
         <p className="s-wb-note">Sends the claim, then asks for the quote again. While the request and the two quotes run, this button is busy and disabled.</p>
-        <RequestsDrawer />
+        <div className="s-wb-dock">
+          <RequestsDrawer />
+        </div>
       </section>
     </form>
   );

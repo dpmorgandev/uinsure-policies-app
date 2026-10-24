@@ -19,6 +19,15 @@
   min-width: 0;
 }
 
+/* The drawer's visually-hidden "(ok)" tags sit absolutely against the drawer, so those inside its scrolling list
+   hang below it and lengthen the page past the footer. Clipping at the dock keeps the page to its own boxes;
+   `clip` makes no scroll container, so the drawer's sticky docking is unchanged. */
+.s-wb-dock {
+  display: block;
+  min-width: 0;
+  overflow: clip;
+}
+
 .s-wb-heading,
 .s-wb-note {
   margin: 0;
