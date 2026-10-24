@@ -53,7 +53,7 @@ nodes:
     cuttable: false
     budget: 3h
     status: in_progress
-    attempt: 1
+    attempt: 2
     branch: bug/bug-002/N2
     worktree: .claude/worktrees/bug-002-N2
     pr: null
@@ -70,7 +70,7 @@ nodes:
       - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-7], title: "Reproduction: the Sell and Cancel inspector regions are not built, the drawer starts closed after a send, rides over the claim section, and prints bodies on one line; fails on main (e2e and unit)", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No stub: every route this node touches already exists", status: skipped}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the reproduction tests red against main; go or change", status: skipped}
-      - {id: t4, role: builder, step: green, layer: screen, rules: [WB-7], title: "The inspector on Sell and Cancel, the drawer open after a send, mounted at form level, bodies indented for display", status: pending}
+      - {id: t4, role: builder, step: green, layer: screen, rules: [WB-7], title: "The inspector on Sell and Cancel, the drawer open after a send, mounted at form level, bodies indented for display", status: done}
       - {id: t5, role: builder, step: refactor, layer: null, rules: [], title: "Refactor with the suite green", status: skipped}
       - {id: t6, role: orchestrator, step: gates, layer: null, rules: [], title: "Every gate for the node, recorded with receipts", status: pending}
       - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
