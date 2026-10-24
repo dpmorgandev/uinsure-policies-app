@@ -229,9 +229,7 @@ export function RenewPolicy() {
           <a href={`#/workbench/policies/${encodeURIComponent(reference)}`}>Open policy {reference}</a>
         </div>
       </section>
-      <section className="s-wb-region" data-region="the-requests-as-sent-inspector" data-req="WB-7">
-        <RequestsDrawer />
-      </section>
+      <RequestsDrawer />
     </form>
   );
 }
