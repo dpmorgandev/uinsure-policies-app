@@ -67,7 +67,7 @@ nodes:
       - "The reproduction test fails on the merge base and passes at the PR head"
       - "The full suite and the rule-coverage check pass"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-7], title: "Reproduction: the Sell and Cancel inspector regions are not built, the drawer starts closed after a send, rides over the claim section, and prints bodies on one line; fails on main (e2e and unit)", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [WB-7], title: "Reproduction: the Sell and Cancel inspector regions are not built, the drawer starts closed after a send, rides over the claim section, and prints bodies on one line; fails on main (e2e and unit)", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No stub: every route this node touches already exists", status: skipped}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the reproduction tests red against main; go or change", status: skipped}
       - {id: t4, role: builder, step: green, layer: screen, rules: [WB-7], title: "The inspector on Sell and Cancel, the drawer open after a send, mounted at form level, bodies indented for display", status: pending}
