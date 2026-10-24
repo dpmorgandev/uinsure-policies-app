@@ -5,7 +5,7 @@
 //
 // On the live API (W1's support/api.ts, the node's port), each policy sold for the test through the API itself. Every
 // expected value is the API's own answer, read from the exchange the page saw or from the API directly. axe on each
-// state the screen reaches, both themes and widths; parity on the recorded states against docs/ui/derived/W2/wb-cancel/.
+// state the screen reaches, both themes and widths; parity on the recorded states against docs/ui/derived/bug-002-N2/wb-cancel/ (bug-002 N2 builds the inspector).
 import { expect, live, test } from '../W1/support/api';
 import type { Page } from '@playwright/test';
 import { axeViolations, backgroundToken, setTheme, themes, tokenBackground, viewports } from '../U0b/support/app';
@@ -155,6 +155,8 @@ test.describe('before a quote', () => {
   /** The Problems region, as docs/ui/screens/wb-cancel/ draws it, and the rules it lists as able to refuse a date. */
   const PROBLEMS = 'problems-cancel-3-cancel-4-cancel-7';
   const STANDING_RULES = ['CANCEL-3', 'CANCEL-4', 'CANCEL-7'] as const;
+  /** The requests-as-sent inspector region (WB-7), as docs/ui/screens/wb-cancel/ draws it. */
+  const INSPECTOR = 'the-requests-as-sent-inspector';
 
   test("WB-3 · the cancel route, before Quote is pressed, shows no canned value and no other policy's reference", async ({ page, api }) => {
     void api;
@@ -165,10 +167,45 @@ test.describe('before a quote', () => {
     const main = page.getByRole('main');
     await expect(main, "the route's own policy, as the API returned it").toContainText(stored.reference, live);
     await expect(main, "its own term's start").toContainText(stored.terms[0]?.startDate ?? 'a start date');
-    const text = await main.innerText();
-    expect(text, 'no recorded-fixture reference').not.toMatch(RECORDED_REFERENCE);
-    expect(text, "no other policy's reference").not.toContain(other.reference);
-    expect(text, 'no answer to a request that was never sent').not.toMatch(/\banswered \d{3}\b/);
+    // bug-002 N2 (A1/I1): the requests-as-sent inspector is built (WB-7), and it shows the screen's own on-open read
+    // of this policy as sent and as answered, its payment reference included. So the canned-value checks read the
+    // rest of main, and the inspector is held to a stronger one: it lists only exchanges this page itself sent for
+    // this policy, and the other policy's reference is nowhere on main, inspector and hidden text included.
+    await page.waitForLoadState('networkidle');
+    const text = await main.evaluate((el, slug) => {
+      const inspector = el.querySelector(`[data-region="${slug}"]`);
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      const parts: string[] = [];
+      for (let node = walker.nextNode(); node !== null; node = walker.nextNode()) {
+        const parent = node.parentElement;
+        if (parent === null || (inspector !== null && inspector.contains(parent))) continue;
+        if (!parent.checkVisibility()) continue;
+        parts.push(node.textContent ?? '');
+      }
+      return parts.join(' ');
+    }, INSPECTOR);
+    expect(text, 'setup: the rest of main is read').toContain(stored.reference);
+    expect(text, 'no recorded-fixture reference outside the inspector').not.toMatch(RECORDED_REFERENCE);
+    expect(text, 'no answer outside the inspector to a request that was never sent').not.toMatch(/\banswered \d{3}\b/);
+    expect(await main.textContent(), "no other policy's reference anywhere on main, the inspector included").not.toContain(other.reference);
+    // Each listed item's request line ("<METHOD> <path>[?query]", its first code element), or the whole item if it has none.
+    const listed = await main
+      .locator(`[data-region="${INSPECTOR}"] li`)
+      .evaluateAll((items) =>
+        items
+          .filter((li) => li.parentElement?.closest('li') === null)
+          .map((li) => (li.querySelector('code') ?? li).textContent?.replace(/\s+/g, ' ').trim() ?? ''),
+      );
+    const ours = seen.filter((e) => e.path === `/api/policies/${stored.reference}` || e.path.startsWith(`/api/policies/${stored.reference}/`));
+    const unclaimed = [...ours];
+    for (const line of listed) {
+      const at = unclaimed.findIndex((e) => {
+        const sentLine = `${e.method} ${e.path.replace(/^\/api/, '')}`;
+        return line === sentLine || line.startsWith(`${sentLine}?`);
+      });
+      expect(at, `the inspector's item "${line.slice(0, 120)}" is an exchange this page sent for ${stored.reference}`).toBeGreaterThanOrEqual(0);
+      unclaimed.splice(at, 1);
+    }
     await expect(main.getByRole('alert'), 'no problem: none was returned').toHaveCount(0);
     // The screen's Problems region lists, as drawn, the rules that can refuse a date here: those chips are its standing
     // guide, under "No problem", not a rule the API named. Any other rule chip would be one the API never returned.
