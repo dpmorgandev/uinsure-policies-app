@@ -14,10 +14,12 @@
 // expected value is the exchange the page itself saw (watchApi), never a figure written here.
 import type { Locator, Page } from '@playwright/test';
 import { expect, live, test } from '../W1/support/api';
-import { viewports } from '../U0b/support/app';
+import { serveTrace, setTheme, viewports } from '../U0b/support/app';
+import { designFixtureDir } from '../U0b/support/trail';
+import { sellStates } from '../W1/support/parity';
 import { answered, apiToday, daysFromToday, field, requestOf, route, sell, sellForm, sellThroughApi, watchApi } from '../W1/support/workbench';
 import type { Exchange } from '../W1/support/workbench';
-import { openCancel, quote } from '../W2/support/cancel';
+import { cancelStates, openCancel, quote } from '../W2/support/cancel';
 import { freshReference } from '../W3/support/fresh';
 
 /** Every string, number or boolean anywhere in a JSON value, as text. */
@@ -238,3 +240,95 @@ test('WB-7 · the claim screen drawer shows the claim request and response JSON 
     expect(text, `the response's ${key} starts its own indented line`).toMatch(new RegExp(`^[ \\t]+"?${key}"?\\s*:`, 'm'));
   }
 });
+
+// ── A1/I7: the inspector regions as signed off (docs/ui/screens/wb-sell/, docs/ui/screens/wb-cancel/) ──────────
+// Parity compares data-req, data-comp and order only, so it can't see a region's heading or its dock. On the recorded
+// populated states (docs/ui/fixture/api/), the design fixture serving the shell's trace data.
+
+/** The signed-off headings of the two inspector regions. */
+const SELL_RECEIPT = 'Receipt for rung 4: what was sent, what came back';
+const CANCEL_REQUESTS = 'Requests';
+
+async function recordedState(page: Page, width: 1440 | 390, open: (page: Page) => Promise<void>): Promise<void> {
+  await serveTrace(page, designFixtureDir);
+  await setTheme(page, 'light');
+  await page.setViewportSize(viewports[width]);
+  await open(page);
+  await page.waitForLoadState('networkidle');
+}
+
+test('WB-7 · the sell screen\'s inspector region is the receipt section labelled "Receipt for rung 4: what was sent, what came back", holding the drawer', async ({ page }) => {
+  await recordedState(page, 1440, sellStates.populated.open);
+  const inspector = page.locator('[data-region="the-request-as-sent-inspector"]');
+  await expect(inspector, 'setup: the inspector region is on the page').toHaveCount(1);
+  await expect(inspector.getByRole('heading', { level: 2, name: SELL_RECEIPT, exact: true }), 'the region carries its signed-off heading').toHaveCount(1);
+  const labelled = page.getByRole('region', { name: SELL_RECEIPT, exact: true });
+  await expect(labelled, 'the region is labelled by that heading').toHaveAttribute('data-region', 'the-request-as-sent-inspector');
+  await expect(drawerIn(labelled), 'the drawer sits inside the labelled region').toHaveCount(1);
+});
+
+test('WB-7 · the cancel screen\'s inspector region is headed "Requests", with the drawer docked inside it below the heading', async ({ page }) => {
+  await recordedState(page, 1440, cancelStates.populated.open);
+  const inspector = page.locator('[data-region="the-requests-as-sent-inspector"]');
+  await expect(inspector, 'setup: the inspector region is on the page').toHaveCount(1);
+  await expect(inspector.getByRole('heading', { level: 2, name: CANCEL_REQUESTS, exact: true }), 'the region carries its signed-off heading').toHaveCount(1);
+  const layout = await inspector.evaluate((region, name) => {
+    const drawer = [...region.querySelectorAll('aside[aria-labelledby]')].find(
+      (a) => document.getElementById(a.getAttribute('aria-labelledby') ?? '')?.textContent?.trim() === name,
+    );
+    const dock = drawer?.parentElement ?? null;
+    return {
+      firstChild: region.firstElementChild ? `${region.firstElementChild.tagName.toLowerCase()} ${region.firstElementChild.textContent?.trim() ?? ''}` : null,
+      dockIsRegionChild: dock !== null && dock !== region && dock.parentElement === region,
+      dockHoldsOnlyTheDrawer: dock !== null && dock !== region && dock.childElementCount === 1,
+      dockAfterHeading: dock !== null && region.firstElementChild !== null && dock.previousElementSibling === region.firstElementChild,
+    };
+  }, 'The requests as sent');
+  expect(layout, 'the heading first, then the dock holding the drawer alone').toEqual({
+    firstChild: `h2 ${CANCEL_REQUESTS}`,
+    dockIsRegionChild: true,
+    dockHoldsOnlyTheDrawer: true,
+    dockAfterHeading: true,
+  });
+});
+
+for (const width of [1440, 390] as const) {
+  test(`WB-7 · on the cancel screen at ${width} the requests drawer never covers the Requests heading at any scroll`, async ({ page }) => {
+    await recordedState(page, width, cancelStates.populated.open);
+    const inspector = page.locator('[data-region="the-requests-as-sent-inspector"]');
+    const heading = inspector.getByRole('heading', { level: 2, name: CANCEL_REQUESTS, exact: true });
+    await expect(heading, 'the region carries its signed-off heading').toHaveCount(1);
+    await expect(drawerIn(inspector), 'setup: the region holds the drawer').toHaveCount(1);
+    const covered = await inspector.evaluate((region, name) => {
+      const drawer = [...region.querySelectorAll('aside[aria-labelledby]')].find(
+        (a) => document.getElementById(a.getAttribute('aria-labelledby') ?? '')?.textContent?.trim() === name,
+      ) as HTMLElement;
+      const title = region.querySelector(':scope > h2') as HTMLElement;
+      const hits: { scrollY: number }[] = [];
+      const end = document.documentElement.scrollHeight - window.innerHeight;
+      for (let y = 0; y <= end + 10; y += 10) {
+        window.scrollTo(0, Math.min(y, end));
+        const d = drawer.getBoundingClientRect();
+        const h = title.getBoundingClientRect();
+        const onScreen = (r: DOMRect): boolean => r.bottom > 0 && r.top < window.innerHeight;
+        const meet = d.top < h.bottom && h.top < d.bottom && d.left < h.right && h.left < d.right;
+        if (onScreen(d) && onScreen(h) && meet) hits.push({ scrollY: window.scrollY });
+      }
+      return hits;
+    }, 'The requests as sent');
+    expect(covered, 'scroll positions where the drawer covers the Requests heading').toEqual([]);
+  });
+
+  test(`WB-7 · on the cancel screen at ${width}, scrolled to the end, the page ends at the footer's bottom`, async ({ page }) => {
+    await recordedState(page, width, cancelStates.populated.open);
+    await expect(drawerIn(page.locator('[data-region="the-requests-as-sent-inspector"]')), 'setup: the inspector holds the drawer').toHaveCount(1);
+    await expect(page.getByRole('contentinfo'), 'setup: the page has its contentinfo footer').toHaveCount(1);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const measured = await page.evaluate(() => {
+      // The contentinfo footer: a footer not scoped to main or to a sectioning element.
+      const footer = [...document.querySelectorAll('footer')].find((f) => f.closest('main, article, aside, nav, section') === null) as HTMLElement;
+      return { scrollHeight: document.documentElement.scrollHeight, footerBottom: Math.round(footer.getBoundingClientRect().bottom + window.scrollY) };
+    });
+    expect(Math.abs(measured.scrollHeight - measured.footerBottom), `no page below the footer: ${JSON.stringify(measured)}`).toBeLessThanOrEqual(1);
+  });
+}
