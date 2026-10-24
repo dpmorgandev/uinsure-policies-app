@@ -332,3 +332,68 @@ for (const width of [1440, 390] as const) {
     expect(Math.abs(measured.scrollHeight - measured.footerBottom), `no page below the footer: ${JSON.stringify(measured)}`).toBeLessThanOrEqual(1);
   });
 }
+
+// ── A2/I1, I2: the sell receipt heading is seen, not only present (the cancel checks above, on wb-sell) ─────────
+// A bare sticky drawer after the h2 has the whole receipt section as its sticky range, so it rides up over the h2.
+
+for (const width of [1440, 390] as const) {
+  test(`WB-7 · on the sell screen at ${width} the requests drawer never covers the receipt heading at any scroll`, async ({ page }) => {
+    await recordedState(page, width, sellStates.populated.open);
+    const inspector = page.locator('[data-region="the-request-as-sent-inspector"]');
+    const heading = inspector.getByRole('heading', { level: 2, name: SELL_RECEIPT, exact: true });
+    await expect(heading, 'the region carries its signed-off heading').toHaveCount(1);
+    await expect(drawerIn(inspector), 'setup: the region holds the drawer').toHaveCount(1);
+    await expect(drawerIn(inspector).getByRole('listitem').first(), 'setup: the drawer lists the sale').toBeVisible(live);
+    const covered = await inspector.evaluate((region, name) => {
+      const drawer = [...region.querySelectorAll('aside[aria-labelledby]')].find(
+        (a) => document.getElementById(a.getAttribute('aria-labelledby') ?? '')?.textContent?.trim() === name,
+      ) as HTMLElement;
+      const title = region.querySelector(':scope > h2') as HTMLElement;
+      const hits: { scrollY: number }[] = [];
+      const end = document.documentElement.scrollHeight - window.innerHeight;
+      for (let y = 0; y <= end + 10; y += 10) {
+        window.scrollTo(0, Math.min(y, end));
+        const d = drawer.getBoundingClientRect();
+        const h = title.getBoundingClientRect();
+        const onScreen = (r: DOMRect): boolean => r.bottom > 0 && r.top < window.innerHeight;
+        const meet = d.top < h.bottom && h.top < d.bottom && d.left < h.right && h.left < d.right;
+        if (onScreen(d) && onScreen(h) && meet) hits.push({ scrollY: window.scrollY });
+      }
+      return hits;
+    }, 'The requests as sent');
+    expect(covered, `scroll positions where the drawer covers the "${SELL_RECEIPT}" heading`).toEqual([]);
+  });
+
+  // Scrolled to the end in a live window the sticky drawer is back in its own place, so the page already ends at the
+  // footer on a bare drawer: the blank band under the drawer in the regression shots is the drawer having left its
+  // place. So this test pins both: the page ends at the footer, and the drawer keeps one place on the page at every
+  // scroll (as cancel's docked drawer does), leaving nothing blank below it.
+  test(`WB-7 · on the sell screen at ${width} the requests drawer keeps its place on the page at every scroll, and scrolled to the end the page ends at the footer's bottom`, async ({ page }) => {
+    await recordedState(page, width, sellStates.populated.open);
+    const inspector = page.locator('[data-region="the-request-as-sent-inspector"]');
+    await expect(drawerIn(inspector), 'setup: the inspector holds the drawer').toHaveCount(1);
+    await expect(drawerIn(inspector).getByRole('listitem').first(), 'setup: the drawer lists the sale').toBeVisible(live);
+    await expect(page.getByRole('contentinfo'), 'setup: the page has its contentinfo footer').toHaveCount(1);
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const measured = await page.evaluate(() => {
+      // The contentinfo footer: a footer not scoped to main or to a sectioning element.
+      const footer = [...document.querySelectorAll('footer')].find((f) => f.closest('main, article, aside, nav, section') === null) as HTMLElement;
+      return { scrollHeight: document.documentElement.scrollHeight, footerBottom: Math.round(footer.getBoundingClientRect().bottom + window.scrollY) };
+    });
+    expect(Math.abs(measured.scrollHeight - measured.footerBottom), `no page below the footer: ${JSON.stringify(measured)}`).toBeLessThanOrEqual(1);
+
+    const places = await inspector.evaluate((region, name) => {
+      const drawer = [...region.querySelectorAll('aside[aria-labelledby]')].find(
+        (a) => document.getElementById(a.getAttribute('aria-labelledby') ?? '')?.textContent?.trim() === name,
+      ) as HTMLElement;
+      const tops = new Set<number>();
+      const end = document.documentElement.scrollHeight - window.innerHeight;
+      for (let y = 0; y <= end + 10; y += 10) {
+        window.scrollTo(0, Math.min(y, end));
+        tops.add(Math.round(drawer.getBoundingClientRect().top + window.scrollY));
+      }
+      return [...tops].sort((a, b) => a - b);
+    }, 'The requests as sent');
+    expect(places, "the drawer's top on the page, at every scroll top to bottom: one place only").toHaveLength(1);
+  });
+}
