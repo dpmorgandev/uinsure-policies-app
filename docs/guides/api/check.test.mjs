@@ -295,3 +295,64 @@ test("STY-5 A1/I14: with no Playwright, print.mjs exits 2 and its hint names the
     rmSync(sandbox, { recursive: true, force: true });
   }
 });
+
+// ---- Round D1 (David's steer on reviewer A2 findings R1, R4, R5; findings file D1.md) ----
+
+// The text of the servicer journey: from `<section ... id="servicer">` to the next top-level section.
+const servicerSection = (html) => {
+  const start = html.indexOf('id="servicer"');
+  const end = html.indexOf('<section', start + 1);
+  return { start, end, text: html.slice(start, end), startLine: lineAt(html, start) };
+};
+
+test("LRN-5 D1/I1: every date in a servicer-journey curl command is set from the reader's own today", () => {
+  const html = read(guidePath);
+  const section = servicerSection(html);
+  const endLine = lineAt(html, section.end);
+  const curls = guideCommands(html).filter((c) => c.text.startsWith("curl ") && c.line > section.startLine && c.line < endLine);
+  assert.ok(curls.length > 0, "the servicer journey shows curl commands");
+
+  // A date of birth is a fixed fact about a person, not a date relative to the sale.
+  const dates = new Set(
+    curls.flatMap((c) =>
+      [...c.text.replace(/"dateOfBirth":"[^"]*"/g, "").matchAll(/\b\d{4}-\d{2}-\d{2}\b/g)].map((m) => m[0]),
+    ),
+  );
+  assert.ok(dates.size > 0, "the servicer journey's commands carry dates");
+
+  // Computed by the shell, or covered by a table row that gives the date and its offset from the reader's today.
+  const rows = [...section.text.matchAll(/<tr\b[\s\S]*?<\/tr>/g)].map((m) => decode(m[0].replace(/<[^>]+>/g, " ")));
+  const uncovered = [...dates].filter((d) => !rows.some((r) => r.includes(d) && /\btoday\b/i.test(r)));
+  assert.deepEqual(uncovered, [], "each fixed date in a command needs a row giving its offset from the reader's own today");
+  assert.match(decode(section.text.replace(/<[^>]+>/g, " ")), /your own today/i, "the section tells the reader to use their own today");
+});
+
+test("LRN-5 D1/I2: a receipted dotnet-ef install or update, at the EF Design version, comes before the first dotnet ef command", () => {
+  const version = read("Directory.Packages.props").match(/Microsoft\.EntityFrameworkCore\.Design"\s+Version="([^"]+)"/)?.[1];
+  assert.ok(version, "Directory.Packages.props pins Microsoft.EntityFrameworkCore.Design");
+
+  const commands = guideCommands(read(guidePath));
+  const first = commands.findIndex((c) => /^dotnet ef\b/.test(c.text));
+  assert.ok(first >= 0, "the guide shows a dotnet ef command");
+
+  const installPattern = new RegExp(`^dotnet tool (install|update) --global dotnet-ef --version ${escapeRe(version)}$`);
+  const install = commands.slice(0, first).find((c) => installPattern.test(c.text));
+  assert.ok(install, `before index.html:${commands[first].line}, the guide shows \`dotnet tool install|update --global dotnet-ef --version ${version}\``);
+  assert.ok(isReceipted(install.text, receiptCommands(read(receiptsPath))), "that install command has a receipt in receipts.md");
+});
+
+test("§8.3 D1/I3: no note in the receipts says 'At HEAD', and a stated test result names its capture sha", () => {
+  const md = read(receiptsPath);
+  const script = read("docs/guides/api/run-receipts.sh");
+  const observed = md.split(/^## Observed while capturing$/m)[1]?.split(/^## /m)[0] ?? "";
+  assert.ok(observed.trim() !== "", "receipts.md has an 'Observed while capturing' section");
+
+  assert.doesNotMatch(observed, /\bat HEAD\b/i, "receipts.md: a note dated by the moving word HEAD");
+  const heredoc = script.split("## Observed while capturing")[1] ?? "";
+  assert.doesNotMatch(heredoc, /\bat HEAD\b/i, "run-receipts.sh: the heredoc that generates the note");
+
+  const bullets = observed.split(/^- /m).slice(1);
+  const results = bullets.filter((b) => /\b(fails?|failed|passed|printed total)\b/i.test(b));
+  const unnamed = results.filter((b) => !/\b[0-9a-f]{8}\b/.test(b)).map((b) => b.slice(0, 60));
+  assert.deepEqual(unnamed, [], "a bullet that states a test result names the commit it was measured at");
+});
