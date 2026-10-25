@@ -6,6 +6,23 @@ SQL Server when deployed), problem-details errors (RFC 9457) and OpenAPI with Sc
 with TDD, one feature at a time. Every rule, its ID and the interpretation taken for it are in
 [docs/requirements.md](docs/requirements.md).
 
+## Quick start
+
+Docket opens with the build trail already loaded: the compiled `trace.json` ships with the repo.
+
+1. Run `npm ci` in `src/Uinsure.Policies.Web` (once).
+2. In Visual Studio, open `Uinsure.Policies.slnx`, choose **API and web** in the startup-project dropdown on the
+   toolbar, and press F5. Docket opens at `http://localhost:4170`, and the API runs on port 5080.
+
+Without Visual Studio, from the repo root, in two terminals:
+
+```sh
+dotnet run --project src/Uinsure.Policies.Api --launch-profile http
+npm --prefix src/Uinsure.Policies.Web ci && npm --prefix src/Uinsure.Policies.Web run build && npm --prefix src/Uinsure.Policies.Web run preview
+```
+
+Then open `http://localhost:4173`. The user guides are `UI_UserGuide.pdf` and `API_UserGuide.pdf` at the root.
+
 ## Docket (the web app)
 
 Docket lives in `src/Uinsure.Policies.Web`. It has two parts: the **trail explorer**, which reads the compiled build trail
@@ -16,8 +33,9 @@ renewed from a browser. It is React, TypeScript and Vite.
 **In Visual Studio:** open `Uinsure.Policies.slnx` and choose the **API and web** startup profile (it is in
 `Uinsure.Policies.slnLaunch`, beside the solution). F5 starts the API on port 5080, which opens its own browser
 tab on `/health/live`, and the web dev server on `http://localhost:4170`, which opens Docket in your default
-browser (Vite's `--open`; it is not a debugger-attached window). The dev server compiles `trace.json` from git
-history each time it starts, and proxies `/api` to the API. The web project is excluded from the solution
+browser (Vite's `--open`; it is not a debugger-attached window). The dev server serves the compiled `trace.json` in
+`public/` (`npm run trace` rebuilds it from git history; with none there it compiles one at start), and proxies `/api`
+to the API. The web project is excluded from the solution
 build, so `dotnet build` never runs npm. Run `npm ci` in `src/Uinsure.Policies.Web` once first.
 
 Visual Studio remembers the selected startup profile per user, in its git-ignored `.vs/` folder, so the repo can't
@@ -29,7 +47,7 @@ set it for you. Pick **API and web** once per machine (and again if you delete `
 dotnet run --project src/Uinsure.Policies.Api --launch-profile http   # the API, port 5080
 cd src/Uinsure.Policies.Web
 npm ci
-npm run trace      # compile trace.json from git history
+npm run trace      # optional: recompile trace.json from git history
 npm run build
 npm run preview    # http://localhost:4173, /api proxied to port 5080 (set DOCKET_API_PORT to change it)
 ```

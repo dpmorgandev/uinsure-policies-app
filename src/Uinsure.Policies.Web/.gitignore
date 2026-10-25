@@ -1,4 +1,7 @@
 node_modules/
 dist/
-public/
+public/*
+# The compiled trail ships with the release so Docket opens with data; `npm run trace` rebuilds it.
+!public/trace.json
+!public/trace/
 test-results/

@@ -26,6 +26,8 @@ const proxy = {
 // DATA-1: the dev server listens first and compiles the trail beside it. Until the compile ends /trace.json answers 503
 // "compiling"; then it serves the compiled file. A failed compile is printed problem by problem and /trace.json keeps
 // answering 503, so the page says it could not load. Preview compiles nothing: it serves the dist/ the build made.
+// A compiled trail already in public/ (the release ships one) is served at once and not recompiled; `npm run trace`
+// rebuilds it from the current HEAD.
 function traceOnStart(): Plugin {
   const publicDir = resolve(import.meta.dirname, 'public');
   let state: 'compiling' | 'ready' | 'failed' = 'compiling';
@@ -35,20 +37,23 @@ function traceOnStart(): Plugin {
     apply: (_config, { command, mode, isPreview }) => command === 'serve' && mode !== 'test' && isPreview !== true,
     configureServer(server) {
       const log = server.config.logger;
-      let problems = '';
-      const compiler = spawn(process.execPath, [resolve(import.meta.dirname, 'compiler/index.ts'), '--ref', 'HEAD'], { cwd: import.meta.dirname });
-      compiler.stderr.on('data', (chunk: Buffer) => (problems += chunk.toString()));
-      const compiled = new Promise<void>((done) =>
-        compiler.on('close', (code) => {
-          state = code === 0 ? 'ready' : 'failed';
-          if (state === 'failed') for (const line of problems.split('\n').filter((l) => l.trim() !== '')) log.error(`trace compile failed: ${line}`);
-          done();
-        }),
-      );
-      // The port answers at once, but the "Local:" line waits for the compile: it means the trail is ready or has said why not.
-      const printUrls = server.printUrls.bind(server);
-      server.printUrls = () => void compiled.then(printUrls);
-      server.httpServer?.on('close', () => compiler.kill());
+      if (existsSync(resolve(publicDir, 'trace.json'))) state = 'ready';
+      else {
+        let problems = '';
+        const compiler = spawn(process.execPath, [resolve(import.meta.dirname, 'compiler/index.ts'), '--ref', 'HEAD'], { cwd: import.meta.dirname });
+        compiler.stderr.on('data', (chunk: Buffer) => (problems += chunk.toString()));
+        const compiled = new Promise<void>((done) =>
+          compiler.on('close', (code) => {
+            state = code === 0 ? 'ready' : 'failed';
+            if (state === 'failed') for (const line of problems.split('\n').filter((l) => l.trim() !== '')) log.error(`trace compile failed: ${line}`);
+            done();
+          }),
+        );
+        // The port answers at once, but the "Local:" line waits for the compile: it means the trail is ready or has said why not.
+        const printUrls = server.printUrls.bind(server);
+        server.printUrls = () => void compiled.then(printUrls);
+        server.httpServer?.on('close', () => compiler.kill());
+      }
       server.middlewares.use((request, response, next) => {
         const raw = (request.url ?? '').split('?')[0] ?? '';
         if (raw !== '/trace.json' && !raw.startsWith('/trace/')) return next();
