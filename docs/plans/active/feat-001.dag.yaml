@@ -36,7 +36,7 @@ nodes:
       - {id: t2, role: builder, step: write, layer: null, rules: [], title: "Re-capture shots from main with red boxes from region tags and each step's result framed; the coverage check script", status: done}
       - {id: t3, role: builder, step: write, layer: null, rules: [], title: "Both guides rebuilt as persona journeys; the carried N6 work; both PDFs reprinted", status: done}
       - {id: t4, role: orchestrator, step: gates, layer: null, rules: [], title: "Link check, coverage check, privacy scan, PDFs reprint from HTML, full suite green", status: done}
-      - {id: t5, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD (only a P1 reopens)", status: pending}
+      - {id: t5, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD (only a P1 reopens)", status: done}
       - {id: t6, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/feat-001-N1.md: David follows one journey per persona in the running app", status: pending}
       - {id: t7, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: pending}
       - {id: t8, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; completeness check passes", status: pending}
