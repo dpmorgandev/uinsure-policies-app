@@ -10,7 +10,7 @@ import { expect, live, test } from '../W1/support/api';
 import { answered, daysFromToday, requestOf, sell, sellForm, sellThroughApi, unreachable, watchApi } from '../W1/support/workbench';
 import { askToCancel, cancelAnswered, confirmCancel, openCancel, quote } from '../W2/support/cancel';
 import { freshReference } from '../W3/support/fresh';
-import { drawerIn, headerField } from './support';
+import { drawerIn, header, headerField } from './support';
 
 test('HONEST-1 · when the re-read after a 201 cancel fails, the cancel header marks the policy status as read before the cancel', async ({ page, api }) => {
   void api;
@@ -39,6 +39,14 @@ test('HONEST-1 · when the re-read after a 201 cancel fails, the cancel header m
   const status = headerField(page, 'Status');
   await expect(status, 'the Status field says it was read before the cancel').toContainText(/read before the cancel/i, live);
   await expect(status, 'the marked status is the one the first read gave').toContainText(before);
+  // Every header field, whatever its label: the screen's own 'Policy status' id shows the status too (bug-002 N3 A1 I1).
+  const unmarked: string[] = [];
+  for (const field of await header(page).locator('dl > div').all()) {
+    const label = ((await field.locator('dt').textContent()) ?? '').trim();
+    const value = ((await field.locator('dd').textContent()) ?? '').replace(/\s+/g, ' ').trim();
+    if (value.includes(before) && !/read before the cancel/i.test(value)) unmarked.push(`${label}: ${value}`);
+  }
+  expect(unmarked, 'no header field shows the status from before the cancel without the mark').toEqual([]);
 });
 
 test('HONEST-1 · a sale whose fetch is rejected reads as failed in the requests drawer and the request log, never Waiting', async ({ page, api }) => {

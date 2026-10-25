@@ -16,6 +16,19 @@ afterEach(() => {
 /** The live header's text, whitespace folded. */
 const headerText = (): string => document.querySelector('header[data-mode="live"]')?.textContent?.replace(/\s+/g, ' ') ?? '';
 
+/**
+ * Every live header field (each dd, whatever its dt) that shows the status the first read gave without the mark. The kit's
+ * Status field is not the only one that can carry it: the screen's own 'Policy status' id does too (bug-002 N3 A1 I1).
+ */
+const unmarkedStatusFields = (): string[] =>
+  [...document.querySelectorAll('header[data-mode="live"] dl > div')]
+    .map((field) => ({
+      label: field.querySelector('dt')?.textContent?.trim() ?? '',
+      value: field.querySelector('dd')?.textContent?.replace(/\s+/g, ' ').trim() ?? '',
+    }))
+    .filter(({ value }) => value.includes(soldPolicy.status) && !/read before the cancel/i.test(value))
+    .map(({ label, value }) => `${label}: ${value}`);
+
 test('HONEST-1 · when the re-read after a 201 cancel is refused, the header marks the policy status as read before the cancel', async () => {
   stubCancel([policyRead(), policyReadRefused()]);
   openCancel();
@@ -23,6 +36,7 @@ test('HONEST-1 · when the re-read after a 201 cancel is refused, the header mar
   await waitFor(() => expect(headerText(), 'the header says the status shown was read before the cancel').toMatch(/read before the cancel/i));
   expect(headerField('Status')?.textContent ?? '', 'the Status field is the one marked').toMatch(/read before the cancel/i);
   expect(headerField('Status')?.textContent ?? '', 'the marked status is the one the first read gave').toContain(soldPolicy.status);
+  expect(unmarkedStatusFields(), 'no header field shows the status from before the cancel without the mark').toEqual([]);
 });
 
 test('HONEST-1 · when the re-read after a 201 cancel never reaches the API, the header marks the policy status as read before the cancel', async () => {
@@ -31,4 +45,6 @@ test('HONEST-1 · when the re-read after a 201 cancel never reaches the API, the
   await quoteAndCancel();
   await waitFor(() => expect(headerText(), 'the header says the status shown was read before the cancel').toMatch(/read before the cancel/i));
   expect(headerField('Status')?.textContent ?? '', 'the Status field is the one marked').toMatch(/read before the cancel/i);
+  expect(headerField('Status')?.textContent ?? '', 'the marked status is the one the first read gave').toContain(soldPolicy.status);
+  expect(unmarkedStatusFields(), 'no header field shows the status from before the cancel without the mark').toEqual([]);
 });
