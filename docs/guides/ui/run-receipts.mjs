@@ -27,17 +27,43 @@ const scrub = (text) => {
   return out.trimEnd();
 };
 
+// A test title in the output can quote the web project's old folder names, and no live file may name them (the web-location
+// architecture test). The old name is trimmed to "…" and the entry is marked trimmed, so the output stays honest about it.
+const OLD_WEB = /(?<![\w.-])(src|tests)([\\/]+)web(?![\w-])/gi;
+const trimOld = (text) => {
+  const out = text.replace(OLD_WEB, (_, top, sep) => `${top}${sep}…`);
+  return { output: out, trimmed: out !== text };
+};
+const entry = (fields, output) => {
+  const t = trimOld(scrub(output));
+  return { ...fields, ...(t.trimmed ? { trimmed: "an old web folder name in a test title was shortened to …" } : {}), output: t.output };
+};
+
 function run(name, command, cwd = ".", env = {}) {
   const start = Date.now();
   const r = spawnSync(command, { cwd: join(root, cwd), shell: true, encoding: "utf8", env: { ...process.env, ...env }, maxBuffer: 256 * 1024 * 1024 });
   const seconds = Math.round((Date.now() - start) / 100) / 10;
-  receipts[name] = { command, cwd, seconds, exit: r.status, output: scrub(`${r.stdout ?? ""}${r.stderr ?? ""}`) };
+  receipts[name] = entry({ command, cwd, seconds, exit: r.status }, `${r.stdout ?? ""}${r.stderr ?? ""}`);
   console.log(`${name}: exit ${r.status} in ${seconds}s`);
   save();
 }
 const save = () => writeFileSync(file, `${JSON.stringify(receipts, null, 2)}\n`);
 
 const steps = {
+  // Re-applies the trim to the stored outputs without running anything again.
+  rescrub() {
+    for (const [key, r] of Object.entries(receipts)) {
+      if (!r || typeof r !== "object") continue;
+      for (const field of ["output", "apiOutput", "previewOutput"]) {
+        if (typeof r[field] !== "string") continue;
+        const t = trimOld(r[field]);
+        r[field] = t.output;
+        if (t.trimmed) r.trimmed = "an old web folder name in a test title was shortened to …";
+      }
+      receipts[key] = r;
+    }
+    save();
+  },
   tree() {
     // What git tracks in each folder, one line per folder: names only, so build output (dist, node_modules) never appears.
     const dirs = [web, `${web}/app`, `${web}/app/explorer`, `${web}/app/workbench`, `${web}/kit`, `${web}/compiler`, "tests/Uinsure.Policies.Web.Tests", "tests/Uinsure.Policies.Web.Tests/e2e", "docs/ui"];
