@@ -1,0 +1,45 @@
+plan_id: feat-001
+kind: feature
+title: The full user guides, as persona journeys
+status: approved
+created: 2026-10-25
+approved_by: david
+approved_on: 2026-10-25
+requirements_rev: 4ec58102
+parent: null
+nodes:
+  - id: N1
+    title: Rebuild both guides as persona journeys
+    kind: docs
+    owner: loop
+    depends_on: []
+    rules: []
+    cuttable: false
+    budget: 5h
+    status: pending
+    attempt: 0
+    branch: null
+    worktree: null
+    pr: null
+    qa: docs/qa/feat-001-N1.md
+    trace: docs/trace/feat-001/N1/
+    acceptance:
+      - "Every highlighted element in both guides has a red box drawn round it and a 'Step n' label, positioned from region tags; no numbered circle remains (documentation-requirements LRN-6, amended 2026-10-25)"
+      - "Each guide is organised as persona journeys (servicer and assessor in UI_UserGuide.pdf; developer and servicer in API_UserGuide.pdf), and each step says what the user decides and what Docket or the API gives them (LRN-12)"
+      - "Each step's screenshot shows its result: the response, the end of the page or the plan picture (LRN-13)"
+      - "The coverage check under docs/guides/ fails on any §6 or §7 feature with no journey step, and passes at HEAD (LRN-14)"
+      - "The API guide's commands and counts are reprinted from a run on main, with no 'not on this branch' callout; one diagram per big idea; F8 R6-R12 and the A2.2 note applied (carried from bug-002/N6)"
+      - "Both PDFs reprint from their HTML with node docs/guides/print.mjs; every path:line link resolves at HEAD; the privacy scan passes on the HTML, assets and PDF text"
+      - "A reader follows one persona journey in a PDF against the running app and reaches each step's shown result"
+    tasks:
+      - {id: t1, role: builder, step: write, layer: null, rules: [], title: "Specs: guide-format red box + Step n label; ui-guide and api-guide question banks by persona, journey outlines and coverage maps", status: pending}
+      - {id: t2, role: builder, step: write, layer: null, rules: [], title: "Re-capture shots from main with red boxes from region tags and each step's result framed; the coverage check script", status: pending}
+      - {id: t3, role: builder, step: write, layer: null, rules: [], title: "Both guides rebuilt as persona journeys; the carried N6 work; both PDFs reprinted", status: pending}
+      - {id: t4, role: orchestrator, step: gates, layer: null, rules: [], title: "Link check, coverage check, privacy scan, PDFs reprint from HTML, full suite green", status: pending}
+      - {id: t5, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD (only a P1 reopens)", status: pending}
+      - {id: t6, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/feat-001-N1.md: David follows one journey per persona in the running app", status: pending}
+      - {id: t7, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: pending}
+      - {id: t8, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; completeness check passes", status: pending}
+      - {id: t9, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: pending}
+      - {id: t10, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from the PDFs and the QA script", status: pending}
+      - {id: t11, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
