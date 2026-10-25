@@ -15,7 +15,7 @@ import './notice.css';
 const navFor = (): NavItem[] => [
   { key: 'overview', label: 'Overview', href: '#/', scope: 'explorer' },
   { key: 'matrix', label: 'Requirements matrix', href: '#/rules', scope: 'explorer' },
-  { key: 'plan', label: 'Plan', href: '#/plans', scope: 'explorer' },
+  { key: 'plan', label: 'Plan', href: '#/plans/build', scope: 'explorer' },
   { key: 'decisions', label: 'Human decisions', href: '#/decisions', scope: 'explorer' },
   { key: 'about', label: 'How to read this', href: '#/about', scope: 'explorer' },
   { key: 'workbench', label: 'Workbench', href: '#/workbench', scope: 'workbench' },
@@ -77,7 +77,6 @@ export function Frame() {
   const verdict = useMatch('/plans/:planId/:nodeId/verdicts/:round/:agent');
   const finding = useMatch('/plans/:planId/:nodeId/findings/:round');
   const planPage = useMatch('/plans/:planId');
-  const planIndex = useMatch('/plans');
   const sessionList = useMatch('/sessions');
   const sessionOpen = useMatch('/sessions/:file');
   const sessions = sessionList ?? sessionOpen;
@@ -92,7 +91,6 @@ export function Frame() {
     [verdict !== null, 'Verdict'],
     [finding !== null, 'Finding'],
     [planPage !== null, 'Plan'],
-    [planIndex !== null, 'Plans'],
     [commit !== null, `Commit ${(commit?.params.sha ?? '').slice(0, 7)}`],
     [rule !== null, 'Rule'],
     [matrix !== null, 'Requirements matrix'],
@@ -113,7 +111,7 @@ export function Frame() {
         ? 'decisions'
         : overview || stats
         ? 'overview'
-        : planPage || planIndex || nodePage || walkthrough || activity || commit || loop || verdict || finding
+        : planPage || nodePage || walkthrough || activity || commit || loop || verdict || finding
           ? 'plan'
           : matrix || rule
             ? 'matrix'
@@ -127,7 +125,7 @@ export function Frame() {
 
   const node = trace.state === 'ready' ? trace.trace.nodes.find((n) => n.plan === planId && n.id === nodeId) : undefined;
   // DAG-1: every plan trace.json holds is one tab, each opening its own page, so the ui plan and the investigations
-  // are one click from the build plan (the Plan nav entry opens the list of them).
+  // are one click from the build plan.
   const plans = trace.state === 'ready' ? trace.trace.plans : [];
   const content = (
     <ShellProvider value={{ trace, theme, setTheme }}>
