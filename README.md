@@ -20,6 +20,9 @@ browser (Vite's `--open`; it is not a debugger-attached window). The dev server 
 history each time it starts, and proxies `/api` to the API. The web project is excluded from the solution
 build, so `dotnet build` never runs npm. Run `npm ci` in `src/Uinsure.Policies.Web` once first.
 
+Visual Studio remembers the selected startup profile per user, in its git-ignored `.vs/` folder, so the repo can't
+set it for you. Pick **API and web** once per machine (and again if you delete `.vs/`); VS keeps it after that.
+
 **From the command line:**
 
 ```sh
