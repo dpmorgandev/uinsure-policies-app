@@ -197,7 +197,7 @@ nodes:
     rules: []
     cuttable: false
     budget: 3h
-    status: hitl
+    status: in_progress
     attempt: 1
     branch: bug/bug-002/N6
     worktree: .claude/worktrees/bug-002-N6
