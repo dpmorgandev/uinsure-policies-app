@@ -421,7 +421,7 @@ nodes:
     cuttable: false
     budget: null
     status: done
-    attempt: 1
+    attempt: 2
     branch: feature/build/F8
     worktree: .claude/worktrees/build-F8
     pr: 119

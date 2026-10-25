@@ -1,0 +1,100 @@
+{
+  "v": 1,
+  "ts": "2026-10-25T13:56:06Z",
+  "plan": "bug-002",
+  "node": "N6",
+  "attempt": 1,
+  "agent": "reviewer",
+  "agent_id": "a346da8d79ca7ca32",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "bug-002",
+    "node_id": "N6",
+    "attempt": 1,
+    "base_sha": "e9298e7a137b715c02f3b4ec31964c4bb80ad155",
+    "head_sha": "bc2dbced2eb7edffd23f58d6f6b08fb4c54dea86",
+    "diff_fingerprint": "069a945acae6db90ab87d9ca2a03d5cb00da19fb",
+    "verdict": "PASS",
+    "gate_refs": [
+      "bug-002/N6 gate.write (ada80fdadce28e971b0a97cc42e936a8f932416c)",
+      "bug-002/N6 gate.e2e-regression (3d99537d, before re-shoot: 96 failed / 93 passed)",
+      "bug-002/N6 gate.baselines-reshot (06d68df4)",
+      "bug-002/N6 gate.e2e-regression (06d68df4, --workers=3: 186 passed, 3 timeouts)",
+      "bug-002/N6 gate.e2e-regression (06d68df4, about/activity/commit re-run: 21 passed)",
+      "bug-002/N6 gate.build (06d68df4)",
+      "bug-002/N6 gate.test (06d68df4, 652/652)",
+      "bug-002/N6 gate.diff-scope (06d68df4)",
+      "bug-002/N6 gate.no-stubs (06d68df4)",
+      "bug-002/N6 gate.privacy (06d68df4)",
+      "bug-002/N6 gate.vulnerable (06d68df4)",
+      "bug-002/N2 gate.regression (83dc57af, attempt 4)",
+      "bug-002/N3 gate.e2e-regression (bee81f1b, t6: 96 = 65 + 31)",
+      "bug-002/N1 gate.e2e-regression (95d15128, main 65)"
+    ],
+    "rules_covered": [],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "N6-acceptance-3",
+        "severity": "P2",
+        "file": "docs/plans/active/bug-002.dag.yaml",
+        "line": 210,
+        "what": "Acceptance names 76 drifted shots (65 main + 11 from N2), but 96 were re-shot. The 20 extra are the wb-cancel/wb-sell baselines N2 re-signed at 83dc57af, which drifted again with no cause given.",
+        "why": "N6 acceptance 3 asks for each diff to be looked at and its cause named. bug-002/N2 gate.regression left 12 failing after its 20 rulings, but N3 t6 counts 31 wb-cancel/wb-sell failures. So 20 shots signed at N2 Pause 2 drifted again. The QA script (t4) and Pause 2 need to name why, or a non-deterministic baseline gets re-signed twice.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "N6-acceptance-1",
+        "severity": "P2",
+        "file": "README.md",
+        "line": 24,
+        "what": "The README says to pick the profile 'once per machine', but .vs/ sits beside the solution, so a fresh clone or worktree on the same machine starts with none and needs it picked again.",
+        "why": "Line 23 of the same README puts the setting in the repo's git-ignored .vs/ folder, which makes it per checkout, not per machine. The acceptance used 'per machine' (inv-009 I2), but every line must be something David can defend. 'Once per clone' is the accurate wording.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "N6-acceptance-2",
+        "severity": "P2",
+        "file": "docs/plans/active/build.dag.yaml",
+        "line": 424,
+        "what": "F8 is now set to done but still shows attempt: 1. Its trail shows attempt++ and A2 / A2.2 verdicts.",
+        "why": "N6 exists to make the plan state match main, and the .dag.yaml is the only plan state. docs/trace/build/F8/loop.jsonl line 8 records attempt++, and the closing verdict is verdicts/A2.2-reviewer.json, so attempt should be 2.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "N6-acceptance-2",
+        "severity": "P2",
+        "file": "docs/plans/active/build.dag.yaml",
+        "line": 237,
+        "what": "F8 t9 (and U10 t14 in ui.dag.yaml) are marked done, but neither trail holds the PR comments the task names. U10's trail has no pr(116) event either.",
+        "why": "Acceptance 2 says tasks that never ran are skipped, not done. The F8 loop ends at pr(119) with no pr.comment events. The U10 loop has no pr or pr.comment event at all. The only evidence is gh pr view in activity.jsonl, which is a command record, not a receipt.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R5",
+        "rule_id": "N6-trailers",
+        "severity": "P2",
+        "file": "docs/trace/bug-002/N6/packet/trailers.txt",
+        "line": 45,
+        "what": "Two content commits have no Rule or TDD trailer: 06d68df4 test(regression) and 788fa800 docs(lessons). Builder commit ada80fda carries Rule: none and TDD: none.",
+        "why": "CLAUDE.md hard rules and requirements-trace say loop commits carry Agent, Plan, Node, Rule and TDD. plan( and chore(trace) commits are conventionally exempt, but these two change the deliverable (96 baselines, lessons.md).",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "N6 is a docs node with rules: [], so there are no TDD red/stub/green steps to order and no rule traits to check. The diff touches no src/ or tests/ file (gate.diff-scope). gate.no-stubs found no NotImplementedException in tracked src at 06d68df4.",
+      "The gates ran at 06d68df4. The only later commit, bc2dbced, is plan-only (t2 → done), a generated-only delta under the 2026-10-23 time-to-PR ruling.",
+      "'Every regression spec passes' rests on two runs: 186 passed with 3 cold-start timeouts (about, activity and commit populated 1440 light), then those 3 passed on a re-run. I accept that as the known API warm-up carry-over, but the regression gate is still flaky.",
+      "Acceptance 4 is met. docs/lessons.md has a bug-002/N1 entry (attempts 1–2: the stream-order race and the 503 taken as final, inv-010) and a bug-002/N2 entry (attempts 1–3, inv-011). Each names what cost the attempts and the rule it leaves.",
+      "Acceptance 2 is met: F7 and F8 are done with pr 119 (#115 superseded, per F8 loop pr(119)), U10 is done with pr 116, and the Pause 2 tasks for F7, F8 and U10 are skipped (no signoff events in their trails).",
+      "Commit 2fa42098 takes six acceptance lines out of N6 on David's 'Split: guides move out': N5 S1 guide line, inv-009 I18/I19/I20, both PDFs, and the N4 A1 matrix Step 3 re-sign. No tracked plan holds them yet. They need a home in the follow-up plan, or they are lost from plan state.",
+      "Acceptance 3's Pause 2 rulings and acceptance 5 on the post-rebase head belong to later tasks (t4, t5, t8), so this review doesn't judge them. The full suite was 652/652 at 06d68df4.",
+      "Files: README.md, docs/lessons.md, docs/plans/active/build.dag.yaml, docs/plans/active/ui.dag.yaml, docs/plans/active/bug-002.dag.yaml"
+    ]
+  }
+}
