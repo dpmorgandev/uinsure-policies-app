@@ -1,0 +1,2 @@
+{"v":1,"ts":"2026-10-25T01:35:18Z","plan":"bug-002","node":"N4","attempt":1,"source":"orchestrator","event":"setup","detail":"bug/bug-002/N4 from origin/main 45d07e30 (carries #128 bug-002/N3)"}
+{"v":1,"ts":"2026-10-25T01:35:18Z","plan":"bug-002","node":"N4","attempt":1,"source":"orchestrator","event":"state(in_progress)","detail":"attempt 1"}
