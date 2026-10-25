@@ -151,7 +151,7 @@ nodes:
       - {id: t7, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
       - {id: t8, role: tester, step: qa, after: [t6], layer: null, rules: [DATA-4, AGENT-2, DAG-1], title: "QA script docs/qa/bug-002-N4.md: the matrix, the activity notice, the Plan nav, the status tones, the drawer failed state and the cancel reset", status: done}
       - {id: t9, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: done}
-      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md, README and matrix; chore(trace) commit; completeness check passes", status: pending}
+      - {id: t10, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md, README and matrix; chore(trace) commit; completeness check passes", status: done}
       - {id: t11, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: pending}
       - {id: t12, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and the running app", status: pending}
       - {id: t13, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
@@ -213,6 +213,7 @@ nodes:
       - "build.dag.yaml shows F7 and F8 done with pr 119, ui.dag.yaml shows U10 done with pr 116; tasks that never ran are skipped, not done (inv-009 #9, I14)"
       - "Every regression spec passes on the N6 head: the baselines that drifted on main since U4 (65 screenshots, listed in bug-002/N1 gate.e2e-regression) and the 11 N2 left to re-sign (wb-sell submitting x3, wb-sell and wb-cancel api-unreachable x4 each; bug-002/N2 gate.regression, inv-011 #2) are re-signed by a baseline: <screen> ruling at Pause 2, each diff looked at and its cause named"
       - "Both PDFs are reprinted from the HTML on the PR head"
+      - "The matrix screen's Step 3 is re-signed as the built test-count scope note, with no not-built-yet box, and U1's DATA-4 scope-note test goes back to reading its reference (bug-002/N4 A1, David 2026-10-25: 'Test asserts N4's line')"
       - "docs/lessons.md exists and holds a lesson for bug-002/N1 (attempt 3) and bug-002/N2 (attempt 4), each naming what cost the attempts and the rule it leaves (SKILL.md §8 step 3; never written at those merges)"
       - "The full suite and the guide checks pass"
     tasks:
