@@ -148,6 +148,8 @@ export function CancelPolicy() {
 
   const quotePath = `GET /policies/${reference}/cancellation-quote?cancellationDate=${quoted?.date ?? date}`;
   const cancelPath = `POST /policies/${reference}/cancellation`;
+  // HONEST-1: every header field that shows the status reads this one value, so none shows the pre-cancel status unmarked.
+  const statusShown = policy ? (stale ? `${policy.status} (read before the cancel)` : policy.status) : undefined;
 
   const rungs: RungSpineItem[] = [
     {
@@ -229,9 +231,9 @@ export function CancelPolicy() {
           question="If I cancel on the date I quoted, is the refund the one I was quoted?"
           answer={answerOf(quoted, cancelled, cancelling.kind === 'done' ? cancelling.status : null, quoteBusy)}
           missingLabel="not returned"
-          status={policy ? { value: stale ? 'warn' : 'pass', label: stale ? `${policy.status} (read before the cancel)` : policy.status } : null}
+          status={policy ? { value: stale ? 'warn' : 'pass', label: statusShown } : null}
           ids={[
-            { label: 'Policy status', value: policy?.status, missing: 'not returned' },
+            { label: 'Policy status', value: statusShown, missing: 'not returned' },
             { label: 'Policy', value: reference },
             { label: 'Term 1', value: term ? `${term.startDate} to ${term.endDate}` : null, missing: 'not returned' },
           ]}
