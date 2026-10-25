@@ -1,0 +1,2 @@
+{"v":1,"ts":"2026-10-25T13:31:29Z","plan":"bug-002","node":"N6","attempt":1,"source":"orchestrator","event":"setup","detail":"bug/bug-002/N6 from origin/main e9298e7a (PR #130 merge), worktree .claude/worktrees/bug-002-N6"}
+{"v":1,"ts":"2026-10-25T13:31:29Z","plan":"bug-002","node":"N6","attempt":1,"source":"orchestrator","event":"state(in_progress)","detail":"attempt 1"}
