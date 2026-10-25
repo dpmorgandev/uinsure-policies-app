@@ -1,5 +1,5 @@
 /** The repository the footer and commit links point at. */
-export const REPO = 'https://github.com/dpmorgandev/uinsure-policies-api';
+export const REPO = 'https://github.com/dpmorgandev/uinsure-policies-app';
 
 /** NAV-3: links out are built from IDs in trace.json, never from free text. */
 export const commitUrl = (sha: string): string => `${REPO}/commit/${sha}`;

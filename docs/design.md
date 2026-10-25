@@ -108,18 +108,17 @@ The tests run on SQLite. SQLite cannot prove SQL Server-specific behaviour: uniq
 the migrations themselves. The pre-push idempotent migration script
 (`dotnet ef migrations script --idempotent`) proves the migrations generate. The rest is a known gap.
 
-### Local git hooks
+### Local checks
 
 The repository has no CI for the code: the pipeline in `infrastructure/` was never connected (see
-[infrastructure/README.md](../infrastructure/README.md)). The local gate is the hooks in `.githooks/`:
+[infrastructure/README.md](../infrastructure/README.md)). During the build, every push was gated locally by a
+Release build, the full test suite and the idempotent migration script. To run the same checks:
 
-- `pre-commit`: refuses a commit on `main` once the `main-locked` marker exists, then a privacy scan of staged
-  files, then `dotnet build -warnaserror`.
-- `commit-msg`: on `feature/*` and `bug/*` branches, checks the `Agent`, `Plan` and `Node` trailers (and `Rule`, plus
-  `TDD` unless the subject starts `docs(`, on tester and builder commits), and that `Plan` and `Node` match the
-  branch.
-- `pre-push`: refuses a push to `main` once it is locked, then a Release build, the full test suite, the
-  idempotent migration script, and the harness self-test.
+```sh
+dotnet build Uinsure.Policies.slnx -c Release -warnaserror
+dotnet test --solution Uinsure.Policies.slnx
+dotnet ef migrations script --idempotent --project src/Uinsure.Policies.Persistence --startup-project src/Uinsure.Policies.Api
+```
 
 ## Branching and merging
 
