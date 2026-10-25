@@ -4,7 +4,7 @@ Spec for `docs/guides/api/index.html` and `API_UserGuide.pdf` (F7, rebuilt as pe
 
 **Persona journeys (David, 2026-10-25).** The guide follows two personas: a **developer joining** the project, who clones, runs, tests and learns where a rule lives, and a **servicer driving the API directly**, who calls it with Postman and curl and reads each response. Each step names what the user decides and what the API or the repo gives them (LRN-12), and its shot or captured output frames the outcome (LRN-13). The coverage map in §3 lists every §6 item against its step (LRN-14).
 
-**Citations and receipts are from `main`.** The web app, its launch profile (U9) and its test suites are on `main` now, so the guide cites them there (`src/Uinsure.Policies.Web`, `tests/Uinsure.Policies.Web.Tests`, `Uinsure.Policies.slnLaunch`). Every command and count is reprinted from a run on `main` at the node's HEAD (§4). The guide has no "not on this branch" callout and no count carried over from an earlier branch (the earlier 637 tests and 253 requests are replaced by the new run).
+**Citations and receipts are from the node's branch, which holds `main`'s code.** The web app, its launch profile (U9) and its test suites are on `main` now, so the guide cites them (`src/Uinsure.Policies.Web`, `tests/Uinsure.Policies.Web.Tests`, `Uinsure.Policies.slnLaunch`). Every command and count is reprinted from a run at the node's HEAD (§4). The guide has no "not on this branch" callout and no count carried over from an earlier branch (the earlier 637 tests and 253 requests are replaced by the new run).
 
 ## 1. Question bank
 
@@ -65,27 +65,27 @@ Coverage check for the build: every question's step exists in the guide as an `l
 | 29 Feb start ends 28 Feb | `src/Uinsure.Policies.Domain/Policies/Term.cs:24` |
 | Order in which violations are listed | `src/Uinsure.Policies.Domain/Rules/RuleIds.cs:30` |
 | "Today" in Europe/London from `TimeProvider`; service orchestrates | `src/Uinsure.Policies.Services/UkCalendar.cs:7`; `src/Uinsure.Policies.Services/PolicyService.cs:12` |
-| SELL-1 checked in the service, returned alone | `src/Uinsure.Policies.Services/PolicyService.cs:14` |
-| Provider switch, schema at start-up | `src/Uinsure.Policies.Persistence/PersistenceServiceCollectionExtensions.cs:14`, `:23`, `:37`; Sqlite config `src/Uinsure.Policies.Api/appsettings.Development.json` |
-| Unique reference, concurrency token, new `Version` per save, unique-violation to 409 | `src/Uinsure.Policies.Persistence/Configurations/PolicyConfiguration.cs:16`, `:19`; `src/Uinsure.Policies.Persistence/PolicyRepository.cs:45`, `:61` |
-| Health: live runs no checks, ready runs the `ready` tag | `src/Uinsure.Policies.Api/Program.cs:126`, `:127`; check registered at `PersistenceServiceCollectionExtensions.cs:31` |
-| Pipeline: forwarded headers, exception handler, HTTPS rejection, rate limiter | `src/Uinsure.Policies.Api/Program.cs:83`, `:86`, `:108`, `:36` |
-| Strict JSON, body cap 65,536 bytes, unknown query keys rejected | `src/Uinsure.Policies.Api/Program.cs:52`, `:19`; `src/Uinsure.Policies.Api/Filters/RejectUnknownQueryParametersFilter.cs:8` |
+| SELL-1 checked in the service, returned alone | `src/Uinsure.Policies.Services/PolicyService.cs:15` |
+| Provider switch, schema at start-up | `src/Uinsure.Policies.Persistence/PersistenceServiceCollectionExtensions.cs:18`, `:23`, `:37`; Sqlite config `src/Uinsure.Policies.Api/appsettings.Development.json` |
+| Unique reference, concurrency token, new `Version` per save, unique-violation to 409 | `src/Uinsure.Policies.Persistence/Configurations/PolicyConfiguration.cs:16`, `:19`; `src/Uinsure.Policies.Persistence/PolicyRepository.cs:45`, `:64` |
+| Health: live runs no checks, ready runs the `ready` tag | `src/Uinsure.Policies.Api/Program.cs:133`, `:134`; check registered at `PersistenceServiceCollectionExtensions.cs:31` |
+| Pipeline: forwarded headers, exception handler, HTTPS rejection, rate limiter | `src/Uinsure.Policies.Api/Program.cs:90`, `:93`, `:96`, `:37` |
+| Strict JSON, body cap 65,536 bytes, unknown query keys rejected | `src/Uinsure.Policies.Api/Program.cs:50`, `:20`; `src/Uinsure.Policies.Api/Filters/RejectUnknownQueryParametersFilter.cs:8` |
 | Status, type and title per rule in one place | `src/Uinsure.Policies.Api/Errors/ProblemCatalog.cs:7`; `src/Uinsure.Policies.Api/Errors/ResultExtensions.cs:6`; `src/Uinsure.Policies.Api/Errors/UnexpectedExceptionHandler.cs:10` |
-| OpenAPI and Scalar in Development only; App Insights only with a connection string | `src/Uinsure.Policies.Api/Program.cs:121`, `:76` |
+| OpenAPI and Scalar in Development only; App Insights only with a connection string | `src/Uinsure.Policies.Api/Program.cs:128`, `:81` |
 | Launch profiles: `https` (7080 and 5080) and `http` (5080) | `src/Uinsure.Policies.Api/Properties/launchSettings.json` |
 | Architecture tests: layering, rule coverage | `tests/Uinsure.Policies.Architecture.Tests/LayeringTests.cs:9`; `tests/Uinsure.Policies.Architecture.Tests/RuleCoverageTests.cs:6` |
 | A rule test is traited (example) | `tests/Uinsure.Policies.Api.Tests/CancelCoolingOffTests.cs:24` |
 | Postman folders: F0b Walking skeleton, F1 Sell, F1b Layered models, F2 Retrieve, F3 Cancel, F4 Renew | `tests/postman/Uinsure.Policies.postman_collection.json:9`, `:71`, `:2319`, `:2660`, `:3528`, `:8552` |
-| Hooks | `.githooks/pre-commit`, `.githooks/commit-msg`, `.githooks/pre-push:18-40` |
-| Bicep (`main.bicep`, four modules, three `.bicepparam`) and the pipeline | `infrastructure/main.bicep`, `infrastructure/modules/`, `infrastructure/params/`, `infrastructure/pipelines/azure-pipelines.yml` |
+| Hooks | `.githooks/pre-commit`, `.githooks/commit-msg`, `.githooks/pre-push:25-31` |
+| Bicep (`main.bicep`, five modules, three `.bicepparam`) and the pipeline | `infrastructure/main.bicep`, `infrastructure/modules/`, `infrastructure/params/`, `infrastructure/pipelines/azure-pipelines.yml` |
 | SDK pin | `global.json`: 10.0.100, `rollForward: latestFeature` |
 
-Line numbers above are from the F7 build. The build re-resolves each against `main` at HEAD and corrects the ones that moved; the link check fails on any that do not resolve.
+Line numbers above were re-resolved at the node's HEAD by feat-001/N1 (the Program.cs and persistence ones had moved); the link check fails on any file that does not resolve.
 
 ### 2.2 Existing documents to reuse and not contradict
 
-`README.md` (run, assumptions, known limits), `docs/design.md` (endpoints, errors, tests, decisions, security scope), `infrastructure/README.md`, `docs/qa/build-F*.md`. Where the guide repeats a figure from them (test counts, request counts), the figure is re-measured on `main` (§4) and the guide shows the new one.
+`README.md` (run, assumptions, known limits), `docs/design.md` (endpoints, errors, tests, decisions, security scope), `infrastructure/README.md`, `docs/qa/build-F*.md`. Where the guide repeats a figure from them (test counts, request counts), the figure is re-measured at the node's HEAD (§4) and the guide shows the new one.
 
 ### 2.3 Material for the troubleshooting table (LRN-11)
 
@@ -96,8 +96,8 @@ From the README and design notes, plus the trail findings:
 | "The filename or extension is too long" in architecture tests | Clone path too long on Windows | `README.md:87` |
 | "address already in use" on `dotnet run` | Visual Studio or another run holds port 5080 | `README.md` (Visual Studio section) |
 | 400 on `GET /policies/{reference}?reference=X` | A query key named like a route parameter is unknown | `docs/design.md` (Errors) |
-| 400 `/problems/https-required` | Plain HTTP outside Development | `Program.cs:108` |
-| 429 with `Retry-After` | Rate limit per client IP | `Program.cs:36` |
+| 400 `/problems/https-required` | Plain HTTP outside Development | `Program.cs:96` |
+| 429 with `Retry-After` | Rate limit per client IP | `Program.cs:37` |
 | Postman fails with connection refused | API not started, or `baseUrl` is not `http://localhost:5080` | `tests/postman/local.postman_environment.json` |
 | 422 on a sale that worked yesterday | The start date is now in the past (SELL-2) | `docs/requirements.md` SELL-2 |
 | 409 `/problems/concurrency` | Two writes on one policy; retry | `PolicyConfiguration.cs:19` |
@@ -214,17 +214,17 @@ X1 | 6 trouble | TJ1 | troubleshooting table
 
 ## 4. Receipts plan
 
-The build runs every command on `main` at the node's HEAD and records each in `docs/guides/api/receipts.md` (agents may not write the trace directory), by `docs/guides/api/run-receipts.sh`: the command exactly as run, the date, the exit code and the output pasted from the run. The guide copies from that file only. Required runs:
+The build runs every command on the node's branch at its HEAD and records each in `docs/guides/api/receipts.md` (agents may not write the trace directory), by `docs/guides/api/run-receipts.sh`: the command exactly as run, the date, the exit code and the output pasted from the run. The guide copies from that file only. Required runs:
 
 1. `dotnet --version`, `dotnet build Uinsure.Policies.slnx -warnaserror`
 2. API start on 5080, then `curl` on `/health/live`, `/health/ready`, and one request per endpoint and failure class (sell, get, quote, cancel, claim, renew; 400, 404, 409, 422 single and multiple)
 3. `dotnet test --solution Uinsure.Policies.slnx`, per project counts and elapsed time
 4. `dotnet test --solution Uinsure.Policies.slnx -- --filter-trait "Rule=CANCEL-1b"`
-5. `postman collection run tests/postman/Uinsure.Policies.postman_collection.json -e tests/postman/local.postman_environment.json`, request count, assertion count and elapsed time
+5. `postman collection run tests/postman/Uinsure.Policies.postman_collection.json -e tests/postman/local.postman_environment.json`, request count, assertion count and elapsed time. The Postman CLI does not start on the reprint machine (a Private Cloud manifest error), so the F8 receipt for the F2 Retrieve folder is reused, labelled as reused with its date, and no whole-collection count is shown
 6. `node --test ".claude/hooks/__tests__/*.test.mjs"`
-7. `dotnet ef migrations script --idempotent` as the pre-push hook runs it
-8. Bicep build, as `infrastructure/README.md` gives it
-9. Web suites (`npm --prefix src/Uinsure.Policies.Web run test`), now on `main`
+7. `dotnet ef migrations script --idempotent` as the pre-push hook runs it, and the hook itself (`sh .githooks/pre-push < /dev/null`)
+8. `bicep --version` and the Bicep build, as `infrastructure/README.md` gives it
+9. Web unit suite (`npm --prefix src/Uinsure.Policies.Web run test`). The Playwright suite is the UI guide's evidence and takes about an hour, so it is not run for this guide
 
 A number that appears in the guide without a matching line in `receipts.md` fails the check. This replaces the earlier receipts file wholesale: the 637 tests, the 253 requests and the 12.3 s are not carried over.
 

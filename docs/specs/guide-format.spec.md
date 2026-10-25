@@ -24,6 +24,7 @@ Guide sources use only the classes in `guide.css`. No inline styles except the `
 | Diagram | `figure > svg` using the CSS variables for colour | LRN-4 |
 | Steps | `ol.steps > li.step#<id>`, with `div.decide` (what the user decides), `div.gives` (what Docket or the API gives them), `div.see` and `pre.output` for the captured result | LRN-5, LRN-12 |
 | Persona journey | `section.journey > h2 + p.summary + ol.steps`; one per persona | LRN-12 |
+| Grouped journey | `section.journey.grouped > h3 + ol.steps`, repeated. A journey of more than four steps puts its steps in groups of four or fewer under `h3` labels (LRN-3). The step id (`DJ5`) numbers each step, so a grouped journey draws no counter circle. A step's own sub-sections are `h4`, and its numbered tasks are `ol.run` | LRN-3, LRN-12 |
 | Screenshot with red boxes | `figure > div.shot > img + span.box + span.boxlabel`, one `span.box` and `span.boxlabel` pair per step the shot serves. `span.box` is a red outline drawn round the element the step drives from; `span.boxlabel` is the text "Step n" beside it. `left`, `top`, `width` and `height` of the box are percentages of the image, measured from the element's `[data-region]` rectangle; the label's `left` and `top` are derived from the box (above it, or below it when the box touches the top edge). A shot that frames a result (LRN-13) has no box on the result, which is not a step's start | LRN-6, LRN-13 |
 | Check your understanding | `table.check` | LRN-7 |
 | Comparison table | `table` | LRN-8 |
