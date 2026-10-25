@@ -176,7 +176,9 @@ test("LRN-3 A1/I7: no list outside the front sheet has more than four items", ()
 
 test("A1/I8: the API guide spec states its real question count and a receipts path that exists", () => {
   const spec = read("docs/specs/api-guide.spec.md");
-  const rows = [...spec.matchAll(/^\| [ADU]\d+ \|/gm)].length;
+  // Only §1 (the question bank), and only its persona rows DQn and SQn: the diagram table in §3.2 is not counted.
+  const bank = spec.match(/^## 1\. Question bank\n[\s\S]*?(?=^## 2\. )/m)?.[0] ?? "";
+  const rows = [...bank.matchAll(/^\| [DS]Q\d+ \|/gm)].length;
   assert.ok(rows > 0, "the spec has a question bank");
 
   const stated = [
