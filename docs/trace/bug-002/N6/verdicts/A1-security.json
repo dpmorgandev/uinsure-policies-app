@@ -1,0 +1,53 @@
+{
+  "v": 1,
+  "ts": "2026-10-25T13:53:36Z",
+  "plan": "bug-002",
+  "node": "N6",
+  "attempt": 1,
+  "agent": "security",
+  "agent_id": "ae08a9ec1e4bf875c",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "bug-002",
+    "node_id": "N6",
+    "attempt": 1,
+    "base_sha": "e9298e7a137b715c02f3b4ec31964c4bb80ad155",
+    "head_sha": "bc2dbced2eb7edffd23f58d6f6b08fb4c54dea86",
+    "diff_fingerprint": "069a945acae6db90ab87d9ca2a03d5cb00da19fb",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.diff-scope",
+      "gate.vulnerable",
+      "gate.privacy",
+      "gate.no-stubs",
+      "gate.build",
+      "gate.test"
+    ],
+    "rules_covered": [
+      "API3:2023",
+      "API4:2023",
+      "API6:2023",
+      "API8:2023",
+      "API9:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Scope: docs-only diff. It touches README.md, docs/lessons.md, three plan dags, a docs/context snapshot, the N4 and N6 trace files and 96 re-shot PNG baselines. gate.diff-scope confirms no src/ or tests/ change, and I found none in the diff. API3, API4, API6, API8 and API9 are met because no server code, route, DTO, config, EF column or OpenAPI change is reachable from this diff.",
+      "API1:2023 n/a: no auth or tenancy, so the reference is the only key (out of scope).",
+      "API2:2023 n/a: authentication is out of scope.",
+      "API5:2023 n/a: no roles (out of scope).",
+      "API7:2023 n/a: no outbound URL fetching, and the diff adds no HttpClient or source code.",
+      "API10:2023 n/a: no upstream APIs, and the diff adds no consumption code.",
+      ".NET extras, SQL: no FromSqlRaw, ExecuteSqlRaw or SqlQueryRaw is added, because no .cs file changed.",
+      ".NET extras, money: no .cs file changed, so no double or float near amounts.",
+      ".NET extras, packages: no csproj, package.json or lockfile change. gate.vulnerable (dotnet list package --vulnerable --include-transitive) reported no vulnerable packages.",
+      ".NET extras, secrets: I grepped the whole diff for password=, accountkey=, api key, secret, token assignments, ghp_, sk- keys, personal email and local absolute paths and found no hits. gate.privacy was clean. The trace files already carry redacted placeholders (<user>, <main>, <outside-repo>) in place of local paths.",
+      ".NET extras, logging: no logging code changed.",
+      "Baselines: I opened two of the 96 PNGs (about/populated-1440-light, activity/populated-1440-light). They show fixture trail content and the same redaction placeholders, with no real local path, email or credential. I did not open the other 94. The privacy scan can't read PNGs, so that check is a sample of two, not the full set.",
+      "The README addition (one paragraph on picking the VS startup profile once per machine) and docs/lessons.md carry no sensitive content.",
+      "gate.build and gate.test passed on the head (652/652). The N6 regression e2e passed on re-run: 3 cold-start timeouts, no screenshot diffs. This is not a security signal and does not affect the verdict."
+    ]
+  }
+}

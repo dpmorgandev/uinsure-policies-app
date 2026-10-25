@@ -1,0 +1,82 @@
+{
+  "v": 1,
+  "ts": "2026-10-25T14:58:56Z",
+  "plan": "bug-002",
+  "node": "N6",
+  "attempt": 1,
+  "agent": "reviewer",
+  "agent_id": "a6fa6120909a6dcb5",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "bug-002",
+    "node_id": "N6",
+    "attempt": 1,
+    "base_sha": "e9298e7a137b715c02f3b4ec31964c4bb80ad155",
+    "head_sha": "39f13bd4a404d42219f3dbedad5472203793421b",
+    "diff_fingerprint": "35b7275c6f2248e205b5b72a45f9da94b09f9357",
+    "verdict": "PASS",
+    "gate_refs": [
+      "bug-002/N6 steer(D1,pause2) (bab20778)",
+      "bug-002/N6 findings(findings/D1.md) (b579143f)",
+      "bug-002/N6 gate.finding-red (8b5dc76e: 12 renew tests fail on assertions, 0 timeouts, diff = wb-7.spec.ts only)",
+      "bug-002/N6 gate.finding-green (e8d331d4: wb-7.spec.ts 32/32, typecheck 0, lint 0)",
+      "bug-002/N6 gate.web-unit (e8d331d4: 421 passed)",
+      "bug-002/N6 gate.baselines-reshot (94486192: 12 wb-renew shots)",
+      "bug-002/N6 gate.e2e (94486192, whole suite: 930 passed, 2 cold-start timeouts)",
+      "bug-002/N6 gate.e2e (94486192, N3 honest-1 and wb-1 re-run: 5 passed)",
+      "bug-002/N6 gate.build (94486192)",
+      "bug-002/N6 gate.test (94486192, 652/652)",
+      "bug-002/N6 gate.diff-scope (94486192)",
+      "bug-002/N6 gate.no-stubs (94486192)",
+      "bug-002/N6 gate.privacy (94486192)",
+      "bug-002/N6 gate.vulnerable (94486192, npm audit)"
+    ],
+    "rules_covered": [
+      "WB-7"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "WB-7",
+        "severity": "P2",
+        "file": "tests/Uinsure.Policies.Web.Tests/e2e/N2/wb-7.spec.ts",
+        "line": 288,
+        "what": "The footer check is a third word-for-word copy (cancel :382, sell :433, renew :288). renewDrawerHits is general, but the claim, cancel and sell loops weren't moved onto it.",
+        "why": "code-quality rule of three: extract on the third copy when all three change for the same reason. These all pin the same WB-7 drawer layout, so they change together. Test-only, so P2.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "WB-7",
+        "severity": "P2",
+        "file": "docs/trace/bug-002/N6/packet/trailers.txt",
+        "line": 119,
+        "what": "94486192 test(regression) changes 12 deliverable baselines and carries Rule: WB-7 and Fixes-Finding but no TDD trailer. This is the same pattern as A1 R5 on 06d68df4.",
+        "why": "CLAUDE.md hard rules and requirements-trace: loop commits carry Agent, Plan, Node, Rule and TDD. A baseline re-shoot has no step that fits it (red, stub, green or refactor), so either the commit needs a TDD value or the rule needs a named exemption.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "WB-7",
+        "severity": "P2",
+        "file": "docs/qa/bug-002-N6.md",
+        "line": 129,
+        "what": "QA step 16, note 1 and the wb-renew sign-off line still describe the pre-fix overlap. No step checks the docked drawer at 94486192 or its placement after section 4.",
+        "why": "D1 I1 asks for the placement change (a layout-only dock after section 4, not 'in the frame') to be shown at the next pause. The 12 new wb-renew baselines need their own baseline: wb-renew ruling. The current sign-off line offers only the overlap choices.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "TDD order holds. Red 8b5dc76e (wb-7.spec.ts only, Rule: WB-7, TDD: red, Fixes-Finding D1/I1 and D1/I2) comes before green e8d331d4 (RenewPolicy.tsx only, TDD: green, Fixes-Finding D1/I1), and the re-shoot 94486192 comes after green. A finding fix needs no stub step.",
+      "Red was red for the right reason: 6 'drawer covers' assertions failed, 2 'one place' assertions failed, and 4 footer-overrun assertions failed by 170-300 px, with 0 timeouts. Each place/footer test checks the footer first, so all 12 failed on the defective code, and the existing renew test still passed. Green: all 32 wb-7 tests pass.",
+      "Nothing was weakened. The spec diff only adds an import and new lines after the old line 452. No existing assertion, title or skip changed. Every new title starts with 'WB-7 · ', names one rule, and claims no reachability or parity exemption.",
+      "Anti-oracle: the new tests measure box geometry and page height in a live layout on the recorded W3 states (fixture files 092 and 094 are 422 refusals, and the unreachable state is an aborted GET). None of them asserts the s-wb-dock class or any other implementation detail, and none uses random or wall-clock data.",
+      "The fix is 3 lines: RequestsDrawer wrapped in the layout-only .s-wb-dock (no data-region or data-req), matching RecordClaim.tsx:254, CancelPolicy.tsx:331 and SellPolicy.tsx:417. Parity is unaffected, because the whole e2e suite, parity included, passes at 94486192.",
+      "I opened docs/ui/baselines/wb-renew/api-unreachable-1440-light.png at HEAD. The drawer sits docked after section 4, 'The API did not answer' and the Renewal amount field are fully visible, and the footer is the last box. The grey band under the single failed line is the dock's own height, the same as wb-claim (QA note 3).",
+      "Leftovers: gate.no-stubs found no NotImplementedException in tracked src at 94486192. The D1 diff adds no time or rounding API, no 'not implemented' throw, no package (npm audit: 0 vulnerabilities), and no dangerouslySetInnerHTML.",
+      "39f13bd4 (HEAD) is trace-only, so the gates at 94486192 stand for HEAD. A1's P2s R1-R5 still stand as recorded in verdicts/A1-reviewer.json and aren't re-judged here."
+    ]
+  }
+}

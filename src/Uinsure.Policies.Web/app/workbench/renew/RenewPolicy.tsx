@@ -230,7 +230,9 @@ export function RenewPolicy() {
           <a href={`#/workbench/policies/${encodeURIComponent(reference)}`}>Open policy {reference}</a>
         </div>
       </section>
-      <RequestsDrawer />
+      <div className="s-wb-dock">
+        <RequestsDrawer />
+      </div>
     </form>
   );
 }

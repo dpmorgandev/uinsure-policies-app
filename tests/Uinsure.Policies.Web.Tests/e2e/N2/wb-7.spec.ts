@@ -21,6 +21,7 @@ import { answered, apiToday, daysFromToday, field, requestOf, route, sell, sellF
 import type { Exchange } from '../W1/support/workbench';
 import { cancelStates, openCancel, quote } from '../W2/support/cancel';
 import { freshReference } from '../W3/support/fresh';
+import { renewStates } from '../W3/support/states';
 
 /** Every string, number or boolean anywhere in a JSON value, as text. */
 function leaves(value: unknown): string[] {
@@ -451,4 +452,102 @@ for (const width of [1440, 390] as const) {
     }, 'The requests as sent');
     expect(places, "the drawer's top on the page, at every scroll top to bottom: one place only").toHaveLength(1);
   });
+}
+
+// ── bug-002 N6 D1/I1, I2: on wb-renew the open drawer never covers the page, and the page ends at the footer ──
+// RenewPolicy.tsx mounts the sticky drawer bare in the .s-wb-page form, so its sticky range is the whole form: once
+// the on-open read has opened it, it rides up over sections 1 to 4. The claim, cancel and sell checks above, on
+// wb-renew, on the recorded states W3's parity flows reach (docs/ui/fixture/api/), each one the drawer opens on.
+
+/** Where, scrolling top to bottom in 10 px steps, the drawer's box meets a target's while both are on screen. */
+async function renewDrawerHits(page: Page, targets: Record<string, Locator>): Promise<{ scrollY: number; target: string }[]> {
+  const drawer = drawerIn(page);
+  await expect(drawer, 'setup: the page has its requests drawer').toHaveCount(1);
+  await expect(drawer.getByRole('listitem').first(), "setup: the drawer lists the page's request").toBeVisible(live);
+  const names = Object.keys(targets);
+  const handles = [];
+  for (const name of names) {
+    const target = targets[name] as Locator;
+    await expect(target, `setup: the page shows ${name}`).toBeVisible(live);
+    handles.push(await target.elementHandle());
+  }
+  return page.evaluate(
+    ({ drawer: d, targets: ts, names: ns }) => {
+      const hits: { scrollY: number; target: string }[] = [];
+      const onScreen = (r: DOMRect): boolean => r.bottom > 0 && r.top < window.innerHeight;
+      const end = document.documentElement.scrollHeight - window.innerHeight;
+      for (let y = 0; y <= end + 10; y += 10) {
+        window.scrollTo(0, Math.min(y, end));
+        const a = (d as Element).getBoundingClientRect();
+        ts.forEach((t, i) => {
+          const b = (t as Element).getBoundingClientRect();
+          const meet = a.top < b.bottom && b.top < a.bottom && a.left < b.right && b.left < a.right;
+          if (onScreen(a) && onScreen(b) && meet) hits.push({ scrollY: window.scrollY, target: ns[i] as string });
+        });
+      }
+      return hits;
+    },
+    { drawer: await drawer.elementHandle(), targets: handles, names },
+  );
+}
+
+const RENEW_PROBLEMS = '[data-region="problems-renew-1-2-with-its-window-renew-3b-renew-5-renew-6-could-3-several-at-once-listed-not-placed"]';
+const RENEW_TIMELINE = '[data-region="the-new-term-last-on-the-timeline"]';
+
+/** The parts of each drawer-open renew state the drawer must never lie over. */
+const renewTargets: { state: string; open: (page: Page) => Promise<void>; covers: string; targets: (page: Page) => Record<string, Locator> }[] = [
+  {
+    state: renewStates.unreachable.state,
+    open: renewStates.unreachable.open,
+    covers: 'the "The API did not answer" banner or the Renewal amount input',
+    targets: (page) => ({
+      'the unreachable banner': page.locator(RENEW_PROBLEMS).getByRole('alert', { name: 'The API did not answer' }),
+      'the Renewal amount input': field(page, 'Renewal amount'),
+    }),
+  },
+  ...[renewStates.populated, renewStates.error].map((s) => ({
+    state: s.state,
+    open: s.open,
+    covers: "section 3's timeline, the violations list or the Renew policy button",
+    targets: (page: Page) => ({
+      "section 3's timeline": page.locator(RENEW_TIMELINE).locator('figure'),
+      'the violations list': page.locator(RENEW_PROBLEMS).getByRole('alert').locator('ul').first(),
+      'the Renew policy button': page.getByRole('main').getByRole('button', { name: 'Renew policy' }),
+    }),
+  })),
+];
+
+for (const width of [1440, 390] as const) {
+  for (const { state, open, covers, targets } of renewTargets) {
+    test(`WB-7 · on the renew screen (${state}) at ${width} the requests drawer never covers ${covers} at any scroll`, async ({ page }) => {
+      await recordedState(page, width, open);
+      expect(await renewDrawerHits(page, targets(page)), `scroll positions where the drawer covers ${covers}`).toEqual([]);
+    });
+
+    test(`WB-7 · on the renew screen (${state}) at ${width} the requests drawer keeps its place on the page at every scroll, and scrolled to the end the page ends at the footer's bottom`, async ({ page }) => {
+      await recordedState(page, width, open);
+      const drawer = drawerIn(page);
+      await expect(drawer, 'setup: the page has its requests drawer').toHaveCount(1);
+      await expect(drawer.getByRole('listitem').first(), "setup: the drawer lists the page's request").toBeVisible(live);
+      await expect(page.getByRole('contentinfo'), 'setup: the page has its contentinfo footer').toHaveCount(1);
+      await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+      const measured = await page.evaluate(() => {
+        // The contentinfo footer: a footer not scoped to main or to a sectioning element.
+        const footer = [...document.querySelectorAll('footer')].find((f) => f.closest('main, article, aside, nav, section') === null) as HTMLElement;
+        return { scrollHeight: document.documentElement.scrollHeight, footerBottom: Math.round(footer.getBoundingClientRect().bottom + window.scrollY) };
+      });
+      expect(Math.abs(measured.scrollHeight - measured.footerBottom), `no page below the footer: ${JSON.stringify(measured)}`).toBeLessThanOrEqual(1);
+
+      const places = await drawer.evaluate((d) => {
+        const tops = new Set<number>();
+        const end = document.documentElement.scrollHeight - window.innerHeight;
+        for (let y = 0; y <= end + 10; y += 10) {
+          window.scrollTo(0, Math.min(y, end));
+          tops.add(Math.round(d.getBoundingClientRect().top + window.scrollY));
+        }
+        return [...tops].sort((a, b) => a - b);
+      });
+      expect(places, "the drawer's top on the page, at every scroll top to bottom: one place only").toHaveLength(1);
+    });
+  }
 }

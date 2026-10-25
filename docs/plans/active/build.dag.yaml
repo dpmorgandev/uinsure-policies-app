@@ -389,11 +389,11 @@ nodes:
     rules: []
     cuttable: false
     budget: null
-    status: hitl
+    status: done
     attempt: 2
     branch: feature/build/F7
     worktree: .claude/worktrees/build-F7
-    pr: null
+    pr: 119
     qa: docs/qa/build-F7.md
     trace: docs/trace/build/F7/
     acceptance:
@@ -409,9 +409,9 @@ nodes:
       - {id: t6, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/build-F7.md: David follows the guide's steps from a clean checkout", status: done}
       - {id: t7, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: done}
       - {id: t8, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; completeness check passes", status: done}
-      - {id: t9, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: pending}
-      - {id: t10, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and the PDF", status: pending}
-      - {id: t11, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
+      - {id: t9, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: done}
+      - {id: t10, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and the PDF", status: skipped}
+      - {id: t11, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: done}
   - id: F8
     title: UI user guide
     kind: docs
@@ -420,11 +420,11 @@ nodes:
     rules: []
     cuttable: false
     budget: null
-    status: in_progress
-    attempt: 1
+    status: done
+    attempt: 2
     branch: feature/build/F8
     worktree: .claude/worktrees/build-F8
-    pr: null
+    pr: 119
     qa: docs/qa/build-F8.md
     trace: docs/trace/build/F8/
     acceptance:
@@ -436,10 +436,10 @@ nodes:
       - {id: t2, role: builder, step: write, layer: null, rules: [], title: "Capture every screen and workflow step from the running app, with highlight markers measured from region tags", status: done}
       - {id: t3, role: builder, step: write, layer: null, rules: [], title: "docs/guides/ui/index.html built from the spec; UI_UserGuide.pdf printed", status: done}
       - {id: t4, role: orchestrator, step: gates, layer: null, rules: [], title: "Links resolve, privacy scan, the PDF reprints from its HTML, question bank fully answered, full suite green", status: done}
-      - {id: t5, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: pending}
+      - {id: t5, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD", status: done}
       - {id: t6, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/build-F8.md: David follows the guide's workflows in the running app", status: skipped}
-      - {id: t7, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: pending}
-      - {id: t8, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; completeness check passes", status: pending}
-      - {id: t9, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: pending}
-      - {id: t10, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and the PDF", status: pending}
-      - {id: t11, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
+      - {id: t7, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: skipped}
+      - {id: t8, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; completeness check passes", status: skipped}
+      - {id: t9, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: done}
+      - {id: t10, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and the PDF", status: skipped}
+      - {id: t11, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: done}
