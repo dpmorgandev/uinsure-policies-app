@@ -572,11 +572,11 @@ nodes:
     rules: []
     cuttable: true
     budget: null
-    status: hitl
+    status: done
     attempt: 2
     branch: feature/ui/U10
     worktree: .claude/worktrees/ui-U10
-    pr: null
+    pr: 116
     qa: docs/qa/ui-U10.md
     trace: docs/trace/ui/U10/
     acceptance:
@@ -607,6 +607,6 @@ nodes:
       - {id: t11, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/ui-U10.md", status: done}
       - {id: t12, role: git, step: integrate, layer: null, rules: [], title: "Merge origin/ui if it moved; every check on the post-integrate HEAD", status: done}
       - {id: t13, role: orchestrator, step: trace, layer: null, rules: [], title: "Render and check the trail; chore(trace) commit", status: done}
-      - {id: t14, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: pending}
-      - {id: t15, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: F5 on a fresh clone starts API and web on the trail, run the QA script, then sign off (delegated)", status: pending}
-      - {id: t16, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: pending}
+      - {id: t14, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR into ui, reviewer, security and integrate comments", status: done}
+      - {id: t15, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: F5 on a fresh clone starts API and web on the trail, run the QA script, then sign off (delegated)", status: skipped}
+      - {id: t16, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges into ui", status: done}
