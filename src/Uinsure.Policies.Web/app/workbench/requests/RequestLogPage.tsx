@@ -26,7 +26,7 @@ export function RequestLogPage() {
 
   const numbered = log.map((entry, index) => ({ n: index + 1, entry }));
   const entries: RequestLogEntry[] = numbered
-    .map(({ n, entry }) => ({ n, method: entry.method, path: apiPathOf(entry.path), status: entry.status }))
+    .map(({ n, entry }) => ({ n, method: entry.method, path: apiPathOf(entry.path), status: entry.status, failed: entry.failed }))
     .reverse();
   const open: { n: number; entry: LoggedExchange } | undefined =
     numbered.find(({ n }) => n === picked) ?? numbered[numbered.length - 1];

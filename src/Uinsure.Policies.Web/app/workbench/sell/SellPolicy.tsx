@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { FormEvent } from 'react';
 import { Receipt } from 'lucide-react';
 import {
@@ -135,6 +135,7 @@ export function SellPolicy() {
   const nextHolder = useRef(2);
   const inFlight = useRef(false);
   const busy = outcome.kind === 'busy';
+  const soldAnswer = useRef<HTMLParagraphElement>(null);
 
   const form: SellForm = {
     ...values,
@@ -226,6 +227,11 @@ export function SellPolicy() {
 
   const sold = outcome.kind === 'sold' ? outcome : null;
 
+  // BUSY-1: the 201 is drawn above the form while Send is at its foot, so focus goes to the answer (only errors had a focusKey).
+  useEffect(() => {
+    if (outcome.kind === 'sold') soldAnswer.current?.focus();
+  }, [outcome]);
+
   return (
     <form noValidate onSubmit={submit}>
       <PageHeader
@@ -234,6 +240,8 @@ export function SellPolicy() {
         eyebrow={sold ? `Workbench · Sell a policy · policy ${sold.policy.reference}` : 'Workbench · Sell a policy'}
         question="If I send this request, what does the API store?"
         answer={answerOf(outcome)}
+        missingLabel="nothing sold yet"
+        status={sold ? { value: 'pass', label: sold.policy.status } : null}
         ids={sold ? [{ label: 'Policy', value: sold.policy.reference }] : undefined}
         liveNote={liveNoteOf(outcome)}
       />
@@ -267,7 +275,7 @@ export function SellPolicy() {
             onRetry={() => void send()}
           />
         ) : sold ? (
-          <p className="s-wb-note">
+          <p className="s-wb-note" tabIndex={-1} ref={soldAnswer}>
             None. The API answered {sold.status} and returned no problems.{' '}
             <a href={`#/workbench/policies/${encodeURIComponent(sold.policy.reference)}`}>Open policy {sold.policy.reference}</a>
           </p>

@@ -16,6 +16,11 @@ export interface RequestLogEntry {
    * flight, or never answered): the table draws it as pending, never as 0.
    */
   status?: number | null;
+  /**
+   * True when the fetch was rejected (the API down or blocked), so no response ever came back. The row reads Failed,
+   * never Pending, whatever `status` holds (HONEST-1).
+   */
+  failed?: boolean;
   /** How long it took, in milliseconds. Leave out when it was not measured. */
   durationMs?: number;
 }
@@ -38,7 +43,16 @@ function answered(entry: RequestLogEntry): number | null {
   return typeof code === 'number' && Number.isFinite(code) && code > 0 ? code : null;
 }
 
-function tone(code: number | null): Status {
+/** What the status cell shows: the code, or Failed for a rejected fetch, or Pending while there is no answer yet. */
+function word(entry: RequestLogEntry): string {
+  if (entry.failed === true) return 'Failed';
+  const code = answered(entry);
+  return code === null ? 'Pending' : String(code);
+}
+
+function tone(entry: RequestLogEntry): Status {
+  if (entry.failed === true) return 'fail';
+  const code = answered(entry);
   if (code === null) return 'pending';
   if (code < 300) return 'pass';
   if (code < 400) return 'warn';
@@ -48,8 +62,7 @@ function tone(code: number | null): Status {
 function matches(entry: RequestLogEntry, filter: string): boolean {
   const needle = filter.trim().toLowerCase();
   if (needle === '') return true;
-  const code = answered(entry);
-  return `${entry.method} ${entry.path} ${code === null ? 'pending' : code}`.toLowerCase().includes(needle);
+  return `${entry.method} ${entry.path} ${word(entry)}`.toLowerCase().includes(needle);
 }
 
 /** The requests this browser sent, newest first, with method, path, status and duration. Filterable. */
@@ -143,9 +156,7 @@ export function RequestLog({
                         )}
                       </td>
                       <td>
-                        <StatusTag status={tone(answered(entry))}>
-                          {answered(entry) === null ? 'Pending' : String(answered(entry))}
-                        </StatusTag>
+                        <StatusTag status={tone(entry)}>{word(entry)}</StatusTag>
                       </td>
                       <td className={styles.num}>
                         {entry.durationMs !== undefined ? (

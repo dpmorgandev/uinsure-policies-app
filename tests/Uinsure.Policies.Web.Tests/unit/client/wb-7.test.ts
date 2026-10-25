@@ -106,6 +106,7 @@ describe('the request log', () => {
         status: null,
         responseHeaders: null,
         responseBody: null,
+        failed: true,
       },
     ]);
   });

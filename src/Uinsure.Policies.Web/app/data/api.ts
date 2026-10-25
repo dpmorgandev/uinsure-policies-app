@@ -408,6 +408,8 @@ export interface LoggedExchange {
   responseHeaders: Record<string, string> | null;
   /** The body as the exact text received. */
   responseBody: string | null;
+  /** Set when fetch rejected: the request never got an answer, so it is not still waiting for one. */
+  failed?: true;
 }
 
 function postJson(body: unknown): RequestInit {
@@ -437,7 +439,13 @@ export function loggingFetch(fetch: Fetch, log: LoggedExchange[]): Fetch {
       responseBody: null,
     };
     log.push(entry);
-    const response = await fetch(input, init);
+    let response: Response;
+    try {
+      response = await fetch(input, init);
+    } catch (error) {
+      entry.failed = true;
+      throw error;
+    }
     // The entry is completed in one step after the body is read, so a snapshot never holds a status without its body.
     const body = await response.clone().text();
     entry.status = response.status;

@@ -1,0 +1,50 @@
+{
+  "screen": "not-found",
+  "route": "*",
+  "regions": [
+    {
+      "name": "what was asked for, and where to go",
+      "req": [
+        "NAV-2"
+      ],
+      "components": [
+        "page-header",
+        "empty-state",
+        "search"
+      ],
+      "fields": [
+        "the path asked for (not in the fixture; drawn as the labelled placeholder ‹path asked for›)"
+      ],
+      "built": true
+    }
+  ],
+  "states": [
+    {
+      "name": "populated",
+      "file": "populated.html",
+      "variant": "no data: the route matched no screen, so the path asked for is a labelled placeholder"
+    }
+  ],
+  "actions": [
+    {
+      "label": "Go to the overview",
+      "kind": "link",
+      "to": "/"
+    },
+    {
+      "label": "Go to the requirements matrix",
+      "kind": "link",
+      "to": "/rules"
+    },
+    {
+      "label": "Search for it",
+      "kind": "link",
+      "to": "#find"
+    },
+    {
+      "label": "Jump to a rule, node, SHA or path",
+      "kind": "control",
+      "to": "search combobox; opens the matching screen, no request"
+    }
+  ]
+}

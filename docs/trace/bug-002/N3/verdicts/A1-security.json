@@ -1,0 +1,57 @@
+{
+  "v": 1,
+  "ts": "2026-10-25T00:18:26Z",
+  "plan": "bug-002",
+  "node": "N3",
+  "attempt": 1,
+  "agent": "security",
+  "agent_id": "ab6c928451af8bdad",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "bug-002",
+    "node_id": "N3",
+    "attempt": 1,
+    "base_sha": "99a0a0c3ffe646c3bf5d71e4b57436827bca399c",
+    "head_sha": "9a5b98bc490ad74ec48a415ed6688b1dab1ce9ba",
+    "diff_fingerprint": "cb4ec22c9419ec9b6dbfe72932159bb0725d7715",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.npm-audit",
+      "gate.diff-scope",
+      "gate.not-implemented",
+      "gate.green",
+      "gate.e2e",
+      "gate.lint",
+      "gate.build"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Web-security checklist W1-W8 walked, as this is a ui node (Docket). The diff's source changes: app/data/api.ts, RequestsDrawer, CancelPolicy, PolicyView, RequestLogPage, SellPolicy, kit RequestLog and its examples, plus tests, docs/ui/stylekit and docs/ui/kit shots.",
+      "W1 met: no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function in the added lines. API-derived values (policy.status, entry.path, the Failed label) go through React text nodes and props only.",
+      "W2 met: the only href in the diff is the existing internal hash route in SellPolicy.tsx, built with encodeURIComponent(sold.policy.reference). No external or data-passed URL was added.",
+      "W3 met: index.html, CSP and fonts are not in the diff. The generated stylekit and kit.css change only the stamp and the request-log rows.",
+      "W4 met: loggingFetch gains a try/catch that sets entry.failed = true and rethrows. It adds no new request, no cookie, and no localStorage or sessionStorage use. Only /api/ calls stay through the proxy.",
+      "W5 met: src/Uinsure.Policies.Web/compiler/** is not touched.",
+      "W6 met: the packet diff has no local absolute path, personal email, key or token (scanned for C:\\Users, C:/Users, the user name, @gmail, Bearer, api key, password; 0 hits). The only matches for the broader .claude/http pattern were the trace logs, which show repo-relative paths with <main> and <user> placeholders, and SVG xmlns URLs in generated HTML.",
+      "W7 met: package.json and the lockfile are not in the diff. gate.npm-audit at bee81f1b: runtime 0 vulnerabilities, dev 0 vulnerabilities.",
+      "W8 met: the new failed state shows fixed kit text ('The request failed: no response came back.', 'Failed'). The rejected error object is rethrown to the existing handlers and never rendered, so no stack trace or exception message is shown. The Cancel header's stale marker shows only the status string the API returned.",
+      "API8:2023 met via W3 and W4 (no CSP or origin change, no new network surface). API10:2023 met via W1 and W8 (the API's answers render as text, and a failed read is marked rather than shown as current).",
+      "n/a, ui node with no server code: API1, API2, API3, API4, API5, API6, API7 and API9. The .NET extras (raw SQL, decimal money, NuGet packages, server logging) are replaced by W1-W8 for a ui node. Authentication is out of scope and was not failed.",
+      "Receipt caveat, not a finding: gate.e2e shows 96 regression-screenshot failures, the same set N2 merged with. They are visual drift with no security bearing, and the delegated ruling covers them."
+    ]
+  }
+}

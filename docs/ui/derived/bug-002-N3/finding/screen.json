@@ -1,0 +1,113 @@
+{
+  "screen": "finding",
+  "route": "/plans/:planId/:nodeId/findings/:round",
+  "regions": [
+    {
+      "name": "findings",
+      "req": [
+        "LOOP-4"
+      ],
+      "components": [
+        "breadcrumbs",
+        "page-header",
+        "provenance-label",
+        "file-line-link",
+        "disclosure",
+        "finding-card",
+        "sha-link",
+        "status-tag"
+      ],
+      "fields": [
+        "findings[node,round].plan",
+        "findings[node,round].node",
+        "findings[node,round].round",
+        "findings[node,round].attempt",
+        "findings[node,round].source",
+        "findings[node,round].file",
+        "findings[node,round][id].id",
+        "findings[node,round][id].rule",
+        "findings[node,round][id].layer",
+        "findings[node,round][id].cause",
+        "findings[node,round][id].fixDirection",
+        "findings[node,round][id].files",
+        "findings[node,round][id].testable",
+        "findings[node,round][id].untestableReason",
+        "findings[node,round][id].fixedBy",
+        "stamp.sha",
+        "stamp.utc"
+      ],
+      "built": true
+    },
+    {
+      "name": "fixed by",
+      "req": [
+        "LOOP-4",
+        "LOOP-2"
+      ],
+      "components": [
+        "sha-link",
+        "status-tag",
+        "json-viewer"
+      ],
+      "fields": [
+        "findings[node,round][id].id",
+        "findings[node,round][id].fixedBy"
+      ],
+      "built": true
+    }
+  ],
+  "states": [
+    {
+      "name": "populated",
+      "file": "populated.html",
+      "variant": "findings[node=F3][round=A1], two findings, both with fix commits"
+    },
+    {
+      "name": "long-content",
+      "file": "long-content.html",
+      "variant": "findings[node=F1][round=D2], the longest finding round in the trail; I8 lists no fix commit"
+    }
+  ],
+  "actions": [
+    {
+      "label": "Open the loop for F3 to see the stub gate and attempt 2 that raised these findings",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId/loop"
+    },
+    {
+      "label": "Open the loop for F1 to see the steer at pause 1 that raised round D2",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId/loop"
+    },
+    {
+      "label": "Full commit (short SHA)",
+      "kind": "link",
+      "to": "/commits/:sha"
+    },
+    {
+      "label": "Commit on GitHub",
+      "kind": "link",
+      "to": "https://github.com/dpmorgandev/uinsure-policies-api/commit/:sha"
+    },
+    {
+      "label": "File on GitHub",
+      "kind": "link",
+      "to": "https://github.com/dpmorgandev/uinsure-policies-api/blob/main/:path"
+    },
+    {
+      "label": "Rule",
+      "kind": "link",
+      "to": "/rules/:ruleId"
+    },
+    {
+      "label": "Plan",
+      "kind": "link",
+      "to": "/plans/:planId"
+    },
+    {
+      "label": "Node",
+      "kind": "link",
+      "to": "/plans/:planId/:nodeId"
+    }
+  ]
+}

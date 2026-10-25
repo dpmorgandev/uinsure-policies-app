@@ -1,6 +1,6 @@
 {
- "kitTree": "c97911e6cd951c3be0a0aa1eed9b609eb5a24375",
- "builtAt": "2026-10-23T05:23:29Z",
- "from": "src/web/kit",
+ "kitTree": "b122dee751dbf75a3ca3a717bab2e59d107d3f04",
+ "builtAt": "2026-10-25T00:01:03Z",
+ "from": "src/Uinsure.Policies.Web/kit",
  "script": ".claude/scripts/design/build-stylekit.mjs"
 }

@@ -64,6 +64,8 @@ function answerOf(quoted: Quoted | null, cancelled: CancellationResult | null, c
 export function CancelPolicy() {
   const { reference = '' } = useParams();
   const [policy, setPolicy] = useState<Policy | null>(null);
+  // HONEST-1: true when the re-read after a cancel failed, so the status drawn is the one read before the cancel.
+  const [stale, setStale] = useState(false);
   const [date, setDate] = useState('');
   const [quoting, setQuoting] = useState<Step<CancellationQuote>>({ kind: 'idle' });
   const [quoted, setQuoted] = useState<Quoted | null>(null);
@@ -106,6 +108,7 @@ export function CancelPolicy() {
     if (answer.kind === 'ok' && answer.status === 201) {
       const again = await getPolicy(browserDeps(), reference);
       if (again.kind === 'ok') setPolicy(again.value);
+      else setStale(true);
     }
   }
 
@@ -145,6 +148,8 @@ export function CancelPolicy() {
 
   const quotePath = `GET /policies/${reference}/cancellation-quote?cancellationDate=${quoted?.date ?? date}`;
   const cancelPath = `POST /policies/${reference}/cancellation`;
+  // HONEST-1: every header field that shows the status reads this one value, so none shows the pre-cancel status unmarked.
+  const statusShown = policy ? (stale ? `${policy.status} (read before the cancel)` : policy.status) : undefined;
 
   const rungs: RungSpineItem[] = [
     {
@@ -161,9 +166,9 @@ export function CancelPolicy() {
         : quoting.kind === 'failed'
           ? { status: 'fail', label: 'No quote' }
           : { status: 'pending', label: 'Not quoted yet' },
-      receipt: quoted ? (
+      receipt: quoted && quoting.kind === 'done' ? (
         <p className="s-wb-note">
-          {quotePath} answered {quoting.kind === 'done' ? quoting.status : ''}, quotedOn {quoted.quote.quotedOn}.
+          {quotePath} answered {quoting.status}, quotedOn {quoted.quote.quotedOn}.
         </p>
       ) : (
         <p className="s-wb-note">Nothing quoted yet, so there is no quoted date to carry down.</p>
@@ -190,9 +195,9 @@ export function CancelPolicy() {
       carried: quoted
         ? { label: 'Cancellation date', value: quoted.date, note: 'carried from rung 1. To change it, quote again.' }
         : undefined,
-      receipt: cancelled ? (
+      receipt: cancelling.kind === 'done' ? (
         <p className="s-wb-note">
-          {cancelPath} answered {cancelling.kind === 'done' ? cancelling.status : ''}, cancellationDate {cancelled.cancellationDate}.
+          {cancelPath} answered {cancelling.status}, cancellationDate {cancelling.value.cancellationDate}.
         </p>
       ) : (
         <p className="s-wb-note">
@@ -226,8 +231,9 @@ export function CancelPolicy() {
           question="If I cancel on the date I quoted, is the refund the one I was quoted?"
           answer={answerOf(quoted, cancelled, cancelling.kind === 'done' ? cancelling.status : null, quoteBusy)}
           missingLabel="not returned"
+          status={policy ? { value: stale ? 'warn' : 'pass', label: statusShown } : null}
           ids={[
-            { label: 'Policy status', value: policy?.status, missing: 'not returned' },
+            { label: 'Policy status', value: statusShown, missing: 'not returned' },
             { label: 'Policy', value: reference },
             { label: 'Term 1', value: term ? `${term.startDate} to ${term.endDate}` : null, missing: 'not returned' },
           ]}
