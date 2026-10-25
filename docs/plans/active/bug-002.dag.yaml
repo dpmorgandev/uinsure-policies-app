@@ -124,10 +124,10 @@ nodes:
     rules: [DATA-4, AGENT-2, DAG-1]
     cuttable: false
     budget: 3h
-    status: pending
-    attempt: 0
-    branch: null
-    worktree: null
+    status: in_progress
+    attempt: 1
+    branch: bug/bug-002/N4
+    worktree: .claude/worktrees/bug-002-N4
     pr: null
     qa: docs/qa/bug-002-N4.md
     trace: docs/trace/bug-002/N4/
