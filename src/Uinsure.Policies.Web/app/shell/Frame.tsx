@@ -12,10 +12,10 @@ import type { TraceState } from './ShellContext';
 import './notice.css';
 
 // The built sections are links. The ones the app has not built are drawn as "not built yet", never as a link.
-const navFor = (): NavItem[] => [
+const navFor = (buildPlanId: string): NavItem[] => [
   { key: 'overview', label: 'Overview', href: '#/', scope: 'explorer' },
   { key: 'matrix', label: 'Requirements matrix', href: '#/rules', scope: 'explorer' },
-  { key: 'plan', label: 'Plan', href: '#/plans/build', scope: 'explorer' },
+  { key: 'plan', label: 'Plan', href: `#/plans/${buildPlanId}`, scope: 'explorer' },
   { key: 'decisions', label: 'Human decisions', href: '#/decisions', scope: 'explorer' },
   { key: 'about', label: 'How to read this', href: '#/about', scope: 'explorer' },
   { key: 'workbench', label: 'Workbench', href: '#/workbench', scope: 'workbench' },
@@ -123,9 +123,10 @@ export function Frame() {
     document.title = `${title} · Docket`;
   }, [title]);
 
+  const buildPlanId = (trace.state === 'ready' ? trace.trace.plans.find((plan) => plan.kind === 'build')?.id : undefined) ?? 'build';
   const node = trace.state === 'ready' ? trace.trace.nodes.find((n) => n.plan === planId && n.id === nodeId) : undefined;
   // DAG-1: every plan trace.json holds is one tab, each opening its own page, so the ui plan and the investigations
-  // are one click from the build plan.
+  // are one click from the build plan (the Plan nav entry opens the build plan; both real DAGs say kind: build).
   const plans = trace.state === 'ready' ? trace.trace.plans : [];
   const content = (
     <ShellProvider value={{ trace, theme, setTheme }}>
@@ -169,7 +170,7 @@ export function Frame() {
         }
       : { noSnapshot: true, provenanceHref: '#/about', repoHref: REPO };
   return (
-    <AppShell topBar={topBar} nav={{ current, items: navFor() }} footer={footer}>
+    <AppShell topBar={topBar} nav={{ current, items: navFor(buildPlanId) }} footer={footer}>
       {content}
     </AppShell>
   );
