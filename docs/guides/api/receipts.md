@@ -595,23 +595,32 @@ Date: 2026-10-25. Branch: feature/feat-001/N1 at 6bf608d2. Exit code: 0.
 # duration_ms 57214.6363
 ```
 
+## R8a Install the EF tools at the runtime's version
+
+Command: `dotnet tool update --global dotnet-ef --version 10.0.13`
+
+Date: 2026-10-25. Branch: feature/feat-001/N1 at a9c3f83b. Exit code: 0.
+
+```text
+Tool 'dotnet-ef' was successfully updated from version '9.0.9' to version '10.0.13'.
+```
+
 ## R8 Idempotent migration script
 
 Command: `dotnet ef migrations script --idempotent --project src/Uinsure.Policies.Persistence --startup-project src/Uinsure.Policies.Api -o migrate.sql`
 
-Date: 2026-10-25. Branch: feature/feat-001/N1 at 6bf608d2. Exit code: 0.
+Date: 2026-10-25. Branch: feature/feat-001/N1 at 947b66ba. Exit code: 0.
 
 ```text
 Build started...
 Build succeeded.
-The Entity Framework tools version '9.0.9' is older than that of the runtime '10.0.13'. Update the tools for the latest features and bug fixes. See https://aka.ms/AAc1fbw for more information.
 ```
 
 ## R8b Length of the migration script, in lines
 
 Command: `wc -l < migrate.sql`
 
-Date: 2026-10-25. Branch: feature/feat-001/N1 at 6bf608d2. Exit code: 0.
+Date: 2026-10-25. Branch: feature/feat-001/N1 at 947b66ba. Exit code: 0.
 
 ```text
 242
@@ -621,7 +630,7 @@ Date: 2026-10-25. Branch: feature/feat-001/N1 at 6bf608d2. Exit code: 0.
 
 Command: `head -n 9 migrate.sql`
 
-Date: 2026-10-25. Branch: feature/feat-001/N1 at 6bf608d2. Exit code: 0.
+Date: 2026-10-25. Branch: feature/feat-001/N1 at 947b66ba. Exit code: 0.
 
 ```text
 (excerpt: the byte-order mark on line 1 dropped)
@@ -690,21 +699,21 @@ F8 findings=3 verdicts=6
 
 Command: `sh .githooks/pre-push < /dev/null; echo "pre-push exit $?"`
 
-Date: 2026-10-25. Branch: feature/feat-001/N1 at 6bf608d2. Exit code: 0.
+Date: 2026-10-25. Branch: feature/feat-001/N1 at 947b66ba. Exit code: 0.
 
 ```text
 (excerpt: the last 12 lines)
-  <repo>\tests\Uinsure.Policies.Architecture.Tests\bin\Release\net10.0\Uinsure.Policies.Architecture.Tests.dll (net10.0|x64) passed (1s 513ms)
-  <repo>\tests\Uinsure.Policies.Domain.Tests\bin\Release\net10.0\Uinsure.Policies.Domain.Tests.dll (net10.0|x64) passed (1s 007ms)
+  <repo>\tests\Uinsure.Policies.Architecture.Tests\bin\Release\net10.0\Uinsure.Policies.Architecture.Tests.dll (net10.0|x64) passed (1s 486ms)
+  <repo>\tests\Uinsure.Policies.Api.Tests\bin\Release\net10.0\Uinsure.Policies.Api.Tests.dll (net10.0|x64) passed (7s 591ms)
+  <repo>\tests\Uinsure.Policies.Services.Tests\bin\Release\net10.0\Uinsure.Policies.Services.Tests.dll (net10.0|x64) passed (924ms)
 
   total: 652
   failed: 0
   succeeded: 652
   skipped: 0
-  duration: 3s 918ms
+  duration: 7s 828ms
 Build started...
 Build succeeded.
-The Entity Framework tools version '9.0.9' is older than that of the runtime '10.0.13'. Update the tools for the latest features and bug fixes. See https://aka.ms/AAc1fbw for more information.
 pre-push exit 0
 ```
 
@@ -714,15 +723,18 @@ pre-push exit 0
   which loads related collections for more than one collection navigation ... no 'QuerySplittingBehavior' has been
   configured". It is a performance note, not a failure, and nothing in the code configures it.
 - The repository has no tool manifest (`.config/dotnet-tools.json`): `dotnet tool restore` printed "Cannot find a
-  manifest file" and exited 0, so `.githooks/pre-push` goes on to `dotnet ef`, which ran from a globally installed
-  tool, version 9.0.9, with a version warning (R8).
-- At HEAD, one architecture test fails: `WebProjectLocationTests.No_live_tracked_file_names_the_old_web_paths`,
-  because `docs/guides/ui/run-output.json:45` quotes an e2e test title that names the old web test folder. That file
-  belongs to the UI guide, not this one. R3, R3d and R13 (the hook runs the whole suite) were run with that one quoted path changed in the working tree
+  manifest file" and exited 0, so `.githooks/pre-push` goes on to `dotnet ef`, which then needs a globally installed
+  tool. The first capture ran with a global tool at version 9.0.9, which printed a version warning. R8a updates it to
+  10.0.13, the runtime's version, so R8 and R13 print no warning. Each entry's own line gives the sha it ran at.
+- At 6bf608d2 (the commit R1 to R12 were captured at), one architecture test failed:
+  `WebProjectLocationTests.No_live_tracked_file_names_the_old_web_paths`, because `docs/guides/ui/run-output.json:45`
+  quoted an e2e test title that names the old web test folder. That file belongs to the UI guide, not this one.
+  R3, R3d and R13 (the hook runs the whole suite) were run then with that one quoted path changed in the working tree
   (and restored afterwards), so they show the suite as it stands once the UI guide's file is corrected. Run as
-  committed, R3 printed total 652, failed 1, succeeded 651, and R3d printed total 79, failed 1, succeeded 78.
+  committed at 6bf608d2, R3 printed total 652, failed 1, succeeded 651, and R3d printed total 79, failed 1, succeeded 78.
+  Commit da7ac832 fixed the file, so the suite passes as committed from there on.
 - R10 ran with `--no-launch-profile` only. With no launch profile the run is not Development and has no
-  `Database:Provider`, so start-up fails. The guide's fix is to use `--launch-profile http`.
+  `Database:Provider`, so start-up stops with an error. The guide's fix is to use `--launch-profile http`.
 
 ## Not run
 

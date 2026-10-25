@@ -3,7 +3,7 @@
 # Run from the repository root, in Git Bash, with port 5080 free and no policies.development.db:
 #   bash docs/guides/api/run-receipts.sh
 # The sales use start dates relative to 2026-10-25, the day the guide was captured, so the dates in the
-# commands below only fit that day. Each command is run exactly as written here (eval) and recorded as
+# commands below only fit that day; the guide gives each as an offset from the reader's own today. Each command is run exactly as written here (eval) and recorded as
 # `Command:` followed by its output. The guide copies commands and outputs from receipts.md; nothing is retyped.
 # Afterwards: node docs/guides/api/fill-guide.mjs copies the HTTP outputs into index.html.
 set -u
@@ -129,6 +129,7 @@ sleep 2
 entry R10 "Run with no launch profile (a problem met while capturing)" 'dotnet run --project src/Uinsure.Policies.Api --no-launch-profile' "grep -m1 'OptionsValidationException'" 'the exception line'
 
 entry R7 "Harness self-test" 'node --test ".claude/hooks/__tests__/*.test.mjs"' "grep -E '^(1\\.\\.|# (tests|suites|pass|fail|cancelled|skipped|todo|duration_ms))'" 'the summary'
+entry R8a "Install the EF tools at the runtime's version" 'dotnet tool update --global dotnet-ef --version 10.0.13'
 entry R8 "Idempotent migration script" 'dotnet ef migrations script --idempotent --project src/Uinsure.Policies.Persistence --startup-project src/Uinsure.Policies.Api -o migrate.sql'
 entry R8b "Length of the migration script, in lines" 'wc -l < migrate.sql'
 entry R8c "First lines of the migration script" 'head -n 9 migrate.sql' "sed '1s/^\xEF\xBB\xBF//'" 'the byte-order mark on line 1 dropped'
@@ -150,15 +151,18 @@ cat >> "$OUT" <<'EOF'
   which loads related collections for more than one collection navigation ... no 'QuerySplittingBehavior' has been
   configured". It is a performance note, not a failure, and nothing in the code configures it.
 - The repository has no tool manifest (`.config/dotnet-tools.json`): `dotnet tool restore` printed "Cannot find a
-  manifest file" and exited 0, so `.githooks/pre-push` goes on to `dotnet ef`, which ran from a globally installed
-  tool, version 9.0.9, with a version warning (R8).
-- At HEAD, one architecture test fails: `WebProjectLocationTests.No_live_tracked_file_names_the_old_web_paths`,
-  because `docs/guides/ui/run-output.json:45` quotes an e2e test title that names the old web test folder. That file
-  belongs to the UI guide, not this one. R3, R3d and R13 (the hook runs the whole suite) were run with that one quoted path changed in the working tree
+  manifest file" and exited 0, so `.githooks/pre-push` goes on to `dotnet ef`, which then needs a globally installed
+  tool. The first capture ran with a global tool at version 9.0.9, which printed a version warning. R8a updates it to
+  10.0.13, the runtime's version, so R8 and R13 print no warning. Each entry's own line gives the sha it ran at.
+- At 6bf608d2 (the commit R1 to R12 were captured at), one architecture test failed:
+  `WebProjectLocationTests.No_live_tracked_file_names_the_old_web_paths`, because `docs/guides/ui/run-output.json:45`
+  quoted an e2e test title that names the old web test folder. That file belongs to the UI guide, not this one.
+  R3, R3d and R13 (the hook runs the whole suite) were run then with that one quoted path changed in the working tree
   (and restored afterwards), so they show the suite as it stands once the UI guide's file is corrected. Run as
-  committed, R3 printed total 652, failed 1, succeeded 651, and R3d printed total 79, failed 1, succeeded 78.
+  committed at 6bf608d2, R3 printed total 652, failed 1, succeeded 651, and R3d printed total 79, failed 1, succeeded 78.
+  Commit da7ac832 fixed the file, so the suite passes as committed from there on.
 - R10 ran with `--no-launch-profile` only. With no launch profile the run is not Development and has no
-  `Database:Provider`, so start-up fails. The guide's fix is to use `--launch-profile http`.
+  `Database:Provider`, so start-up stops with an error. The guide's fix is to use `--launch-profile http`.
 
 ## Not run
 

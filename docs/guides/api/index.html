@@ -207,12 +207,16 @@ scalar status 200</pre>
       </div>
       <p>With SQLite, the schema is created from the model at start-up (<code>EnsureCreated</code>, <a class="ref" href="../../../src/Uinsure.Policies.Persistence/PersistenceServiceCollectionExtensions.cs#L37">src/Uinsure.Policies.Persistence/PersistenceServiceCollectionExtensions.cs:37</a>). The app never calls <code>Migrate()</code>. The migration, <code>InitialCreate</code>, is for SQL Server only, and the pipeline applies it as a script.</p>
       <ol class="run">
+        <li>Install the EF command-line tool at the runtime's version (10.0.13). The repository has no tool manifest, so nothing else supplies it. <code>update</code> installs it if it is missing, and replaces an older one.
+          <pre>dotnet tool update --global dotnet-ef --version 10.0.13</pre>
+          <div class="see">One line saying the tool was installed or updated. The captured machine had version 9.0.9, so it said:</div>
+          <pre class="output" data-receipt="R8a">Tool 'dotnet-ef' was successfully updated from version '9.0.9' to version '10.0.13'.</pre>
+        </li>
         <li>Generate the idempotent script, as the pre-push hook does.
           <pre>dotnet ef migrations script --idempotent --project src/Uinsure.Policies.Persistence --startup-project src/Uinsure.Policies.Api -o migrate.sql</pre>
-          <div class="see">The tool wrote the script and printed one warning about its own version:</div>
+          <div class="see">The tool wrote the script and printed no warning:</div>
           <pre class="output" data-receipt="R8">Build started...
-Build succeeded.
-The Entity Framework tools version '9.0.9' is older than that of the runtime '10.0.13'. Update the tools for the latest features and bug fixes. See https://aka.ms/AAc1fbw for more information.</pre>
+Build succeeded.</pre>
         </li>
         <li>Count its lines, then read the first ones.
           <pre>wc -l &lt; migrate.sql
@@ -617,17 +621,17 @@ app.MapHealthChecks("/health/ready", new() { Predicate = check =&gt; check.Tags.
         <li>Run the pre-push hook yourself, as git runs it, with no refs on standard input.
           <pre>sh .githooks/pre-push &lt; /dev/null; echo "pre-push exit $?"</pre>
           <div class="see">The last lines of the run, ending in exit 0:</div>
-          <pre class="output" data-receipt="R13">  &lt;repo&gt;\tests\Uinsure.Policies.Architecture.Tests\bin\Release\net10.0\Uinsure.Policies.Architecture.Tests.dll (net10.0|x64) passed (1s 513ms)
-  &lt;repo&gt;\tests\Uinsure.Policies.Domain.Tests\bin\Release\net10.0\Uinsure.Policies.Domain.Tests.dll (net10.0|x64) passed (1s 007ms)
+          <pre class="output" data-receipt="R13">  &lt;repo&gt;\tests\Uinsure.Policies.Architecture.Tests\bin\Release\net10.0\Uinsure.Policies.Architecture.Tests.dll (net10.0|x64) passed (1s 486ms)
+  &lt;repo&gt;\tests\Uinsure.Policies.Api.Tests\bin\Release\net10.0\Uinsure.Policies.Api.Tests.dll (net10.0|x64) passed (7s 591ms)
+  &lt;repo&gt;\tests\Uinsure.Policies.Services.Tests\bin\Release\net10.0\Uinsure.Policies.Services.Tests.dll (net10.0|x64) passed (924ms)
 
   total: 652
   failed: 0
   succeeded: 652
   skipped: 0
-  duration: 3s 918ms
+  duration: 7s 828ms
 Build started...
 Build succeeded.
-The Entity Framework tools version '9.0.9' is older than that of the runtime '10.0.13'. Update the tools for the latest features and bug fixes. See https://aka.ms/AAc1fbw for more information.
 pre-push exit 0</pre>
         </li>
       </ol>
@@ -758,6 +762,21 @@ wc -l &lt; main.json</pre>
   <h2>Journey 2: a servicer driving the API</h2>
   <p class="headline">Call the API with curl and Postman, and read every answer.</p>
   <p class="summary">The examples were sent with <code>curl</code> to the API started in DJ2, on 2026-10-25, so "today" is 2026-10-25. Run the steps in order: the later ones use the policies the earlier ones create. A <code>…</code> inside a command or an output marks text left out of this page; the full text is in <code>receipts.md</code>. The commands are for a POSIX shell (Git Bash on Windows). In PowerShell, <code>curl</code> is an alias for a different command, so use <code>curl.exe</code> and change the quoting.</p>
+
+  <div class="callout warn"><span class="label">Dates</span> The commands show the dates of the capture day, 2026-10-25. A sale must start between your today and your today + 60 (<span class="chip">SELL-2</span>), so on any other day those dates fail. Use your own today: before each command, replace every date in it with the date in the right-hand column below. Find your today with <code>date +%F</code>, and a later date with <code>date -d "+7 days" +%F</code> (GNU date, as in Git Bash). A date of birth stays as shown.
+    <table>
+      <thead><tr><th>Date in the command</th><th>Use instead</th><th>Where</th></tr></thead>
+      <tbody>
+        <tr><td>2026-10-25</td><td>your own today</td><td>GUIDE-002 start date (SJ2), the claim date (SJ5)</td></tr>
+        <tr><td>2026-11-01</td><td>your today + 7 days</td><td>GUIDE-001 start date (SJ2)</td></tr>
+        <tr><td>2026-11-10</td><td>your today + 16 days</td><td>the quote and the cancellation (SJ4), the claim on the cancelled GUIDE-001 (SJ5)</td></tr>
+        <tr><td>2027-04-30</td><td>your today + 187 days</td><td>the pro rata quotes (SJ4, SJ5)</td></tr>
+        <tr><td>2026-10-24</td><td>your today - 1 day</td><td>the cancellation for yesterday (SJ4)</td></tr>
+        <tr><td>2026-10-26</td><td>your today + 1 day</td><td>the claim for tomorrow (SJ5)</td></tr>
+        <tr><td>2026-10-01</td><td>your today - 24 days</td><td>the past start date in the failed sales (SJ2, SJ7)</td></tr>
+      </tbody>
+    </table>
+    With those offsets, <code>daysInTerm</code>, <code>daysUsed</code>, <code>ruleApplied</code> and every <code>refundAmount</code> and <code>totalRefund</code> come out as shown, because they depend only on the gaps between dates. The one exception is a term that contains 29 February, which has 366 days and changes the pro rata amounts a little. What will differ from this page: every date in an output moves to your calendar, <code>quotedOn</code> is your today, the <span class="chip">SELL-2</span> window in the 422 body reads your today to your today + 60, the renewal window in SJ6 follows your GUIDE-002 start date, and every <code>traceId</code> and payment <code>reference</code> is new on each run.</div>
 
   <h3>Sell, look up and cancel (SJ1 to SJ4)</h3>
   <ol class="steps">
@@ -1235,7 +1254,7 @@ Content-Type: application/problem+json; charset=utf-8
           <tr><td>409 <code>/problems/concurrency</code></td><td>Two writes on one policy at once</td><td>Retry the request</td></tr>
           <tr><td><code>curl</code> prints a web page or an error in PowerShell</td><td>In PowerShell, <code>curl</code> is an alias for another command, and quoting differs</td><td>Use Git Bash, or call <code>curl.exe</code></td></tr>
           <tr><td>The API and web profile stops with "Packages are not restored"</td><td>A fresh clone has no <code>node_modules</code> for Docket</td><td><code>npm --prefix src/Uinsure.Policies.Web ci</code>, then start again. Docket needs Node 22.22 or later</td></tr>
-          <tr><td><code>dotnet ef</code> warns "tools version '9.0.9' is older than that of the runtime '10.0.13'"</td><td>An older global <code>dotnet-ef</code>; the repository has no tool manifest</td><td>Update the global <code>dotnet-ef</code> to the runtime's version. The script is still generated</td></tr>
+          <tr><td><code>dotnet ef</code> is not found, or warns "tools version '9.0.9' is older than that of the runtime '10.0.13'"</td><td>The global <code>dotnet-ef</code> is missing or older than the runtime; the repository has no tool manifest to supply it</td><td>Run DJ3 step 1: <code>dotnet tool update --global dotnet-ef --version 10.0.13</code>. With an older tool the script is still generated</td></tr>
           <tr><td>A warning in the log about "QuerySplittingBehavior" on the first read</td><td>EF Core notes a query that loads several collections. It is a performance note, not a failure</td><td>None needed</td></tr>
         </tbody>
       </table>
