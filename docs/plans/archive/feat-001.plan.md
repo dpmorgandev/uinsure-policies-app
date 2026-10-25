@@ -87,5 +87,17 @@ Requirement lines: `docs/documentation-requirements.md` LRN-6 (amended), LRN-12,
 - `docs/specs/guide-format.spec.md`: last changed in `fc1ee5bc`. Its `span.marker` component (`:26`) becomes the red box.
 
 ## Attempt log
+- N1 attempt 1: the t1 gate failed at 6f2e8efc. Check A1/I8 counted the 7 diagram rows, not the 30 persona questions. The investigator found the check at fault, not the spec (findings/A1.md), and the builder fixed it in 1f548620. Attempt 1 → 2.
+- N1 attempt 2: t2 shots and the coverage check landed at 6db22f48, the UI guide at 6bf608d2 and da7ac832, and the API guide at ae30479f. Gates passed at 0e0cc637. Review A2 at a9c3f83b: reviewer PASS (7 P2), security PASS.
+- Steer D1 (David, 2026-10-25, "Fix now"): reviewer R1 (fixed capture-day dates), R4 (dotnet-ef prerequisite) and R5 (stale receipt note) went through findings/D1.md. Red checks 947b66ba came first (written by the builder, because guard G1 keeps the tester out of docs/guides/**), then the fix 11872be5. Review A2.2: reviewer PASS (4 P2), security PASS. No attempt increment.
+- The full Playwright run was repeated once at David's ruling ("Re-run once"): 446 passed / 486 failed, against 475 / 457 the first time. The guide prints the failing run as it happened; the cause goes to bug-003.
 
 ## Completion record
+- N1: PR #134, merged by David as c438c1ff on 2026-10-25. Integrate receipt 6113586e (652/652); trail check OK.
+- Sign-offs on David's behalf: the From David paragraph and the Pause 2 sign-off at 5f2b47ab, under his delegation of 2026-10-25 ("Delegate + sign-off"). He merged.
+- Pause 2 Postman receipt was skipped: this is a docs node with no API change, and the Postman CLI won't start on the capture machine.
+- The hitl → done commit (2419dbcf) was pushed after the merge, so this archive commit carries N1's done state, pr 134 and t9-t11.
+- Moved to bug-003 (parked until after 2026-10-30): e2e timeouts under full parallel load (A2 R3, two runs); the cold-start timeouts; the README "once per clone" wording; F8 t9 and U10 t14 bookkeeping; the test:kit path filter; the N4/N6 code P2s.
+- Harness carry-overs (one harness PR): the tester's write scope for docs-node checks; the SubagentStop hook not firing for the D1 investigator (its findings were filed by replaying the same hook with the agent's own final message); render-trace has no gate.postman(skipped) event form.
+- PR notes, not fixed: four hand-capture placeholders (VS x2, Postman x2) at David's ruling "Leave placeholders"; A2 R2 and A2.2 R4 (check depth); A2.2 R1-R3 (receipts provenance, clean-machine dotnet-ef); A2 R7 (TDD label on 1f548620).
+- Still deferred from the plan's Out list: the matrix Step 3 re-sign.

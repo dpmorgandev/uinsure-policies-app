@@ -1,7 +1,7 @@
 plan_id: feat-001
 kind: feature
 title: The full user guides, as persona journeys
-status: approved
+status: archived
 created: 2026-10-25
 approved_by: david
 approved_on: 2026-10-25
@@ -16,11 +16,11 @@ nodes:
     rules: []
     cuttable: false
     budget: 5h
-    status: hitl
+    status: done
     attempt: 2
     branch: feature/feat-001/N1
     worktree: .claude/worktrees/feat-001-N1
-    pr: null
+    pr: 134
     qa: docs/qa/feat-001-N1.md
     trace: docs/trace/feat-001/N1/
     acceptance:
@@ -40,6 +40,6 @@ nodes:
       - {id: t6, role: tester, step: qa, layer: null, rules: [], title: "QA script docs/qa/feat-001-N1.md: David follows one journey per persona in the running app", status: done}
       - {id: t7, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: done}
       - {id: t8, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md and README; chore(trace) commit; completeness check passes", status: done}
-      - {id: t9, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: pending}
-      - {id: t10, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from the PDFs and the QA script", status: pending}
-      - {id: t11, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
+      - {id: t9, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: done}
+      - {id: t10, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from the PDFs and the QA script", status: done}
+      - {id: t11, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: done}
