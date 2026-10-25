@@ -125,7 +125,7 @@ nodes:
     cuttable: false
     budget: 3h
     status: in_progress
-    attempt: 1
+    attempt: 2
     branch: bug/bug-002/N4
     worktree: .claude/worktrees/bug-002-N4
     pr: null
