@@ -59,9 +59,19 @@ const problem: InspectorRequest = {
   ].join('\n'),
 };
 
+// A request the API never answered (the fetch was rejected). No source records one, so the path is the recorded quote
+// again and the note says the rest is a placeholder: there is no status and no exchange to show.
+const noResponse: InspectorRequest = {
+  number: 2,
+  method: 'GET',
+  path: QUOTE_PATH,
+  outcome: 'problem',
+  note: 'Placeholder: no response came back, so there is no status or exchange. No source records a rejected fetch.',
+};
+
 export const examples: { state: string; element: JSX.Element }[] = [
   { state: 'closed', element: <InspectorDrawer requests={[cancel, quoteLineOnly]} defaultOpen={false} /> },
   { state: 'open', element: <InspectorDrawer requests={[cancel, quoteLineOnly]} defaultOpen /> },
   { state: 'one request', element: <InspectorDrawer requests={[quote]} defaultOpen /> },
-  { state: 'problem', element: <InspectorDrawer requests={[problem]} defaultOpen /> },
+  { state: 'problem', element: <InspectorDrawer requests={[noResponse, problem]} defaultOpen /> },
 ];

@@ -14,7 +14,7 @@ export interface InspectorRequest {
   method: string;
   /** The path and query as sent. */
   path: string;
-  /** The HTTP status, once the API has answered. */
+  /** The HTTP status, once the API has answered. A `problem` with no status means no response came: the fetch was rejected. */
   status?: number;
   outcome: RequestOutcome;
   /** The request and response as recorded, laid out as they should be read. Shown in the mono face, verbatim. */
@@ -35,6 +35,11 @@ export interface InspectorDrawerProps {
   minHeight?: number;
   maxHeight?: number;
   headingLevel?: 2 | 3 | 4;
+}
+
+/** A problem with no HTTP status was never answered: the fetch was rejected (the API down or blocked). */
+function hasNoResponse(request: InspectorRequest): boolean {
+  return request.outcome === 'problem' && request.status === undefined;
 }
 
 const SMALL_STEP = 24;
@@ -101,7 +106,9 @@ export function InspectorDrawer({
   const announcement = latest
     ? latest.outcome === 'pending'
       ? `Request #${latest.number} sent, waiting for the response`
-      : `Request #${latest.number} answered${latest.status !== undefined ? ` ${latest.status}` : ''}`
+      : hasNoResponse(latest)
+        ? `Request #${latest.number} failed: no response`
+        : `Request #${latest.number} answered${latest.status !== undefined ? ` ${latest.status}` : ''}`
     : '';
 
   return (
@@ -170,6 +177,11 @@ export function InspectorDrawer({
                   </code>
                   {request.outcome === 'pending' ? (
                     <StatusTag status="pending">Waiting</StatusTag>
+                  ) : hasNoResponse(request) ? (
+                    <StatusTag status="fail">
+                      Failed
+                      <span className={styles.srOnly}> (no response)</span>
+                    </StatusTag>
                   ) : (
                     <StatusTag status={request.outcome === 'ok' ? 'pass' : 'fail'}>
                       {request.status ?? (request.outcome === 'ok' ? 'OK' : 'Problem')}
