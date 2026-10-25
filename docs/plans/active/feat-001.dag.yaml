@@ -16,10 +16,10 @@ nodes:
     rules: []
     cuttable: false
     budget: 5h
-    status: pending
-    attempt: 0
-    branch: null
-    worktree: null
+    status: in_progress
+    attempt: 1
+    branch: feature/feat-001/N1
+    worktree: .claude/worktrees/feat-001-N1
     pr: null
     qa: docs/qa/feat-001-N1.md
     trace: docs/trace/feat-001/N1/
