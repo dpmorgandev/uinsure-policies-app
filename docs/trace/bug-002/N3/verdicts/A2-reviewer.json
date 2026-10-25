@@ -1,0 +1,63 @@
+{
+  "v": 1,
+  "ts": "2026-10-25T00:49:33Z",
+  "plan": "bug-002",
+  "node": "N3",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a96e7b31e18b49ef8",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "bug-002",
+    "node_id": "N3",
+    "attempt": 2,
+    "base_sha": "99a0a0c3ffe646c3bf5d71e4b57436827bca399c",
+    "head_sha": "3ed926d115a6ec12d7ed5e1cf1f7a6cb9efc9d88",
+    "diff_fingerprint": "ca4d6fe554a3cae8cc50d6e2081d1b5609848e27",
+    "verdict": "PASS",
+    "gate_refs": [
+      "findings(findings/A1.md)",
+      "gate.finding-red@8597a3cf",
+      "gate.fix-green@82518511",
+      "gate.typecheck@82518511",
+      "gate.lint@82518511",
+      "gate.lint-css@82518511",
+      "gate.test@82518511",
+      "gate.build@82518511",
+      "gate.npm-audit@82518511",
+      "gate.not-implemented@82518511",
+      "gate.diff-scope@82518511",
+      "gate.render-trace-check@82518511",
+      "gate.e2e@82518511",
+      "gate.e2e-regression@82518511"
+    ],
+    "rules_covered": [
+      "WB-1",
+      "BUSY-1",
+      "HONEST-1"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "HONEST-1",
+        "severity": "P2",
+        "file": "docs/qa/bug-002-N3.md",
+        "line": 136,
+        "what": "The QA script still expects the defect that A1/I1 fixed: step 12 says Policy status 'still reads a bare Active', and the summary (line 52) and ruling (line 224) still ask David to decide it.",
+        "why": "After 82518511, both header fields read statusShown (CancelPolicy.tsx:152, :234, :236), so step 12 now shows 'Active (read before the cancel)' in Policy status. If David runs step 12 as written, it fails against correct behaviour, and he is asked to rule on something the orchestrator already ruled on in loop.jsonl's findings event. The web-testing skill says the QA script is written after both verdicts PASS, so it must describe the build under test. docs/qa is outside the diff fingerprint, so this doesn't block the code.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "A1/I1 is fixed. CancelPolicy.tsx:152 works out statusShown once, as '<status> (read before the cancel)' when stale, otherwise the status itself. The kit Status label (:234) and the 'Policy status' id (:236) both read it, so no header field can show the pre-cancel status without the mark. This matches the orchestrator's ruling in loop.jsonl's findings event: both fields stay, each marked when stale, and the exactly-one-field clause is dropped. The warn and pass tone is still on the Status field only. The id has no tone in the kit's PageHeaderId, so the text mark is the honest signal there.",
+      "The strengthened tests are a real oracle for I1. honest-1-cancel-reread.test.tsx:23-30 and honest-1.spec.ts:43-49 walk every 'header[data-mode=live] dl > div', whatever its label, and fail on any dd that holds the first read's status without the mark. The A1 assertions (headerText match, Status marked, Status holds the first read's status) are all still there, at :36-38 and :46-48 in unit and :40-41 in e2e. These are additions only, with no weakening. In the e2e test, the expected status is the one the page's own first read returned (watchApi), not a literal.",
+      "TDD order for the fix: red 8597a3cf comes before green 82518511, and both carry Fixes-Finding: A1/I1. gate.finding-red at 8597a3cf shows it was red for the right reason: 2 unit tests failed in honest-1-cancel-reread on the unmarked Policy status, 1 e2e test failed (cancel re-read), the untouched rejected-sale test passed, and typecheck was 0. gate.fix-green at 82518511 shows 413/413 unit tests and the e2e passing.",
+      "WB-1 and BUSY-1 are unchanged since A1 and still met. When not stale, statusShown is policy.status, the same value A1's WB-1 Cancel tests and the WB-4 'Policy status' tests checked. The whole suite's functional tests pass at 82518511 (gate.e2e: 816 passed). The 96 failures are the same regression-screenshot set as at A1 and at N2's merge, accepted by the delegated ruling. None of them is new.",
+      "Leftovers: gate.not-implemented at 82518511 is clean. HEAD 3ed926d1 changes only the trace files, after the gated 82518511.",
+      "A1 R3 (status tone) and R4 (InspectorDrawer announcement) are now N4 acceptance lines (bug-002.dag.yaml:139-140), so I don't raise them again here. R2 is folded into I1 and is handled by the strengthened tests.",
+      "Code quality: the comment at CancelPolicy.tsx:151 says why the value is shared (HONEST-1), not what the line does. The fix is minimal and adds no dead code or speculative generality."
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "v": 1,
+  "ts": "2026-10-25T00:48:30Z",
+  "plan": "bug-002",
+  "node": "N3",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a87c021830e02de44",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "bug-002",
+    "node_id": "N3",
+    "attempt": 2,
+    "base_sha": "99a0a0c3ffe646c3bf5d71e4b57436827bca399c",
+    "head_sha": "3ed926d115a6ec12d7ed5e1cf1f7a6cb9efc9d88",
+    "diff_fingerprint": "ca4d6fe554a3cae8cc50d6e2081d1b5609848e27",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.npm-audit",
+      "gate.typecheck",
+      "gate.lint",
+      "gate.test",
+      "gate.build",
+      "gate.e2e",
+      "gate.diff-scope",
+      "gate.fix-green"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Web-security checklist W1-W8 walked in place of the .NET extras. The diff touches only src/Uinsure.Policies.Web/app/{data,workbench} and kit/patterns/request-log, plus tests and generated docs.",
+      "W1 met: no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval or new Function in the changed source. The new failed note, the 'read before the cancel' label and the Failed word are fixed strings or React text children.",
+      "W2 met: the only href in the diff is the existing internal hash route '#/workbench/policies/' with encodeURIComponent on the reference. No external or data-passed URL was added.",
+      "W3 met: index.html is not in the diff, so the CSP is unchanged. No third-party script, font, image or style was added.",
+      "W4 met: loggingFetch only adds a try/catch that sets entry.failed and rethrows. It makes no new request and adds no storage or cookie access. The only localStorage use is the existing browser.ts recent-policies list (WB-9), which is not in the diff.",
+      "W5 met: compiler/** is not in the diff.",
+      "W6 met: no absolute path, personal email, key or token in the changed src or tests.",
+      "W7 met: package.json and the lockfile are not in the diff. gate.npm-audit exit 0 (runtime 0, dev 0).",
+      "W8 met: a rejected fetch is drawn as the fixed text 'The request failed: no response came back.' The error object and its message are rethrown unchanged and never rendered by this diff.",
+      "API8:2023 met via W3 and W4. API10:2023 met via W1 and W8: the API's answers are still drawn as text, and status and reference values are rendered as React text.",
+      "n/a: API1, API2, API3, API4, API5, API6, API7 and API9, plus the .NET extras (SQL, money, packages, secrets, logging): ui node, no server code in the diff. API1, API2 and API5 are also out of scope because there is no auth or tenancy.",
+      "The packet diff.patch is 6.6 MB because it includes its own earlier copy and generated docs/ui/derived screens. I read the src/ and tests/ hunks (lines 22149-23040) in full and grepped the rest.",
+      "gate.e2e shows 96 regression-screenshot failures that the orchestrator ruled as pre-existing and not new. These are not security-relevant."
+    ]
+  }
+}
