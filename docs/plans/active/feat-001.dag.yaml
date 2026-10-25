@@ -33,7 +33,7 @@ nodes:
       - "A reader follows one persona journey in a PDF against the running app and reaches each step's shown result"
     tasks:
       - {id: t1, role: builder, step: write, layer: null, rules: [], title: "Specs: guide-format red box + Step n label; ui-guide and api-guide question banks by persona, journey outlines and coverage maps", status: done}
-      - {id: t2, role: builder, step: write, layer: null, rules: [], title: "Re-capture shots from main with red boxes from region tags and each step's result framed; the coverage check script", status: pending}
+      - {id: t2, role: builder, step: write, layer: null, rules: [], title: "Re-capture shots from main with red boxes from region tags and each step's result framed; the coverage check script", status: done}
       - {id: t3, role: builder, step: write, layer: null, rules: [], title: "Both guides rebuilt as persona journeys; the carried N6 work; both PDFs reprinted", status: pending}
       - {id: t4, role: orchestrator, step: gates, layer: null, rules: [], title: "Link check, coverage check, privacy scan, PDFs reprint from HTML, full suite green", status: pending}
       - {id: t5, role: review, step: review, layer: null, rules: [], title: "Reviewer and security verdicts PASS for HEAD (only a P1 reopens)", status: pending}
