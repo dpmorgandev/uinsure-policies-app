@@ -88,7 +88,7 @@ nodes:
     rules: [WB-1, BUSY-1, HONEST-1]
     cuttable: false
     budget: 3h
-    status: in_progress
+    status: hitl
     attempt: 2
     branch: bug/bug-002/N3
     worktree: .claude/worktrees/bug-002-N3
@@ -138,6 +138,7 @@ nodes:
       - "NotBuiltRegion and its NotBuiltYet import are gone from app/shell/Rung.tsx once no screen uses them; N2 removed the last two uses (bug-002/N2 review A3 R3, P2)"
       - "Sell and Cancel draw the header Status in the tone its value earns (Pending, Cancelled never a pass tick), from one status-to-tone mapping the workbench screens share (bug-002/N3 review A1 R3, P2)"
       - "A rejected fetch in the requests drawer is announced and tagged as failed, never 'answered' or 'Problem', through the in-node kit gap on InspectorDrawer (bug-002/N3 review A1 R4, P2)"
+      - "Moving from one policy's cancel route straight to another's starts the cancel screen afresh: no quote, cancel, answer or stale mark carried from the previous policy (pre-existing on main; found in bug-002/N3 QA step 12)"
       - "The reproduction test fails on the merge base and passes at the PR head"
       - "The full suite and the rule-coverage check pass"
     tasks:
