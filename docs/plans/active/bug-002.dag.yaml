@@ -124,7 +124,7 @@ nodes:
     rules: [DATA-4, AGENT-2, DAG-1]
     cuttable: false
     budget: 3h
-    status: in_progress
+    status: paused_acceptance
     attempt: 1
     branch: bug/bug-002/N4
     worktree: .claude/worktrees/bug-002-N4
@@ -142,7 +142,7 @@ nodes:
       - "The reproduction test fails on the merge base and passes at the PR head"
       - "The full suite and the rule-coverage check pass"
     tasks:
-      - {id: t1, role: tester, step: red, layer: acceptance, rules: [DATA-4, AGENT-2, DAG-1], title: "Reproduction: the matrix scope note is not built, agent-2.spec.ts without fixme fails, the Plan nav opens build only, Sell and Cancel draw Pending and Cancelled as a pass, the drawer announces a rejected fetch as answered, and a cancel route carries the previous policy (those three tagged HONEST-1, N3 rule); fails on main (e2e and unit tests)", status: pending}
+      - {id: t1, role: tester, step: red, layer: acceptance, rules: [DATA-4, AGENT-2, DAG-1], title: "Reproduction: the matrix scope note is not built, agent-2.spec.ts without fixme fails, the Plan nav opens build only, Sell and Cancel draw Pending and Cancelled as a pass, the drawer announces a rejected fetch as answered, and a cancel route carries the previous policy (those three tagged HONEST-1, N3 rule); fails on main (e2e and unit tests)", status: done}
       - {id: t2, role: builder, step: stub, layer: screen, rules: [], title: "No stub: every route this node touches already exists", status: skipped}
       - {id: t3, role: david, step: pause1, layer: null, rules: [], title: "Pause 1: read the reproduction tests red against main; go or change", status: pending}
       - {id: t4, role: builder, step: green, layer: screen, rules: [DATA-4, AGENT-2, DAG-1], title: "The scope note from trace.json, the notice from the kit (in-node kit gap), the Plan nav over every plan, one status-to-tone mapping, the drawer failed state (in-node kit gap on InspectorDrawer), the cancel screen reset per policy, NotBuiltRegion removed: all layers", status: pending}
