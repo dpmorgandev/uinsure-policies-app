@@ -16,7 +16,7 @@ nodes:
     rules: []
     cuttable: false
     budget: 5h
-    status: in_progress
+    status: hitl
     attempt: 2
     branch: feature/feat-001/N1
     worktree: .claude/worktrees/feat-001-N1
