@@ -1,6 +1,6 @@
 # Guide format spec
 
-Shared by F7 (API guide) and F8 (UI guide). Requirements: `docs/documentation-requirements.md` §4 (LRN), §4b (MAN), §5 (STY).
+Shared by F7 (API guide) and F8 (UI guide). Requirements: `docs/documentation-requirements.md` §4 (LRN, with LRN-6 amended and LRN-12 to LRN-14 added by feat-001), §4b (MAN), §5 (STY).
 
 ## Files
 
@@ -13,7 +13,7 @@ Shared by F7 (API guide) and F8 (UI guide). Requirements: `docs/documentation-re
 | `docs/guides/test/index.html` | The template as a test page; `node docs/guides/print.mjs test` proves the pipeline |
 | `docs/guides/print.mjs` | Prints `docs/guides/<guide>/index.html` to A4 PDF |
 
-Guide sources use only the classes in `guide.css`. No inline styles except the `left` and `top` percentages of a marker.
+Guide sources use only the classes in `guide.css`. No inline styles except the `left`, `top`, `width` and `height` percentages of a red box and the `left` and `top` percentages of its label.
 
 ## Components
 
@@ -22,8 +22,9 @@ Guide sources use only the classes in `guide.css`. No inline styles except the `
 | Cover, front sheet | `section.cover`, `section.front > ol > li > strong` | LRN-1 |
 | Three layers | `p.headline`, `p.summary`, `details.depth` | LRN-2 |
 | Diagram | `figure > svg` using the CSS variables for colour | LRN-4 |
-| Steps | `ol.steps > li.step`, with `div.see` and `pre.output` for the captured result | LRN-5 |
-| Screenshot with markers | `figure > div.shot > img + span.marker`; `left` and `top` are percentages measured from region tags | LRN-6 |
+| Steps | `ol.steps > li.step#<id>`, with `div.decide` (what the user decides), `div.gives` (what Docket or the API gives them), `div.see` and `pre.output` for the captured result | LRN-5, LRN-12 |
+| Persona journey | `section.journey > h2 + p.summary + ol.steps`; one per persona | LRN-12 |
+| Screenshot with red boxes | `figure > div.shot > img + span.box + span.boxlabel`, one `span.box` and `span.boxlabel` pair per step the shot serves. `span.box` is a red outline drawn round the element the step drives from; `span.boxlabel` is the text "Step n" beside it. `left`, `top`, `width` and `height` of the box are percentages of the image, measured from the element's `[data-region]` rectangle; the label's `left` and `top` are derived from the box (above it, or below it when the box touches the top edge). A shot that frames a result (LRN-13) has no box on the result, which is not a step's start | LRN-6, LRN-13 |
 | Check your understanding | `table.check` | LRN-7 |
 | Comparison table | `table` | LRN-8 |
 | Code reference | `div.extract > a.ref` (text `path:line`; `href` is relative to the guide's folder and carries the line as a fragment, for example `../../../src/X.cs#L13`) and `pre` of 3 to 12 real lines | LRN-9 |
@@ -31,7 +32,20 @@ Guide sources use only the classes in `guide.css`. No inline styles except the `
 | Troubleshooting | closing `table`: symptom, cause, fix | LRN-11 |
 | Rule chip, status callouts | `span.chip`, `div.callout.warn`, `.error`, `.ok` | STY-3 |
 
+### Red box and "Step n" label (LRN-6, amended)
+
+- No numbered circle, no `span.marker`. The red box is the only highlight, drawn in the guide's error red from `tokens.css`, 3 px, with no fill so the element stays readable.
+- The label reads exactly `Step n`, where n is the step's number in its journey. The step text under the shot names the same n ("Step 2: type the reference in the box"). A shot that serves several steps carries several box and label pairs, each with its own n, in step order.
+- Positions come from region tags: `capture.mjs` reads the `[data-region]` rectangle (or the element inside it that the step names) and writes percentages into the manifest. Where a tool has no region tags (Postman, Visual Studio), the box is measured from the captured pixels, never placed by eye.
+- Every `span.box` has one `span.boxlabel`, and every label's n appears in the step list beneath the same figure. The guide check fails on a box with no label, a label with no step, or an n that does not match.
+
 Lists have three items, or four at most (LRN-3); longer ones are grouped under labels.
+
+## Journeys and the coverage map (LRN-12, LRN-14)
+
+A guide is the journeys of its personas, one `section.journey` per persona, each a list of `ol.steps` steps. A step has an id of the form `<persona letter>J<n>` (for example `SJ3`), set as the `id` of its `li.step`. Each step says what the user decides (`div.decide`) and what Docket or the API gives them (`div.gives`), then shows the shot that frames its outcome (LRN-13).
+
+The coverage map lives in the guide's spec, as one fenced block with the info string `coverage`. Each non-blank line not starting with `#` is `feature-id | requirement ref | step id | feature`, split on ` | ` and trimmed. The check script (under `docs/guides/`, run beside `docs/guides/api/check.test.mjs`) fails on a feature whose step id is not a step in the guide's HTML, on a step with no feature, and on a §6 or §7 item with no line.
 
 ## Print pipeline
 
