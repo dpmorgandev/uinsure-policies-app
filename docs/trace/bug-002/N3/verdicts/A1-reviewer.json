@@ -1,0 +1,105 @@
+{
+  "v": 1,
+  "ts": "2026-10-25T00:22:49Z",
+  "plan": "bug-002",
+  "node": "N3",
+  "attempt": 1,
+  "agent": "reviewer",
+  "agent_id": "a76f445df264972b2",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "bug-002",
+    "node_id": "N3",
+    "attempt": 1,
+    "base_sha": "99a0a0c3ffe646c3bf5d71e4b57436827bca399c",
+    "head_sha": "9a5b98bc490ad74ec48a415ed6688b1dab1ce9ba",
+    "diff_fingerprint": "cb4ec22c9419ec9b6dbfe72932159bb0725d7715",
+    "verdict": "FAIL",
+    "gate_refs": [
+      "gate.red@5a48f82a",
+      "gate.kit-typecheck@f2bd37a1",
+      "gate.kit-tests@f2bd37a1",
+      "gate.kit-css@f2bd37a1",
+      "gate.kit-typecheck@5e5a2e53",
+      "gate.kit-tests@5e5a2e53",
+      "gate.kit-css@5e5a2e53",
+      "gate.kit-audit@5e5a2e53",
+      "gate.stylekit@3a91fd8e",
+      "gate.screens-audit@5c2c24d9",
+      "gate.frames-audit@5c2c24d9",
+      "gate.green@00faa2c7",
+      "gate.typecheck@bee81f1b",
+      "gate.lint@bee81f1b",
+      "gate.lint-css@bee81f1b",
+      "gate.test@bee81f1b",
+      "gate.build@bee81f1b",
+      "gate.npm-audit@bee81f1b",
+      "gate.not-implemented@bee81f1b",
+      "gate.diff-scope@bee81f1b",
+      "gate.render-trace-check@bee81f1b",
+      "gate.e2e@bee81f1b",
+      "gate.e2e-regression@bee81f1b"
+    ],
+    "rules_covered": [
+      "WB-1",
+      "BUSY-1"
+    ],
+    "rules_missing": [
+      "HONEST-1"
+    ],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "HONEST-1",
+        "severity": "P1",
+        "file": "src/Uinsure.Policies.Web/app/workbench/cancel/CancelPolicy.tsx",
+        "line": 234,
+        "what": "When the re-read fails, the Cancel header still shows 'Policy status: <pre-cancel status>' unmarked, next to the new marked Status field. The original symptom is still there.",
+        "why": "Acceptance line 3 says that when the re-read after a 201 cancel fails, the header marks the status as read before the cancel. Only the kit Status field (line 232) gets the '(read before the cancel)' label and the warn tone. The 'Policy status' id (line 234) still renders policy?.status as plain text. That id is the field that showed the stale status unmarked before this node (the Status field used to read 'not returned'), so the header still states a status as current that the API no longer holds. Even when the re-read succeeds, the header now shows the status twice. The derived reference wb-cancel/populated.html draws a single 'Policy status' field.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "HONEST-1",
+        "severity": "P2",
+        "file": "tests/Uinsure.Policies.Web.Tests/unit/screens/honest-1-cancel-reread.test.tsx",
+        "line": 24,
+        "what": "The failed re-read tests (unit and e2e honest-1.spec.ts:39) check only the Status field and a match anywhere in the header. A second, unmarked copy of the stale status passes them.",
+        "why": "The tests can't fail on R1. headerText() matching /read before the cancel/ is satisfied by one marked field while another field shows the same stale value unmarked. A test that proves 'the header marks the status' needs to check that no header field shows the pre-cancel status without the mark.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R3",
+        "rule_id": "HONEST-1",
+        "severity": "P2",
+        "file": "src/Uinsure.Policies.Web/app/workbench/sell/SellPolicy.tsx",
+        "line": 244,
+        "what": "Sell and Cancel (CancelPolicy.tsx:232) always use the 'pass' tone. 'Pending' and 'Cancelled' get a green check here, while PolicyView's STATUS_TAGS draws them as pending and fail.",
+        "why": "The glyph and colour claim a pass the API didn't give, and the same API status now looks different from screen to screen. This is also the rule of three: status-to-tone mapping now appears five times (PolicyView STATUS_TAGS, Renew, Claim, Sell, Cancel), each one different, and they all change for the same reason.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "HONEST-1",
+        "severity": "P2",
+        "file": "src/Uinsure.Policies.Web/kit/layouts/inspector-drawer/InspectorDrawer.tsx",
+        "line": 104,
+        "what": "For a rejected fetch, the drawer's live region announces 'Request #N answered', and its visible tag reads 'Problem' rather than 'Failed'.",
+        "why": "RequestsDrawer.tsx:73 maps a failed entry to outcome 'problem', and the kit's announcement treats every non-pending outcome as answered. Assistive tech is told the API answered a request that got no response. The visible 'failed' comes only from the note. The in-node kit gap gave RequestLog a failed state, but InspectorDrawer has none. This is a kit gap, not a fix for the screen.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "WB-1: Sell's Status binds sold.policy.status, and missingLabel 'nothing sold yet' covers the state before any answer. Cancel binds policy.status. Unit and e2e tests check before, after and cancel, using recorded API answers (unit) and live exchanges (e2e). Met.",
+      "BUSY-1: on 'sold', a useEffect moves focus to the tabIndex=-1 answer paragraph, which states the 201 and the reference. Unit and e2e tests check that focus left Send, isn't on body, and holds the status and reference. Met, in line with David's ruling (focus, not a redirect).",
+      "The red receipt said acceptance 3b ('answered ,') can't be tested and asked review to confirm. Confirmed: CancelPolicy.tsx:167-170 and :196-199 now render the receipts only when the step is 'done', and the ': \"\"' fallbacks are gone.",
+      "Rejected fetch: loggingFetch sets failed=true and rethrows. The RequestLog kit draws Failed/fail before any status and the filter finds the word failed. RequestLogPage and PolicyView pass failed through. The kit example's new row #5 is labelled as a placeholder in its caption.",
+      "TDD order: the red commits bdef148a, f9afb36c and 3f1e87b7 come before the green ca6bb883 and 5e5a2e53. There was no stub step (t2 skipped, every route already exists). The gate.not-implemented receipt is clean.",
+      "Commit 434547b0 (web-tester, after green) adds failed:true to a WB-7 toEqual expectation. That tightens the assertion rather than loosening it, and HONEST-1's red test requires that behaviour change. I don't count it as weakening. Commit ca6bb883 did leave that WB-7 test red until this commit.",
+      "Evidence chain: the gate.red receipt's head 5a48f82a and the green SHA 26942d71 cited in 434547b0 aren't in the trailer log, which suggests the branch was rebased after red. Without commands I can't diff each red test file against HEAD. The HEAD test files show no Skip, fixme or loosened expectation, and their header comments still describe the defect as red would.",
+      "Minor and not raised: the stale flag never resets when the reference changes. Other state on the screen behaves the same way already, and this only matters if you navigate from one cancel route straight to another.",
+      "The 96 failing regression screenshots match the set N2 merged with, accepted by delegated ruling. The wb-sell and wb-cancel shots that the Status change affects are left to Pause 2."
+    ]
+  }
+}
