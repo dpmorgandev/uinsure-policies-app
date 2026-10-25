@@ -21,6 +21,8 @@ import {
 } from './support/app';
 import type { CompiledTrail } from './support/app';
 import { expectRegionComponents, expectRegionsInOrder, expectShell, gitOnlyNode, matrix, node, outsideInTransit, overview } from './support/parity';
+import { serveTrace, setTheme, viewports } from '../U0b/support/app';
+import { designFixtureDir } from '../U0b/support/trail';
 
 const TRAIL = 'trail-completeness-trail-incomplete-reasons-verbatim-not-built-yet-and-f0a-as-git-only';
 const SCOPE_NOTE = 'test-count-scope-note-counts-are-per-node-sell-7-10-at-f1-vs-15-traited';
@@ -220,8 +222,27 @@ test.describe('parity', () => {
     await expectRegionComponents(page, overview, TRAIL);
   });
 
+  // This one no longer reads U1's reference. The signed matrix screen (docs/ui/screens/matrix/populated.html) and every
+  // reference derived from it predate inv-009 #8 I6 (David: build the note), so they still draw Step 3 as the kit's
+  // not-built-yet box, and a screen is immutable after G4: the matrix screen's Step 3 is on N6's re-sign list. Until
+  // then the region is held to bug-002 N4's DATA-4 acceptance line instead (David's ruling, 2026-10-25): tagged
+  // DATA-4, no not-built-yet, and the note drawn, on the same design fixture the other parity tests use.
   test("DATA-4 · parity: the matrix's test-count scope note region carries its reference's components", async ({ page }) => {
-    await expectRegionComponents(page, matrix, SCOPE_NOTE);
+    await serveTrace(page, designFixtureDir);
+    await setTheme(page, 'light');
+    await page.setViewportSize(viewports[1440]);
+    await page.goto(matrix.path);
+    const note = page.locator(`[data-region="${SCOPE_NOTE}"]`);
+    await expect(note, 'the matrix draws its Step 3').toHaveCount(1);
+    await expect(note, 'the region is tagged DATA-4').toHaveAttribute('data-req', /(^|\s)DATA-4(\s|$)/);
+    await expect(note, 'the region is built').not.toHaveAttribute('data-built', 'false');
+    await expect(note.locator('[data-comp^="not-built-yet "], [class*="kit-not-built-yet__"]'), 'no not-built-yet component').toHaveCount(0);
+    await expect(note, 'no not-built-yet words').not.toContainText(/not built yet/i);
+    await expect(note, 'the note says what the matrix counts').toContainText(
+      "The matrix counts a rule's tests at the node that built it, while the rule page lists every test traited with it",
+    );
+    // The design fixture's first rule with a per-node count: SELL-1, 22/22 at build/F1 (docs/ui/fixture/trace.json).
+    await expect(note, "the note gives a rule's per-node count from the fixture").toContainText(/For example SELL-1 has 22\D+22\b.* at F1\./);
   });
 
   test("DATA-4 · parity: the node page keeps its reference's regions in order, all but the banner not built yet", async ({ page }) => {
