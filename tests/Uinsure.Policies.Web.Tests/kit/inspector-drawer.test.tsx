@@ -75,15 +75,31 @@ describe('inspector-drawer examples', () => {
   });
 
   it('problem: the 422 shows as a failure, in a word, a glyph and a colour', () => {
-    const { container } = render(examples[3]!.element);
-    const tag = container.querySelector('[data-status="fail"]');
+    render(examples[3]!.element);
+    const items = within(screen.getByRole('list')).getAllByRole('listitem');
+    const tag = items[1]!.querySelector('[data-status="fail"]');
     expect(tag).not.toBeNull();
     expect(tag?.textContent).toContain('422');
     expect(tag?.textContent).toContain('(problem)');
+    expect(tag?.textContent).not.toContain('Failed');
     expect(tag?.querySelector('svg')).not.toBeNull();
     expect(screen.getByRole('region', { name: 'Request #1, request and response' }).textContent).toContain(
       'ruleId      "CANCEL-3"',
     );
+  });
+
+  it('problem: the request with no response is drawn as failed, never answered', () => {
+    render(examples[3]!.element);
+    const items = within(screen.getByRole('list')).getAllByRole('listitem');
+    const tag = items[0]!.querySelector('[data-status="fail"]');
+    expect(tag).not.toBeNull();
+    expect(tag?.textContent).toContain('Failed');
+    expect(tag?.textContent).toContain('(no response)');
+    expect(tag?.textContent).not.toContain('Problem');
+    expect(tag?.querySelector('svg')).not.toBeNull();
+    expect(screen.getByRole('status').textContent).toBe('Request #2 failed: no response');
+    expect(within(items[0]!).queryByRole('region')).toBeNull();
+    expect(within(items[0]!).getByText(/Placeholder: no response came back/)).toBeTruthy();
   });
 });
 
@@ -145,6 +161,18 @@ describe('InspectorDrawer', () => {
   it('announces the latest answer in the live region', () => {
     render(<InspectorDrawer requests={[cancel, quote]} />);
     expect(screen.getByRole('status').textContent).toBe('Request #2 answered 201');
+  });
+
+  it('announces a problem the API answered with its status, and a rejected fetch as failed', () => {
+    const answered: InspectorRequest = { number: 1, method: 'GET', path: '/policies/X', status: 422, outcome: 'problem' };
+    const rejected: InspectorRequest = { number: 1, method: 'GET', path: '/policies/X', outcome: 'problem' };
+    const first = render(<InspectorDrawer requests={[answered]} />);
+    expect(screen.getByRole('status').textContent).toBe('Request #1 answered 422');
+    first.unmount();
+    render(<InspectorDrawer requests={[rejected]} defaultOpen />);
+    expect(screen.getByRole('status').textContent).toBe('Request #1 failed: no response');
+    expect(screen.getByText(/^Failed/).closest('[data-status]')?.getAttribute('data-status')).toBe('fail');
+    expect(screen.queryByText(/Problem/)).toBeNull();
   });
 
   it('says plainly when nothing has been sent', () => {

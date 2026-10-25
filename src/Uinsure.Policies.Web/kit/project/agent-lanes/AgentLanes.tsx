@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { Check, Clock, Minus, RefreshCw, X } from 'lucide-react';
+import { Check, Clock, Info, Minus, RefreshCw, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { AgentBadge } from '../../primitives/agent-badge/AgentBadge';
 import type { AgentName } from '../../primitives/agent-badge/AgentBadge';
@@ -25,9 +25,22 @@ export interface Lane {
   events: readonly LaneEvent[];
 }
 
+/** An activity line the lanes do not draw: its agent has no lane, or the line names no agent. */
+export interface UndrawnLine {
+  /** The agent the line names, or null / empty when it names none (shown as "no agent"). */
+  agent?: string | null;
+  /** The line's number in the log. Not drawn; it keeps each line distinct for a caller that passes them. */
+  n?: number;
+}
+
 export interface AgentLanesProps {
   /** One lane per agent that acted, in the order given. */
   lanes: readonly Lane[];
+  /**
+   * The lines the caller was given but cannot draw as lanes. When there are any, the lanes say so in a notice inside
+   * their region: how many, and whose, so every line is either a tick or accounted for.
+   */
+  undrawn?: readonly UndrawnLine[];
   /** The node is git-only (F0a): the trail holds no activity records, by design. */
   gitOnly?: boolean;
   /** Start with the text-equivalent table open. */
@@ -62,16 +75,33 @@ function touchedOf(event: LaneEvent): string | undefined {
   return parts.length === 0 ? undefined : parts.join(' · ');
 }
 
+/** "2 lines are not drawn as lanes: design-auditor, no agent. They are in the table below." Null when none. */
+function noticeOf(undrawn: readonly UndrawnLine[]): string | null {
+  if (undrawn.length === 0) return null;
+  const names = Array.from(new Set(undrawn.map((line) => present(line.agent) ?? 'no agent')));
+  const count = `${undrawn.length} ${undrawn.length === 1 ? 'line is' : 'lines are'}`;
+  return `${count} not drawn as lanes: ${names.join(', ')}. They are in the table below.`;
+}
+
 /**
  * Per-agent lanes of activity. Position along a lane is rung order (the walkthrough row), never clock time, and
  * the same events are in a table as the text equivalent.
  */
-export function AgentLanes({ lanes, gitOnly = false, tableOpen = false }: AgentLanesProps) {
+export function AgentLanes({ lanes, undrawn = [], gitOnly = false, tableOpen = false }: AgentLanesProps) {
   const withEvents = lanes.filter((lane) => lane.events.length > 0);
+  const text = noticeOf(undrawn);
+  const notice =
+    text === null ? null : (
+      <p className={styles.notice} data-notice="undrawn">
+        <Info className={styles.noticeIcon} aria-hidden="true" focusable="false" />
+        {text}
+      </p>
+    );
 
   if (gitOnly) {
     return (
       <section className={styles.root} aria-label="Agent lanes" data-state="git-only">
+        {notice}
         <p className={styles.empty}>
           This node is git-only (F0a): the trail holds no activity records, by design, so there are no lanes to draw.
         </p>
@@ -82,6 +112,7 @@ export function AgentLanes({ lanes, gitOnly = false, tableOpen = false }: AgentL
   if (withEvents.length === 0) {
     return (
       <section className={styles.root} aria-label="Agent lanes" data-state="empty">
+        {notice}
         <p className={styles.empty}>No agent activity is recorded for this node, so there are no lanes to draw.</p>
       </section>
     );
@@ -105,6 +136,7 @@ export function AgentLanes({ lanes, gitOnly = false, tableOpen = false }: AgentL
         scroll sideways inside their frame when they are wider than the page; in a narrow frame each lane wraps onto
         more lines instead, still in rung order.
       </p>
+      {notice}
       <div className={styles.scroll} role="region" aria-label="Agent lanes, by rung" tabIndex={0}>
         <ul
           className={[styles.lanes, labelled ? styles.wrapped : ''].filter(Boolean).join(' ')}

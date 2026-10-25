@@ -1,7 +1,7 @@
 {
  "stamp": {
-  "kitTree": "b122dee751dbf75a3ca3a717bab2e59d107d3f04",
-  "builtAt": "2026-10-25T00:01:03Z",
+  "kitTree": "4f58a4b341b44fd5b72da618517fd277e8f69566",
+  "builtAt": "2026-10-25T02:40:51Z",
   "from": "src/Uinsure.Policies.Web/kit",
   "script": ".claude/scripts/design/build-stylekit.mjs"
  },
@@ -10615,6 +10615,13 @@
      "style": false
     },
     {
+     "tag": "p",
+     "classes": [
+      "kit-agent-lanes__notice"
+     ],
+     "style": false
+    },
+    {
      "tag": "section",
      "classes": [
       "kit-agent-lanes__root"
@@ -10707,6 +10714,15 @@
       "kit-agent-lanes__icon",
       "lucide",
       "lucide-x"
+     ],
+     "style": false
+    },
+    {
+     "tag": "svg",
+     "classes": [
+      "kit-agent-lanes__noticeIcon",
+      "lucide",
+      "lucide-info"
      ],
      "style": false
     },

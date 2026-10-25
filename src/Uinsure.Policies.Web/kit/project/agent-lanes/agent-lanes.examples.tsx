@@ -1,6 +1,6 @@
 import type { JSX } from 'react';
 import { AgentLanes } from './AgentLanes';
-import type { Lane, LaneEvent } from './AgentLanes';
+import type { Lane, LaneEvent, UndrawnLine } from './AgentLanes';
 
 // The events are the 17 red, stub, green and refactor rows of build/F2's walkthrough for GET-1, as rule.html's
 // text-equivalent table lists them: row number, SHA, TDD step, agent and what it did, plus row 2 (a commit with no
@@ -43,6 +43,13 @@ const both: Lane[] = [
 // tests/web/e2e/U4/agent-2.spec.ts). It is an activity-log line, not a commit, so it carries no TDD trailer and no SHA.
 const reviewer: LaneEvent[] = [{ n: 7, tdd: null, tool: 'Read', file: 'src/sell.txt', label: 'Read src/sell.txt' }];
 
+// build/F3 on the `agents` fixture trail: line 4 is a design-auditor Read (an agent with no lane in the kit) and line 5 a
+// Read with no agent field. Neither is drawn as a lane, and both are counted (AGENT-2, e2e U10/agent-2.spec.ts).
+const undrawn: UndrawnLine[] = [
+  { n: 4, agent: 'design-auditor' },
+  { n: 5, agent: null },
+];
+
 const note = {
   margin: 'var(--space-2) 0 0',
   fontSize: 'var(--text-14)',
@@ -55,7 +62,12 @@ export const examples: { state: string; element: JSX.Element }[] = [
     state: 'pop',
     element: (
       <div>
-        <AgentLanes lanes={both} tableOpen />
+        <AgentLanes lanes={both} undrawn={undrawn} tableOpen />
+        <p style={note}>
+          The notice above the lanes accounts for lines with no lane: build/F3's lines 4 (design-auditor, not one of the
+          kit's agents) and 5 (no agent field) on the agents fixture. The lanes are F2's rows; the two sources are shown
+          together only to show the notice.
+        </p>
       </div>
     ),
   },

@@ -221,6 +221,41 @@ describe('AgentLanes', () => {
     expect(screen.getByText('no SHA')).toBeTruthy();
   });
 
+  it('AGENT-2 · pop: the lanes draw the notice of the lines they cannot draw, inside their own region', () => {
+    render(byState('pop'));
+    const region = screen.getByRole('region', { name: 'Agent lanes' });
+    const notice = within(region).getByText(
+      '2 lines are not drawn as lanes: design-auditor, no agent. They are in the table below.',
+    );
+    expect(region.contains(notice)).toBe(true);
+    expect(notice.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+  });
+
+  it('the notice counts lines, names each agent once, says "no agent" for a missing one, and is singular for one line', () => {
+    const lanes = [{ agent: 'tester' as const, events: [{ n: 1, tdd: 'red', label: 'x' }] }];
+    const { rerender } = render(
+      <AgentLanes
+        lanes={lanes}
+        undrawn={[{ agent: 'design-auditor' }, { agent: 'design-auditor' }, { agent: '' }, { agent: undefined }]}
+      />,
+    );
+    expect(screen.getByText(/4 lines are not drawn as lanes: design-auditor, no agent\./)).toBeTruthy();
+    rerender(<AgentLanes lanes={lanes} undrawn={[{ agent: null }]} />);
+    expect(screen.getByText(/1 line is not drawn as lanes: no agent\./)).toBeTruthy();
+  });
+
+  it('no undrawn lines, no notice', () => {
+    render(<AgentLanes lanes={[{ agent: 'tester', events: [{ n: 1, tdd: 'red', label: 'x' }] }]} undrawn={[]} />);
+    expect(screen.queryByText(/not drawn as lanes/)).toBeNull();
+  });
+
+  it('the notice still shows when every line is undrawn, so no lane is drawn', () => {
+    render(<AgentLanes lanes={[]} undrawn={[{ agent: 'design-auditor' }]} />);
+    const region = screen.getByRole('region', { name: 'Agent lanes' });
+    expect(region.getAttribute('data-state')).toBe('empty');
+    expect(within(region).getByText(/1 line is not drawn as lanes: design-auditor\./)).toBeTruthy();
+  });
+
   it('the scroll regions can be reached by keyboard', () => {
     render(byState('pop'));
     const region = screen.getByRole('region', { name: 'Agent lanes, by rung' });

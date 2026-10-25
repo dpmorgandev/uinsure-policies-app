@@ -19,8 +19,9 @@ test.afterAll(() => {
   agents?.trail.cleanup();
 });
 
-// carried: needs a kit notice state via /kit-gap (U10 cut, 2026-10-23)
-test.fixme("AGENT-2 · the notice of build/F3's two lines not drawn as lanes is drawn by a kit component, not the screen's own markup", async ({ page }) => {
+// carried: needs a kit notice state via /kit-gap (U10 cut, 2026-10-23); un-fixme'd by bug-002 N4 (inv-009 #10, I15;
+// David: run the kit gap rather than retire the test), so it runs, and fails until the kit draws the notice.
+test("AGENT-2 · the notice of build/F3's two lines not drawn as lanes is drawn by a kit component, not the screen's own markup", async ({ page }) => {
   await openOnFixture(page, agents, '/#/plans/build/F3/activity');
   await traceAnswered(page);
   const lanes = region(page, LANES);

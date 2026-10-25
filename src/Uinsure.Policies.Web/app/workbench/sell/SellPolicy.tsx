@@ -24,6 +24,7 @@ import type { PaymentMethod, Policy, PolicyType, Problem, SellForm, SellFormProp
 import { RequestsDrawer } from '../RequestsDrawer';
 import { browserDeps, todayInLondon } from '../browser';
 import { ProblemView } from '../ProblemView';
+import { toneOfStatus } from '../statusTone';
 import '../workbench.css';
 
 const PAYMENT_METHODS = [
@@ -241,7 +242,7 @@ export function SellPolicy() {
         question="If I send this request, what does the API store?"
         answer={answerOf(outcome)}
         missingLabel="nothing sold yet"
-        status={sold ? { value: 'pass', label: sold.policy.status } : null}
+        status={sold ? { value: toneOfStatus(sold.policy.status), label: sold.policy.status } : null}
         ids={sold ? [{ label: 'Policy', value: sold.policy.reference }] : undefined}
         liveNote={liveNoteOf(outcome)}
       />
