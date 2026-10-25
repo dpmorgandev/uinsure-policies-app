@@ -1,7 +1,7 @@
 plan_id: bug-002
 kind: bug
 title: "What main still holds after #121 (inv-009)"
-status: approved
+status: archived
 created: 2026-10-23
 approved_by: david
 approved_on: 2026-10-23
@@ -56,7 +56,7 @@ nodes:
     attempt: 4
     branch: bug/bug-002/N2
     worktree: .claude/worktrees/bug-002-N2
-    pr: null
+    pr: 125
     qa: docs/qa/bug-002-N2.md
     trace: docs/trace/bug-002/N2/
     acceptance:
@@ -201,7 +201,7 @@ nodes:
     attempt: 1
     branch: bug/bug-002/N6
     worktree: .claude/worktrees/bug-002-N6
-    pr: null
+    pr: 131
     qa: docs/qa/bug-002-N6.md
     trace: docs/trace/bug-002/N6/
     acceptance:
@@ -219,4 +219,4 @@ nodes:
       - {id: t6, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md, README and matrix; chore(trace) commit; completeness check passes", status: done}
       - {id: t7, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: done}
       - {id: t8, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and a baseline: <screen> ruling per re-shot screen", status: done}
-      - {id: t9, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
+      - {id: t9, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: done}
