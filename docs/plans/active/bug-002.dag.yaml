@@ -197,10 +197,10 @@ nodes:
     rules: []
     cuttable: false
     budget: 3h
-    status: pending
-    attempt: 0
-    branch: null
-    worktree: null
+    status: in_progress
+    attempt: 1
+    branch: bug/bug-002/N6
+    worktree: .claude/worktrees/bug-002-N6
     pr: null
     qa: docs/qa/bug-002-N6.md
     trace: docs/trace/bug-002/N6/
