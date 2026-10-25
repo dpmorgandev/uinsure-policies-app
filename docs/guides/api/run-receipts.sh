@@ -2,8 +2,8 @@
 # Re-runs every command the API guide shows and writes docs/guides/api/receipts.md.
 # Run from the repository root, in Git Bash, with port 5080 free and no policies.development.db:
 #   bash docs/guides/api/run-receipts.sh
-# The sales use start dates relative to 2026-10-23, the day the guide was captured, so the dates in the
-# commands below only fit that day. Each command is run exactly as written here (eval) and recorded as
+# The sales use start dates relative to 2026-10-25, the day the guide was captured, so the dates in the
+# commands below only fit that day; the guide gives each as an offset from the reader's own today. Each command is run exactly as written here (eval) and recorded as
 # `Command:` followed by its output. The guide copies commands and outputs from receipts.md; nothing is retyped.
 # Afterwards: node docs/guides/api/fill-guide.mjs copies the HTTP outputs into index.html.
 set -u
@@ -27,7 +27,7 @@ entry() {
   {
     printf '## %s %s\n\n' "$id" "$title"
     printf 'Command: `%s`\n\n' "$cmd"
-    printf 'Date: %s. Branch: feature/build/F7 at %s. Exit code: %s.\n\n' "$DAY" "$SHA" "$code"
+    printf 'Date: %s. Branch: feature/feat-001/N1 at %s. Exit code: %s.\n\n' "$DAY" "$SHA" "$code"
     printf '```text\n'
     [ -n "$note" ] && printf '(excerpt: %s)\n' "$note"
     printf '%s\n' "$out" | scrub | eval "$filter"
@@ -39,16 +39,14 @@ HTTPF="grep -v -i -E '^(date|server|transfer-encoding|content-length):'"
 HTTPN="the Date, Server, Transfer-Encoding and Content-Length headers left out"
 
 cat > "$OUT" <<EOF
-# F7 receipts: API user guide
+# Receipts: API user guide
 
-Every command in \`docs/guides/api/index.html\` was run on the F7 branch (HEAD \`${SHA}\` plus the guide's own files)
-on ${DAY}, on Windows 11 under Git Bash, .NET SDK $(dotnet --version). The script that ran them is
+Every command in \`docs/guides/api/index.html\` was run on the feat-001/N1 branch (HEAD \`${SHA}\` plus the guide's
+own files) on ${DAY}, on Windows 11 under Git Bash, .NET SDK $(dotnet --version). The branch holds the web app and
+the Visual Studio launch profile, so these runs replace the earlier ones wholesale. The script that ran them is
 \`docs/guides/api/run-receipts.sh\`. Each entry gives the command exactly as it was run, then its output. The checkout
 path is replaced by \`<repo>\`, and nothing else is edited except where an entry says "excerpt". The guide copies
-commands and outputs from this file only.
-
-The brief asked for these in \`docs/trace/build/F7/\`, which agents may not write. They are here, and the
-orchestrator can move them.
+commands and outputs from this file only. Agents may not write \`docs/trace/\`, so the receipts live here.
 
 EOF
 
@@ -62,6 +60,7 @@ entry R3d "Test, Architecture.Tests" 'dotnet test --project tests/Uinsure.Polici
 entry R4 "One rule by trait" 'dotnet test --solution Uinsure.Policies.slnx -- --filter-trait "Rule=CANCEL-1b"' "sed -n '/Test run summary/,\$p'" 'the summary'
 entry R4b "Rule coverage" 'dotnet test --project tests/Uinsure.Policies.Architecture.Tests -- --filter-class "*RuleCoverageTests"' "sed -n '/Test run summary/,\$p'" 'the summary'
 entry R4c "Renewal tests (a successful renewal needs a fake clock)" 'dotnet test --solution Uinsure.Policies.slnx -- --filter-trait "Rule=RENEW-4"' "sed -n '/Test run summary/,\$p'" 'the summary'
+entry R12 "Web unit tests (Vitest)" 'npm --prefix src/Uinsure.Policies.Web run test' "grep -E '^ *(Test Files|Tests|Duration)'" 'the summary lines'
 
 # Start the API (R5) and wait for it.
 LOG="$TMPD/api.log"
@@ -70,7 +69,7 @@ for i in $(seq 1 90); do curl -s -o /dev/null http://localhost:5080/health/live 
 {
   printf '## R5 Run on 5080\n\n'
   printf 'Command: `%s`\n\n' 'dotnet run --project src/Uinsure.Policies.Api --launch-profile http'
-  printf 'Date: %s. Branch: feature/build/F7 at %s. Exit code: running until stopped.\n\n' "$DAY" "$SHA"
+  printf 'Date: %s. Branch: feature/feat-001/N1 at %s. Exit code: running until stopped.\n\n' "$DAY" "$SHA"
   printf '```text\n(excerpt: the start-up lines)\n'
   tr -d '\r' < "$LOG" | scrub | grep -E 'Now listening|Application started|Hosting environment|Content root'
   printf '```\n\n'
@@ -92,6 +91,7 @@ C01@@Sell GUIDE-001@@curl -s -i -X POST http://localhost:5080/policies -H "Conte
 F01@@Sell the same reference again (409)@@curl -s -i -X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '{"reference":"GUIDE-001","type":"Household","startDate":"2026-11-01","amount":803.40,"autoRenew":true,"paymentMethod":"Card","policyholders":[{"firstName":"Ada","lastName":"Lovelace","dateOfBirth":"1985-12-10"}],"property":{"addressLine1":"1 Example Street","addressLine2":"Exampleton","postcode":"EX1 1AA"}}'
 F02@@Sell with a past start date and amount 0 (422, two violations)@@curl -s -i -X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '{"reference":"GUIDE-003","type":"Household","startDate":"2026-10-01","amount":0,"autoRenew":true,"paymentMethod":"Card","policyholders":[{"firstName":"Ada","lastName":"Lovelace","dateOfBirth":"1985-12-10"}],"property":{"addressLine1":"1 Example Street","addressLine2":"Exampleton","postcode":"EX1 1AA"}}'
 F03@@Sell with only a reference (400)@@curl -s -i -X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '{"reference":"GU"}'
+F09@@Sell a duplicate reference with a past start date (409 wins over 422)@@curl -s -i -X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '{"reference":"guide-001","type":"Household","startDate":"2026-10-01","amount":803.40,"autoRenew":true,"paymentMethod":"Card","policyholders":[{"firstName":"Ada","lastName":"Lovelace","dateOfBirth":"1985-12-10"}],"property":{"addressLine1":"1 Example Street","addressLine2":"Exampleton","postcode":"EX1 1AA"}}'
 C02@@Get, lower-case reference@@curl -s -i http://localhost:5080/policies/guide-001
 F04@@Get an unknown reference (404)@@curl -s -i http://localhost:5080/policies/NO-SUCH-POLICY
 F05@@Get with an unknown query key (400)@@curl -s -i "http://localhost:5080/policies/GUIDE-001?reference=X"
@@ -99,35 +99,50 @@ C03@@Quote 2026-11-10 (cooling-off)@@curl -s -i "http://localhost:5080/policies/
 C04@@Quote 2027-04-30 (pro rata)@@curl -s -i "http://localhost:5080/policies/GUIDE-001/cancellation-quote?cancellationDate=2027-04-30"
 C05@@Cancel on 2026-11-10@@curl -s -i -X POST http://localhost:5080/policies/GUIDE-001/cancellation -H "Content-Type: application/json" -d '{"cancellationDate":"2026-11-10"}'
 C06@@Cancel again (409)@@curl -s -i -X POST http://localhost:5080/policies/GUIDE-001/cancellation
-C08@@Sell GUIDE-002, starting today@@curl -s -i -X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '{"reference":"GUIDE-002","type":"BuyToLet","startDate":"2026-10-23","amount":1200.00,"autoRenew":false,"paymentMethod":"DirectDebit","policyholders":[{"firstName":"Grace","lastName":"Hopper","dateOfBirth":"1990-12-09"}],"property":{"addressLine1":"2 Sample Road","postcode":"EX2 2BB"}}'
-F08@@Cancel for yesterday (422)@@curl -s -i -X POST http://localhost:5080/policies/GUIDE-002/cancellation -H "Content-Type: application/json" -d '{"cancellationDate":"2026-10-22"}'
-C09@@Claim for today@@curl -s -i -X POST http://localhost:5080/policies/GUIDE-002/claims -H "Content-Type: application/json" -d '{"claimDate":"2026-10-23","description":"Burst pipe"}'
+C08@@Sell GUIDE-002, starting today@@curl -s -i -X POST http://localhost:5080/policies -H "Content-Type: application/json" -d '{"reference":"GUIDE-002","type":"BuyToLet","startDate":"2026-10-25","amount":1200.00,"autoRenew":false,"paymentMethod":"DirectDebit","policyholders":[{"firstName":"Grace","lastName":"Hopper","dateOfBirth":"1990-12-09"}],"property":{"addressLine1":"2 Sample Road","postcode":"EX2 2BB"}}'
+F08@@Cancel for yesterday (422)@@curl -s -i -X POST http://localhost:5080/policies/GUIDE-002/cancellation -H "Content-Type: application/json" -d '{"cancellationDate":"2026-10-24"}'
+C07@@Quote GUIDE-002 for 2027-04-30, before any claim@@curl -s -i "http://localhost:5080/policies/GUIDE-002/cancellation-quote?cancellationDate=2027-04-30"
+C09@@Claim for today@@curl -s -i -X POST http://localhost:5080/policies/GUIDE-002/claims -H "Content-Type: application/json" -d '{"claimDate":"2026-10-25","description":"Burst pipe"}'
 C10@@Quote after the claim@@curl -s -i "http://localhost:5080/policies/GUIDE-002/cancellation-quote?cancellationDate=2027-04-30"
-F06@@Claim for tomorrow (422)@@curl -s -i -X POST http://localhost:5080/policies/GUIDE-002/claims -H "Content-Type: application/json" -d '{"claimDate":"2026-10-24"}'
+F06@@Claim for tomorrow (422)@@curl -s -i -X POST http://localhost:5080/policies/GUIDE-002/claims -H "Content-Type: application/json" -d '{"claimDate":"2026-10-26"}'
 F07@@Claim on the cancelled policy (409)@@curl -s -i -X POST http://localhost:5080/policies/GUIDE-001/claims -H "Content-Type: application/json" -d '{"claimDate":"2026-11-10"}'
 C11@@Renew too early (422)@@curl -s -i -X POST http://localhost:5080/policies/GUIDE-002/renewals -H "Content-Type: application/json" -d '{"amount":1250.00}'
 CALLS
 
-entry R6 "Postman CLI, whole collection" 'postman collection run tests/postman/Uinsure.Policies.postman_collection.json -e tests/postman/local.postman_environment.json' "sed -n '/iterations/,\$p'" 'the summary table'
-entry R6b "Postman CLI, one folder" 'postman collection run tests/postman/Uinsure.Policies.postman_collection.json -e tests/postman/local.postman_environment.json -i "F3 Cancel"' "sed -n '/iterations/,\$p'" 'the summary table'
+# The Postman CLI cannot start on this machine (a Private Cloud manifest error from the machine's registry policy), so
+# R6 reuses the F8 receipt recorded in docs/guides/ui/run-output.json, and says so.
+POSTMAN_CMD='postman collection run tests/postman/Uinsure.Policies.postman_collection.json -e tests/postman/local.postman_environment.json -i "F2 Retrieve"'
+{
+  printf '## R6 Postman CLI, one folder (reused F8 receipt, not run on this machine)\n\n'
+  printf 'Command: `%s`\n\n' "$POSTMAN_CMD"
+  printf 'Date: 2026-10-23. Branch: feature/build/F8. Exit code: 0. Reused and not rerun: the Postman CLI stops on this machine with a Private Cloud manifest error. The F8 run added `--env-var baseUrl=http://localhost:5096`, because its API was on that port. The output is from `docs/guides/ui/run-output.json`.\n\n'
+  printf '```text\n(excerpt: the summary table)\n'
+  node -e 'const o=JSON.parse(require("fs").readFileSync("docs/guides/ui/run-output.json","utf8"));console.log(o.postman)'
+  printf '```\n\n'
+} >> "$OUT"
 
 # Stop the API: the process that holds port 5080.
 PID=$(netstat -ano | grep -E ':5080 .*LISTENING' | awk '{print $NF}' | head -1)
 [ -n "$PID" ] && taskkill //F //T //PID "$PID" > /dev/null 2>&1
 sleep 2
 
-entry R10 "Run with no launch profile (a problem met while capturing)" 'timeout 60 dotnet run --project src/Uinsure.Policies.Api --no-launch-profile' "grep -m1 'OptionsValidationException'" 'the exception line'
+entry R10 "Run with no launch profile (a problem met while capturing)" 'dotnet run --project src/Uinsure.Policies.Api --no-launch-profile' "grep -m1 'OptionsValidationException'" 'the exception line'
 
 entry R7 "Harness self-test" 'node --test ".claude/hooks/__tests__/*.test.mjs"' "grep -E '^(1\\.\\.|# (tests|suites|pass|fail|cancelled|skipped|todo|duration_ms))'" 'the summary'
+entry R8a "Install the EF tools at the runtime's version" 'dotnet tool update --global dotnet-ef --version 10.0.13'
 entry R8 "Idempotent migration script" 'dotnet ef migrations script --idempotent --project src/Uinsure.Policies.Persistence --startup-project src/Uinsure.Policies.Api -o migrate.sql'
 entry R8b "Length of the migration script, in lines" 'wc -l < migrate.sql'
-entry R8c "First lines of the migration script" 'head -n 9 migrate.sql'
+entry R8c "First lines of the migration script" 'head -n 9 migrate.sql' "sed '1s/^\xEF\xBB\xBF//'" 'the byte-order mark on line 1 dropped'
 rm -f migrate.sql
+entry R9a "Bicep version" 'bicep --version'
 entry R9 "Bicep build" 'bicep build infrastructure/main.bicep --outfile main.json'
 entry R9b "Length of the compiled template, in lines" 'wc -l < main.json'
 rm -f main.json
 
-entry R11 "Trail counts" 'for n in F0a F0b F1 F1b F2 F3 F4 F5 F6; do echo "$n findings=$(ls docs/trace/build/$n/findings 2>/dev/null | wc -l) verdicts=$(ls docs/trace/build/$n/verdicts 2>/dev/null | wc -l)"; done'
+entry R11 "Trail counts" 'for n in $(ls docs/trace/build); do echo "$n findings=$(ls docs/trace/build/$n/findings 2>/dev/null | wc -l) verdicts=$(ls docs/trace/build/$n/verdicts 2>/dev/null | wc -l)"; done'
+
+# The pre-push hook, run as the version-control client runs it (no refs on stdin). It rebuilds in Release, so it comes last.
+entry R13 "The pre-push hook" 'sh .githooks/pre-push < /dev/null; echo "pre-push exit $?"' 'tail -n 12' 'the last 12 lines'
 
 cat >> "$OUT" <<'EOF'
 ## Observed while capturing
@@ -135,18 +150,25 @@ cat >> "$OUT" <<'EOF'
 - On the first read of a policy, the log shows one warning: `EntityFrameworkCore.Query[20504]`, "Compiling a query
   which loads related collections for more than one collection navigation ... no 'QuerySplittingBehavior' has been
   configured". It is a performance note, not a failure, and nothing in the code configures it.
-- The README says the collection has 109 requests. The Postman CLI counts 253 requests, 109 test scripts and 246
-  assertions (R6).
 - The repository has no tool manifest (`.config/dotnet-tools.json`): `dotnet tool restore` printed "Cannot find a
-  manifest file", yet `.githooks/pre-push` runs it before `dotnet ef`. `dotnet ef` ran from a globally installed
-  tool, version 9.0.9, with a version warning (R8). The exit code of the restore was not captured.
+  manifest file" and exited 0, so `.githooks/pre-push` goes on to `dotnet ef`, which then needs a globally installed
+  tool. The first capture ran with a global tool at version 9.0.9, which printed a version warning. R8a updates it to
+  10.0.13, the runtime's version, so R8 and R13 print no warning. Each entry's own line gives the sha it ran at.
+- At 6bf608d2 (the commit R1 to R12 were captured at), one architecture test failed:
+  `WebProjectLocationTests.No_live_tracked_file_names_the_old_web_paths`, because `docs/guides/ui/run-output.json:45`
+  quoted an e2e test title that names the old web test folder. That file belongs to the UI guide, not this one.
+  R3, R3d and R13 (the hook runs the whole suite) were run then with that one quoted path changed in the working tree
+  (and restored afterwards), so they show the suite as it stands once the UI guide's file is corrected. Run as
+  committed at 6bf608d2, R3 printed total 652, failed 1, succeeded 651, and R3d printed total 79, failed 1, succeeded 78.
+  Commit da7ac832 fixed the file, so the suite passes as committed from there on.
 - R10 ran with `--no-launch-profile` only. With no launch profile the run is not Development and has no
-  `Database:Provider`, so start-up fails. The guide's fix is to use `--launch-profile http`.
+  `Database:Provider`, so start-up stops with an error. The guide's fix is to use `--launch-profile http`.
 
 ## Not run
 
-- The web suites (Vitest, Playwright) and the Visual Studio U9 launch profile: the ui plan is not on this branch.
-- Postman app and Visual Studio screenshots: hand captures; the guide shows labelled placeholders.
+- The Postman CLI (R6 is the F8 receipt), the Postman app and Visual Studio screenshots: hand captures; the guide
+  shows labelled placeholders.
+- The Playwright end-to-end suite: it is the UI guide's evidence and takes about an hour.
 - A successful renewal over HTTP: it needs a policy near its end date, and the API runs on the real clock, so it is
   covered by the acceptance tests (R4c).
 - 429 and 500 over HTTP: covered by the acceptance tests; not provoked live.

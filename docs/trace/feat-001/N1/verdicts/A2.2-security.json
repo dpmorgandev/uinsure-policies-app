@@ -1,0 +1,53 @@
+{
+  "v": 1,
+  "ts": "2026-10-25T20:52:00Z",
+  "plan": "feat-001",
+  "node": "N1",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "a9ed7ec0cd9e3a448",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "feat-001",
+    "node_id": "N1",
+    "attempt": 2,
+    "base_sha": "7d8f57892a298f3fa24f00e0686a865a30f9ae1c",
+    "head_sha": "11872be5a7ed1f5a8da1c860dc7885ea8cce77fd",
+    "diff_fingerprint": "8e48528de1b1d0c3a906d77c73ff75bd9d17a06d",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.scope",
+      "gate.privacy",
+      "gate.build",
+      "gate.test",
+      "gate.guides",
+      "gate.fix",
+      "gate.print",
+      "gate.stubs"
+    ],
+    "rules_covered": [
+      "API3:2023",
+      "API4:2023",
+      "API6:2023",
+      "API8:2023",
+      "API9:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "API1:2023 n/a: no auth or tenancy; the reference is the only key.",
+      "API2:2023 n/a: authentication is out of scope.",
+      "API5:2023 n/a: no roles.",
+      "API7:2023 n/a: no outbound URL fetching. The diff changes nothing under src/, tests/ or infrastructure/, so no HttpClient can be introduced.",
+      "API10:2023 n/a: no upstream APIs.",
+      "This is a docs node, so API3, API4, API6, API8 and API9 are met by absence. The scope gate shows the diff confined to docs/guides/**, docs/specs/*guide*, the PDFs and the plan files. I found no diff entries under src/, tests/ or infrastructure/. I did not recheck the guides' prose claims about the API's controls against the source.",
+      "Secrets: I grepped the diff for passwords, tokens, keys, account keys, local absolute user paths and personal emails. The only hits are ConnectionStrings:Policies documentation and the SQLite file name (Data Source=policies.development.db), which holds no credentials. The API guide states that no secrets exist (managed identity). gate.privacy was clean at HEAD.",
+      "SQL: no raw SQL. Money: no double or float in the diff. Packages: no package change, per the gate.print and scope events. Logging: no code change.",
+      "The D1 delta adds `dotnet tool update --global dotnet-ef --version 10.0.13` to the guide and to docs/guides/api/run-receipts.sh. It pins an exact version from the official NuGet feed and puts no credentials in the command, so I recorded no supply-chain finding. The `dotnet tool restore` in the guide sits inside an extract of the pre-push hook, not in the guide's own steps.",
+      "docs/guides/api/run-receipts.sh uses eval on fixed command and filter strings written in the script. There is no external input, so I recorded no finding.",
+      "The guide's sample data is fictitious (GUIDE-001, Ada Lovelace, 1 Example Street, EX1 1AA). The privacy gate passed.",
+      "I ran no commands. The evidence is the diff packet, the touched files and the gate receipts. The 2 full Playwright e2e runs in gate.e2e-rerun failed under parallel load. The log attributes this to the test environment, not to a docs defect, and it is not a security matter."
+    ]
+  }
+}

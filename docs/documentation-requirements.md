@@ -65,12 +65,15 @@ Both guides use one layout, built to teach and not just to be looked things up i
 | LRN-3 | **Lists of three, or at most four.** Longer lists are grouped under labels. |
 | LRN-4 | **One diagram per big idea**, drawn as inline SVG in Docket's palette. |
 | LRN-5 | **Numbered steps for every task.** Each step gives the action, the exact command or click, and **what you should see**, which is either a real captured output or a screenshot. |
-| LRN-6 | **Screen highlights.** A screenshot is overlaid with numbered markers, and a key below it explains each numbered region. The marker positions come from the app's own region tags (`data-region` and the screen contract's regions) wherever they exist, so they are measured and never placed by hand. |
+| LRN-6 | **Screen highlights (amended by David, 2026-10-25, feat-001).** Each element a step drives from has a red box drawn round it and a "Step n" label beside it, never a numbered circle. The step text below the screenshot names the same n. The box positions come from the app's own region tags (`data-region` and the screen contract's regions) wherever they exist, so they are measured and never placed by hand. |
 | LRN-7 | **"Check your understanding"** ends each section: a two-column table with the question on the left and the answer on the right. |
 | LRN-8 | **Comparison tables** for things that get confused, for example the test projects, the run modes and the cancellation outcomes. |
 | LRN-9 | **Code references** give a repo-relative `path:line` link and a short extract of 3 to 12 real lines, so a reader can open the code and see the idea in place. |
 | LRN-10 | **"Why" callouts** state each design decision as the choice made, the alternative and the reason. |
 | LRN-11 | **Troubleshooting:** a closing table of symptom, cause and fix, built from the problems actually met during the build: the trails' findings, and `docs/lessons.md` where it exists. |
+| LRN-12 | **Persona journeys (feat-001).** Each guide is organised as the journeys of its personas, not one section per operation: a policy servicer in the workbench, an assessor in the explorer, and a developer joining the project. Each step says what the user decides there and what Docket (or the API) gives them. |
+| LRN-13 | **Shots show the outcome (feat-001).** A step's screenshot frames the action and its result: the response, the end of the page, the plan picture. A top-of-page shot that shows no result is not a step's "what you should see". |
+| LRN-14 | **Full coverage, checked (feat-001).** A coverage map lists every feature of the guide's half (§6, §7) against the journey step that teaches it. A check script fails on any feature with no step. |
 
 ## 4b. Running the tests by hand (MAN)
 

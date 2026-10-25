@@ -62,9 +62,33 @@ th, td { border: 1px solid var(--color-border); padding: var(--space-1) var(--sp
 th { background: var(--color-accent); }
 table.check th:first-child, table.check td:first-child { width: 40%; }
 
-/* LRN-4 diagrams, LRN-6 screenshots with numbered markers */
+/* LRN-4 diagrams, LRN-6 screenshots with red boxes and "Step n" labels (amended 2026-10-25) */
 figure { margin: var(--space-4) 0; }
 figure svg, figure img { max-width: 100%; height: auto; }
 figcaption { color: var(--color-text-secondary); font-size: var(--text-12); }
 .shot { position: relative; display: inline-block; }
-.marker { position: absolute; width: 1.4rem; height: 1.4rem; border-radius: 50%; background: var(--color-error); color: var(--color-background); font-weight: 700; text-align: center; line-height: 1.4rem; transform: translate(-50%, -50%); }
+.box { position: absolute; box-sizing: border-box; border: 3px solid var(--color-error); pointer-events: none; }
+.boxlabel { position: absolute; background: var(--color-error); color: var(--color-background); font: 700 11px/1.3 var(--font-sans); padding: 1px 5px; white-space: nowrap; }
+
+/* LRN-12 persona journeys: what the user decides, what Docket gives, then the shots and their sub-steps */
+.journey .step { break-inside: auto; }
+.journey .step > h3 { margin: 0 0 var(--space-2); }
+.journey .step figure, .journey .step .decide, .journey .step .gives, .journey .step .substeps li, .journey .step table { break-inside: avoid; }
+.decide, .gives { margin: var(--space-2) 0; padding: var(--space-1) var(--space-3); background: var(--color-surface); border-left: 4px solid var(--color-primary); }
+.gives { border-color: var(--color-success); }
+.decide .label, .gives .label { font-weight: 700; margin-right: var(--space-2); }
+.substeps { list-style: none; padding: 0; margin: var(--space-2) 0 0; }
+.substeps li { margin: 0 0 var(--space-1); }
+.substeps li strong:first-child { color: var(--color-error); }
+/* A journey of more than four steps is grouped under labels (LRN-3). The step id numbers each step, so a grouped journey has no counter circle. */
+.journey.grouped > h3 { color: var(--color-primary); border-bottom: 1px solid var(--color-border); padding-bottom: var(--space-1); }
+.journey.grouped .step { padding-left: var(--space-3); }
+.journey.grouped .step::before { content: none; }
+.journey .step table.long { break-inside: auto; }
+.journey .step > h4 { margin: var(--space-3) 0 var(--space-1); font-size: var(--text-14); break-after: avoid; }
+ol.run { padding-left: var(--space-5); }
+ol.run > li { margin: 0 0 var(--space-3); break-inside: avoid; }
+
+/* A scanner for private text reads raw PDF bytes, and compressed pixels can look like an e-mail address by chance.
+   A shot the scan trips on is nudged by one part in a thousand, which makes the PDF re-encode it (bytes differ, look is the same). */
+.shot img.nudge { filter: brightness(1.001); }
