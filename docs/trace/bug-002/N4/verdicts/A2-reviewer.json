@@ -1,0 +1,123 @@
+{
+  "v": 1,
+  "ts": "2026-10-25T12:52:00Z",
+  "plan": "bug-002",
+  "node": "N4",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "aba79569c6e988ff7",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "bug-002",
+    "node_id": "N4",
+    "attempt": 2,
+    "base_sha": "c2462ac78a54e2226bee6a3f3fec2888f7d1dae3",
+    "head_sha": "d2e56d1e7c49358b010ca8055f9bfa612e7d07a5",
+    "diff_fingerprint": "93af2614aabe8cf03a056fffa7b57c7447ea65a0",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.red@3822667b",
+      "gate.finding-red@020ae8c1",
+      "gate.green@0241788c",
+      "gate.kit-typecheck@0d424d55",
+      "gate.kit-tests@0d424d55",
+      "gate.kit-css@0d424d55",
+      "gate.kit-audit@0d424d55",
+      "gate.stylekit@a495c34a",
+      "gate.screens-audit@f6b42b13",
+      "gate.frames-audit@f6b42b13",
+      "gate.green@0d5c2a11",
+      "gate.typecheck@914fce31",
+      "gate.lint@914fce31",
+      "gate.lint-css@914fce31",
+      "gate.build@914fce31",
+      "gate.test@914fce31",
+      "gate.npm-audit@914fce31",
+      "gate.not-implemented@914fce31",
+      "gate.diff-scope@914fce31",
+      "gate.e2e@914fce31",
+      "gate.finding-red@2c7d6ac8",
+      "gate.e2e@4d2b940f",
+      "gate.trace-check@4d2b940f"
+    ],
+    "rules_covered": [
+      "DATA-4",
+      "AGENT-2",
+      "DAG-1",
+      "HONEST-1"
+    ],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "DATA-4",
+        "severity": "P2",
+        "file": "tests/Uinsure.Policies.Web.Tests/e2e/U1/data-4.spec.ts",
+        "line": 230,
+        "what": "The rewritten U1 test is still titled 'parity: ... carries its reference's components', but it no longer reads a reference. It checks behaviour on the design fixture.",
+        "why": "web-testing: only a test labelled 'reachable:' or 'parity:' may pass at the stub, and the design fixture is for parity only, never for behaviour. The test now checks the N4 acceptance line (David's A1 ruling), so its title and fixture misdescribe it. A behaviour check is sitting under a parity exemption.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R2",
+        "rule_id": "DATA-4",
+        "severity": "P2",
+        "file": "tests/Uinsure.Policies.Web.Tests/e2e/U1/data-4.spec.ts",
+        "line": 242,
+        "what": "The test pins the builder's exact Matrix.tsx sentence, copied in after green ('The matrix counts a rule's tests at the node that built it, while ...').",
+        "why": "Anti-oracle: no test is edited to match the code. The ruling asked the test to assert N4's line (the note drawn from per-node counts, with no not-built-yet marker), not the implementation's prose. The rule, node and count assertions already prove the behaviour. The verbatim sentence only fixes the wording.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R3",
+        "rule_id": "DATA-4",
+        "severity": "P2",
+        "file": "docs/trace/bug-002/N4/packet/trailers.txt",
+        "line": 191,
+        "what": "Commit 4c59afec is trailered 'TDD: red' and fixes A1/I1, but its gate.finding-red exited 0. Per the receipt it was a test rewrite, 'not fail-first'.",
+        "why": "requirements-trace: a test written from a finding fails before the fix commit and passes after it. David's ruling authorises the rewrite, but the red trailer tells the trail it was red when it never was. The trail should record it as a ruled rewrite, not as red.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R4",
+        "rule_id": "HONEST-1",
+        "severity": "P2",
+        "file": "docs/trace/bug-002/N4/packet/trailers.txt",
+        "line": 150,
+        "what": "Kit gap 2 commit 0d424d55 (InspectorDrawer failed state) has no Rule or TDD trailer, yet it is the commit that turns the HONEST-1 drawer tests green.",
+        "why": "requirements-trace: every commit carries Agent, Plan, Node, Rule and TDD. Kit gap 1 (99ed59ab) carries 'Rule: AGENT-2, TDD: green'. Gap 2 does not, so the trailer log never shows the green for the rejected-fetch acceptance line.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R5",
+        "rule_id": "AGENT-2",
+        "severity": "P2",
+        "file": "src/Uinsure.Policies.Web/kit/project/agent-lanes/AgentLanes.tsx",
+        "line": 33,
+        "what": "UndrawnLine.n is never read by the kit ('Not drawn; it keeps each line distinct'). Activity.tsx fills it from record.line for nothing.",
+        "why": "code-quality slop list: dead code, meaning unused members, and speculative generality. noticeOf reads only agent and the array length.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R6",
+        "rule_id": "DATA-4",
+        "severity": "P2",
+        "file": "src/Uinsure.Policies.Web/app/explorer/matrix/Matrix.tsx",
+        "line": 102,
+        "what": "No test covers ScopeNote's fallback branch (' No rule here records a count at a node.'). Both the N4 and U1 tests use fixtures that have a per-node count.",
+        "why": "Coverage per row: the no-count path is the HONEST-1/DATA-4 edge, where the note must not invent an example. No test pins it, so a regression there would go unseen.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "TDD order holds. Reds 034f5447 (DATA-4), 28d613e0 (AGENT-2), 8f32dbd9 (DAG-1) and 3e8703a6 (HONEST-1) come before greens 99ed59ab and 054c986b. D1 red 020ae8c1 failed (gate.finding-red exit 1) before fixes aa6a36cc and 0241788c. t2 stub was skipped because every route already existed, so no gate.stub applies.",
+      "Assertions changed after red: the N4 DAG-1 tests were rewritten under steer D1 (loop.jsonl:6, source david), and the U1 DATA-4 parity test under the A1 ruling (loop.jsonl:30, source david). Both are authorised contract changes, not weakenings. The inspector-drawer kit 'problem' test now scopes to items[1] and adds an assertion, so it is stronger, not looser.",
+      "DAG-1: Frame.tsx is unchanged against origin/main (gate.green@0241788c). The new N4 DAG-1 tests therefore pin main's behaviour and would pass on the merge base, so the generic 'reproduction fails on the merge base' line is moot for DAG-1. Steer D1 states main already does this.",
+      "The A1 ruling puts the matrix screen's Step 3 on N6's re-sign list, and the U1 test comment cites that. N6's acceptance lines in bug-002.dag.yaml do not record it (the orchestrator should add it). The four regenerated matrix baselines (2c7d6ac8) still need David's approval at Pause 2.",
+      "Full e2e has 96 failures, exactly the N3 regression drift set that N6 is to re-sign. The six cold-start failures passed 32/32 on re-run at the same HEAD (gate.e2e@4d2b940f). Unit tests 421/421. No 'not implemented' left in src (gate.not-implemented).",
+      "Acceptance checked against the code. Matrix Step 3 is ScopeNote, built from rules[].matrix with no NotBuiltYet. AgentLanes draws the undrawn notice inside its region, with no new catalog state (only the pop example changed), and agent-2.spec.ts has lost its fixme. NotBuiltRegion and NotBuiltYet are gone from Rung.tsx, with no use left in src. toneOfStatus is shared by Sell, Cancel, Policy, Renew and Claim. InspectorDrawer announces and tags a problem with no status as 'failed: no response', and RequestsDrawer maps entry.failed to that case. CancelPolicy keys CancelScreen on the reference.",
+      "HONEST-1 tests are N3's rule, carried for N4's three acceptance lines. They compare the tone against the policy view's tone, read from the page, plus the literal tones pending and fail in the unit tests. Their expected values come from the API exchange or recorded fixtures, so no canned stub passes them."
+    ]
+  }
+}

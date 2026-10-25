@@ -1,0 +1,59 @@
+{
+  "v": 1,
+  "ts": "2026-10-25T12:49:48Z",
+  "plan": "bug-002",
+  "node": "N4",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "af3eb616dbb95e4ac",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "bug-002",
+    "node_id": "N4",
+    "attempt": 2,
+    "base_sha": "c2462ac78a54e2226bee6a3f3fec2888f7d1dae3",
+    "head_sha": "d2e56d1e7c49358b010ca8055f9bfa612e7d07a5",
+    "diff_fingerprint": "93af2614aabe8cf03a056fffa7b57c7447ea65a0",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.npm-audit",
+      "gate.diff-scope",
+      "gate.build",
+      "gate.lint",
+      "gate.typecheck",
+      "gate.test",
+      "gate.e2e",
+      "gate.trace-check"
+    ],
+    "rules_covered": [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "API8:2023",
+      "API10:2023"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Reviewed as a ui node (plan bug-002, web-only diff), so the web-security checklist W1-W8 replaces the .NET extras. gate.diff-scope confirms every changed file is under src/Uinsure.Policies.Web, tests/Uinsure.Policies.Web.Tests, docs/{trace,context,ui/kit,ui/stylekit}, the bug-002 plan, or docs/ui/baselines. It names no server code. The attempt-2 commits since 914fce31 are tests, matrix baselines and trace only.",
+      "W1 met: the added lines in src/ and tests/ contain no dangerouslySetInnerHTML, innerHTML, outerHTML, insertAdjacentHTML, document.write, eval( or new Function. The new text is all JSX text nodes, which React escapes. These are the Matrix ScopeNote (Matrix.tsx, built from trace rule id, node and tests), the AgentLanes notice (AgentLanes.tsx noticeOf, built from the activity-record agent name), and the InspectorDrawer Failed tag (fixed words only).",
+      "W2 met: the diff adds no href and no link built from data in app/ or kit/. The only new hrefs are '#/plans/<id>' strings in test assertions.",
+      "W3 met: index.html, the CSS imports and the fonts are untouched. The new AgentLanes.module.css rules use only var(--...) tokens and no url(). The new Info icon is an inline lucide SVG, so no third-party origin is added.",
+      "W4 met: no fetch call is added in app/ or kit/. The only new fetch references are test stubs. Workbench status tones go through the new statusTone.ts, a pure mapping. CancelPolicy is now keyed on :reference, which only resets component state. No cookie, localStorage or sessionStorage use appears in the added lines.",
+      "W5 met (vacuously): src/Uinsure.Policies.Web/compiler/** is not in the diff.",
+      "W6 met: a scan of the added lines for local absolute paths, personal emails and key or token patterns found nothing. The only URLs are http://localhost:5080 and http://localhost:4173 in activity log and audit-baseline text, which are not private.",
+      "W7 met: src/Uinsure.Policies.Web/package.json and the lockfile are not in the diff, so no package was added. gate.npm-audit (N4 t6) reports 0 vulnerabilities.",
+      "W8 met: the InspectorDrawer change adds a fixed 'Request #n failed: no response' announcement and a 'Failed (no response)' tag for a rejected fetch. It echoes no error message or stack trace. The 'Failed to fetch' string appears only inside a unit-test stub.",
+      "API8:2023 covered through W3 and W4: no new origin, CSP change or network surface. API10:2023 covered through W1 and W8: the API's status words are rendered as text. toneOfStatus maps an unknown status to 'warn', never to 'pass', so it does not over-trust the API's answer.",
+      "n/a, ui node with no server code: API1:2023, API2:2023, API3:2023, API4:2023, API5:2023, API6:2023, API7:2023 and API9:2023. API1, API2 and API5 are also Out by scope: there is no auth or tenancy.",
+      "n/a, ui node with no server code: the .NET extras (SQL, money, packages, secrets, logging). The web equivalents are W6 for secrets and paths and W7 for packages.",
+      "One caveat on evidence: the packet's diff.patch holds the binary PNG baselines and generated stylekit HTML only as index lines or very long lines. I did not inspect their pixel contents. docs/ui/stylekit/kit.css and docs/ui/stylekit/components/*.html are generated from the kit sources I did read."
+    ]
+  }
+}
