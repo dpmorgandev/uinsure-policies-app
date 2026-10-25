@@ -134,7 +134,7 @@ nodes:
     acceptance:
       - "Matrix Step 3 draws the test-count scope note from trace.json per-node counts, with no not-built-yet marker (inv-009 #8, I6)"
       - "The undrawn-lines notice on the activity screen is a kit component, added by the in-node kit gap with at most one catalog state, and agent-2.spec.ts runs without fixme and passes (inv-009 #10, I15)"
-      - "With two plans in trace.json, the Plan nav entry offers every plan before or without landing on the build plan (inv-009 #11, I16)"
+      - "The Plan nav entry opens a plan page with every plan in trace.json as a tab, and clicking a tab loads that plan (David 2026-10-25, steer D1: 'the plan page should display a tabbed plan open users can click another plan from the tabs to load it'; supersedes inv-009 #11 I16's reading, never land on build)"
       - "NotBuiltRegion and its NotBuiltYet import are gone from app/shell/Rung.tsx once no screen uses them; N2 removed the last two uses (bug-002/N2 review A3 R3, P2)"
       - "Sell and Cancel draw the header Status in the tone its value earns (Pending, Cancelled never a pass tick), from one status-to-tone mapping the workbench screens share (bug-002/N3 review A1 R3, P2)"
       - "A rejected fetch in the requests drawer is announced and tagged as failed, never 'answered' or 'Problem', through the in-node kit gap on InspectorDrawer (bug-002/N3 review A1 R4, P2)"
