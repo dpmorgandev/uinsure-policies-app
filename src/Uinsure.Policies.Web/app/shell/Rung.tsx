@@ -1,6 +1,5 @@
 import { useId } from 'react';
 import type { ReactNode } from 'react';
-import { NotBuiltYet } from '../../kit';
 import './rung.css';
 
 interface RungProps {
@@ -33,15 +32,6 @@ export function Region({ region, req, label, children }: { region: string; req: 
   return (
     <section className="s-region" data-region={region} data-req={req} aria-label={label}>
       <div className="s-body">{children}</div>
-    </section>
-  );
-}
-
-/** A region the screen file marks as not built: the kit's pattern, with no requirement ID claimed. */
-export function NotBuiltRegion({ region, name }: { region: string; name: string }) {
-  return (
-    <section className="s-region" data-region={region} data-built="false">
-      <NotBuiltYet kind="region" name={name} />
     </section>
   );
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { DataTable, FilterBar, NotBuiltYet, PageHeader, RuleChip, ShaLink, StatusTag } from '../../../kit';
+import { DataTable, FilterBar, PageHeader, RuleChip, ShaLink, StatusTag } from '../../../kit';
 import type { DataTableColumn, FilterDefinition, Status } from '../../../kit';
 import type { Trace, TraceRule } from '../../data/trace';
 import { DataNotice } from '../../shell/DataNotice';
@@ -88,6 +88,20 @@ function columnsOf(trace: Trace, snapshotSha: string): DataTableColumn<Row>[] {
   ];
 }
 
+/** DATA-4: the matrix counts a rule's tests at the node that built it; the rule page lists every test traited with it. */
+function ScopeNote({ rules }: { rules: TraceRule[] }) {
+  const example = rules.find((rule) => rule.matrix?.node != null && testsText(rule.matrix.tests) !== null);
+  return (
+    <p className="s-text">
+      The matrix counts a rule&apos;s tests at the node that built it, while the rule page lists every test traited with it, so
+      the two figures can differ.
+      {example?.matrix?.node == null
+        ? ' No rule here records a count at a node.'
+        : ` For example ${example.id} has ${testsText(example.matrix.tests)} at ${example.matrix.node}.`}
+    </p>
+  );
+}
+
 function MatrixTables({ trace, snapshotSha, snapshotShort, utc }: { trace: Trace; snapshotSha: string; snapshotShort: string; utc: string }) {
   const [filter, setFilter] = useState({ status: '', feature: '' });
   const all: Row[] = buildRules(trace).map((rule) => ({ id: rule.id, rule, status: ruleStatus(rule) }));
@@ -143,7 +157,7 @@ function MatrixTables({ trace, snapshotSha, snapshotShort, utc }: { trace: Trace
         ordinal="Step 3"
         heading="Test counts are per node"
       >
-        <NotBuiltYet kind="region" name="test-count scope note" />
+        <ScopeNote rules={all.map((row) => row.rule)} />
       </Rung>
     </>
   );

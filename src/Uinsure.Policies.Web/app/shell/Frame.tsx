@@ -12,10 +12,10 @@ import type { TraceState } from './ShellContext';
 import './notice.css';
 
 // The built sections are links. The ones the app has not built are drawn as "not built yet", never as a link.
-const navFor = (buildPlanId: string): NavItem[] => [
+const navFor = (): NavItem[] => [
   { key: 'overview', label: 'Overview', href: '#/', scope: 'explorer' },
   { key: 'matrix', label: 'Requirements matrix', href: '#/rules', scope: 'explorer' },
-  { key: 'plan', label: 'Plan', href: `#/plans/${buildPlanId}`, scope: 'explorer' },
+  { key: 'plan', label: 'Plan', href: '#/plans', scope: 'explorer' },
   { key: 'decisions', label: 'Human decisions', href: '#/decisions', scope: 'explorer' },
   { key: 'about', label: 'How to read this', href: '#/about', scope: 'explorer' },
   { key: 'workbench', label: 'Workbench', href: '#/workbench', scope: 'workbench' },
@@ -77,6 +77,7 @@ export function Frame() {
   const verdict = useMatch('/plans/:planId/:nodeId/verdicts/:round/:agent');
   const finding = useMatch('/plans/:planId/:nodeId/findings/:round');
   const planPage = useMatch('/plans/:planId');
+  const planIndex = useMatch('/plans');
   const sessionList = useMatch('/sessions');
   const sessionOpen = useMatch('/sessions/:file');
   const sessions = sessionList ?? sessionOpen;
@@ -91,6 +92,7 @@ export function Frame() {
     [verdict !== null, 'Verdict'],
     [finding !== null, 'Finding'],
     [planPage !== null, 'Plan'],
+    [planIndex !== null, 'Plans'],
     [commit !== null, `Commit ${(commit?.params.sha ?? '').slice(0, 7)}`],
     [rule !== null, 'Rule'],
     [matrix !== null, 'Requirements matrix'],
@@ -111,7 +113,7 @@ export function Frame() {
         ? 'decisions'
         : overview || stats
         ? 'overview'
-        : planPage || nodePage || walkthrough || activity || commit || loop || verdict || finding
+        : planPage || planIndex || nodePage || walkthrough || activity || commit || loop || verdict || finding
           ? 'plan'
           : matrix || rule
             ? 'matrix'
@@ -123,10 +125,9 @@ export function Frame() {
     document.title = `${title} · Docket`;
   }, [title]);
 
-  const buildPlanId = (trace.state === 'ready' ? trace.trace.plans.find((plan) => plan.kind === 'build')?.id : undefined) ?? 'build';
   const node = trace.state === 'ready' ? trace.trace.nodes.find((n) => n.plan === planId && n.id === nodeId) : undefined;
   // DAG-1: every plan trace.json holds is one tab, each opening its own page, so the ui plan and the investigations
-  // are one click from the build plan (the Plan nav entry opens the build plan; both real DAGs say kind: build).
+  // are one click from the build plan (the Plan nav entry opens the list of them).
   const plans = trace.state === 'ready' ? trace.trace.plans : [];
   const content = (
     <ShellProvider value={{ trace, theme, setTheme }}>
@@ -170,7 +171,7 @@ export function Frame() {
         }
       : { noSnapshot: true, provenanceHref: '#/about', repoHref: REPO };
   return (
-    <AppShell topBar={topBar} nav={{ current, items: navFor(buildPlanId) }} footer={footer}>
+    <AppShell topBar={topBar} nav={{ current, items: navFor() }} footer={footer}>
       {content}
     </AppShell>
   );

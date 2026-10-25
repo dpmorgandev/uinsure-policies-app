@@ -8,6 +8,7 @@ import type { ApiAnswer, PaymentMethod, Policy } from '../../data/api';
 import { browserDeps } from '../browser';
 import { ProblemView } from '../ProblemView';
 import { RequestsDrawer } from '../RequestsDrawer';
+import { toneOfStatus } from '../statusTone';
 import '../workbench.css';
 
 const PAYMENT_METHODS = [
@@ -121,7 +122,7 @@ export function RenewPolicy() {
           question="If I renew this policy now, will the API take the renewal, and on which amount and payment method?"
           answer={answer}
           missingLabel="not in this response"
-          status={known ? { value: known.status === 'Active' ? 'pass' : 'warn', label: known.status } : null}
+          status={known ? { value: toneOfStatus(known.status), label: known.status } : null}
           ids={[
             { label: 'Policy', value: reference },
             ...(known

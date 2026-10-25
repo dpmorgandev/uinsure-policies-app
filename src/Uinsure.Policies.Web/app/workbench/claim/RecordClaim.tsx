@@ -9,6 +9,7 @@ import type { ApiAnswer, CancellationQuote, Policy, RecordedClaim } from '../../
 import { browserDeps, todayInLondon } from '../browser';
 import { ProblemView } from '../ProblemView';
 import { RequestsDrawer } from '../RequestsDrawer';
+import { toneOfStatus } from '../statusTone';
 import '../workbench.css';
 
 const ruleHref = (ruleId: string): string => '#/rules/' + ruleId;
@@ -154,7 +155,7 @@ export function RecordClaim() {
           question="After a claim is recorded, does the quote I ask for again refund 0.00?"
           answer={answer}
           missingLabel="not in this response"
-          status={known ? { value: known.status === 'Active' ? 'pass' : 'warn', label: known.status } : null}
+          status={known ? { value: toneOfStatus(known.status), label: known.status } : null}
           ids={[
             { label: 'Policy', value: reference },
             ...(known ? [{ label: `Term ${known.currentTermNumber}`, value: `${known.startDate} to ${known.endDate}` }] : []),

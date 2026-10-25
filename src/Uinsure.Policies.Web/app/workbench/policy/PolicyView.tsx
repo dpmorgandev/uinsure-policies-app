@@ -3,16 +3,14 @@ import type { ReactNode } from 'react';
 import { Receipt } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router';
 import { Button, DataTable, KeyValueList, PageHeader, ProblemBanner, RequestLog, StatusTag, TermTimeline } from '../../../kit';
-import type { DataTableColumn, KeyValueItem, RequestLogEntry, Status, TermTimelineProps } from '../../../kit';
+import type { DataTableColumn, KeyValueItem, RequestLogEntry, TermTimelineProps } from '../../../kit';
 import { getPolicy } from '../../data/api';
 import type { ApiAnswer, Policy, Problem } from '../../data/api';
 import { browserDeps, useRequestLog } from '../browser';
 import { apiPathOf } from '../RequestsDrawer';
 import { ProblemView } from '../ProblemView';
+import { toneOfStatus } from '../statusTone';
 import '../workbench.css';
-
-// How the API's status word is drawn. The word shown is always the API's own.
-const STATUS_TAGS: Record<string, Status> = { Pending: 'pending', Active: 'pass', Expired: 'warn', Cancelled: 'fail' };
 
 type TimelineClaim = NonNullable<TermTimelineProps['claims']>[number];
 type TimelineCancellation = NonNullable<TermTimelineProps['cancellation']>;
@@ -290,7 +288,7 @@ function headerOf(reference: string, answer: ApiAnswer<Policy> | null): ReactNod
         {...common}
         title={`Policy ${policy.reference}`}
         answer={`${policy.status}. Term ${policy.currentTermNumber} runs ${policy.startDate} to ${policy.endDate}, with ${plural(policy.payments.length, 'payment', 'payments')}, ${plural(policy.refunds.length, 'refund', 'refunds')} and ${plural(policy.claims.length, 'claim', 'claims')}.`}
-        status={{ value: STATUS_TAGS[policy.status] ?? 'warn', label: policy.status }}
+        status={{ value: toneOfStatus(policy.status), label: policy.status }}
         ids={[
           { label: 'Policy', value: policy.reference },
           { label: 'Type', value: policy.type },

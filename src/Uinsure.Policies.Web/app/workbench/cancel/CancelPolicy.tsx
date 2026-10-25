@@ -20,6 +20,7 @@ import type { ApiAnswer, CancellationQuote, CancellationResult, Policy } from '.
 import { RequestsDrawer } from '../RequestsDrawer';
 import { browserDeps } from '../browser';
 import { ProblemView } from '../ProblemView';
+import { toneOfStatus } from '../statusTone';
 import '../workbench.css';
 
 const ruleHref = (ruleId: string): string => '#/rules/' + ruleId;
@@ -61,8 +62,13 @@ function answerOf(quoted: Quoted | null, cancelled: CancellationResult | null, c
   return 'Nothing is quoted yet. Quote a date to see the refund before anything is cancelled.';
 }
 
+/** HONEST-1: one screen per policy. The route table keeps this element across a change of :reference, so it is keyed on it. */
 export function CancelPolicy() {
   const { reference = '' } = useParams();
+  return <CancelScreen key={reference} reference={reference} />;
+}
+
+function CancelScreen({ reference }: { reference: string }) {
   const [policy, setPolicy] = useState<Policy | null>(null);
   // HONEST-1: true when the re-read after a cancel failed, so the status drawn is the one read before the cancel.
   const [stale, setStale] = useState(false);
@@ -231,7 +237,7 @@ export function CancelPolicy() {
           question="If I cancel on the date I quoted, is the refund the one I was quoted?"
           answer={answerOf(quoted, cancelled, cancelling.kind === 'done' ? cancelling.status : null, quoteBusy)}
           missingLabel="not returned"
-          status={policy ? { value: stale ? 'warn' : 'pass', label: statusShown } : null}
+          status={policy ? { value: stale ? 'warn' : toneOfStatus(policy.status), label: statusShown } : null}
           ids={[
             { label: 'Policy status', value: statusShown, missing: 'not returned' },
             { label: 'Policy', value: reference },
