@@ -197,7 +197,7 @@ nodes:
     rules: []
     cuttable: false
     budget: 3h
-    status: hitl
+    status: done
     attempt: 1
     branch: bug/bug-002/N6
     worktree: .claude/worktrees/bug-002-N6
@@ -218,5 +218,5 @@ nodes:
       - {id: t5, role: git, step: integrate, layer: null, rules: [], title: "Rebase onto origin/main; full suite on the post-rebase HEAD", status: done}
       - {id: t6, role: orchestrator, step: trace, layer: null, rules: [], title: "Render walkthrough.md, README and matrix; chore(trace) commit; completeness check passes", status: done}
       - {id: t7, role: git, step: pr, layer: null, rules: [], title: "Push, draft PR from the body template, reviewer, security and rebase comments", status: done}
-      - {id: t8, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and a baseline: <screen> ruling per re-shot screen", status: pending}
+      - {id: t8, role: david, step: pause2, layer: null, rules: [], title: "Pause 2: sign-off from walkthrough.md, the QA script and a baseline: <screen> ruling per re-shot screen", status: done}
       - {id: t9, role: david, step: merge, layer: null, rules: [], title: "David marks the PR ready and merges", status: pending}
