@@ -1,0 +1,91 @@
+{
+  "v": 1,
+  "ts": "2026-10-25T20:55:06Z",
+  "plan": "feat-001",
+  "node": "N1",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "a07b05af6df6644cb",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "feat-001",
+    "node_id": "N1",
+    "attempt": 2,
+    "base_sha": "7d8f57892a298f3fa24f00e0686a865a30f9ae1c",
+    "head_sha": "11872be5a7ed1f5a8da1c860dc7885ea8cce77fd",
+    "diff_fingerprint": "8e48528de1b1d0c3a906d77c73ff75bd9d17a06d",
+    "verdict": "PASS",
+    "gate_refs": [
+      "loop.jsonl:17 verdict(reviewer,PASS,verdicts/A2-reviewer.json)",
+      "loop.jsonl:19 steer(D1,pause2)",
+      "loop.jsonl:20 findings(D1.md)",
+      "loop.jsonl:22 gate.e2e-rerun (446/486, not a node gate)",
+      "loop.jsonl:23 gate.finding-red (947b66ba: checks 13-15 fail, old 12 pass)",
+      "loop.jsonl:24 gate.fix (11872be5: 26/26)",
+      "loop.jsonl:25 gate.build",
+      "loop.jsonl:26 gate.test (652/652)",
+      "loop.jsonl:27 gate.scope",
+      "loop.jsonl:28 gate.stubs",
+      "loop.jsonl:29 gate.guides",
+      "loop.jsonl:30 gate.privacy",
+      "loop.jsonl:31 gate.print"
+    ],
+    "rules_covered": [],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "§8.3",
+        "severity": "P2",
+        "file": "docs/guides/api/receipts.md",
+        "line": 729,
+        "what": "Note says R1-R12 ran at 6bf608d2 and R13 on the patched tree, but R8/R8b/R8c/R13 read 947b66ba and R8a reads a9c3f83b. Header :3 still says HEAD 6bf608d2.",
+        "why": "D1/I3 asked that nothing in the receipts be wrong (§8 acceptance 3). Check 15 passes only because 'at HEAD' is gone and a sha is named. The note now contradicts the entries' own Date lines. run-receipts.sh:157-163 hard-codes 6bf608d2 while each entry takes SHA from git rev-parse HEAD (:11, :30), so a full rerun would make the note stale again, which is the same cause I3 named.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "§8.3",
+        "severity": "P2",
+        "file": "docs/guides/api/receipts.md",
+        "line": 602,
+        "what": "R8a was not run by run-receipts.sh. It was an ad-hoc `dotnet tool update ... | tail -5; dotnet tool list -g` (activity.jsonl:479), spliced into receipts.md by hand.",
+        "why": "receipts.md:5-6 says the script ran every command and that each entry is 'the command exactly as it was run'. D1/I2's fix direction was 'Run it through run-receipts.sh so it gets a receipt'. R8, R8b, R8c and R13 were rerun from an edited temporary copy of the script (activity.jsonl:484-496) and then hand-merged. The output line is plausible, but this provenance is not disclosed.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "LRN-5",
+        "severity": "P2",
+        "file": "docs/guides/api/index.html",
+        "line": 210,
+        "what": "The guide says `update` installs dotnet-ef if missing, but R8a only shows an update from 9.0.9. The clean-machine path, the I2 symptom, has no receipt.",
+        "why": "LRN-5: the exact command and what you should see. The fix is meant for a reader with no dotnet-ef, and that is the one case not captured. I believe current SDKs install on update, but nothing in the packet shows it, so the output a fresh reader sees is unshown.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R4",
+        "rule_id": "LRN-5",
+        "severity": "P2",
+        "file": "docs/guides/api/check.test.mjs",
+        "line": 325,
+        "what": "Check D1/I1 passes any table row holding the date and the word 'today'. It never checks the offset arithmetic, so a wrong offset would pass.",
+        "why": "Anti-oracle: the builder wrote both the red check and the fix (loop.jsonl:23 'tester G1-refused'). I checked all seven offsets by hand against 2026-10-25 (+7, +16, +187, -1, +1, -24, 0), and all are correct at HEAD. The check alone would not have caught an error.",
+        "route_to": "tester"
+      }
+    ],
+    "notes": [
+      "No P1 under the docs-node bar. No command fails as printed once the reader follows the Dates callout (index.html:766-779), and the gate.privacy receipt at loop.jsonl:30 is clean.",
+      "D1/I1 (A2 R1) is resolved through the instruction route the investigator allowed. The callout gives every servicer-journey date as an offset from the reader's own today and says which outputs will differ (dates, quotedOn, the SELL-2 window, the renewal window, traceIds, references). I checked by hand that daysUsed 10/181/188 and refunds 803.40/405.00/581.92 depend only on the gaps between dates. The 29 February caveat is stated. Each date's 'Where' column matches the SJ step it sits in (SJ2 819-873, SJ4 917-986, SJ5 987-1043, SJ7 1072-1156).",
+      "Residual, not raised: `date +%F` gives the reader's local date, but the API uses the UK date (UkCalendar, Europe/London). A reader far from UK time near midnight could get SELL-2 on the 'today' sale. This is narrow; it could go in the Dates callout or the troubleshooting table later.",
+      "D1/I2 (A2 R4) is resolved. DJ3 step 1 (index.html:210-213) installs dotnet-ef 10.0.13 before the first `dotnet ef`, the version matches Directory.Packages.props (as check 14 enforces), and the troubleshooting row (:1257) now points to it.",
+      "D1/I3 (A2 R5) is partly resolved. 'At HEAD' is gone from receipts.md and run-receipts.sh, and the note names 6bf608d2 and da7ac832. R1 above is what remains.",
+      "TDD order: 947b66ba (TDD: red, check.test.mjs only, staged alone per activity.jsonl:481-482) comes before 11872be5 (TDD: green). The green commit staged only API_UserGuide.pdf, index.html, receipts.md and run-receipts.sh (activity.jsonl:518), so no check was weakened after red. Both commits carry Fixes-Finding D1/I1-I3.",
+      "The red checks were written by the builder, not the tester. This is disclosed at loop.jsonl:23 ('tester G1-refused'), and it is why R4 matters.",
+      "From the A2 verdict: R3 (e2e full-run failures, reproduced 446/486 at loop.jsonl:22) and R6 (placeholders) were accepted by David as PR notes. R2 (coverage check depth) and R7 (TDD: refactor label on 1f548620) are unchanged and not raised again.",
+      "No src/ change since 0e0cc637. gate.stubs (loop.jsonl:28) shows no NotImplementedException, and gate.build and gate.test (loop.jsonl:25-26) pass 652/652 at HEAD.",
+      "Not verified by me: that the reprinted API_UserGuide.pdf (392595 bytes, loop.jsonl:31) shows the new callout and table; I did not open the PDF. Also not verified: that `dotnet tool update --global` installs a tool that is absent (see R3)."
+    ]
+  }
+}

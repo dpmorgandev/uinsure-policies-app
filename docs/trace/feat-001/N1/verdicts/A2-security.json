@@ -1,0 +1,53 @@
+{
+  "v": 1,
+  "ts": "2026-10-25T19:30:43Z",
+  "plan": "feat-001",
+  "node": "N1",
+  "attempt": 2,
+  "agent": "security",
+  "agent_id": "aa2db24434ab3e284",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "security",
+    "plan_id": "feat-001",
+    "node_id": "N1",
+    "attempt": 2,
+    "base_sha": "7d8f57892a298f3fa24f00e0686a865a30f9ae1c",
+    "head_sha": "a9c3f83bc4869b8283ae30bddda24ed8d8f3a355",
+    "diff_fingerprint": "a49ee512bc26044f2545f3850b4f19f7934d62f1",
+    "verdict": "PASS",
+    "gate_refs": [
+      "gate.privacy",
+      "gate.scope",
+      "gate.guides",
+      "gate.print",
+      "gate.build",
+      "gate.test",
+      "gate.stubs"
+    ],
+    "rules_covered": [
+      "API3:2023",
+      "API4:2023",
+      "API6:2023",
+      "API8:2023",
+      "API9:2023",
+      "NET"
+    ],
+    "rules_missing": [],
+    "findings": [],
+    "notes": [
+      "Docs node: the diff has no src/ or package change (gate.scope, gate.print). It holds the guides, their build, capture and receipt scripts, the specs and the two PDFs. I checked the scripts, the receipts and the printed text for security and privacy.",
+      "API1:2023 n/a: no auth or tenancy; the reference is the only key, and the guide says so.",
+      "API2:2023 n/a: auth is out of scope. The guide states there is no authentication (DQ3, API guide index.html:743).",
+      "API5:2023 n/a: no roles.",
+      "API7:2023 n/a: no src/ change, so no outbound fetching was added. The only fetch calls are in guide tooling (ui/capture.mjs, ui/run-receipts.mjs), and they hit localhost and the local trace.json.",
+      "API10:2023 n/a: no upstream APIs; pricing is client-supplied.",
+      "API3, API4, API6, API8 and API9 are met in the sense that no code behind them changed. The guide's security statements match the skill. It states 429 with Retry-After (index.html:1119 and 1233), a 413 for bodies over 65,536 bytes (index.html:1134), 400 /problems/https-required (index.html:1232), no authentication (index.html:743), and that 429, 500 and 413 were not provoked live.",
+      "NET raw SQL: none added; no src/ change. The SQL, money, package and logging checks have nothing to find in the diff.",
+      "NET secrets: a grep of the added lines for Password=, AccountKey=, keys, tokens, Bearer and BEGIN blocks found only the sentence at index.html:1565, 'There are no secrets' (managed identity). The receipts hold no credentials. The sample people (Ada Lovelace, Grace Hopper) and addresses (EX1 1AA, EX2 2BB) are fictitious.",
+      "NET packages: gate.print reports no package change, so there is nothing to audit.",
+      "Privacy: the grep found no personal email, no local absolute path and no private name in docs/guides, and none in either PDF. The only drive path is the generic advice 'C:\\src\\uinsure-policies' (index.html:1226), which was already in the previously merged guide. ui/run-receipts.mjs scrubs the repo root and the home directory to <repo> and <home> before it stores output. gate.privacy ran clean over every changed text file and both PDFs.",
+      "Scripts: ui/run-receipts.mjs runs only hard-coded commands with spawnSync and spawn; no user input reaches a shell. capture.mjs deletes only png files and manifest.json in its own shots directory. The only network calls are to localhost. The generated HTML loads no external script, font or stylesheet; guide.css imports the local tokens.css."
+    ]
+  }
+}

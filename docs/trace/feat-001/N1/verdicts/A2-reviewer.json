@@ -1,0 +1,120 @@
+{
+  "v": 1,
+  "ts": "2026-10-25T19:35:54Z",
+  "plan": "feat-001",
+  "node": "N1",
+  "attempt": 2,
+  "agent": "reviewer",
+  "agent_id": "abb5f67667e418624",
+  "verdict": {
+    "schema_version": 1,
+    "agent": "reviewer",
+    "plan_id": "feat-001",
+    "node_id": "N1",
+    "attempt": 2,
+    "base_sha": "7d8f57892a298f3fa24f00e0686a865a30f9ae1c",
+    "head_sha": "a9c3f83bc4869b8283ae30bddda24ed8d8f3a355",
+    "diff_fingerprint": "a49ee512bc26044f2545f3850b4f19f7934d62f1",
+    "verdict": "PASS",
+    "gate_refs": [
+      "loop.jsonl:3 gate.write (t1, failed A1/I8 at 6f2e8efc)",
+      "loop.jsonl:5 findings(A1.md)",
+      "loop.jsonl:6 gate.write (t1 after A1/I1, 1f548620)",
+      "loop.jsonl:7 gate.write (t2, 6db22f48)",
+      "loop.jsonl:8 gate.write (t3 part 1, 6bf608d2)",
+      "loop.jsonl:9 gate.write (t3 part 2, ae30479f)",
+      "loop.jsonl:10 gate.build",
+      "loop.jsonl:11 gate.test",
+      "loop.jsonl:12 gate.scope",
+      "loop.jsonl:13 gate.stubs",
+      "loop.jsonl:14 gate.guides",
+      "loop.jsonl:15 gate.privacy",
+      "loop.jsonl:16 gate.print"
+    ],
+    "rules_covered": [],
+    "rules_missing": [],
+    "findings": [
+      {
+        "id": "R1",
+        "rule_id": "LRN-5",
+        "severity": "P2",
+        "file": "docs/guides/api/index.html",
+        "line": 840,
+        "what": "Servicer journey dates are fixed to 2026-10-25. From 2026-10-26 the GUIDE-002 sale gets 422 SELL-2, so SJ4-SJ6 get 404. GUIDE-001's 2026-11-01 start fails after 2026-11-01.",
+        "why": "Acceptance line 7: 'A reader follows one persona journey in a PDF against the running app and reaches each step's shown result'. The summary at :760 states the capture day but never tells the reader to move the dates to their own today, and run-receipts.sh:5 admits 'the dates in the commands below only fit that day'. This is carried from F7 A2 R4 and A2.2 R4, both P2, so it stays P2 for consistency. It becomes material at t6 if David follows the servicer journey on a later day.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R2",
+        "rule_id": "LRN-14",
+        "severity": "P2",
+        "file": "docs/guides/coverage.test.mjs",
+        "line": 114,
+        "what": "The check only enforces the top-level bold items of §6/§7, by word prefix. Deleting a sub-feature row (e.g. R6 migrations) still passes, and an empty ref word matches any item.",
+        "why": "LRN-14: 'A check script fails on any feature with no step'. The features are the sub-bullets of §6/§7 (prerequisites, migrations, harness self-test, …). The spec's map lists them (api-guide.spec.md:171-212), but the script never compares them with the requirements, so the map's completeness is checked by hand.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R3",
+        "rule_id": "MAN-5",
+        "severity": "P2",
+        "file": "docs/guides/ui/index.html",
+        "line": 348,
+        "what": "The full Playwright run is printed as exit 1, 475 passed / 457 failed, cause unknown. A reader can't run that collection green by following the guide.",
+        "why": "§8.2 says David can run each test collection by hand by following the guide alone. The guide reports the failure honestly (callout at :351), and that is right. The defect is in the e2e suite or app under full parallel load (10 workers), outside a docs node's scope, so it needs its own bug plan, not a guide change.",
+        "route_to": "tester"
+      },
+      {
+        "id": "R4",
+        "rule_id": "LRN-5",
+        "severity": "P2",
+        "file": "docs/guides/api/index.html",
+        "line": 211,
+        "what": "DJ3's `dotnet ef migrations script` needs a global dotnet-ef the guide never asks the reader to install (no tool manifest). On a clean machine the command isn't found.",
+        "why": "LRN-5 asks for the exact command and what you should see. The only mention is the troubleshooting row at :1238, about an older version. Carried from docs/qa/build-F7.md:99 (note 4) and still open.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R5",
+        "rule_id": "§8.3",
+        "severity": "P2",
+        "file": "docs/guides/api/receipts.md",
+        "line": 719,
+        "what": "receipts.md:719 (and run-receipts.sh:155) says 'At HEAD, one architecture test fails'. That has been stale since da7ac832 fixed run-output.json:45; gate.test at 0e0cc637 is 652/652.",
+        "why": "§8.3 makes receipts the evidence. R3, R3d and R13 were run on a working tree carrying the later da7ac832 edit, which is disclosed, but the 'At HEAD' wording now misdescribes the HEAD under review.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R6",
+        "rule_id": "MAN-3",
+        "severity": "P2",
+        "file": "docs/guides/api/index.html",
+        "line": 171,
+        "what": "Four hand-capture placeholders remain (Visual Studio figures 2 and 4, Postman figures 9 and 11), so MAN-1 and MAN-3 have no tool screenshot at the point where the reader acts.",
+        "why": "§4b: each runner gets 'a screenshot of the tool at the point where a reader acts'. The placeholders are labelled honestly and the gate at loop.jsonl:9 records them. They need David's capture or his acceptance at Pause 2.",
+        "route_to": "builder"
+      },
+      {
+        "id": "R7",
+        "rule_id": "none",
+        "severity": "P2",
+        "file": "docs/guides/api/check.test.mjs",
+        "line": 179,
+        "what": "Commit 1f548620 carries 'TDD: refactor' but changes what the A1/I8 check counts (7 to 30 rows), which is a behaviour fix. 6f2e8efc carries 'TDD: none'; the later docs commits carry no TDD.",
+        "why": "requirements-trace: a refactor has no behaviour change, and a fix commit carries Fixes-Finding (present: A1/I1). The orchestrator noted the mislabel at loop.jsonl:6. Trailer hygiene only; the red receipt (loop.jsonl:3) does precede the fix.",
+        "route_to": "builder"
+      }
+    ],
+    "notes": [
+      "No P1 found under the docs-node bar. Every printed command I checked matches the repo at HEAD: dotnet build/test/--project/--filter-trait/--filter-class (receipts R2-R4c), dotnet run --launch-profile http (launchSettings.json exists), Uinsure.Policies.slnLaunch exists, the Postman -i \"F2 Retrieve\" folder, the package.json scripts (test, e2e, trace, build, preview), playwright.config.ts and vite.config.ts in src/Uinsure.Policies.Web, and the e2e API start (tests/Uinsure.Policies.Web.Tests/e2e/W1/support/api.ts).",
+      "R1 is the call I'd most like the orchestrator or David to look at again. By precedent (F7) it is P2, but the new acceptance line 7 makes a dated journey the thing the t6 QA step tests. If the QA run is on 2026-10-26 or later, the servicer journey in API_UserGuide.pdf fails from SJ2's GUIDE-002 sale onwards.",
+      "LRN-6: guide.css replaces .marker circles with .box and .boxlabel ('Step n'). capture.mjs measures the boxes from [data-region] with getBoundingClientRect (lines 110-170). The only circle left is .step::before, the step counter on step lists, not a screenshot highlight, and grouped journeys switch it off.",
+      "LRN-12: both guides are organised as journeys (API: DJ1-DJ8 developer, SJ1-SJ8 servicer; UI: servicer SJ and assessor AJ steps), each with 'You decide' and 'gives you' blocks.",
+      "Privacy: no local paths, user folders or e-mails in the changed text (grep over docs/guides, specs, plan files and the packet diff), which matches gate.privacy. aj6-decisions.png shows the app's own text 'What did David decide' and the commit author 'David Morgan'. F8 security S1 already rated this a P2 PR note for David to confirm, so I'm not raising it again here.",
+      "guide.css adds .shot img.nudge (brightness 1.001) so the PDF re-encodes images whose compressed bytes tripped the privacy scanner by chance. It's a reasonable false-positive workaround, but David should know the scan was steered round that way.",
+      "Disclosed deviations against acceptance line 5 ('reprinted from a run on main'): the receipts were run on feature/feat-001/N1, which is docs-only over main. The Postman CLI output (R6) is reused from F8's 2026-10-23 run because the CLI would not start on the capture machine.",
+      "Carried F8 R7 is resolved: the Docket.Web.esproj:4 extract is now three real lines. A1/I1 is fixed as directed: the check, not the spec, now counts DQ/SQ rows in §1 only (check.test.mjs:179-181), and gate.write at loop.jsonl:6 passed 12/12.",
+      "Not verified by me: PDF page counts against §9's 30-40 and 40-50, LRN-13 framing across all 54 shots (I opened one), and every path:line link. For the links I rely on gate.guides (loop.jsonl:14)."
+    ]
+  }
+}
